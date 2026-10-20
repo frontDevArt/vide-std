@@ -1,0 +1,8 @@
+projects/*/build/
+projects/*/qa/
+tools/rhvoice/
+tools/.build/
+tools/piper-voices/
+tools/setup.log
+__pycache__/
+*.pyc

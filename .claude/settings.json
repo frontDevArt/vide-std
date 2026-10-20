@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m studio:*)",
+      "Bash(python3 -m studio:*)",
+      "Bash(bash tools/setup_rhvoice.sh)",
+      "Bash(ffmpeg:*)",
+      "Bash(ffprobe:*)",
+      "Read(projects/**)",
+      "Edit(projects/**)",
+      "Write(projects/**)"
+    ]
+  }
+}

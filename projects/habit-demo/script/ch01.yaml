@@ -1,0 +1,26 @@
+chapter: ch01
+title: "Петля привычки"
+scenes:
+  - id: s01
+    template: title
+    lines: ["Глава первая. | Петля привычки."]
+    params: {kicker: "Глава 1", title: "Петля *привычки*"}
+  - id: s02
+    template: bullets
+    lines: ["У любой привычки три шага: | сигнал, | действие | и награда."]
+    params:
+      header: "Три шага"
+      items: [{icon: bell, text: "Сигнал"}, {icon: bolt, text: "Действие"}, {icon: star, text: "Награда"}]
+  - id: s03
+    template: counter
+    lines: ["В среднем мы берём телефон | больше ста раз в день."]
+    params: {from: 0, to: 100, suffix: "+", label: "раз в день берём телефон", at_beat: 1}
+  - id: s04
+    template: statement
+    lines: ["Измени сигнал — | и изменится всё остальное."]
+    params: {text: "Измени *сигнал*", icon: target, sub: "и изменится всё остальное"}
+  - id: s05
+    template: outro
+    lines: ["Об этом — в следующей главе."]
+    hold: 1.0
+    params: {text: "Дальше: *сигналы*"}
