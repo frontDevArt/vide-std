@@ -72,11 +72,12 @@ def _piper(text, voice, rate, out_raw):
 BACKENDS = {"rhvoice": _rhvoice, "edge": _edge, "piper": _piper}
 
 
-def probe(tts_cfg) -> str:
+def probe(tts_cfg, language="ru") -> str:
     """Проверяет, что синтез реально работает (а не просто «бинарник есть»)."""
+    from .lang import profile
     tmp = Path(tempfile.mkdtemp())
     try:
-        BACKENDS[tts_cfg["backend"]]("Проверка голоса.", tts_cfg["voice"], 100, tmp / "p.wav")
+        BACKENDS[tts_cfg["backend"]](profile(language)["probe"], tts_cfg["voice"], 100, tmp / "p.wav")
         if not (tmp / "p.wav").exists() or (tmp / "p.wav").stat().st_size < 2000:
             raise TTSUnavailable(f"{tts_cfg['backend']}: синтез вернул пустой файл")
         return "ok"

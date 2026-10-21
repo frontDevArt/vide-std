@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Сборка RHVoice (офлайн-TTS, русские голоса) ОДИН РАЗ на машину.
+# Сборка RHVoice (офлайн-TTS; по умолчанию русский голос, другие языки — LANGUAGES/VOICES) ОДИН РАЗ на машину.
 # Результат кэшируется в tools/rhvoice/ внутри проекта — повторный запуск мгновенный.
 #
 # Все фиксы взяты из реального прогона (см. docs/LESSONS.md, раздел TTS):
@@ -11,12 +11,14 @@
 #
 # Использование:  bash tools/setup_rhvoice.sh            (голос по умолчанию aleksandr-hq)
 #                 VOICES="aleksandr-hq elena" bash tools/setup_rhvoice.sh
+#   английский:  VOICES="aleksandr-hq slt" LANGUAGES="Russian English" bash tools/setup_rhvoice.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PREFIX="$ROOT/tools/rhvoice"
 SRC="$ROOT/tools/.build/RHVoice"
 VOICES="${VOICES:-aleksandr-hq}"
+LANGUAGES="${LANGUAGES:-Russian}"   # data/languages/<...> в RHVoice: Russian, English, ...
 
 if [ -x "$PREFIX/bin/RHVoice-test" ] && [ -f "$PREFIX/rhvoice" ]; then
   echo "[rhvoice] уже установлен: $PREFIX"; exit 0
@@ -36,7 +38,8 @@ if [ ! -d "$SRC/.git" ]; then
 fi
 cd "$SRC"
 
-subs="data/languages/Russian cmake/thirdParty/sanitizers cmake/thirdParty/CCache"
+subs="cmake/thirdParty/sanitizers cmake/thirdParty/CCache"
+for l in $LANGUAGES; do subs="$subs data/languages/$l"; done
 for v in $VOICES; do subs="$subs data/voices/$v"; done
 subs="$subs $(awk '$1=="path" && $3 ~ /^external\// {print $3}' .gitmodules | tr '\n' ' ')"
 echo "[rhvoice] submodules (это самая долгая часть)..."

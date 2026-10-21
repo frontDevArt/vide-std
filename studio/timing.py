@@ -126,7 +126,7 @@ def choose_rate(proj: Project, log=print):
 
 def layout(proj: Project, log=print) -> dict:
     """Полная раскладка проекта -> build/timeline.json (+ субтитры). Идемпотентно, с кэшем TTS."""
-    T.probe(proj.cfg["tts"])
+    T.probe(proj.cfg["tts"], proj.cfg["language"])
     rate, voiced = choose_rate(proj, log)
     P = proj.cfg["pauses"]
     fps = proj.fps

@@ -38,7 +38,7 @@ RHVoice нативно под Windows собирать не нужно.
 ## Выбор голоса
 | Ситуация | Бэкенд |
 |---|---|
-| Есть интернет, нужен самый живой голос | `edge` (`ru-RU-DmitryNeural`, `ru-RU-SvetlanaNeural`) |
+| Есть интернет, нужен самый живой голос | `edge` (`ru-RU-DmitryNeural`, `ru-RU-SvetlanaNeural`; en: `en-US-GuyNeural`) |
 | Нужен офлайн / конфиденциально | `rhvoice` (`aleksandr-hq`) или `piper` |
 | Длинный ролик (час) | `edge` или `piper` — RHVoice на часе утомляет |
 

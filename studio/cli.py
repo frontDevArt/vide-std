@@ -27,16 +27,18 @@ def cmd_doctor(a):
         line(False, "python-библиотеки", f"({e}) -> pip install -r requirements.txt")
     from . import gfx
     try:
-        line(True, "шрифт с кириллицей", gfx._font_file("bold"))
+        line(True, "шрифт (кириллица + латиница)", gfx._font_file("bold"))
     except Exception as e:
         line(False, "шрифт", str(e))
     from . import tts
-    for be, voice in (("rhvoice", "aleksandr-hq"), ("edge", "ru-RU-DmitryNeural"), ("piper", "ru_RU-dmitri-medium")):
-        try:
-            tts.probe({"backend": be, "voice": voice})
-            print(f"  ✅ TTS {be} ({voice}) — синтез работает")
-        except Exception as e:
-            print(f"  ⬜ TTS {be}: {str(e)[:110]}")
+    from .lang import LANGS
+    for code in (a.lang.split(",") if a.lang else LANGS):
+        for be, voice in LANGS[code]["voices"].items():
+            try:
+                tts.probe({"backend": be, "voice": voice}, code)
+                print(f"  ✅ TTS [{code}] {be} ({voice}) — синтез работает")
+            except Exception as e:
+                print(f"  ⬜ TTS [{code}] {be}: {str(e)[:110]}")
     import os
     print(f"  ℹ️  ядер CPU: {os.cpu_count()}")
     return 0 if ok else 1
@@ -58,6 +60,7 @@ def cmd_new(a):
     shutil.copytree(STUDIO_ROOT / "projects" / "_template", dst)
     y = (dst / "project.yaml").read_text(encoding="utf-8")
     y = y.replace("topic: TODO", f"topic: {a.topic!r}".replace("'", '"'))
+    y = y.replace("language: ru", f"language: {a.lang}")
     y = y.replace("format: vertical", f"format: {a.format}")
     y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
     (dst / "project.yaml").write_text(y, encoding="utf-8")
@@ -68,7 +71,9 @@ def cmd_new(a):
 def cmd_validate(a):
     from .templates import REGISTRY, load_project_templates
     from .textutil import word_count, segments
+    from .lang import profile
     proj = load(resolve_project(a.project))
+    lp = profile(proj.cfg["language"])
     load_project_templates(proj.root)
     errs, warns = [], []
     ids = set()
@@ -91,15 +96,15 @@ def cmd_validate(a):
                 errs.append(f"{ch}/{sid}: нет текста и не задан min_duration")
             for l in lines:
                 words += word_count(l)
-                if re.search(r"[A-Za-z]", l.replace("|", "")):
-                    warns.append(f"{ch}/{sid}: латиница в «{l[:40]}…» — проверьте произношение или напишите кириллицей")
+                if lp["foreign"] and re.search(lp["foreign"], l.replace("|", "")):
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: {lp['foreign_msg']}")
                 if len(l) > 220:
                     warns.append(f"{ch}/{sid}: очень длинная строка ({len(l)} симв.) — разбейте на предложения")
                 if any(len(x) > 90 for x in segments(l)):
                     warns.append(f"{ch}/{sid}: длинный бит без '|' — субтитры порежутся по словам")
     tgt = proj.cfg.get("target_duration")
-    est = words / 150 * 60
-    print(f"Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
+    est = words / lp["wpm"] * 60
+    print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
     for w in warns:
@@ -188,11 +193,13 @@ def cmd_frame(a):
 def main(argv=None):
     p = argparse.ArgumentParser(prog="python -m studio")
     sp = p.add_subparsers(dest="cmd", required=True)
-    sp.add_parser("doctor", help="проверить окружение и TTS")
+    dr = sp.add_parser("doctor", help="проверить окружение и TTS")
+    dr.add_argument("--lang", default=None, help="языки через запятую (ru,en); по умолчанию все из studio/lang.py")
     n = sp.add_parser("new", help="создать проект из шаблона")
     n.add_argument("topic"); n.add_argument("--slug"); n.add_argument("--format", default="vertical",
                                                                       choices=["vertical", "horizontal", "square"])
     n.add_argument("--duration", type=float, default=None, help="точная длительность, c (иначе — по речи)")
+    n.add_argument("--lang", default="ru", help="язык ролика: ru | en | ... (studio/lang.py)")
     for name, h in (("validate", "проверить сценарий"), ("voice", "озвучка + тайминги"),
                     ("stills", "контрольные кадры"), ("render", "рендер сцен"), ("assemble", "сборка финала"),
                     ("qa", "проверка финала"), ("all", "voice→render→assemble→qa"), ("status", "фазы и следующий шаг"),

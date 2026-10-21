@@ -19,10 +19,11 @@ FORMATS = {
 }
 
 DEFAULTS = {
+    "language": "ru",  # язык озвучки и текста ролика (studio/lang.py: LANGS)
     "fps": 30,
     "format": "vertical",
     "target_duration": None,
-    "tts": {"backend": "rhvoice", "voice": "aleksandr-hq", "rate": 105, "rate_range": [98, 125]},
+    "tts": {"backend": "rhvoice", "voice": "auto", "rate": 105, "rate_range": [98, 125]},
     "pauses": {"start": 0.45, "comma": 0.18, "sentence": 0.40, "scene": 0.55, "end": 0.6,
                "max_extra_gap": 0.45},
     "style": {"palette": "neon", "font": "Inter Display"},
@@ -92,6 +93,13 @@ def load(root) -> Project:
     cfg = deep_merge(DEFAULTS, user)
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
+    if cfg["tts"].get("voice") in (None, "auto"):
+        from .lang import default_voice
+        v = default_voice(cfg["language"], cfg["tts"]["backend"])
+        if not v:
+            raise SystemExit(f"Нет голоса по умолчанию для языка '{cfg['language']}' и бэкенда "
+                             f"{cfg['tts']['backend']}: укажите tts.voice в project.yaml")
+        cfg["tts"]["voice"] = v
     proj = Project(root, cfg)
     for ch in cfg.get("chapters") or []:
         p = root / "script" / f"{ch}.yaml"

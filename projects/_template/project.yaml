@@ -2,13 +2,15 @@
 title: TODO
 topic: TODO
 audience: TODO            # для кого ролик, что зритель должен вынести
+language: ru              # язык озвучки и текста: ru | en | ... (studio/lang.py). Голос auto берётся отсюда
 format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square 1080×1080
 fps: 30
 target_duration: null     # секунды, если длительность должна быть ТОЧНОЙ (Shorts/Reels); null — по речи
 
 tts:
   backend: rhvoice        # rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
-  voice: aleksandr-hq     # rhvoice: aleksandr-hq; edge: ru-RU-DmitryNeural; piper: ru_RU-dmitri-medium
+  voice: auto             # auto — по языку (studio/lang.py). ru: aleksandr-hq | ru-RU-DmitryNeural | ru_RU-dmitri-medium;
+                          #   en: slt | en-US-GuyNeural | en_US-lessac-medium
   rate: auto              # auto — подбор под target_duration; ДЛЯ ДЛИННЫХ РОЛИКОВ ЗАФИКСИРУЙТЕ ЧИСЛО после 1-й главы
   rate_range: [98, 125]   # что считаем естественным темпом
 

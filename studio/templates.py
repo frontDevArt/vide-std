@@ -88,8 +88,11 @@ class Template:
 
 
 def plural(n, forms):
+    """forms: строка | [один, много] (en) | [один, два-четыре, пять] (ru)."""
     if isinstance(forms, str):
         return forms
+    if len(forms) == 2:
+        return forms[0] if abs(int(n)) == 1 else forms[1]
     n = abs(int(n)) % 100
     if 11 <= n <= 19:
         return forms[2]
@@ -101,7 +104,8 @@ def plural(n, forms):
 class FeedStrip:
     """Длинная заранее отрисованная лента постов -> кадр = вырезка (быстро) + motion blur."""
 
-    def __init__(self, phone, seed=3):
+    def __init__(self, phone, seed=3, title="Лента"):
+        self.title = title
         sw, sh = phone.sw, phone.sh
         self.sw, self.sh = sw, sh
         m = int(sw * 0.045)
@@ -155,7 +159,7 @@ class FeedStrip:
         hdr = Image.new("RGBA", (sw, int(sh * 0.13)), (12, 10, 26, 245))
         d = ImageDraw.Draw(hdr)
         f = G.font(int(sw * 0.075), "black")
-        d.text((m, int(sh * 0.055)), "Лента", font=f, fill=col("text"))
+        d.text((m, int(sh * 0.055)), self.title, font=f, fill=col("text"))
         d.rounded_rectangle((m, hdr.height - 8, m + sw * 0.17, hdr.height - 3), 3, fill=col("magenta"))
         d.line((0, hdr.height - 1, sw, hdr.height - 1), fill=(60, 52, 100, 255), width=2)
         self.header = hdr
@@ -185,12 +189,14 @@ _PHONES = {}
 
 def phone_ctx(ctx):
     """Один телефон и одна лента на процесс (дорогие спрайты строятся один раз)."""
-    key = (ctx["W"], ctx["H"])
+    from .lang import profile
+    title = profile(ctx.get("language"))["ui"]["feed"]
+    key = (ctx["W"], ctx["H"], title)
     if key not in _PHONES:
         ph = G.Phone(ctx["W"], ctx["H"])
         if ctx["H"] < ctx["W"]:
             ph.cx = ctx["W"] * 0.30
-        _PHONES[key] = (ph, FeedStrip(ph))
+        _PHONES[key] = (ph, FeedStrip(ph, title=title))
     return _PHONES[key]
 
 

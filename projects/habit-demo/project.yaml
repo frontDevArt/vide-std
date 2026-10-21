@@ -2,6 +2,7 @@
 title: "Как работает привычка"
 topic: "Как работает привычка"
 audience: "демо горизонтального формата"
+language: ru
 format: horizontal          # vertical 1080×1920 | horizontal 1920×1080 | square 1080×1080
 fps: 30
 target_duration: null     # секунды, если длительность должна быть ТОЧНОЙ (Shorts/Reels); null — по речи

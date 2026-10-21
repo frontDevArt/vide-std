@@ -41,11 +41,11 @@ def prepare(proj: Project):
     G.FONT_FAMILY = proj.cfg["style"].get("font", G.FONT_FAMILY)
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"]}
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"]}
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     ch_code = code_hash(proj.root)
-    style_key = stable_hash(proj.cfg["style"]) + stable_hash(proj.cfg["subtitles"])
+    style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
         s["state_in"] = dict(state)
