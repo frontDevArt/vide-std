@@ -1,13 +1,38 @@
+# Генерируемое в проектах (пересобирается из project.yaml + script/ + templates/)
 projects/*/build/
 projects/*/qa/
+# `python -m studio demo <slug>` → projects/<slug>-demo/, регресс → projects/regress*/
+projects/*-demo/
+projects/regress*/
+logs/
+*.log
+output/
+
+# Секреты (ключ ElevenLabs и т.п.)
+.env
+.env.*
+!.env.example
+
+# Внешние бинарники и голоса (ставятся tools/setup_rhvoice.sh)
 tools/rhvoice/
 tools/.build/
 tools/piper-voices/
-tools/setup.log
+
+# Claude Code: локальное
+.claude/settings.local.json
+.claude/worktrees/
+.channel-kit-incoming/
+
+# Python
 __pycache__/
 *.pyc
-.env
-logs/
-output/
-.channel-kit-incoming/
-*.log
+.venv/
+venv/
+.pytest_cache/
+
+# IDE / ОС
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

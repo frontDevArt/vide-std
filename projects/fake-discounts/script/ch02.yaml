@@ -1,0 +1,228 @@
+# Глава 2: что нашли проверки в магазинах (outline.md: 1:41–5:10, ~530 слов).
+# Мини-дуга: крючок (из лаборатории — в магазин) → Urbany (скептики тоже) → метаанализ → Ngwe 77¢ (данные продаж) →
+# спешка → граница (неправдоподобная цена бьёт обратно) → Which? (ни одного минимума года) → подписка → вердикт TRUE.
+# Сверено с источниками 2026-10-21: Ngwe 77¢ — данные продаж аутлетов, не эксперимент (бриф поправлен по источнику).
+chapter: ch02
+title: "Real stores"
+scenes:
+  # ---------------------------------------------------------------- карточка главы
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "So let's leave the lab, | and go shopping."
+    min_duration: 3
+    params: {number: 2, total: 4, title: "Real stores", subtitle: "what the checks found"}
+
+  # ---------------------------------------------------------------- Urbany 1988: скептики тоже
+  - id: s02
+    template: lab_diagram
+    lines:
+      - "In nineteen eighty-eight, | Urbany, Bearden and Weilbaker sent people on a simulated shopping trip, | on computers."
+      - "Some ads showed only a sale price. | Others added a regular price next to it."
+    params:
+      chrome: {step: 1}
+      center: {icon: tag, title: "Simulated shopping", at: 0}
+      labels:
+        - {text: "sale price only", at: "only"}
+        - {text: "+ “regular price”", at: "added"}
+      source: {label: "STUDY", text: "Urbany, Bearden & Weilbaker, 1988 · JCR", at: "nineteen"}
+
+  - id: s03
+    template: lab_anchor
+    lines:
+      - "With a regular price, | people guessed the store normally charged more, | and the deal felt better."
+      - "Then the researchers inflated that regular price, | well past believable."
+    params:
+      gauge:
+        at: "0.3s"
+        label: "store's usual price"
+        x0: 200
+        x1: 1340
+        y: 770
+        land: 0.88
+        needle: {from: 0.3, to: 0.6, at: "regular", pull_at: "guessed", label: "your guess"}
+      anchor: {drop_at: "inflated", scale: 0.75}
+      source: {label: "STUDY", text: "Urbany, Bearden & Weilbaker, 1988", at: 0}
+
+  - id: s04
+    template: lab_versus
+    lines:
+      - "It worked about as well as the believable one, | even for the most skeptical shoppers."
+      - "And more people bought right away, | without checking other stores."
+    params:
+      left: {title: "Believable “was”", items: [{text: "Deal feels better", at: "worked"}]}
+      right: {title: "Exaggerated “was”", items: [{text: "About as well", at: "believable"}, {text: "Even for skeptics", at: "skeptical"}, {text: "Fewer price checks", at: "checking"}]}
+      source: {label: "STUDY", text: "Urbany, Bearden & Weilbaker, 1988 · JCR", at: 0}
+
+  # ---------------------------------------------------------------- метаанализ Krishna et al. 2002
+  - id: s05
+    template: lab_hero_stack
+    lines:
+      - "One study can be a fluke."
+      - "So in two thousand two, | Krishna and colleagues combined twenty published papers | in a meta-analysis."
+    params:
+      claim: {label: "ONE STUDY", text: "Could be a *fluke*", meta: "", at: 0, qmark: false}
+      hero: {value: 20, from: 0, caption: "published papers", sub: "one meta-analysis", color: accent, at: "twenty", x: 120, y: 400}
+      cards:
+        - {icon: book, title: "20 papers", sub: "pooled results", at: "combined"}
+        - {icon: chart, title: "Meta-analysis", sub: "price framing", at: "meta-analysis"}
+      source: {label: "META-ANALYSIS", text: "Krishna, Briesch, Lehmann & Yuan, 2002 · J. of Retailing", at: "two thousand"}
+
+  - id: s06
+    template: lab_hero_stack
+    lines:
+      - "A regular price next to the sale price | boosted the sense of savings for big deals, | and even for implausible ones."
+      - "Only small, | believable discounts didn't gain much."
+    params:
+      hero: {value: 20, from: 20, caption: "published papers", sub: "one meta-analysis", color: accent, at: 0, x: 120, y: 400}
+      cards:
+        - {icon: check, title: "Big deals", sub: "more savings felt", chip: "MORE", chip_color: accent, at: "big"}
+        - {icon: check, title: "Implausible deals", sub: "more savings felt", chip: "MORE", chip_color: accent, at: "implausible"}
+        - {icon: cross, title: "Small deals", sub: "barely moved", chip: "LITTLE", chip_color: dim, at: "small"}
+      source: {label: "META-ANALYSIS", text: "Krishna et al., 2002 · 20 papers", at: 0}
+
+  - id: s07
+    template: lab_versus
+    lines:
+      - "The same analysis found | that the percent off | moves people more | than the dollars off."
+      - "But those are still experiments. | What about real stores, | and real money?"
+    params:
+      left: {title: "Dollars off", items: [{text: "Moves people", at: "dollars"}]}
+      right: {title: "Percent off", items: [{text: "Moves people more", at: "percent"}]}
+      source: {label: "META-ANALYSIS", text: "Krishna et al., 2002 · J. of Retailing", at: 0}
+
+  # ---------------------------------------------------------------- Ngwe 2018: настоящие магазины
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "A Harvard Business School researcher, | Donald Ngwe, | studied a major clothing brand's outlet stores."
+      - "Some items there were made for the outlet, | and never sold at their original price at all."
+    params:
+      center: {icon: tag, title: "Outlet stores", at: "studied"}
+      labels:
+        - {text: "real sales data", at: "Harvard"}
+        - {text: "made for the outlet", at: "made"}
+        - {text: "never sold at “original”", at: "never"}
+      source: {label: "WORKING PAPER", text: "Ngwe, 2018 · Harvard Business School", at: "Harvard"}
+
+  - id: s09
+    template: fd_number
+    lines:
+      - "Yet in the stores' own sales data, | every extra dollar on that fake original price | meant customers paid about seventy-seven cents more."
+    params:
+      value: 77
+      suffix: "¢"
+      caption: "more paid per fake $1"
+      sub: "outlet sales data"
+      at: "every"
+      source: {label: "SALES DATA", text: "Ngwe, 2018 · HBS working paper", at: "sales"}
+
+  - id: s10
+    template: lab_anchor
+    lines:
+      - "And the easiest to sway | were infrequent shoppers. | Regulars, | much less."
+      - "If you rarely shop somewhere, | that tag may be the only price you know."
+    params:
+      tag: {was: "$80", now: "$40", x: 960, y: 250, scale: 0.9, at: 0, strike_at: "sway", now_at: "infrequent"}
+      labels:
+        - {text: "infrequent: most swayed", at: "infrequent"}
+        - {text: "regulars: less", at: "Regulars"}
+      receipt:
+        at: "0.4s"
+        lines:
+          - {text: "FAKE $1|+$0.77", at: "infrequent"}
+      source: {label: "SALES DATA", text: "Ngwe, 2018 · HBS working paper", at: 0}
+
+  # ---------------------------------------------------------------- спешка: Krishnan et al. 2013
+  - id: s11
+    template: lab_flow
+    lines:
+      - "Now add a countdown timer."
+      - "In two thousand thirteen, | Krishnan, Dutta and Jha found | that exaggerated was prices work much better | when people feel time pressure."
+      - "There is a limit."
+    params:
+      stations:
+        - {icon: timer, title: "Countdown", sub: "“ends in 09:59”", at: "countdown"}
+        - {icon: clock, title: "Time pressure", sub: "less time to think", at: "found"}
+        - {icon: anchor, title: "Old price hits harder", sub: "much more effective", at: "much"}
+      source: {label: "STUDY", text: "Krishnan, Dutta & Jha, 2013 · J. of Retailing", at: "two thousand"}
+
+  # ---------------------------------------------------------------- граница: Wolk & Spann 2008
+  - id: s12
+    template: lab_versus
+    lines:
+      - "In online bidding, | Wolk and Spann found an exaggerated reference price raised bids | when people found it believable."
+      - "When it looked unbelievable, | it backfired, | and bids went down."
+    params:
+      left: {title: "Looks believable", items: [{text: "Bids go up", at: "raised"}]}
+      right: {title: "Looks unbelievable", items: [{text: "Backfires", at: "backfired"}, {text: "Bids go down", at: "bids went"}]}
+      source: {label: "STUDY", text: "Wolk & Spann, 2008 · J. of Interactive Marketing", at: "online"}
+
+  # ---------------------------------------------------------------- Which? 2025: цены Black Friday
+  - id: s13
+    template: lab_diagram
+    lines:
+      - "So what about Black Friday itself?"
+      - "A British consumer group called Which | tracked one hundred seventy-five products | from eight retailers, | for a full year."
+    params:
+      center: {icon: receipt, title: "Price tracking", at: 0}
+      labels:
+        - {text: "175 products", at: "seventy-five"}
+        - {text: "8 retailers", at: "eight"}
+        - {text: "12 months", at: "full"}
+      source: {label: "CONSUMER GROUP", text: "Which?, 2025 · UK · May 2024 – May 2025", at: "British"}
+
+  - id: s14
+    template: fd_number
+    lines:
+      - "Eighty-three percent | were the same price or cheaper | at least once outside the Black Friday sales."
+      - "That's price tracking, not a lab study. | But it's a year of real prices."
+    params:
+      value: 83
+      suffix: "%"
+      caption: "same or cheaper outside the sale"
+      sub: "175 products · 8 UK retailers"
+      at: "Eighty-three"
+      source: {label: "CONSUMER GROUP", text: "Which?, 2025 · price tracking, not a study", at: 0}
+
+  - id: s15
+    template: lab_anchor
+    lines:
+      - "And on Black Friday itself, | not one deal | was the lowest price of the year."
+    params:
+      tag: {was: "$199", now: "$149", x: 960, y: 250, scale: 0.9, at: 0, strike_at: "Friday", now_at: "deal"}
+      labels:
+        - {text: "lowest of the year?", at: "lowest"}
+        - {text: "0 deals", at: "year"}
+      receipt:
+        at: "0.4s"
+        lines:
+          - {text: "OUTSIDE THE SALE|83%", at: "not"}
+          - {text: "BLACK FRIDAY LOWS|0", at: "lowest"}
+      source: {label: "CONSUMER GROUP", text: "Which?, 2025 · UK", at: 0}
+
+  # ---------------------------------------------------------------- подписка
+  - id: s16
+    template: lab_diagram
+    lines:
+      - "If you'd rather know how your brain gets priced before you shop, | subscribe to Notes From The Mind."
+      - "Next, | we'll look at why I'm not fooled | is exactly what a fooled brain says."
+    params:
+      center: {icon: anchor, title: "Notes From The Mind", at: 0}
+      labels:
+        - {text: "subscribe", at: "subscribe"}
+        - {text: "next: “I'm not fooled”", at: "Next"}
+
+  # ---------------------------------------------------------------- вердикт
+  - id: s17
+    template: lab_anchor
+    voice: {style: 0.3}
+    lines:
+      - "So, | does a crossed-out price work, | even when it's fake?"
+      - "Verdict: | true."
+      - "One caveat: | a price that's too absurd to believe | can backfire."
+    params:
+      tag: {was: "$199", now: "$99", x: 960, y: 230, scale: 1.0, at: 0, strike_at: "crossed-out", now_at: "work"}
+      anchor: {at: "fake"}
+      verdict: {verdict: "TRUE", sub: "works on skeptics · *too absurd* can backfire", at: "true"}
+    min_duration: 6

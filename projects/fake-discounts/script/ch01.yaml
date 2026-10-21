@@ -1,0 +1,151 @@
+# Глава 1: хук + откуда взялся эффект якоря (outline.md: 0:00–2:00, ~290 слов).
+# Мини-дуга: крючок (52 % уверены, что скидки фейковые) → «это якорь» → колесо фортуны → агенты недвижимости →
+# мост: «а в настоящих магазинах?».
+chapter: ch01
+title: "The anchor"
+scenes:
+  # ---------------------------------------------------------------- хук
+  - id: s01
+    template: lab_anchor
+    voice: {style: 0.3}
+    lines:
+      - "That line through the old price? | You know it's a trick."
+    params:
+      chrome: {rubric: "Money Brain", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      tag: {was: "$199", now: "$99", x: 960, y: 170, scale: 1.0, at: 0, strike_at: "line", now_at: "price"}
+      labels:
+        - {text: "deal?", at: "know"}
+        - {text: "real?", at: "trick"}
+    min_duration: 4
+
+  - id: s02
+    template: fd_number
+    lines:
+      - "In the United States, | fifty-two percent of consumers say | brands regularly run fake discounts."
+    params:
+      value: 52
+      suffix: "%"
+      caption: "say discounts are fake"
+      at: "fifty-two"
+      source: {label: "SURVEY", text: "YouGov, 2024 · US consumers", at: "United"}
+
+  - id: s03
+    template: lab_versus
+    lines:
+      - "So we feel immune. | We spot the trick, | so it can't work on us."
+      - "But researchers have tested exactly that: | what an old price does to people who don't believe it."
+    params:
+      left: {title: "We think", items: [{text: "I'm immune", at: "immune"}, {text: "I see through it", at: "spot"}]}
+      right: {title: "Studies tested", items: [{text: "Skeptics, in experiments", at: "tested"}, {text: "Does it still work?", at: "believe"}]}
+
+  - id: s04
+    template: lab_anchor
+    lines:
+      - "And the answer is uncomfortable. | It still works."
+      - "Psychologists even have a name for that old price: | an anchor."
+    params:
+      tag: {was: "$199", now: "$99", x: 960, y: 150, scale: 0.9, at: 0, strike_at: "answer", now_at: "works"}
+      anchor: {at: "anchor"}
+
+  # ---------------------------------------------------------------- откуда взялось
+  - id: s05
+    template: lab_chapter
+    lines:
+      - "So where does it come from?"
+    min_duration: 3
+    params: {number: 1, total: 4, title: "The anchor", subtitle: "where it comes from"}
+
+  - id: s06
+    template: lab_flow
+    lines:
+      - "In nineteen seventy-four, | Tversky and Kahneman spun a rigged wheel of fortune."
+      - "It stopped on either ten | or sixty-five."
+      - "Then they asked: | what percentage of United Nations members are African countries?"
+    params:
+      chrome: {step: 1}
+      stations:
+        - {icon: wheel, title: "Rigged wheel", sub: "spun in front of people", at: "Tversky"}
+        - {icon: target, title: "10 or 65", sub: "a random number", at: "ten"}
+        - {icon: question, title: "% of UN: African?", sub: "now estimate", at: "asked"}
+      source: {label: "STUDY", text: "Tversky & Kahneman, 1974 · Science", at: "nineteen"}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "People who saw ten | guessed twenty-five percent."
+      - "People who saw sixty-five | guessed forty-five."
+      - "Twenty points apart, | because of a number everyone knew was random."
+    params:
+      hero: {value: 20, from: 0, caption: "points apart", sub: "median guesses", color: accent, at: "points", x: 120, y: 400}
+      cards:
+        - {icon: wheel, title: "Saw 10 → 25%", sub: "median guess", at: "ten"}
+        - {icon: wheel, title: "Saw 65 → 45%", sub: "median guess", at: "sixty-five"}
+      source: {label: "STUDY", text: "Tversky & Kahneman, 1974 · Science", at: 0}
+
+  - id: s08
+    template: lab_anchor
+    lines:
+      - "That's anchoring. | The first number you see becomes a weight, | and your estimate gets dragged toward it."
+    params:
+      gauge:
+        at: "0.3s"
+        label: "your answer"
+        x0: 200
+        x1: 1340
+        y: 770
+        land: 0.9
+        needle: {from: 0.3, to: 0.62, at: "anchoring", pull_at: "dragged", label: "your estimate"}
+      anchor: {drop_at: "weight", scale: 0.75}
+      receipt:
+        at: "anchoring"
+        lines:
+          - {text: "RANDOM 65|+20 PTS", at: "dragged"}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "Fine, | a rigged wheel is a game."
+      - "So in nineteen eighty-seven, | Northcraft and Neale sent forty-seven real estate agents | to tour the same house."
+    params:
+      center: {icon: house, title: "Same house"}
+      labels:
+        - {text: "Experts, not a game", at: "Northcraft"}
+        - {text: "47 agents", at: "forty-seven"}
+      source: {label: "STUDY", text: "Northcraft & Neale, 1987 · OBHDP", at: "nineteen"}
+
+  - id: s10
+    template: lab_versus
+    lines:
+      - "Agents told one hundred nineteen thousand nine hundred | valued it at about one hundred fourteen thousand."
+      - "Agents told one hundred forty-nine thousand nine hundred | said about one hundred twenty-nine thousand."
+    params:
+      left: {title: "Listed $119,900", items: [{text: "Valued ≈ $114K", at: "fourteen"}]}
+      right: {title: "Listed $149,900", items: [{text: "Valued ≈ $129K", at: "twenty-nine"}]}
+      source: {label: "STUDY", text: "Northcraft & Neale, 1987 · n = 47 agents", at: 0}
+
+  - id: s11
+    template: fd_number
+    lines:
+      - "Same house. | A gap of nearly fifteen thousand dollars."
+      - "And the agents said | the list price hadn't influenced them."
+    params:
+      value: 14550
+      prefix: "$"
+      caption: "gap · same house"
+      sub: "$128,754 vs $114,204"
+      at: "Same"
+      source: {label: "STUDY", text: "Northcraft & Neale, 1987", at: 0}
+      neuron: {mood: facepalm, at: "influenced", x: 1560, y: 640}
+
+  # ---------------------------------------------------------------- мост
+  - id: s12
+    template: lab_diagram
+    lines:
+      - "Students, | experts, | people staring at a random number: | the anchor pulls them all."
+      - "But a lab is not a checkout page. | So what happens with real prices, | in real stores?"
+    params:
+      center: {icon: anchor, title: "Anchoring", at: "Students"}
+      labels:
+        - {text: "students", at: "Students"}
+        - {text: "experts", at: "experts"}
+        - {text: "random numbers", at: "random"}

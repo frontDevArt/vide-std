@@ -1,0 +1,119 @@
+# Глава 4: что помогает + финал (outline.md: 5:33–~8:00).
+# Мини-дуга: крючок (якорь можно ослабить) → 900 человек: «true normal price» почти гасит эффект
+# (Staelin, Urbany & Ngwe, 2023) → их вывод: раскрывать настоящую цену → consider the opposite ослабляет
+# (Mussweiler, Strack & Pfeiffer, 2000) → три шага → не иммунитет, а вопрос → финал: чек отрывается, напоминание вопроса.
+# Сверено 2026-10-21: Staelin et al. — «largely eliminates» (Notre Dame Mendoza, пресс-релиз), не «disappeared».
+# Подсветка — снова ember (без glow главы; переход от холодной ch03 — через state).
+chapter: ch04
+title: "Loosening the anchor"
+scenes:
+  # ---------------------------------------------------------------- карточка главы
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "So how do you loosen an anchor?"
+    min_duration: 3
+    params: {number: 4, total: 4, title: "Loosening the anchor", subtitle: "what actually helps"}
+
+  # ---------------------------------------------------------------- Staelin, Urbany & Ngwe 2023: 900 человек
+  - id: s02
+    template: lab_crowd
+    lines:
+      - "In two thousand twenty-three, | Staelin, Urbany and Ngwe ran an experiment | with nine hundred people."
+      - "A was price next to the sale price | made people more likely to buy."
+    params:
+      hero: {value: 900, from: 0, caption: "people", sub: "one experiment", color: accent, at: "nine hundred"}
+      study: {authors: "Staelin, Urbany & Ngwe", where: "J. of Marketing · 2023 · 1 icon = 10 people", evidence: 3, at: "Staelin"}
+      crowd: {n: 90, cols: 15, at: "experiment"}
+      source: {label: "STUDY", text: "Staelin, Urbany & Ngwe, 2023 · J. of Marketing", at: 0}
+
+  - id: s03
+    template: lab_versus
+    lines:
+      - "Then the researchers also showed the true normal price, | what the item had actually been selling for."
+      - "And the pull of the was price | was largely wiped out."
+    params:
+      left: {title: "With a “was” price", items: [{text: "More likely to buy", at: 0}]}
+      right: {title: "+ true normal price", items: [{text: "What it really sold for", at: "actually"}, {text: "“Was” effect largely gone", at: "wiped"}]}
+      source: {label: "STUDY", text: "Staelin, Urbany & Ngwe, 2023 · n = 900", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "Their conclusion: | competition alone hasn't stamped fake was prices out."
+      - "Showing the price a store really charged | may be the fix | that changes both shoppers and stores."
+    params:
+      center: {icon: tag, title: "Show the real price", at: 0}
+      labels:
+        - {text: "competition: not enough", at: "competition"}
+        - {text: "disclose past prices", at: "Showing"}
+        - {text: "shoppers + stores", at: "both"}
+      source: {label: "STUDY", text: "Staelin, Urbany & Ngwe, 2023 · J. of Marketing", at: 0}
+
+  # ---------------------------------------------------------------- consider the opposite: Mussweiler et al. 2000
+  - id: s05
+    template: lab_diagram
+    lines:
+      - "The second tool lives in your own head."
+      - "In two thousand, | Mussweiler, Strack and Pfeiffer found | that deliberately thinking of reasons the anchor might be wrong | weakens its pull."
+      - "It doesn't erase it."
+    params:
+      center: {icon: question, title: "Consider the opposite", at: 0}
+      labels:
+        - {text: "why might it be wrong?", at: "reasons"}
+        - {text: "weaker pull", at: "weakens"}
+        - {text: "not erased", at: "erase"}
+      source: {label: "STUDY", text: "Mussweiler, Strack & Pfeiffer, 2000 · PSPB", at: "two thousand"}
+
+  # ---------------------------------------------------------------- три шага
+  - id: s06
+    template: lab_anchor
+    lines:
+      - "So, | three steps before you buy."
+      - "First, | ignore the was price, | and look up what the thing has actually been selling for."
+    params:
+      tag: {was: "$199", now: "$99", x: 960, y: 230, scale: 0.9, at: 0, strike_at: "ignore", now_at: "look"}
+      labels:
+        - {text: "skip the “was”", at: "ignore"}
+        - {text: "check its price history", at: "selling"}
+
+  - id: s07
+    template: lab_flow
+    lines:
+      - "Second, | ask whether you'd buy it at this price, | with no old price in sight."
+      - "Third, | argue with the anchor. | Why might that number be wrong?"
+    params:
+      stations:
+        - {icon: chart, title: "Price history", sub: "not the “was”", at: 0}
+        - {icon: money, title: "This price?", sub: "would I still buy it", at: "Second"}
+        - {icon: question, title: "Argue back", sub: "why might it be wrong", at: "Third"}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "None of this makes you immune. | Remember the blind spot."
+      - "But it turns the old price | from a hidden starting point | into a number you can question."
+    params:
+      center: {icon: anchor, title: "A number to question", at: 0}
+      labels:
+        - {text: "not immune", at: "immune"}
+        - {text: "hidden starting point", at: "hidden"}
+        - {text: "→ a question", at: "number"}
+
+  # ---------------------------------------------------------------- финал: чек отрывается
+  - id: s09
+    template: lab_anchor
+    lines:
+      - "So this Black Friday, | the question isn't, | how much am I saving?"
+      - "It's, | would I pay this | if nobody had ever shown me the old price?"
+      - "And tell me in the comments | about the deal you later saw cheaper."
+    params:
+      tag: {was: "$199", now: "$99", x: 560, y: 240, scale: 0.9, at: 0, strike_at: "question", now_at: "saving"}
+      anchor: {at: "old price"}
+      receipt:
+        at: "0.4s"
+        lines:
+          - {text: "TOTAL PAID|THE ANCHOR", at: "saving"}
+        tear_at: "pay"
+        tear_to: {x: 1240, y: 540, scale: 1.7, rot: -4}
+    min_duration: 9

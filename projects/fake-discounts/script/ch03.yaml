@@ -1,0 +1,112 @@
+# Глава 3: почему «на меня не действует» живёт (outline.md: ~1:40, ~250 слов).
+# Мини-дуга: крючок (почему мы уверены, что иммунны) → bias blind spot (Pronin, Lin & Ross, 2002; повторено) →
+# отсылки к агентам и скептикам ch01–ch02 → 52 % знают про трюк — и всё равно → вопрос для комментариев → мост к ch04.
+# Подсветка главы холоднее (outline.md: «холодный взгляд на себя»); ch04 возвращается к ember.
+chapter: ch03
+title: "The blind spot"
+glow: {cool: "#3DD6F5", warm: "#6D7CFF"}
+scenes:
+  # ---------------------------------------------------------------- карточка главы
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "So if it works on skeptics, | why are we all so sure | it doesn't work on us?"
+    min_duration: 3
+    params: {number: 3, total: 4, title: "The blind spot", subtitle: "why “not me” survives"}
+
+  # ---------------------------------------------------------------- bias blind spot: Pronin, Lin & Ross 2002
+  - id: s02
+    template: lab_versus
+    lines:
+      - "In two thousand two, | Pronin, Lin and Ross asked people | how biased the average person is, | and how biased they are."
+      - "On average, | people rated themselves | as less biased than everyone else."
+    params:
+      left: {title: "The average person", items: [{text: "Pretty biased", at: "average person"}]}
+      right: {title: "Me", items: [{text: "Less biased", at: "less"}]}
+      source: {label: "STUDY", text: "Pronin, Lin & Ross, 2002 · PSPB", at: "two thousand"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "Then the researchers explained the bias to them."
+      - "And people kept insisting | their own judgment was the objective one."
+    params:
+      center: {icon: mirror, title: "Bias blind spot", at: "explained"}
+      labels:
+        - {text: "bias explained", at: "explained"}
+        - {text: "still “not me”", at: "insisting"}
+        - {text: "“I'm objective”", at: "objective"}
+      source: {label: "STUDY", text: "Pronin, Lin & Ross, 2002 · PSPB", at: 0}
+      neuron: {mood: surprised, at: "insisting", x: 1560, y: 640}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "Psychologists call it the bias blind spot, | and it has held up | when other teams repeated the study."
+    params:
+      center: {icon: eye, title: "Bias blind spot", at: 0}
+      labels:
+        - {text: "others: biased", at: "call"}
+        - {text: "me: blind spot", at: "blind"}
+        - {text: "replicated", at: "repeated"}
+      source: {label: "REPLICATION", text: "Pronin et al., 2002 · replicated (BPS Research Digest)", at: "held"}
+
+  # ---------------------------------------------------------------- отсылки: агенты и скептики
+  - id: s05
+    template: lab_anchor
+    lines:
+      - "Remember the real estate agents? | They said the list price hadn't influenced them."
+      - "And the skeptical shoppers | were moved by a price they didn't even believe."
+    params:
+      gauge:
+        at: "0.3s"
+        label: "what it's worth"
+        x0: 200
+        x1: 1340
+        y: 770
+        land: 0.88
+        needle: {from: 0.3, to: 0.62, at: "agents", pull_at: "moved", label: "“not influenced”"}
+      anchor: {drop_at: "skeptical", scale: 0.75}
+      labels:
+        - {text: "agents: “not me”", at: "influenced"}
+        - {text: "skeptics: moved anyway", at: "moved"}
+      source: {label: "STUDIES", text: "Northcraft & Neale, 1987 · Urbany et al., 1988", at: 0}
+
+  # ---------------------------------------------------------------- 52 %: знать ≠ быть защищённым
+  - id: s06
+    template: fd_number
+    lines:
+      - "And those fifty-two percent | who say brands fake their discounts?"
+      - "Knowing it's a trick | is not the same | as being immune to it."
+    params:
+      value: 52
+      suffix: "%"
+      caption: "say discounts are fake"
+      sub: "knowing isn’t immunity"
+      at: "fifty-two"
+      source: {label: "SURVEY", text: "YouGov, 2024 · US consumers", at: 0}
+
+  - id: s07
+    template: lab_flow
+    lines:
+      - "In every study we've seen, | nobody felt pushed."
+      - "The old price just quietly became the starting point, | and it felt like their own sense | of what the thing was worth."
+    params:
+      stations:
+        - {icon: tag, title: "Old price", sub: "seen, not believed", at: "every"}
+        - {icon: anchor, title: "Starting point", sub: "quietly set", at: "nobody"}
+        - {icon: person, title: "“My own judgment”", sub: "feels like yours", at: "starting"}
+
+  # ---------------------------------------------------------------- вопрос для комментариев + мост
+  - id: s08
+    template: lab_anchor
+    lines:
+      - "So here's my question for you. | What's the one deal you bought on Black Friday | that you later saw cheaper?"
+      - "Tell me in the comments."
+      - "Because the good news is, | an anchor can be loosened."
+    params:
+      tag: {was: "$129", now: "$89", x: 960, y: 210, scale: 0.9, at: 0, strike_at: "deal", now_at: "Black"}
+      labels:
+        - {text: "later: cheaper?", at: "later"}
+        - {text: "tell me below", at: "comments"}
+    min_duration: 6

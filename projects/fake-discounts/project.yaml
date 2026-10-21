@@ -1,0 +1,47 @@
+# Бриф: briefs/fake-discounts.md (Money Brain, вердикт TRUE). Канал Notes From The Mind.
+title: "Why Fake Discounts Work on You (It's Not What You Think)"
+topic: "Is it true that a crossed-out 'was' price makes you think it's a deal, even when the old price is fake?"
+audience: >-
+  Взрослые англоязычные зрители канала, интересуются психологией и деньгами, без научной подготовки;
+  многие собираются покупать на Black Friday. Вынести: зачёркнутая цена — якорь, работает и на скептиков;
+  «на меня не действует» — само по себе искажение (bias blind spot); противоядие — реальная история цены
+  и вопрос «купил бы я это за эту цену без зачёркнутой цифры».
+language: en
+format: horizontal
+fps: 30
+target_duration: null     # 9 минут по речи (~1400 слов)
+
+tts:
+  backend: elevenlabs     # голос канала; ключ и голос — только в .env
+  voice: auto             # ELEVENLABS_VOICE_ID
+  rate: 100               # числом (auto = повторный платный синтез)
+  rate_range: [95, 115]
+
+pauses:
+  start: 0.45
+  comma: 0.18
+  sentence: 0.40
+  scene: 0.55
+  end: 0.6
+
+style:
+  palette: lab
+  mood: ember             # glow_warm #FF9F6B, accent2 #F78FB3 (роза) — азарт распродажи
+  font: Inter Display
+
+music:
+  enabled: true
+  level_db: -14           # под голос ElevenLabs
+  duck: true
+
+sfx:
+  enabled: true
+
+subtitles:
+  enabled: true
+  max_lines: 1
+  size: 36
+
+loudness: -14
+
+chapters: [ch01, ch02, ch03, ch04]

@@ -37,3 +37,13 @@
 | 2026-W43 | (dry) Learning styles: you learn better in your own style | Myth on Trial | radar | MYTH |
 | 2026-W43 | (dry) We eat more when eating with friends | Everyday Brain | radar | TRUE |
 | 2026-W43 | (dry) Loneliness speeds up memory decline | Fresh Study | radar | HALF-TRUE |
+| 2026-W43 | A crossed-out "was" price makes you think it's a deal, even when it's fake (briefs/fake-discounts.md) | Money Brain | brief | TRUE |
+| 2026-W43 | Opposites attract | Myth on Trial | radar | MYTH |
+| 2026-W43 | Birth order shapes your personality | Myth on Trial | radar | MYTH |
+| 2026-W43 | Venting your anger helps you let it go | Myth on Trial | radar | MYTH |
+| 2026-W43 | The least skilled are the most overconfident (Dunning-Kruger) | Myth on Trial | radar | HALF-TRUE |
+| 2026-W43 | Money stops buying happiness after $75,000 | Money Brain | radar | MYTH |
+| 2026-W43 | Short videos are shrinking your attention span (goldfish 8 seconds) | Myth on Trial | radar | HALF-TRUE |
+| 2026-W43 | A gratitude list makes you happier | Myth on Trial | radar | HALF-TRUE |
+| 2026-W43 | The marshmallow test predicts a child's success | Myth on Trial | radar | HALF-TRUE |
+| 2026-W43 | A pay raise changes your personality | Fresh Study | radar | HALF-TRUE |

@@ -1,0 +1,44 @@
+# Демо стиля 10–15 с (channel/STYLE.md §14) для fake-discounts: метафора «ценник на верёвочке + якорь»,
+# настроение ember, новые элементы (бирка с зачёркиванием accent-2; якорь тянет стрелку шкалы), мотив чека, вердикт TRUE.
+# Шаблон lab_anchor — projects/fake-discounts/templates/money.py.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: lab_anchor
+    voice: {style: 0.3}
+    lines:
+      - "That crossed-out price? | You know it's a trick."
+      - "It still works."
+    params:
+      chrome: {rubric: "Money Brain", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      tag: {was: "$199", now: "$99", x: 960, y: 170, scale: 1.0, at: 0, strike_at: "crossed-out", now_at: "price"}
+      labels:
+        - {text: "deal?", at: "know"}
+        - {text: "real?", at: "trick"}
+      anchor: {at: "still"}
+      keep: [tag]
+  - id: s02
+    template: lab_anchor
+    lines:
+      - "In one experiment, | every extra fake dollar | added about seventy-seven cents | to what people would pay."
+      - {text: "Verdict: | true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 1}
+      tag: {was: "$199", now: "$99", x: 600, y: 190, scale: 0.75, from_prev: true}
+      anchor: {drop_at: "fake"}
+      gauge:
+        at: "experiment"
+        label: "perceived value"
+        x0: 200
+        x1: 1340
+        y: 770
+        land: 0.9
+        needle: {from: 0.3, to: 0.62, at: "every", pull_at: "seventy-seven", label: "feels worth"}
+      receipt:
+        at: "experiment"
+        lines:
+          - {text: "ANCHOR / $1|$0.77", at: "cents"}
+      source: {label: "EXPERIMENT", text: "Ngwe, 2018 · HBS working paper", at: "experiment"}
+      verdict: {verdict: "TRUE", sub: "fake 'was' price → *real* pull", at: "true"}
+    hold: 0.8
