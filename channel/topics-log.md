@@ -34,3 +34,6 @@
 | 2026-W43 | Counting sheep doesn't help you sleep | Myth on Trial | mentioned | MYTH |
 | 2026-W43 | 80% of taste is smell | Myth on Trial | mentioned | HALF-TRUE |
 | 2026-W43 | Breakfast is the most important meal for weight loss | Myth on Trial | mentioned | MYTH |
+| 2026-W43 | (dry) Learning styles: you learn better in your own style | Myth on Trial | radar | MYTH |
+| 2026-W43 | (dry) We eat more when eating with friends | Everyday Brain | radar | TRUE |
+| 2026-W43 | (dry) Loneliness speeds up memory decline | Fresh Study | radar | HALF-TRUE |

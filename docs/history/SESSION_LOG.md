@@ -59,3 +59,8 @@
   (`tts.voice: auto`), фраза проверки TTS, `wpm`, проверка чужого алфавита, надписи шаблонов. ru — по умолчанию.
   en проверен на мини-проекте через edge (`en-US-GuyNeural`): validate/voice/stills ок; при rate 100 речь ~217 слов/мин
   — темп/`rate_range` для en+edge ещё подобрать.
+
+## 2026-10-21 — channel-kit: канал Notes From The Mind, пресет `lab`
+Встроен комплект канала (позиционирование, стайл-гайд, радар тем). Движок: пресет `lab` (фон «лаборатория», камера,
+шаблоны `lab_*`, слова-триггеры, караоке-субтитры, SFX), бэкенд ElevenLabs с таймкодами, таймкоды слов edge.
+Тест `projects/style-test` повторяет `channel/style-demo.html`, QA ✅. Подробно — `docs/channel-kit-integration.md`.
