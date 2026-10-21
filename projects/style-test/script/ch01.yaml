@@ -1,0 +1,41 @@
+chapter: ch01
+title: "Myth on Trial 07: the 21-day habit"
+scenes:
+  - id: s01
+    template: lab_hero_stack
+    lines:
+      - "Everyone says a habit takes | 21 days."
+      - "It comes from a 1960 self-help book, | retold as a rule, | never tested."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "№ 07", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      claim: {label: "VIRAL CLAIM", text: "“It takes *21 days* to build a habit.”", meta: "repeated in countless posts and self-help books", at: "says"}
+      hero: {value: 21, caption: "days", sub: "the popular claim", color: text, at: "21"}
+      cards:
+        - {icon: book, title: "A 1960 self-help book", sub: "a surgeon’s observation of his patients", at: "book"}
+        - {icon: chat, title: "Retold as a hard rule", sub: "“at least 21 days” became “exactly 21”", at: "retold"}
+        - {icon: flask, title: "Tested data", chip: "NONE", chip_color: noev, sub: "no experiment behind the number", at: "never"}
+      source: {label: "CLAIM ORIGIN", text: "Maltz, Psycho-Cybernetics, 1960", at: "1960"}
+      keep: [hero]
+
+  - id: s02
+    template: lab_crowd
+    lines:
+      - "In 2010, | researchers tracked 96 people."
+      - "The median was 66 days, | from 18 | to 254."
+      - "Verdict: myth."
+    hold: 1.0
+    params:
+      chrome: {step: 1}
+      study: {authors: "Lally, van Jaarsveld, Potts & Wardle", where: "Eur. J. of Social Psychology · 2010 · n = 96", evidence: 3, at: "2010"}
+      crowd:
+        n: 96
+        cols: 16
+        at: "96"
+        highlight:
+          - {index: 19, label: "18 days", color: accent, at: "18"}
+          - {index: 77, label: "~254 days", color: accent2, at: "254"}
+      hero: {value: 66, from_prev: true, caption: "median days", sub: "to make a habit automatic", color: accent, at: "66", strike_at: "median"}
+      range: {min: 18, max: 254, mark: 66, min_label: "18 days", max_label: "~254 days", mark_label: "66 · median", at: "from"}
+      source: {label: "SOURCE", text: "Lally et al. (2010), Eur. J. of Social Psychology", at: "researchers"}
+      verdict: {verdict: MYTH, sub: "21 days → median *66* · range 18–254", at: "verdict"}
+      neuron: {mood: surprised}

@@ -115,9 +115,29 @@ def cmd_validate(a):
     return 1 if errs else 0
 
 
+def _elevenlabs_guard(proj, yes):
+    """Платный синтез: темп числом (подбор темпа синтезирует несколько раз) + оценка символов и подтверждение."""
+    from . import tts
+    from .textutil import tts_text
+    tc = proj.cfg["tts"]
+    if tc.get("rate", "auto") == "auto":
+        raise SystemExit("ElevenLabs: задайте tts.rate числом (например 100) — подбор темпа оплачивал бы каждый прогон")
+    cache = proj.bdir("tts")
+    todo = [tts_text(l) for _, d in proj.chapters for sc in d.get("scenes") or [] for l in sc.get("lines") or []]
+    new = [x for x in todo if not (cache / f"{tts.cache_key(x, tc, float(tc['rate']))}.wav").exists()]
+    chars = sum(len(x) for x in new)
+    print(f"ElevenLabs: строк к синтезу {len(new)} из {len(todo)}, символов ≈ {chars} (остальное — из кэша)")
+    if chars and not yes:
+        print("Платный синтез не запущен. Подтвердите: python -m studio voice <проект> --yes")
+        return False
+    return True
+
+
 def cmd_voice(a):
     from .timing import layout
     proj = load(resolve_project(a.project))
+    if proj.cfg["tts"]["backend"] == "elevenlabs" and not _elevenlabs_guard(proj, getattr(a, "yes", False)):
+        return 3
     tl = layout(proj)
     print(f"Темп {tl['rate']:.0f}, длительность {tl['duration']:.2f} c, {len(tl['scenes'])} сцен, "
           f"{tl['wpm_speech']} слов/мин в речи")
@@ -218,6 +238,8 @@ def main(argv=None):
             q.add_argument("--allow-stale", action="store_true")
         if name in ("qa", "all"):
             q.add_argument("--fast", action="store_true", help="без полного декодирования")
+        if name in ("voice", "all"):
+            q.add_argument("--yes", action="store_true", help="подтвердить платный синтез (elevenlabs)")
         if name == "frame":
             q.add_argument("t", type=float); q.add_argument("--out")
     a = p.parse_args(argv)

@@ -1,10 +1,17 @@
 """Синтез речи с кэшем. Бэкенды: rhvoice (офлайн, проверен), edge (онлайн, лучшее качество),
-piper (офлайн нейросетевой). Результат всегда: WAV 48 кГц моно 16 бит, тишина по краям срезана.
+piper (офлайн нейросетевой), elevenlabs (онлайн, платный, таймкоды символов).
+Результат всегда: WAV 48 кГц моно 16 бит, тишина по краям срезана.
 
-Кэш: build/tts/<hash>.wav, ключ = бэкенд+голос+темп+текст. Повторный запуск не синтезирует заново.
+Кэш: build/tts/<hash>.wav, ключ = бэкенд+голос+темп+текст (+модель и настройки голоса для elevenlabs).
+Повторный запуск не синтезирует заново. Таймкоды слов (если бэкенд их даёт) — build/tts/<hash>.words.json,
+времена уже относительно срезанного WAV.
+
+Ключи — только из окружения или .env в корне студии (он в .gitignore). В лог и в чат ключ не выводится.
 """
 from __future__ import annotations
 
+import base64
+import json
 import os
 import shutil
 import subprocess
@@ -24,6 +31,24 @@ TRIM = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
 
 class TTSUnavailable(RuntimeError):
     pass
+
+
+def load_env():
+    """KEY=VALUE из <студия>/.env -> os.environ (не перетирая уже заданные). Пустые значения пропускаются."""
+    f = STUDIO_ROOT / ".env"
+    if not f.exists():
+        return
+    for line in f.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        k, v = k.strip(), v.strip().strip('"').strip("'")
+        if v and k not in os.environ:
+            os.environ[k] = v
+
+
+load_env()
 
 
 def run(cmd, **kw):
@@ -46,10 +71,28 @@ def _rhvoice(text, voice, rate, out_raw):
 
 
 def _edge(text, voice, rate, out_raw):
+    pct = int(round(rate - 100))
+    try:  # Python API: те же байты звука, плюс таймкоды слов (WordBoundary)
+        import edge_tts
+    except ImportError:
+        edge_tts = None
+    if edge_tts is not None:
+        try:
+            com = edge_tts.Communicate(text, voice, rate=f"{pct:+d}%", boundary="WordBoundary")
+            words = []
+            with open(out_raw, "wb") as f:
+                for ch in com.stream_sync():
+                    if ch["type"] == "audio":
+                        f.write(ch["data"])
+                    elif ch["type"] == "WordBoundary":
+                        words.append([ch["text"], ch["offset"] / 1e7, (ch["offset"] + ch["duration"]) / 1e7])
+            _RAW_WORDS[str(out_raw)] = words
+            return
+        except Exception as e:  # noqa: BLE001 — сеть/сервис: честная ошибка, без молчаливой подмены
+            raise TTSUnavailable("edge-tts: " + str(e)[-300:])
     exe = shutil.which("edge-tts")
     if not exe:
         raise TTSUnavailable("edge-tts не найден: pip install edge-tts (нужен интернет)")
-    pct = int(round(rate - 100))
     r = run([exe, "--voice", voice, f"--rate={pct:+d}%", "--text", text, "--write-media", str(out_raw)])
     if r.returncode:
         raise TTSUnavailable("edge-tts: " + r.stderr[-300:])
@@ -69,12 +112,79 @@ def _piper(text, voice, rate, out_raw):
         raise TTSUnavailable("piper: " + r.stderr[-300:])
 
 
-BACKENDS = {"rhvoice": _rhvoice, "edge": _edge, "piper": _piper}
+EL_API = "https://api.elevenlabs.io/v1"
+EL_DEFAULTS = {"model": "eleven_multilingual_v2", "stability": 0.5, "similarity_boost": 0.75, "style": 0.0,
+               "use_speaker_boost": True}
+_RAW_WORDS = {}  # out_raw -> [[слово, t0, t1]] относительно сырого звука (до срезки тишины)
+_EL_CFG = {}
+
+
+def _el_key():
+    k = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+    if not k:
+        raise TTSUnavailable("нет ключа ElevenLabs: впишите ELEVENLABS_API_KEY в .env (корень студии)")
+    return k
+
+
+def _el_request(path, body=None, method="GET"):
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(EL_API + path, method=method,
+                                 data=json.dumps(body).encode() if body is not None else None,
+                                 headers={"xi-api-key": _el_key(), "Content-Type": "application/json",
+                                          "Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:  # 401/403/429 — без ретраев, понятная ошибка
+        msg = e.read().decode(errors="replace")[:300]
+        hint = {401: "ключ неверный", 403: "доступ запрещён (тариф/прокси) — не ретраим",
+                429: "лимит запросов или символов"}.get(e.code, "")
+        raise TTSUnavailable(f"ElevenLabs HTTP {e.code} {hint}: {msg}")
+    except urllib.error.URLError as e:
+        raise TTSUnavailable(f"ElevenLabs недоступен: {e.reason}")
+
+
+def _elevenlabs(text, voice, rate, out_raw):
+    """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова."""
+    c = dict(EL_DEFAULTS, **_EL_CFG)
+    speed = max(0.7, min(1.2, rate / 100.0))  # диапазон, который принимает API
+    body = {"text": text, "model_id": c["model"],
+            "voice_settings": {"stability": c["stability"], "similarity_boost": c["similarity_boost"],
+                               "style": c["style"], "use_speaker_boost": c["use_speaker_boost"], "speed": speed}}
+    r = _el_request(f"/text-to-speech/{voice}/with-timestamps?output_format=mp3_44100_128", body, "POST")
+    Path(out_raw).write_bytes(base64.b64decode(r["audio_base64"]))
+    al = r.get("alignment") or {}
+    words, cur = [], None
+    for ch, a, b in zip(al.get("characters", []), al.get("character_start_times_seconds", []),
+                        al.get("character_end_times_seconds", [])):
+        if ch.isspace():
+            if cur:
+                words.append(cur)
+                cur = None
+            continue
+        if cur is None:
+            cur = [ch, a, b]
+        else:
+            cur[0] += ch
+            cur[2] = b
+    if cur:
+        words.append(cur)
+    _RAW_WORDS[str(out_raw)] = words
+
+
+BACKENDS = {"rhvoice": _rhvoice, "edge": _edge, "piper": _piper, "elevenlabs": _elevenlabs}
 
 
 def probe(tts_cfg, language="ru") -> str:
     """Проверяет, что синтез реально работает (а не просто «бинарник есть»)."""
     from .lang import profile
+    if tts_cfg["backend"] == "elevenlabs":  # бесплатная проверка: ключ и голос, без синтеза (символы платные)
+        _el_request("/user")
+        if not tts_cfg.get("voice") or tts_cfg["voice"] in ("auto", "env"):
+            raise TTSUnavailable("не задан голос ElevenLabs: ELEVENLABS_VOICE_ID в .env или tts.voice")
+        _el_request(f"/voices/{tts_cfg['voice']}")
+        return "ok"
     tmp = Path(tempfile.mkdtemp())
     try:
         BACKENDS[tts_cfg["backend"]](profile(language)["probe"], tts_cfg["voice"], 100, tmp / "p.wav")
@@ -86,22 +196,58 @@ def probe(tts_cfg, language="ru") -> str:
 
 
 # ---------------------------------------------------------------- synth + cache
+def cache_key(text: str, tts_cfg: dict, rate: float) -> str:
+    parts = [tts_cfg["backend"], tts_cfg["voice"], round(float(rate), 1), text]
+    if tts_cfg["backend"] == "elevenlabs":
+        parts.append({k: tts_cfg.get(k, v) for k, v in EL_DEFAULTS.items()})
+    return stable_hash(parts, 16)
+
+
+def _lead_silence(raw) -> float:
+    """Сколько тишины срежет TRIM в начале (порог −45 dB) — чтобы сдвинуть таймкоды слов."""
+    r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(raw), "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"],
+                       stdin=subprocess.DEVNULL, capture_output=True)
+    x = np.frombuffer(r.stdout, dtype=np.int16).astype(np.float32) / 32768.0
+    idx = np.nonzero(np.abs(x) > 10 ** (-45 / 20))[0]
+    return float(idx[0]) / SR if len(idx) else 0.0
+
+
 def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path) -> Path:
-    key = stable_hash([tts_cfg["backend"], tts_cfg["voice"], round(float(rate), 1), text], 16)
+    key = cache_key(text, tts_cfg, rate)
     out = cache_dir / f"{key}.wav"
     if out.exists() and out.stat().st_size > 1000:
         return out
     cache_dir.mkdir(parents=True, exist_ok=True)
-    raw = cache_dir / f"{key}.raw{'.mp3' if tts_cfg['backend'] == 'edge' else '.wav'}"
+    if tts_cfg["backend"] == "elevenlabs":
+        _EL_CFG.clear()
+        _EL_CFG.update({k: tts_cfg[k] for k in EL_DEFAULTS if k in tts_cfg})
+    raw = cache_dir / f"{key}.raw{'.mp3' if tts_cfg['backend'] in ('edge', 'elevenlabs') else '.wav'}"
     BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw)
     if not raw.exists() or raw.stat().st_size < 1000:
         raise TTSUnavailable(f"Синтез не дал звука для: {text[:60]!r}")
+    words = _RAW_WORDS.pop(str(raw), None)
+    lead = _lead_silence(raw) if words else 0.0
     r = run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af", TRIM,
              "-ar", str(SR), "-ac", "1", "-c:a", "pcm_s16le", str(out)])
     raw.unlink(missing_ok=True)
     if r.returncode or not out.exists():
         raise RuntimeError("ffmpeg trim: " + r.stderr[-300:])
+    if words:
+        d = duration(out)
+        words = [[w, round(max(0.0, a - lead), 3), round(min(d, max(0.0, b - lead)), 3)] for w, a, b in words]
+        out.with_suffix(".words.json").write_text(json.dumps(words, ensure_ascii=False), encoding="utf-8")
     return out
+
+
+def load_words(wav):
+    """Таймкоды слов от бэкенда для WAV из кэша или None (тогда timing оценивает сам)."""
+    p = Path(wav).with_suffix(".words.json")
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except ValueError:
+            return None
+    return None
 
 
 def read_wav(path) -> np.ndarray:

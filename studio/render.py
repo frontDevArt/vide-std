@@ -26,7 +26,7 @@ from .timing import load_timeline
 def code_hash(proj_root=None):
     # только код, который рисует кадр; данные сцены (тексты, тайминги) уже в хэше сцены
     h = hashlib.sha1(b"render")
-    files = [STUDIO_ROOT / "studio" / n for n in ("gfx.py", "templates.py", "render.py")]
+    files = [STUDIO_ROOT / "studio" / n for n in ("gfx.py", "templates.py", "render.py", "lab.py", "motion.py")]
     if proj_root and (Path(proj_root) / "templates").exists():
         files += sorted((Path(proj_root) / "templates").glob("*.py"))
     for f in files:
@@ -60,8 +60,11 @@ def prepare(proj: Project):
             state["feed_offset"] = off
         if tpl.uses_phone:
             state["screen_dim"] = float(tpl.dim_out)
+        if hasattr(tpl, "state_out"):  # шаблоны lab: шапка, часы, перенос цифры через склейку
+            state.update(tpl.state_out())
+        extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], ch_code, style_key,
-                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H])
+                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else []))
     return tl, ctx
 
 
@@ -70,9 +73,14 @@ _BG = {}
 
 
 def _bg(W, H):
-    if (W, H) not in _BG:
-        _BG[(W, H)] = G.Background(W, H)
-    return _BG[(W, H)]
+    key = (W, H, G.STYLE_NAME)
+    if key not in _BG:
+        if G.STYLE.get("background") == "lab":
+            from .lab import LabBackground
+            _BG[key] = LabBackground(W, H)
+        else:
+            _BG[key] = G.Background(W, H)
+    return _BG[key]
 
 
 def _sub_sprite(lines, size, W):
@@ -95,13 +103,56 @@ def _sub_sprite(lines, size, W):
     return box
 
 
+def _karaoke_sprite(lines, n_on, size):
+    """Субтитры lab: плашка, слова загораются по мере произнесения (неспетые — 38 %)."""
+    key = ("kar", tuple(lines), n_on, size)
+    if key in _BG:
+        return _BG[key]
+    f = G.font(size, "bold")
+    lh = int(size * 1.25)
+    sp = f.getlength(" ") + size * 0.14
+    widths = [sum(f.getlength(w) for w in l.split()) + sp * (len(l.split()) - 1) for l in lines]
+    pw, ph = int(max(widths) + size * 1.2), lh * len(lines) + int(size * 0.45)
+    box = G.rrect((pw, ph), int(size * 0.34), (5, 7, 11, 158))
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(box)
+    i = 0
+    for li, l in enumerate(lines):
+        x = (pw - widths[li]) / 2
+        y = int(size * 0.18) + li * lh
+        for w in l.split():
+            d.text((x, y), w, font=f, fill=G.col("text", 255 if i < n_on else 97))
+            x += f.getlength(w) + sp
+            i += 1
+    _BG[key] = box
+    return box
+
+
 def draw_subs(img, scene, t, proj_sub_size, W, H):
+    if G.STYLE.get("subs") == "karaoke" and scene.get("words"):
+        return _draw_karaoke(img, scene, t, proj_sub_size, W, H)
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
             a = min(G.prog(t, c["t0"] - 0.02, c["t0"] + 0.08), 1 - G.prog(t, c["t1"] - 0.08, c["t1"]))
             spr = _sub_sprite(tuple(c["lines"]), proj_sub_size, W)
             y = H * (0.835 if H >= W else 0.885)
             G.blitc(img, spr, W / 2, y, max(0.0, a), 0.985 + 0.015 * G.eo(G.prog(t, c["t0"], c["t0"] + 0.12)))
+
+
+def _draw_karaoke(img, scene, t, size, W, H):
+    words = scene["words"]
+    for c in scene.get("subs") or []:
+        if c["t0"] - 0.02 <= t < c["t1"]:
+            a = min(G.prog(t, c["t0"] - 0.02, c["t0"] + 0.08), 1 - G.prog(t, c["t1"] - 0.08, c["t1"]))
+            n_all = sum(len(l.split()) for l in c["lines"])
+            inside = [w for w in words if c["t0"] - 0.05 <= w["t0"] < c["t1"]]
+            n_on = sum(1 for w in inside if w["t0"] <= t)
+            if len(inside) != n_all:  # таймкоды не совпали с нарезкой — равномерно по времени фрагмента
+                n_on = int(n_all * G.prog(t, c["t0"], c["t1"] - 0.3) + 0.999)
+            spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size)
+            z = min(W, H) / 1080
+            cy = H * 0.835 if H >= W else H - 24 * z - spr.height / 2  # горизонталь: низ плашки в 24 px от края (демо)
+            G.blitc(img, spr, W / 2, cy, max(0.0, a))
 
 
 def make_template(ctx, scene):
@@ -115,7 +166,13 @@ def frame(ctx, tpl, scene, f, sub_size):
     t = f / fps
     T = (scene["start_frame"] + f) / fps
     img = _bg(ctx["W"], ctx["H"]).frame(T)
-    tpl.draw(img, t, T)
+    if getattr(tpl, "camera", False) and G.STYLE.get("camera"):
+        from .lab import apply_camera
+        layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        tpl.draw(layer, t, T)
+        img.alpha_composite(apply_camera(layer, T))
+    else:
+        tpl.draw(img, t, T)
     draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"])
     return img
 

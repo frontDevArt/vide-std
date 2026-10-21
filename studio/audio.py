@@ -31,9 +31,37 @@ def voice_track(proj: Project, tl) -> str:
             a = base + int(round(L["t0"] * SR))
             b = min(n, a + len(y))
             x[a:b] += y[: b - a]
+    if proj.cfg.get("sfx", {}).get("enabled", True):
+        x += sfx_track(proj, tl, n, x)
     out = proj.bdir("mix") / "voice.wav"
     T.write_wav(out, x)
     return str(out)
+
+
+def sfx_events(proj: Project, tl):
+    """События звуков из шаблонов (у кого есть sfx_events: шаблоны lab) -> [(t_глобальное, имя)]."""
+    from .render import prepare
+    from . import templates as TP
+    tl2, ctx = prepare(proj)
+    ev = []
+    for s in tl2["scenes"]:
+        tpl = TP.REGISTRY[s["template"]](ctx, s, s["state_in"])
+        if hasattr(tpl, "sfx_events"):
+            base = s["start_frame"] / tl2["fps"]
+            ev += [(base + t, name) for t, name in tpl.sfx_events() if 0 <= t < s["dur"]]
+    return sorted(ev)
+
+
+def sfx_track(proj: Project, tl, n, voice):
+    """Звуки появления на −28…−32 dB относительно голоса (STYLE §10). Своя громкость: sfx.level_db (сдвиг)."""
+    from . import sfx as FX
+    ev = sfx_events(proj, tl)
+    if not ev:
+        return np.zeros(n, np.float32)
+    act = voice[np.abs(voice) > 1e-3]
+    rms = float(np.sqrt(np.mean(act ** 2))) if len(act) else 0.05
+    gain = 10 ** (float(proj.cfg.get("sfx", {}).get("level_db", 0)) / 20)
+    return FX.track(n, ev, rms * gain)
 
 
 def music_loop(path, seconds=32.0, seed=5):

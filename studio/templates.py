@@ -752,3 +752,6 @@ def load_project_templates(root):
         spec = importlib.util.spec_from_file_location(f"project_tpl_{f.stem}", f)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
+
+
+from . import lab  # noqa: E402,F401  — регистрирует шаблоны lab_* (channel/STYLE.md)

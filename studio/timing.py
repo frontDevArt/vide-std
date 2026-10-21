@@ -11,8 +11,10 @@
 """
 from __future__ import annotations
 
+import difflib
 import json
 import math
+import re
 
 from . import tts as T
 from .project import Project, stable_hash
@@ -53,6 +55,37 @@ def _split_bounds(seg_texts, dur, sil):
     return [(round(a, 3), round(b, 3)) for a, b in bounds]
 
 
+def _norm(w):
+    return re.sub(r"[^\w]+", "", w.lower())
+
+
+def _line_words(segs, bounds, dur, wav):
+    """Слова строки с временами [(слово, t0, t1)] относительно начала строки.
+    Есть таймкоды бэкенда (ElevenLabs, edge) -> берём их; нет -> оценка по слогам внутри битов."""
+    est = []
+    for si, (a, b) in enumerate(bounds):
+        ws = display_text(segs[si]).split()
+        tot = sum(weight(w) for w in ws) or 1.0
+        acc = a
+        for w in ws:
+            d = (b - a) * weight(w) / tot
+            est.append([w, round(acc, 3), round(acc + d, 3)])
+            acc += d
+    real = T.load_words(wav)
+    if real:
+        A, B = [_norm(w[0]) for w in est], [_norm(w[0]) for w in real]
+        for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, A, B, autojunk=False).get_opcodes():
+            if op == "equal":
+                for k in range(i2 - i1):
+                    est[i1 + k][1:] = [round(max(0.0, real[j1 + k][1]), 3), round(min(dur, real[j1 + k][2]), 3)]
+            elif op == "replace" and j2 > j1:  # «66» ↔ «sixty six»: делим отрезок бэкенда поровну
+                t0, t1 = real[j1][1], real[j2 - 1][2]
+                n = i2 - i1
+                for k in range(n):
+                    est[i1 + k][1:] = [round(t0 + (t1 - t0) * k / n, 3), round(t0 + (t1 - t0) * (k + 1) / n, 3)]
+    return est
+
+
 def voice_scene(proj: Project, scene: dict, rate: float, cache):
     """Синтез строк сцены. Возвращает «сырую» раскладку без пауз между сценами."""
     lines_out = []
@@ -62,8 +95,10 @@ def voice_scene(proj: Project, scene: dict, rate: float, cache):
         x = T.read_wav(wav)
         dur = len(x) / T.SR
         sil = T.silences(x)
+        bounds = _split_bounds(segs, dur, sil)
         lines_out.append({"text": display_text(raw), "segs": segs, "wav": wav.name,
-                          "dur": round(dur, 3), "bounds": _split_bounds(segs, dur, sil),
+                          "dur": round(dur, 3), "bounds": bounds,
+                          "words": _line_words(segs, bounds, dur, wav),
                           "pause_after": _line_pause(raw, proj.cfg["pauses"])})
     return lines_out
 
@@ -127,6 +162,8 @@ def choose_rate(proj: Project, log=print):
 def layout(proj: Project, log=print) -> dict:
     """Полная раскладка проекта -> build/timeline.json (+ субтитры). Идемпотентно, с кэшем TTS."""
     T.probe(proj.cfg["tts"], proj.cfg["language"])
+    from . import gfx
+    gfx.set_palette(proj.cfg["style"].get("palette", "neon"))  # ширина субтитров — шрифтом стиля
     rate, voiced = choose_rate(proj, log)
     P = proj.cfg["pauses"]
     fps = proj.fps
@@ -166,16 +203,18 @@ def layout(proj: Project, log=print) -> dict:
         d = max(body, float(sc.get("min_duration", 0))) + want_extra.get(i, 0.0)
         head += (d - body) * 0.35 if d > body else 0  # растянутую сцену начинаем чуть позже
         cur = head
-        beats, placed = [], []
+        beats, placed, words = [], [], []
         for li, L in enumerate(lines):
             placed.append({"text": L["text"], "wav": L["wav"], "t0": round(cur, 3),
                            "t1": round(cur + L["dur"], 3)})
+            for w, a, b in L.get("words") or []:
+                words.append({"w": w, "line": li, "t0": round(cur + a, 3), "t1": round(cur + b, 3)})
             for si, (a, b) in enumerate(L["bounds"]):
                 beats.append({"text": display_text(L["segs"][si]), "line": li,
                               "t0": round(cur + a, 3), "t1": round(cur + b, 3)})
             cur += L["dur"] + L["pause_after"]
         scenes.append({"chapter": ch, "id": sc["id"], "template": sc.get("template", "statement"),
-                       "params": sc.get("params") or {}, "lines": placed, "beats": beats,
+                       "params": sc.get("params") or {}, "lines": placed, "beats": beats, "words": words,
                        "start": t, "dur": d})
         t += d
 
@@ -188,13 +227,13 @@ def layout(proj: Project, log=print) -> dict:
         f1 = total_frames if i == n - 1 else int(round(acc * fps))
         s["start_frame"], s["n_frames"] = f0, f1 - f0
         shift = s["start"] - f0 / fps  # локальные времена относительно кадра начала
-        for L in s["lines"] + s["beats"]:
+        for L in s["lines"] + s["beats"] + s["words"]:
             L["t0"] = round(L["t0"] + shift, 4); L["t1"] = round(L["t1"] + shift, 4)
         s["start"] = f0 / fps
         s["dur"] = s["n_frames"] / fps
         s["subs"] = S.chunks_for_scene(proj, s)
         s["hash"] = stable_hash([s["template"], s["params"], s["lines"], s["beats"], s["subs"],
-                                 s["start_frame"], s["n_frames"]])
+                                 s["start_frame"], s["n_frames"]] + ([s["words"]] if s["template"].startswith("lab_") else []))
 
     words = sum(word_count(l["text"]) for s in scenes for l in s["lines"])
     speech = sum(l["t1"] - l["t0"] for s in scenes for l in s["lines"])

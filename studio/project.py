@@ -28,6 +28,7 @@ DEFAULTS = {
                "max_extra_gap": 0.45},
     "style": {"palette": "neon", "font": "Inter Display"},
     "music": {"enabled": True, "level_db": -13, "duck": True},
+    "sfx": {"enabled": True, "level_db": 0},  # звуки появления — только у шаблонов с sfx_events (lab_*)
     "subtitles": {"enabled": True, "max_lines": 2, "size": None},
     "render": {"workers": None, "crf": 18, "preset": "medium"},
     "loudness": -16,
@@ -93,6 +94,10 @@ def load(root) -> Project:
     cfg = deep_merge(DEFAULTS, user)
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
+    if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):
+        from .tts import load_env
+        load_env()  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
+        cfg["tts"]["voice"] = os.environ.get("ELEVENLABS_VOICE_ID", "")
     if cfg["tts"].get("voice") in (None, "auto"):
         from .lang import default_voice
         v = default_voice(cfg["language"], cfg["tts"]["backend"])

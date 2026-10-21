@@ -29,12 +29,40 @@ PALETTES = {
         "lime": (170, 240, 120), "amber": (255, 205, 110), "red": (255, 110, 110),
         "panel": (16, 30, 36), "accent": (90, 230, 210), "accent2": (255, 205, 110),
     },
+    # канал Notes From The Mind: channel/STYLE.md, раздел 2. Цвета вердиктов — только для вердиктов.
+    "lab": {
+        "bg_top": (10, 13, 20), "bg_bot": (10, 13, 20), "bg": (10, 13, 20), "bg2": (17, 23, 38),
+        "text": (238, 242, 248), "dim": (139, 149, 167),
+        "cyan": (61, 214, 245), "magenta": (155, 140, 255), "violet": (155, 140, 255),
+        "lime": (52, 211, 153), "amber": (251, 191, 36), "red": (242, 84, 91),
+        "panel": (17, 23, 38), "accent": (61, 214, 245), "accent2": (155, 140, 255),
+        "true": (52, 211, 153), "half": (251, 191, 36), "myth": (242, 84, 91), "noev": (139, 149, 167),
+        "ink": (20, 28, 46),
+    },
 }
 PAL = dict(PALETTES["neon"])
 
+# Пресет = палитра + (необязательно) фон, шрифты по ролям, камера. Без записи здесь — прежнее поведение.
+ASSETS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
+STYLES = {
+    "lab": {
+        "background": "lab",          # studio/lab.py: LabBackground
+        "camera": True,                # дрейф камеры для шаблонов с camera = True
+        "subs": "karaoke",             # слова загораются по мере произнесения
+        "fonts": {"head": "fonts/Manrope-VF.ttf", "num": "fonts/Unbounded-VF.ttf", "mono": "fonts/JetBrainsMono-VF.ttf"},
+    },
+}
+STYLE = {}
+STYLE_NAME = "neon"
+
 
 def set_palette(name):
+    global STYLE_NAME
     PAL.clear(); PAL.update(PALETTES.get(name, PALETTES["neon"]))
+    STYLE.clear(); STYLE.update(STYLES.get(name, {}))
+    if STYLE_NAME != name:
+        STYLE_NAME = name
+        font.cache_clear(); text_sprite.cache_clear()
 
 
 def col(c, a=255):
@@ -104,8 +132,22 @@ def _font_file(weight):
     raise RuntimeError("Не найден шрифт с кириллицей. Установите Inter или задайте STUDIO_FONT_BOLD.")
 
 
+WEIGHT_NUM = {"black": 900, "extrabold": 800, "bold": 700, "semibold": 600, "medium": 500, "regular": 400, "light": 300}
+
+
 @functools.lru_cache(None)
-def font(size, weight="bold"):
+def font(size, weight="bold", family=None):
+    """family: head | num | mono — шрифт роли из пресета (локальный файл из assets/). Без пресета — как раньше."""
+    files = STYLE.get("fonts") or {}
+    rel = files.get(family or "head")
+    if rel:
+        f = ImageFont.truetype(os.path.join(ASSETS, rel), int(size))
+        try:
+            ax = f.get_variation_axes()[0]
+            f.set_variation_by_axes([max(ax["minimum"], min(ax["maximum"], WEIGHT_NUM.get(weight, 700)))])
+        except Exception:
+            pass
+        return f
     return ImageFont.truetype(_font_file(weight), int(size))
 
 
@@ -203,8 +245,10 @@ def wrap_runs(runs, f, maxw):
 
 @functools.lru_cache(maxsize=512)
 def text_sprite(text, size, weight="bold", color="text", accent="accent", glow=0, glow_color=None,
-                maxw=0, align="center", spacing=1.12):
-    f = font(size, weight)
+                maxw=0, align="center", spacing=1.12, family=None, tracking=0.0):
+    f = font(size, weight, family)
+    if tracking:
+        return _tracked_sprite(text, f, size, color, tracking)
     lines = wrap_runs(_runs(text), f, maxw)
     asc, desc = f.getmetrics()
     lh = int(size * spacing)
@@ -222,6 +266,21 @@ def text_sprite(text, size, weight="bold", color="text", accent="accent", glow=0
             x += f.getlength(w) + sp
     if glow:
         img = glowify(img, glow_color or accent, glow, 0.85)
+    return img
+
+
+def _tracked_sprite(text, f, size, color, tracking):
+    """Одна строка с трекингом (доля кегля между буквами) — капс-заголовки и ярлыки."""
+    gap = size * tracking
+    adv = [f.getlength(c) for c in text]
+    W = int(sum(adv) + gap * max(0, len(text) - 1) + size * 0.3)
+    asc, desc = f.getmetrics()
+    img = Image.new("RGBA", (max(1, W), asc + desc + int(size * 0.15)), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    x = size * 0.15
+    for c, a in zip(text, adv):
+        d.text((x, 0), c, font=f, fill=col(color))
+        x += a + gap
     return img
 
 

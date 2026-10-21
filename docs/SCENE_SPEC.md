@@ -66,3 +66,39 @@ class BigQuote(Template):
 ```
 Правила: дорогое — в `setup`; `draw` только композиция; всё, что должно продолжаться через склейку,
 передавать через `state` (как `feed_offset`, `screen_dim`), а не начинать заново.
+
+## Шаблоны канала: пресет `lab` (Notes From The Mind)
+Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `channel/STYLE.md`, эталон движения —
+`channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
+Код: `studio/lab.py` (фон, элементы, шаблоны), `studio/motion.py` (кривые и тайминги в кадрах @30), `studio/sfx.py` (звуки).
+
+| Шаблон (§5 STYLE) | Для чего | Главные params |
+|---|---|---|
+| `lab_hero_stack` | Hero + Stack: факт с цифрой и следствиями | `claim`, `hero`, `cards[]`, `lines` |
+| `lab_flow` | Flow: процесс из 3 станций, линии с бегущими точками | `stations[]` |
+| `lab_versus` | Versus: «Думают / Нашли» | `left{title, items[]}`, `right{…}` |
+| `lab_crowd` | Crowd: толпа = реальная выборка (+ исследование, шкала, цифра) | `study`, `crowd{n, cols, highlight[]}`, `range`, `hero` |
+| `lab_diagram` | Center Diagram: схема по центру, ярлыки вокруг | `center`, `labels[]` |
+| `lab_full_number` | Full Number: разрыв ритма, шок-факт, «миф → реальность» | `value`, `caption`, `myth{value, at, strike_at}` |
+| `lab_chapter` | карточка главы (веер → «01» → заголовок → прогресс) | `number`, `total`, `title`, `subtitle`; `min_duration: 3` |
+| `lab_verdict` | вердикт отдельной сценой | `verdict{verdict, sub, at}` |
+
+**Общие params у всех `lab_*`:**
+- `chrome: {rubric, number, steps: [CLAIM, EVIDENCE, VERDICT], step, clock: "07:00"}` — шапка. Наследуется
+  следующими сценами через state: задать один раз в первой сцене, дальше менять только `step`/`clock`.
+  На склейке шапка не появляется заново; стрелка часов доезжает до нового времени.
+- `source: {label, text, at}` — плашка источника внизу слева (обязательна, когда звучит исследование).
+- `verdict: {verdict: TRUE|HALF-TRUE|MYTH|NO EVIDENCE, sub: "… *акцент* …", at}` — штамп поверх любой сцены,
+  всё остальное гаснет до 32 %; звук: райзер 0,5 с + удар.
+- `neuron: {mood: surprised|nod|facepalm, at, x, y}` — «Нейрон» (не больше 3–4 раз за ролик).
+- `keep: [hero]` — элемент не уходит в конце сцены и переезжает в следующую (у неё `hero.from_prev: true`).
+
+**Триггер `at`** (у каждого элемента): `"66"` или `"w:median"` — слово в озвучке (старт за 4 кадра до слова),
+`"median of"` — последовательность слов, `"some#2"` — второе вхождение, `3` — номер бита, `"1.5s"` — секунды.
+Таймкоды слов: ElevenLabs и edge дают настоящие; piper/rhvoice — оценка по слогам внутри битов.
+Ненайденное слово — предупреждение в логе `stills`/`render` и запасное время (стаггер).
+
+**Раскадровка под `lab`** (чек-лист — STYLE §13): шаблон композиции на каждую сцену и смена шаблона от сцены
+к сцене; новый элемент не реже раза в 2,5 с; разрыв ритма (`lab_full_number`, `lab_chapter`, вердикт, «Нейрон»)
+каждые 20–30 с; ≤ 7 слов текста в кадре; цвет вердикта — только для вердикта; цифры в кадре = источник = озвучка.
+Shorts (vertical) для `lab_*` пока не свёрстаны отдельно (STYLE §12) — делать горизонталь.

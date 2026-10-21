@@ -19,7 +19,7 @@ LANGS = {
         "name": "английский",
         "wpm": 155,
         "probe": "Voice check.",
-        "voices": {"rhvoice": "slt", "edge": "en-US-GuyNeural", "piper": "en_US-lessac-medium"},
+        "voices": {"rhvoice": "slt", "edge": "en-US-AndrewMultilingualNeural", "piper": "en_US-lessac-medium"},
         "foreign": r"[А-Яа-яЁё]",
         "foreign_msg": "кириллица в английском тексте",
         "ui": {"feed": "Feed"},
