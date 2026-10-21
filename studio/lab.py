@@ -37,7 +37,7 @@ def C(name, a=255):
 
 # ===================================================================== background §4
 class LabBackground:
-    """Сплошной bg + подсветки (циан сверху-слева, лаванда снизу-справа, дыхание ±4 % за 7 с),
+    """Сплошной bg + подсветки (glow_cool сверху-слева, glow_warm снизу-справа, дыхание ±4 % за 7 с),
     сетка 48 px в нижних 40 % с затуханием вверх, 34 пылинки 1–2 px плывут вверх 8–20 px/с."""
 
     def __init__(self, W, H, seed=7):
@@ -47,8 +47,8 @@ class LabBackground:
         ys, xs = np.mgrid[0:self.lh, 0:self.lw].astype(np.float32)
         self.xs, self.ys = (xs + 0.5) * W / self.lw, (ys + 0.5) * H / self.lh
         self.base = np.array(G.PAL["bg"], np.float32)
-        self.c1 = np.array(G.PAL["accent"], np.float32)
-        self.c2 = np.array(G.PAL["accent2"], np.float32)
+        self.c1 = np.array(G.PAL["glow_cool"], np.float32)  # §14: настроение; без него = accent / accent2
+        self.c2 = np.array(G.PAL["glow_warm"], np.float32)
         rng = np.random.default_rng(seed)
         g = np.clip(rng.normal(1.2, 0.9, (H, W)), 0, 3).astype(np.uint8)  # зерно против бандинга
         self.grain = Image.merge("RGB", [Image.fromarray(g, "L")] * 3)
@@ -73,15 +73,17 @@ class LabBackground:
         d = np.sqrt((self.xs - cx) ** 2 + (self.ys - cy) ** 2) / r
         return np.clip(1 - d, 0, 1) * alpha
 
-    def frame(self, T):
+    def frame(self, T, glow=None):
+        """glow — (cool, warm) RGB подсветок главы в этот момент (render.glow_at), иначе — из палитры."""
         W, H, z = self.W, self.H, self.z
+        c1, c2 = (self.c1, self.c2) if glow is None else (np.array(glow[0], np.float32), np.array(glow[1], np.float32))
         _, dx, dy = M.camera(T)
         cx, cy = dx * 0.5 * z, dy * 0.5 * z  # фон — в 0,5× от контента
         br = 1 + 0.04 * math.sin(T * math.tau / 7)
         a1 = self._glow(380 * z + cx + 30 * z * math.sin(T / 3), 180 * z + cy, 950 * z, 0.17 * br)
         a2 = self._glow(W - 300 * z + cx, H - 140 * z + cy + 20 * z * math.cos(T / 4), 900 * z, 0.15 * (2 - br))
-        img = self.base * (1 - a1[..., None]) + self.c1 * a1[..., None]
-        img = img * (1 - a2[..., None]) + self.c2 * a2[..., None]
+        img = self.base * (1 - a1[..., None]) + c1 * a1[..., None]
+        img = img * (1 - a2[..., None]) + c2 * a2[..., None]
         low = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB")
         out = ImageChops.add(low.resize((W, H), Image.BILINEAR), self.grain).convert("RGBA")
         off = int(round(cx)) % self.cell

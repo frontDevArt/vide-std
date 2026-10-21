@@ -8,9 +8,9 @@ fps: 30
 target_duration: null
 
 tts:
-  backend: edge                          # канал: elevenlabs (когда ключ в .env); тест — бесплатный edge
-  voice: en-US-AndrewMultilingualNeural  # мужской
-  rate: 110
+  backend: elevenlabs                    # проверка голоса канала (было: edge, en-US-AndrewMultilingualNeural, rate 110)
+  voice: auto                            # ELEVENLABS_VOICE_ID из .env
+  rate: 100
   rate_range: [95, 115]
 
 style:
@@ -18,7 +18,7 @@ style:
 
 music:
   enabled: true
-  level_db: -18
+  level_db: -14                          # под голос ElevenLabs (громче edge): разрыв ~26 LU, STYLE §10
   duck: true
 
 sfx:

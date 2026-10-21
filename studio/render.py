@@ -37,18 +37,27 @@ def code_hash(proj_root=None):
 def prepare(proj: Project):
     """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены."""
     tl = load_timeline(proj)
-    G.set_palette(proj.cfg["style"].get("palette", "neon"))
+    G.apply_style(proj.cfg["style"])
     G.FONT_FAMILY = proj.cfg["style"].get("font", G.FONT_FAMILY)
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
     ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"]}
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
+    # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
+    glows = {ch: G.chapter_glow(d.get("glow")) for ch, d in proj.chapters}
+    base_glow = (G.PAL["glow_cool"], G.PAL["glow_warm"])
+    use_glow = G.STYLE.get("background") == "lab" and any(glows.values())
+    if use_glow and scenes:
+        state["lab_glow"] = glows.get(scenes[0]["chapter"]) or base_glow  # начало ролика — без перехода
     ch_code = code_hash(proj.root)
     style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
         s["state_in"] = dict(state)
+        if use_glow:
+            s["glow"] = {"from": state["lab_glow"], "to": glows.get(s["chapter"]) or base_glow}
+            state["lab_glow"] = s["glow"]["to"]
         cls = TP.REGISTRY.get(s["template"])
         if cls is None:
             raise SystemExit(f"Неизвестный шаблон '{s['template']}' в сцене {s['chapter']}/{s['id']}")
@@ -64,16 +73,27 @@ def prepare(proj: Project):
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], ch_code, style_key,
-                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else []))
+                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else [])
+                               + ([s["glow"]] if use_glow else []))
     return tl, ctx
 
 
 # ---------------------------------------------------------------- per-process caches
 _BG = {}
+GLOW_T = 1.2  # с: переход подсветок на стыке глав (в начале первой сцены новой главы)
+
+
+def glow_at(scene, t):
+    """Цвета подсветок (cool, warm) в момент t сцены или None, если подсветки по главам не заданы."""
+    g = scene.get("glow")
+    if not g:
+        return None
+    k = G.eio(G.prog(t, 0.0, min(GLOW_T, scene["dur"])))
+    return tuple(tuple(G.lerp(a, b, k) for a, b in zip(A, B)) for A, B in zip(g["from"], g["to"]))
 
 
 def _bg(W, H):
-    key = (W, H, G.STYLE_NAME)
+    key = (W, H, G.STYLE_KEY)
     if key not in _BG:
         if G.STYLE.get("background") == "lab":
             from .lab import LabBackground
@@ -165,7 +185,8 @@ def frame(ctx, tpl, scene, f, sub_size):
     fps = ctx["fps"]
     t = f / fps
     T = (scene["start_frame"] + f) / fps
-    img = _bg(ctx["W"], ctx["H"]).frame(T)
+    glow = glow_at(scene, t)
+    img = _bg(ctx["W"], ctx["H"]).frame(T, glow) if glow else _bg(ctx["W"], ctx["H"]).frame(T)
     if getattr(tpl, "camera", False) and G.STYLE.get("camera"):
         from .lab import apply_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -177,8 +198,8 @@ def frame(ctx, tpl, scene, f, sub_size):
     return img
 
 
-def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, palette, font_family):
-    G.set_palette(palette)
+def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, style, font_family):
+    G.apply_style(style)
     G.FONT_FAMILY = font_family
     TP.load_project_templates(proj_root)
     t0 = time.time()
@@ -224,8 +245,7 @@ def render(proj: Project, chapter=None, workers=None, log=print, force=False):
     todo.sort(key=lambda s: -s["n_frames"])
     t0 = time.time()
     done = 0
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], proj.cfg["style"].get("palette", "neon"),
-            G.FONT_FAMILY)
+    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], proj.cfg["style"], G.FONT_FAMILY)
     with ProcessPoolExecutor(max_workers=workers) as ex:
         futs = [ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, scene_out(proj, s), *args) for s in todo]
         for fu in as_completed(futs):

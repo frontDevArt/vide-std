@@ -18,7 +18,7 @@ import re
 
 from . import tts as T
 from .project import Project, stable_hash
-from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count
+from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count, line_text, line_voice
 from . import subs as S
 
 
@@ -86,12 +86,27 @@ def _line_words(segs, bounds, dur, wav):
     return est
 
 
-def voice_scene(proj: Project, scene: dict, rate: float, cache):
+def line_jobs(scenes):
+    """Задания синтеза по сценам одной главы: [[(raw, text, prev, next, voice)]].
+    prev/next — соседние строки в пределах главы (через границы сцен): ElevenLabs держит по ним интонацию.
+    Граница главы контекст рвёт, чтобы правка ch02 не пересинтезировала (платно) уже готовую ch01.
+    voice = scene.voice, поверх — voice строки."""
+    flat = [(si, l) for si, sc in enumerate(scenes) for l in sc.get("lines") or []]
+    texts = [tts_text(line_text(l)) for _, l in flat]
+    out = [[] for _ in scenes]
+    for i, (si, l) in enumerate(flat):
+        v = dict(scenes[si].get("voice") or {}, **line_voice(l))
+        out[si].append((line_text(l), texts[i], texts[i - 1] if i else None,
+                        texts[i + 1] if i + 1 < len(texts) else None, v))
+    return out
+
+
+def voice_scene(proj: Project, jobs, rate: float, cache):
     """Синтез строк сцены. Возвращает «сырую» раскладку без пауз между сценами."""
     lines_out = []
-    for raw in scene.get("lines") or []:
+    for raw, text, prev, nxt, voice in jobs:
         segs = segments(raw)
-        wav = T.synth(tts_text(raw), proj.cfg["tts"], rate, cache)
+        wav = T.synth(text, proj.cfg["tts"], rate, cache, prev, nxt, voice)
         x = T.read_wav(wav)
         dur = len(x) / T.SR
         sil = T.silences(x)
@@ -103,17 +118,13 @@ def voice_scene(proj: Project, scene: dict, rate: float, cache):
     return lines_out
 
 
-def _all_scenes(proj):
-    for ch, data in proj.chapters:
-        for sc in data.get("scenes") or []:
-            yield ch, sc
-
-
 def measure(proj: Project, rate: float):
     cache = proj.bdir("tts")
     voiced = []
-    for ch, sc in _all_scenes(proj):
-        voiced.append((ch, sc, voice_scene(proj, sc, rate, cache)))
+    for ch, data in proj.chapters:
+        scenes = data.get("scenes") or []
+        for sc, jobs in zip(scenes, line_jobs(scenes)):
+            voiced.append((ch, sc, voice_scene(proj, jobs, rate, cache)))
     return voiced
 
 
@@ -163,7 +174,7 @@ def layout(proj: Project, log=print) -> dict:
     """Полная раскладка проекта -> build/timeline.json (+ субтитры). Идемпотентно, с кэшем TTS."""
     T.probe(proj.cfg["tts"], proj.cfg["language"])
     from . import gfx
-    gfx.set_palette(proj.cfg["style"].get("palette", "neon"))  # ширина субтитров — шрифтом стиля
+    gfx.apply_style(proj.cfg["style"])  # ширина субтитров — шрифтом стиля
     rate, voiced = choose_rate(proj, log)
     P = proj.cfg["pauses"]
     fps = proj.fps

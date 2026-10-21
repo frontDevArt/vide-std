@@ -10,6 +10,7 @@ import functools
 import math
 import os
 import random
+import re
 import subprocess
 
 import numpy as np
@@ -54,15 +55,70 @@ STYLES = {
 }
 STYLE = {}
 STYLE_NAME = "neon"
+STYLE_KEY = ("neon", None, ())
+
+# Цветовые настроения поверх палитры (channel/STYLE.md §14): подсветки фона + второй акцент.
+# `lab` — значения самой палитры, т.е. «без настроения». Каркас (bg, accent, вердикты) не трогаем.
+MOODS = {
+    "lab": {"glow_cool": (61, 214, 245), "glow_warm": (155, 140, 255), "accent2": (155, 140, 255)},
+    "night": {"glow_cool": (91, 124, 255), "glow_warm": (155, 140, 255), "accent2": (109, 124, 255)},
+    "ember": {"glow_cool": (61, 214, 245), "glow_warm": (255, 159, 107), "accent2": (247, 143, 179)},
+    "deep": {"glow_cool": (43, 179, 201), "glow_warm": (109, 124, 255), "accent2": (165, 200, 255)},
+    "orchid": {"glow_cool": (61, 214, 245), "glow_warm": (213, 140, 255), "accent2": (213, 140, 255)},
+}
+MOOD_KEYS = ("glow_cool", "glow_warm", "accent2")
 
 
-def set_palette(name):
-    global STYLE_NAME
+def hex_rgb(s):
+    s = str(s).strip().lstrip("#")
+    if not re.fullmatch(r"[0-9a-fA-F]{6}", s):
+        raise ValueError(f"цвет '{s}' — нужен #RRGGBB")
+    return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def mood_colors(mood=None, overrides=None, base=None):
+    """Цвета настроения: {glow_cool, glow_warm, accent2}. Без настроения — accent/accent2 палитры."""
+    base = base or PAL
+    out = {"glow_cool": base["accent"], "glow_warm": base["accent2"], "accent2": base["accent2"]}
+    if mood:
+        if mood not in MOODS:
+            raise ValueError(f"нет настроения '{mood}' (есть: {', '.join(MOODS)})")
+        out.update(MOODS[mood])
+    for k, v in (overrides or {}).items():
+        if k not in MOOD_KEYS:
+            raise ValueError(f"style.overrides.{k}: можно только {', '.join(MOOD_KEYS)}")
+        out[k] = hex_rgb(v)
+    return out
+
+
+def set_palette(name, mood=None, overrides=None):
+    global STYLE_NAME, STYLE_KEY
     PAL.clear(); PAL.update(PALETTES.get(name, PALETTES["neon"]))
+    PAL.update(mood_colors(mood, overrides))
     STYLE.clear(); STYLE.update(STYLES.get(name, {}))
-    if STYLE_NAME != name:
-        STYLE_NAME = name
+    key = (name, mood, tuple(sorted((overrides or {}).items())))
+    STYLE_NAME = name
+    if STYLE_KEY != key:
+        STYLE_KEY = key
         font.cache_clear(); text_sprite.cache_clear()
+
+
+def chapter_glow(spec):
+    """script/chNN.yaml → glow: <настроение> | {cool: "#hex", warm: "#hex"} → (cool, warm) или None."""
+    if not spec:
+        return None
+    if isinstance(spec, str):
+        m = mood_colors(spec)
+        return m["glow_cool"], m["glow_warm"]
+    if isinstance(spec, dict) and set(spec) <= {"cool", "warm"}:
+        return (hex_rgb(spec["cool"]) if "cool" in spec else PAL.get("glow_cool", PAL["accent"]),
+                hex_rgb(spec["warm"]) if "warm" in spec else PAL.get("glow_warm", PAL["accent2"]))
+    raise ValueError(f"glow: {spec!r} — нужно имя настроения или {{cool, warm}}")
+
+
+def apply_style(style):
+    """project.yaml → style: palette, mood, overrides (font задаётся отдельно)."""
+    set_palette(style.get("palette", "neon"), style.get("mood"), style.get("overrides"))
 
 
 def col(c, a=255):

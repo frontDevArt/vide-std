@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .project import Project
-from .textutil import word_count
+from .textutil import word_count, line_text
 
 
 def _mt(p):
@@ -68,7 +68,8 @@ NEXT = {
 
 def report(proj: Project, log=print):
     ph = phases(proj)
-    words = sum(word_count(l) for _, d in proj.chapters for s in d.get("scenes") or [] for l in s.get("lines") or [])
+    words = sum(word_count(line_text(l)) for _, d in proj.chapters for s in d.get("scenes") or []
+                for l in s.get("lines") or [])
     log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')}")
     log(f"Формат {proj.cfg['format']} {proj.size[0]}×{proj.size[1]}, {proj.fps} fps; "
         f"цель {proj.cfg.get('target_duration') or 'по речи'}; слов в сценарии: {words} (~{words / 140:.1f} мин речи)")

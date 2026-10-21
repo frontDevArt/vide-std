@@ -70,7 +70,7 @@ def cmd_new(a):
 
 def cmd_validate(a):
     from .templates import REGISTRY, load_project_templates
-    from .textutil import word_count, segments
+    from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG
     from .lang import profile
     proj = load(resolve_project(a.project))
     lp = profile(proj.cfg["language"])
@@ -78,6 +78,7 @@ def cmd_validate(a):
     errs, warns = [], []
     ids = set()
     words = 0
+    accents = []  # где переопределён голос: правило канала — 1–2 на ролик (крючок, вердикт)
     for ch, d in proj.chapters:
         for s in d.get("scenes") or []:
             sid = s.get("id")
@@ -94,7 +95,19 @@ def cmd_validate(a):
             lines = s.get("lines") or []
             if not lines and not s.get("min_duration"):
                 errs.append(f"{ch}/{sid}: нет текста и не задан min_duration")
-            for l in lines:
+            if s.get("voice"):
+                accents.append(f"{ch}/{sid}")
+                _validate_voice(proj, s["voice"], f"{ch}/{sid}", errs, warns)
+            for item in lines:
+                l = line_text(item)
+                if isinstance(item, dict) and not l.strip():
+                    errs.append(f"{ch}/{sid}: строка-словарь без text")
+                if line_voice(item):
+                    accents.append(f"{ch}/{sid}: «{l[:30]}…»")
+                    _validate_voice(proj, line_voice(item), f"{ch}/{sid}", errs, warns)
+                model = {**proj.cfg["tts"], **(s.get("voice") or {}), **line_voice(item)}.get("model", "")
+                if AUDIO_TAG.search(l) and not str(model).startswith("eleven_v3"):
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: тег эмоции без model: eleven_v3 — будет прочитан вслух")
                 words += word_count(l)
                 if lp["foreign"] and re.search(lp["foreign"], l.replace("|", "")):
                     warns.append(f"{ch}/{sid}: «{l[:40]}…»: {lp['foreign_msg']}")
@@ -102,6 +115,10 @@ def cmd_validate(a):
                     warns.append(f"{ch}/{sid}: очень длинная строка ({len(l)} симв.) — разбейте на предложения")
                 if any(len(x) > 90 for x in segments(l)):
                     warns.append(f"{ch}/{sid}: длинный бит без '|' — субтитры порежутся по словам")
+    if len(accents) > 2:
+        warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило канала: 1–2 акцента "
+                     f"на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
+    _validate_style(proj, errs, warns)
     tgt = proj.cfg.get("target_duration")
     est = words / lp["wpm"] * 60
     print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
@@ -115,17 +132,68 @@ def cmd_validate(a):
     return 1 if errs else 0
 
 
+def _validate_voice(proj, v, where, errs, warns):
+    """voice: сцены/строки (docs/TTS.md): только elevenlabs, известные ключи, диапазоны API, не быстрее rate_range."""
+    from .tts import EL_VOICE_KEYS, EL_SPEED
+    tc = proj.cfg["tts"]
+    if not isinstance(v, dict):
+        errs.append(f"{where}: voice должен быть словарём {{stability, style, speed, …}}")
+        return
+    if tc["backend"] != "elevenlabs":
+        warns.append(f"{where}: voice действует только для tts.backend: elevenlabs — сейчас игнорируется")
+    unknown = set(v) - set(EL_VOICE_KEYS)
+    if unknown:
+        errs.append(f"{where}: неизвестные ключи voice {sorted(unknown)} (есть: {', '.join(EL_VOICE_KEYS)})")
+    for k in ("stability", "similarity_boost", "style"):
+        if k in v and not (isinstance(v[k], (int, float)) and 0 <= v[k] <= 1):
+            errs.append(f"{where}: voice.{k} = {v[k]!r}, нужно число 0–1")
+    if "speed" in v:
+        sp, hi = v["speed"], tc.get("rate_range", [98, 125])[1] / 100
+        if not (isinstance(sp, (int, float)) and EL_SPEED[0] <= sp <= EL_SPEED[1]):
+            errs.append(f"{where}: voice.speed = {sp!r}, API принимает {EL_SPEED[0]}–{EL_SPEED[1]}")
+        elif sp > hi:
+            errs.append(f"{where}: voice.speed {sp} быстрее потолка rate_range ({hi:g}) — речь не ускоряем")
+    if "model" in v:
+        warns.append(f"{where}: voice.model = {v['model']} — эксперимент: тембр и таймкоды сверить на слух и в stills")
+
+
+def _validate_style(proj, errs, warns):
+    """style.mood / style.overrides / glow глав (channel/STYLE.md §14): accent2 не спорит с вердиктами и бренд-цианом."""
+    from . import gfx as G
+    st = proj.cfg["style"]
+    pal = G.PALETTES.get(st.get("palette", "neon"), G.PALETTES["neon"])
+    try:
+        mc = G.mood_colors(st.get("mood"), st.get("overrides"), base=pal)
+    except ValueError as e:
+        errs.append(f"style: {e}")
+        return
+    if (st.get("mood") or st.get("overrides")) and st.get("palette") != "lab":
+        warns.append("style.mood/overrides рассчитаны на palette: lab")
+    near = lambda a, b: sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5 < 48
+    for k in ("true", "half", "myth", "noev", "accent"):
+        if k in pal and near(mc["accent2"], pal[k]):
+            what = "бренд-цианом accent" if k == "accent" else f"цветом вердикта {k}"
+            errs.append(f"style: accent2 #{'%02X%02X%02X' % tuple(mc['accent2'])} совпадает с {what} "
+                        f"#{'%02X%02X%02X' % tuple(pal[k])} — выберите другое настроение или overrides.accent2")
+    for ch, d in proj.chapters:
+        try:
+            G.chapter_glow(d.get("glow"))
+        except ValueError as e:
+            errs.append(f"{ch}: {e}")
+
+
 def _elevenlabs_guard(proj, yes):
     """Платный синтез: темп числом (подбор темпа синтезирует несколько раз) + оценка символов и подтверждение."""
     from . import tts
-    from .textutil import tts_text
+    from .timing import line_jobs
     tc = proj.cfg["tts"]
     if tc.get("rate", "auto") == "auto":
         raise SystemExit("ElevenLabs: задайте tts.rate числом (например 100) — подбор темпа оплачивал бы каждый прогон")
     cache = proj.bdir("tts")
-    todo = [tts_text(l) for _, d in proj.chapters for sc in d.get("scenes") or [] for l in sc.get("lines") or []]
-    new = [x for x in todo if not (cache / f"{tts.cache_key(x, tc, float(tc['rate']))}.wav").exists()]
-    chars = sum(len(x) for x in new)
+    todo = [j for _, d in proj.chapters for sj in line_jobs(d.get("scenes") or []) for j in sj]
+    new = [text for _, text, prev, nxt, voice in todo
+           if not (cache / f"{tts.cache_key(text, tc, float(tc['rate']), prev, nxt, voice)}.wav").exists()]
+    chars = sum(len(x) for x in new)  # previous_text/next_text — контекст, в символы не входит
     print(f"ElevenLabs: строк к синтезу {len(new)} из {len(todo)}, символов ≈ {chars} (остальное — из кэша)")
     if chars and not yes:
         print("Платный синтез не запущен. Подтвердите: python -m studio voice <проект> --yes")
@@ -186,6 +254,44 @@ def cmd_all(a):
     return 0 if run(proj, fast=a.fast) else 1
 
 
+def cmd_demo(a):
+    """Демо стиля 10–15 с (channel/STYLE.md §14) в projects/<slug>-demo/: стиль, формат, язык и голос — из проекта,
+    сценарий — projects/<slug>/demo/ch01.yaml (иначе заготовка _template/demo), шаблоны проекта — копией."""
+    import yaml
+    src = resolve_project(a.project)
+    if src.name.endswith("-demo"):
+        raise SystemExit("Это уже демо-проект — укажите исходный")
+    script = src / "demo" / "ch01.yaml"
+    if not script.exists():
+        script = STUDIO_ROOT / "projects" / "_template" / "demo" / "ch01.yaml"
+        print(f"⚠️  нет {src.name}/demo/ch01.yaml — беру заготовку {script.relative_to(STUDIO_ROOT)} "
+              "(без метафоры ролика; язык заготовки — en)")
+    dst = src.parent / f"{src.name}-demo"
+    (dst / "script").mkdir(parents=True, exist_ok=True)
+    with open(src / "project.yaml", encoding="utf-8") as f:
+        cfg = yaml.safe_load(f) or {}
+    cfg.update(title=f"style demo: {cfg.get('title', src.name)}", target_duration=None, chapters=["ch01"])
+    with open(dst / "project.yaml", "w", encoding="utf-8") as f:
+        f.write(f"# Сгенерировано `python -m studio demo {src.name}` — правьте исходный проект и demo/ch01.yaml.\n")
+        yaml.safe_dump(cfg, f, allow_unicode=True, sort_keys=False)
+    shutil.copyfile(script, dst / "script" / "ch01.yaml")
+    if (src / "templates").exists():
+        shutil.copytree(src / "templates", dst / "templates", dirs_exist_ok=True)
+    print(f"Демо-проект: {dst}")
+    if a.no_render:
+        return 0
+    a.project, a.fast = str(dst), False
+    rc = cmd_all(a)
+    if not (dst / "build" / "timeline.json").exists():
+        return rc or 1
+    from .timing import load_timeline
+    dur = load_timeline(load(dst))["duration"]
+    if not 10 <= dur <= 15.5:
+        print(f"⚠️  демо {dur:.1f} c — нужно 10–15 c: поправьте текст demo/ch01.yaml")
+    print(f"Демо: {load(dst).final_path()} ({dur:.1f} c) — показать пользователю и ждать утверждения")
+    return rc
+
+
 def cmd_status(a):
     from .status import report
     report(load(resolve_project(a.project)))
@@ -242,6 +348,11 @@ def main(argv=None):
             q.add_argument("--yes", action="store_true", help="подтвердить платный синтез (elevenlabs)")
         if name == "frame":
             q.add_argument("t", type=float); q.add_argument("--out")
+    dm = sp.add_parser("demo", help="демо стиля 10–15 с в projects/<slug>-demo/ (STYLE §14)")
+    dm.add_argument("project")
+    dm.add_argument("--no-render", action="store_true", help="только создать проект демо")
+    dm.add_argument("--workers", type=int)
+    dm.add_argument("--yes", action="store_true", help="подтвердить платный синтез (elevenlabs)")
     a = p.parse_args(argv)
     from .tts import TTSUnavailable
     try:

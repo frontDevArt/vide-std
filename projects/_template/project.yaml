@@ -22,7 +22,9 @@ pauses:                   # секунды
   end: 0.6                # в конце ролика
 
 style:
-  palette: neon           # neon | calm  (studio/gfx.py: PALETTES)
+  palette: neon           # neon | calm | lab  (studio/gfx.py: PALETTES)
+  # mood: lab             # только lab: lab | night | ember | deep | orchid (channel/STYLE.md §14)
+  # overrides: {accent2: "#F78FB3"}   # HEX поверх настроения: glow_cool, glow_warm, accent2
   font: Inter Display
 
 music:

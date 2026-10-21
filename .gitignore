@@ -10,3 +10,4 @@ __pycache__/
 logs/
 output/
 .channel-kit-incoming/
+*.log

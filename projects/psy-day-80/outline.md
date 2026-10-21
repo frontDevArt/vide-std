@@ -59,7 +59,7 @@
 
 ## Сквозные решения (не менять между сессиями)
 - Язык ru, формат horizontal 1920×1080, 30 fps, `target_duration: null` (по речи).
-- Голос: piper `ru_RU-ruslan-medium` — выбор пользователя 2026-10-20 по сэмплам (`voice-samples/`). edge DmitryNeural не работает
+- Голос: piper `ru_RU-ruslan-medium` — выбор пользователя 2026-10-20 по сэмплам (удалены 2026-10-21). edge DmitryNeural не работает
   (NoAudioReceived почти на любой русский текст; `doctor` ложно ✅ — короткая фраза проходит). Модели: `tools/piper-voices/`. `tts.rate: 100` (зафиксировано), `rate_range: [92, 112]`.
 - Палитра `calm`, шрифт Inter Display (фолбэк Arial), HUD часов во всех сценах.
 - Пауза перед каждым фактом = пауза между сценами (`pauses.scene`), каждый факт начинается с новой сцены

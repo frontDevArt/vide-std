@@ -13,7 +13,16 @@ scenes:
     min_duration: 0         # жёсткий минимум длительности сцены, с
     want_duration: 0        # мягкое желание: получает запас времени, если он есть (при target_duration)
     hold: 0                 # секунды после речи (например, финальный титр)
+    voice: {style: 0.4}     # необязательно: акцент голоса на сцену (только elevenlabs, docs/TTS.md)
 ```
+Строка `lines` — строка или словарь с акцентом голоса только на неё:
+```yaml
+    lines:
+      - "So is it true?"
+      - {text: "This one is false.", voice: {style: 0.4, stability: 0.35}}
+```
+`voice` строки ложится поверх `voice` сцены, тот — поверх `tts` в `project.yaml`. Ключи: `stability`, `similarity_boost`,
+`style`, `use_speaker_boost`, `speed`, `model`. Канал: **не больше 1–2 акцентов на ролик** (крючок, вердикт).
 
 ## Биты
 `|` внутри строки делит её на биты, не ломая интонацию:
@@ -97,6 +106,28 @@ class BigQuote(Template):
 `"median of"` — последовательность слов, `"some#2"` — второе вхождение, `3` — номер бита, `"1.5s"` — секунды.
 Таймкоды слов: ElevenLabs и edge дают настоящие; piper/rhvoice — оценка по слогам внутри битов.
 Ненайденное слово — предупреждение в логе `stills`/`render` и запасное время (стаггер).
+
+**Цветовое настроение** (`channel/STYLE.md` §14) — на весь ролик, в `project.yaml`:
+```yaml
+style:
+  palette: lab
+  mood: ember            # lab (по умолчанию) | night | ember | deep | orchid  — gfx.MOODS
+  overrides:             # необязательно, HEX поверх настроения: только glow_cool, glow_warm, accent2
+    accent2: "#F78FB3"
+```
+Меняет только подсветки фона (`glow_cool` сверху-слева, `glow_warm` снизу-справа) и второй акцент `accent2`;
+`bg`, бренд-циан `accent`, цвета вердиктов — никогда. Без `mood` фон пиксель в пиксель прежний.
+`validate` — ошибка, если `accent2` ближе 48 единиц RGB к цвету вердикта (`true/half/myth/noev`) или к `accent`.
+
+**Подсветка главы** — в `script/chNN.yaml` на верхнем уровне: `glow: night` (имя настроения) или
+`glow: {cool: "#5B7CFF", warm: "#9B8CFF"}`. Главы без `glow` — подсветка ролика. Переход на стыке — 1,2 с
+в начале первой сцены новой главы, цвет переносится через `state` (`lab_glow`), поэтому склейка бесшовна.
+`accent2` по главам не меняется.
+
+**Демо стиля:** `python -m studio demo <проект>` → `projects/<slug>-demo/` (стиль, формат, язык, голос — из проекта;
+сценарий — `projects/<slug>/demo/ch01.yaml`, иначе заготовка `projects/_template/demo/ch01.yaml`; свои шаблоны
+`templates/*.py` копируются). Делает `validate → voice → render → assemble → qa`, проверяет 10–15 с.
+`--no-render` — только создать проект; `--yes` — платный синтез ElevenLabs.
 
 **Раскадровка под `lab`** (чек-лист — STYLE §13): шаблон композиции на каждую сцену и смена шаблона от сцены
 к сцене; новый элемент не реже раза в 2,5 с; разрыв ритма (`lab_full_number`, `lab_chapter`, вердикт, «Нейрон»)

@@ -9,6 +9,16 @@ DIGITS = {"0": "ноль", "1": "один", "2": "два", "3": "три", "4": "
           "6": "шесть", "7": "семь", "8": "восемь", "9": "девять"}
 
 
+def line_text(line) -> str:
+    """Строка сценария: "текст" или {text: "текст", voice: {...}} -> текст."""
+    return str(line.get("text", "")) if isinstance(line, dict) else str(line)
+
+
+def line_voice(line) -> dict:
+    """Переопределение голоса строки ({stability, style, speed, …}) или {}."""
+    return dict(line.get("voice") or {}) if isinstance(line, dict) else {}
+
+
 def segments(line: str):
     """'Каждый свайп: | смешное видео, | история.' -> ['Каждый свайп:', 'смешное видео,', 'история.']"""
     return [s.strip() for s in line.split("|") if s.strip()]
@@ -20,9 +30,13 @@ def tts_text(line: str) -> str:
     return re.sub(r"\s+", " ", t).strip()
 
 
+AUDIO_TAG = re.compile(r"\[[a-z][a-z ]*\]")  # теги эмоций eleven_v3: [sighs], [whispers] — звучат, но не видны
+
+
 def display_text(s: str) -> str:
-    """Что показываем в субтитрах: без разметки ударений и акцентов."""
-    return re.sub(r"\s+", " ", s.replace("+", "").replace("*", "").replace("|", " ")).strip()
+    """Что показываем в субтитрах: без разметки ударений, акцентов и тегов эмоций."""
+    s = AUDIO_TAG.sub(" ", s.replace("+", "").replace("*", "").replace("|", " "))
+    return re.sub(r"\s+", " ", s).strip()
 
 
 def weight(s: str) -> float:

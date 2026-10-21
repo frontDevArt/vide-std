@@ -98,6 +98,11 @@ def load(root) -> Project:
         from .tts import load_env
         load_env()  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
         cfg["tts"]["voice"] = os.environ.get("ELEVENLABS_VOICE_ID", "")
+    if cfg["tts"]["backend"] == "elevenlabs" and not cfg["tts"].get("model"):
+        from .tts import load_env
+        load_env()  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
+        if os.environ.get("ELEVENLABS_MODEL_ID", "").strip():
+            cfg["tts"]["model"] = os.environ["ELEVENLABS_MODEL_ID"].strip()
     if cfg["tts"].get("voice") in (None, "auto"):
         from .lang import default_voice
         v = default_voice(cfg["language"], cfg["tts"]["backend"])
