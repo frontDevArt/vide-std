@@ -1,0 +1,515 @@
+<title>Myth on Trial Scene</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Unbounded:wght@700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one 16:9 "video frame" rendered frame-by-frame from a timeline, transport bar under it.
+   Single dark look on purpose: this is a video frame, it must look identical on any host theme. */
+:root{
+  color-scheme: dark;
+  --bg:#0A0D14; --bg-2:#111726; --page:#07090E;
+  --accent:#3DD6F5; --accent-2:#9B8CFF;
+  --text:#EEF2F8; --dim:#8B95A7; --line:rgba(255,255,255,.10);
+  --true:#34D399; --half:#FBBF24; --myth:#F2545B; --noev:#8B95A7;
+  --f-head:"Manrope", "Segoe UI", system-ui, sans-serif;
+  --f-num:"Unbounded", "Manrope", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+html,body{background:var(--page);color:var(--text)}
+[hidden]{display:none!important}
+body{font-family:var(--f-head);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+header.top h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin:0}
+header.top p{margin:0;color:var(--dim);font-size:13px;font-family:var(--f-mono)}
+
+/* ---------- viewport + stage ---------- */
+.viewport{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;overflow:hidden;border-radius:14px;background:var(--bg);box-shadow:0 0 0 1px var(--line), 0 30px 80px rgba(0,0,0,.5)}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--bg)}
+#bg{position:absolute;inset:0;width:1920px;height:1080px}
+#world{position:absolute;inset:0;transform-origin:50% 50%}
+.abs{position:absolute;will-change:transform,opacity,filter}
+svg.lines{position:absolute;inset:0;width:1920px;height:1080px;overflow:visible}
+
+/* glass card */
+.card{background:rgba(17,23,38,.72);border:1px solid var(--line);border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card.focusable{position:absolute}
+.card.focusable::after{content:"";position:absolute;inset:-1px;border-radius:18px;border:1.5px solid var(--accent);opacity:var(--act,0);box-shadow:0 0 28px rgba(61,214,245,.35);pointer-events:none}
+
+.pill{display:inline-flex;align-items:center;gap:14px;height:56px;padding:0 26px;border-radius:999px;border:1px solid var(--line);background:rgba(17,23,38,.7);font-weight:800;font-size:24px;letter-spacing:.08em}
+.pill .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+.mono{font-family:var(--f-mono);font-weight:500}
+.pill .mono{color:var(--dim);font-size:20px;letter-spacing:.02em}
+
+#steps{display:flex;gap:28px;font-family:var(--f-mono);font-size:20px;color:var(--dim);letter-spacing:.06em}
+#steps span{display:flex;align-items:center;gap:10px;transition:none}
+#steps i{display:block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--dim)}
+#steps .on{color:var(--text)}
+#steps .on i{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px var(--accent)}
+
+/* claim */
+#claim{left:96px;top:184px;width:780px;padding:30px 36px}
+#claim .lab{font-family:var(--f-mono);font-size:20px;color:var(--dim);letter-spacing:.08em}
+#claim .txt{font-size:46px;font-weight:800;line-height:1.15;margin-top:12px;text-wrap:balance}
+#claim .txt b{color:var(--text);background:linear-gradient(transparent 62%, rgba(155,140,255,.35) 62%)}
+#claim .meta{margin-top:14px;font-family:var(--f-mono);font-size:19px;color:var(--dim)}
+#qmark{right:-26px;top:-26px;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-num);font-weight:800;font-size:38px;color:var(--noev);border:3px solid var(--noev);background:var(--bg)}
+
+/* hero numbers */
+.hero{left:120px;top:470px;transform-origin:0 0}
+.hero .num{font-family:var(--f-num);font-weight:800;font-size:300px;line-height:.9;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hero .cap{margin-top:18px;font-weight:800;font-size:34px;letter-spacing:.08em}
+.hero .cap small{display:block;margin-top:6px;font-family:var(--f-mono);font-weight:500;font-size:20px;color:var(--dim);letter-spacing:.02em}
+#n21 .num{color:var(--text);text-shadow:0 0 40px rgba(238,242,248,.15)}
+#n66 .num{color:var(--accent);text-shadow:0 0 60px rgba(61,214,245,.45)}
+#strike{position:absolute;left:-14px;top:128px;height:14px;width:520px;background:var(--myth);border-radius:8px;transform-origin:0 50%;box-shadow:0 0 22px rgba(242,84,91,.6)}
+
+/* right stack cards */
+.rc{left:1100px;width:724px;height:120px;display:flex;align-items:center;gap:24px;padding:0 26px}
+.tile{flex:none;width:72px;height:72px;border-radius:14px;background:var(--bg-2);border:1px solid var(--line);display:grid;place-items:center}
+.tile svg{width:38px;height:38px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rc .t{font-size:32px;font-weight:800;letter-spacing:.01em}
+.rc .s{font-family:var(--f-mono);font-size:19px;color:var(--dim);margin-top:6px}
+.chip{display:inline-block;padding:3px 12px;border-radius:999px;font-family:var(--f-mono);font-size:17px;border:1.5px solid currentColor;margin-left:10px;vertical-align:4px}
+
+/* study card */
+#study{left:1100px;top:184px;width:724px;padding:24px 28px}
+#study .row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#study .tag{font-family:var(--f-mono);font-size:19px;color:var(--bg);background:var(--accent);padding:4px 12px;border-radius:8px;letter-spacing:.06em}
+#study .who{font-size:30px;font-weight:800;margin-top:14px}
+#study .where{font-family:var(--f-mono);font-size:19px;color:var(--dim);margin-top:6px}
+.meter{display:flex;gap:6px;align-items:center}
+.meter i{display:block;width:30px;height:10px;border-radius:3px;background:rgba(255,255,255,.12)}
+.meter i.f{background:var(--accent);box-shadow:0 0 10px rgba(61,214,245,.5)}
+.meter span{font-family:var(--f-mono);font-size:16px;color:var(--dim);margin-right:8px}
+
+/* crowd */
+#crowd{left:1100px;top:420px;width:724px;height:300px}
+.person{position:absolute;width:30px;height:36px}
+.person svg{width:100%;height:100%;display:block}
+.person path,.person circle{fill:var(--text)}
+.ptag{position:absolute;font-family:var(--f-mono);font-size:18px;padding:4px 10px;border-radius:8px;white-space:nowrap;transform-origin:50% 100%}
+
+/* range */
+#range{left:1100px;top:752px;width:724px;height:90px}
+#track{position:absolute;left:0;top:30px;height:4px;width:724px;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transform-origin:0 50%}
+.rl{position:absolute;top:48px;font-family:var(--f-mono);font-size:19px;color:var(--dim)}
+#mark{position:absolute;top:14px;width:36px;height:36px;margin-left:-18px;border-radius:50%;background:var(--bg);border:4px solid var(--accent);box-shadow:0 0 20px rgba(61,214,245,.6)}
+#marklab{position:absolute;top:-30px;font-family:var(--f-mono);font-size:19px;color:var(--accent);white-space:nowrap;transform:translateX(-50%)}
+
+/* source chip */
+.src{left:96px;top:920px;height:44px;display:flex;align-items:center;gap:12px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:rgba(10,13,20,.7);font-family:var(--f-mono);font-size:18px;color:var(--dim)}
+.src b{color:var(--accent);font-weight:500;letter-spacing:.06em}
+
+/* verdict */
+#flash{position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 48%, rgba(242,84,91,.55), rgba(242,84,91,0) 70%);opacity:0;pointer-events:none}
+#stamp{left:960px;top:500px;display:flex;flex-direction:column;align-items:center;gap:22px}
+#stamp .box{position:relative;padding:14px 56px 22px;border:7px solid var(--myth);border-radius:26px;background:rgba(10,13,20,.86);box-shadow:0 0 0 10px rgba(10,13,20,.86), 0 0 0 13px rgba(242,84,91,.45), 0 0 90px rgba(242,84,91,.45)}
+#stamp .word{font-family:var(--f-num);font-weight:800;font-size:170px;line-height:1;color:var(--myth);letter-spacing:.04em}
+#stamp .sub{font-family:var(--f-mono);font-size:26px;color:var(--text);background:rgba(10,13,20,.86);padding:10px 22px;border-radius:10px;border:1px solid var(--line)}
+#stamp .sub em{font-style:normal;color:var(--accent)}
+
+/* mascot */
+#neuron{left:830px;top:690px;width:170px;height:170px;transform-origin:50% 100%}
+
+/* subtitles (not affected by camera drift) */
+#sub{position:absolute;left:0;right:0;top:996px;text-align:center;font-weight:700;font-size:36px;letter-spacing:.005em}
+#sub span{display:inline-block;margin:0 .14em;opacity:.38}
+#sub span.on{opacity:1}
+#sub .box{display:inline-block;padding:8px 22px;border-radius:12px;background:rgba(5,7,11,.62)}
+
+/* play overlay */
+#cover{position:absolute;inset:0;display:grid;place-items:center;background:rgba(7,9,14,.35);border:0;cursor:pointer;color:var(--text);font:inherit}
+#cover span{display:flex;align-items:center;gap:12px;padding:14px 26px;border-radius:999px;background:rgba(17,23,38,.9);border:1px solid var(--line);font-weight:800;font-size:16px;letter-spacing:.06em}
+#cover span::before{content:"";width:0;height:0;border-left:14px solid var(--accent);border-top:9px solid transparent;border-bottom:9px solid transparent}
+#cover:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+
+/* transport */
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.bar button{font:inherit;font-weight:700;font-size:14px;color:var(--text);background:var(--bg-2);border:1px solid var(--line);border-radius:9px;padding:9px 14px;cursor:pointer;min-width:44px}
+.bar button:hover{border-color:rgba(61,214,245,.5)}
+.bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.bar input[type=range]{flex:1 1 220px;min-width:0;accent-color:var(--accent)}
+#tc{font-family:var(--f-mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.note{padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+.note h2{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.note p{margin:0;color:var(--dim);font-size:14px;line-height:1.5}
+@media (max-width:520px){ #tc{min-width:0} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Myth on Trial · демо-сцена стиля</h1>
+    <p>1920×1080 · 30 fps · 15 с · кадр считается из времени</p>
+  </header>
+
+  <div class="viewport" id="viewport">
+    <div class="stage" id="stage" aria-label="Демо-сцена: миф о 21 дне на формирование привычки">
+      <canvas id="bg" width="1920" height="1080"></canvas>
+      <div id="world">
+        <svg class="lines" id="lines" viewBox="0 0 1920 1080" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#3DD6F5" stop-opacity=".15"/>
+              <stop offset="1" stop-color="#3DD6F5" stop-opacity=".9"/>
+            </linearGradient>
+          </defs>
+          <path id="p1" d="M 700 600 C 900 600, 920 390, 1100 390" fill="none" stroke="url(#lg)" stroke-width="2.5"/>
+          <path id="p2" d="M 700 600 C 900 600, 920 538, 1100 538" fill="none" stroke="url(#lg)" stroke-width="2.5"/>
+          <path id="p3" d="M 700 600 C 900 600, 920 686, 1100 686" fill="none" stroke="url(#lg)" stroke-width="2.5"/>
+          <circle id="d1" r="6" fill="#3DD6F5"/><circle id="d2" r="6" fill="#3DD6F5"/><circle id="d3" r="6" fill="#3DD6F5"/>
+          <circle id="k1" r="7" cx="1100" cy="390" fill="#0A0D14" stroke="#3DD6F5" stroke-width="3"/>
+          <circle id="k2" r="7" cx="1100" cy="538" fill="#0A0D14" stroke="#3DD6F5" stroke-width="3"/>
+          <circle id="k3" r="7" cx="1100" cy="686" fill="#0A0D14" stroke="#3DD6F5" stroke-width="3"/>
+        </svg>
+
+        <div class="abs" id="eyebrow" style="left:96px;top:96px"><div class="pill"><span class="dot"></span>MYTH ON TRIAL <span class="mono">№ 07</span></div></div>
+        <div class="abs" id="steps" style="right:96px;top:112px"><span id="st1"><i></i>CLAIM</span><span id="st2"><i></i>EVIDENCE</span><span id="st3"><i></i>VERDICT</span></div>
+
+        <div class="abs card" id="claim">
+          <div class="lab">VIRAL CLAIM</div>
+          <div class="txt">“It takes <b>21 days</b> to build a habit.”</div>
+          <div class="meta">repeated in countless posts and self-help books</div>
+          <div class="abs" id="qmark">?</div>
+        </div>
+
+        <div class="abs hero" id="n21"><div class="num" id="n21v">21</div><div class="cap">DAYS<small>the popular claim</small></div><div id="strike"></div></div>
+        <div class="abs hero" id="n66"><div class="num" id="n66v">66</div><div class="cap">MEDIAN DAYS<small>to make a habit automatic</small></div></div>
+
+        <div class="abs card focusable rc" id="c1" style="top:330px">
+          <div class="tile"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 8h6"/></svg></div>
+          <div><div class="t">A 1960 self-help book</div><div class="s">a surgeon’s observation of his patients</div></div>
+        </div>
+        <div class="abs card focusable rc" id="c2" style="top:478px">
+          <div class="tile"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/></svg></div>
+          <div><div class="t">Retold as a hard rule</div><div class="s">“at least 21 days” became “exactly 21”</div></div>
+        </div>
+        <div class="abs card focusable rc" id="c3" style="top:626px">
+          <div class="tile"><svg viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/></svg></div>
+          <div><div class="t">Tested data <span class="chip" style="color:var(--noev)">NONE</span></div><div class="s">no experiment behind the number</div></div>
+        </div>
+
+        <div class="abs card focusable" id="study">
+          <div class="row"><span class="tag">STUDY</span><div class="meter"><span>EVIDENCE</span><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></div></div>
+          <div class="who">Lally, van Jaarsveld, Potts &amp; Wardle</div>
+          <div class="where">Eur. J. of Social Psychology · 2010 · n = 96</div>
+        </div>
+
+        <div class="abs" id="crowd"></div>
+
+        <div class="abs" id="range">
+          <div id="track"></div>
+          <div class="rl" id="rlL" style="left:0">18 days</div>
+          <div class="rl" id="rlR" style="right:0">~254 days</div>
+          <div id="mark"></div><div id="marklab">66 · median</div>
+        </div>
+
+        <div class="abs src" id="src1"><b>CLAIM ORIGIN</b> Maltz, Psycho-Cybernetics, 1960</div>
+        <div class="abs src" id="src2"><b>SOURCE</b> Lally et al. (2010), Eur. J. of Social Psychology</div>
+
+        <div class="abs" id="neuron" aria-hidden="true">
+          <svg viewBox="0 0 170 170">
+            <g stroke="#3DD6F5" stroke-width="5" stroke-linecap="round" fill="none" opacity=".9">
+              <path d="M85 40 L85 12"/><path d="M48 58 L24 38"/><path d="M122 58 L146 38"/>
+              <circle cx="85" cy="10" r="5" fill="#3DD6F5"/><circle cx="22" cy="36" r="5" fill="#3DD6F5"/><circle cx="148" cy="36" r="5" fill="#3DD6F5"/>
+            </g>
+            <circle cx="85" cy="100" r="58" fill="#141C2E" stroke="#3DD6F5" stroke-width="4"/>
+            <g id="eyes">
+              <circle cx="64" cy="96" r="15" fill="#EEF2F8"/><circle cx="106" cy="96" r="15" fill="#EEF2F8"/>
+              <circle id="pl" cx="64" cy="96" r="7" fill="#0A0D14"/><circle id="pr" cx="106" cy="96" r="7" fill="#0A0D14"/>
+            </g>
+            <ellipse id="mouth" cx="85" cy="130" rx="9" ry="7" fill="#0A0D14"/>
+          </svg>
+        </div>
+      </div>
+
+      <div id="flash"></div>
+      <div class="abs" id="stamp">
+        <div class="box"><div class="word">MYTH</div></div>
+        <div class="sub">21 days → median <em>66</em> · range 18–254</div>
+      </div>
+      <div id="sub"><div class="box" id="subbox"></div></div>
+    </div>
+    <button id="cover" type="button" aria-label="Проиграть сцену с начала"><span>PLAY SCENE</span></button>
+  </div>
+
+  <div class="bar" role="group" aria-label="Управление воспроизведением">
+    <button id="play" type="button" aria-label="Пауза или воспроизведение">▶</button>
+    <button id="restart" type="button">С начала</button>
+    <input id="scrub" type="range" min="0" max="15" step="0.0333" value="12.6" aria-label="Позиция в сцене">
+    <span id="tc">12.60 s · кадр 378</span>
+    <button id="snd" type="button" aria-pressed="false">Звук: выкл</button>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h2>Сборка под голос</h2><p>Каждый элемент появляется на своей фразе субтитров. Слово в субтитрах — это триггер анимации.</p></div>
+    <div class="note"><h2>Морфинг вместо склеек</h2><p>«21» не исчезает: его зачёркивают и уводят в сторону, а на его месте доматывается «66».</p></div>
+    <div class="note"><h2>Один фокус</h2><p>Подсвечен только текущий элемент, остальные приглушены. На вердикте гаснет всё, кроме штампа.</p></div>
+    <div class="note"><h2>Фирменное</h2><p>Карточка исследования с силой доказательств, толпа равна выборке (96 человек), штамп вердикта, персонаж «Нейрон».</p></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const T = 15, FPS = 30;
+  const $ = id => document.getElementById(id);
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const P = (t, s, d) => clamp((t - s) / d);
+  const eOut = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+  const eInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const eIn = x => x * x * x;
+  const spring = x => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(x * Math.PI * 2.2);
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const bob = (t, ph) => Math.sin(t * Math.PI * 2 / 5 + ph) * 3;
+  // smooth 0..1 window for "active / in focus" states
+  const win = (t, s, e, f = .3) => eInOut(Math.min(P(t, s, f), 1 - P(t, e - f, f)));
+
+  function put(el, o, x = 0, y = 0, s = 1, b = 0, r = 0) {
+    el.style.opacity = o.toFixed(3);
+    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${s.toFixed(4)}) rotate(${r.toFixed(2)}deg)`;
+    el.style.filter = b > .1 ? `blur(${b.toFixed(1)}px)` : 'none';
+  }
+  // standard entrance (0.45s ease-out-expo, 24px, blur 8→0, scale .96→1) + optional exit (0.3s ease-in)
+  function show(el, t, s, { from = 'bottom', exit = null, dim = 1, ph = 0, extraY = 0, extraX = 0, sc = 1 } = {}) {
+    const k = eOut(P(t, s, .45));
+    const xk = exit == null ? 0 : eIn(P(t, exit, .3));
+    const o = k * (1 - xk) * dim;
+    const dx = from === 'right' ? (1 - k) * 32 : 0;
+    const dy = from === 'bottom' ? (1 - k) * 24 : 0;
+    put(el, o, dx + extraX, dy + xk * 12 + bob(t, ph) * k + extraY, (.96 + .04 * k) * sc, (1 - k) * 8 + xk * 4);
+    return k;
+  }
+
+  /* ---------- background canvas ---------- */
+  const cv = $('bg'), cx = cv.getContext('2d');
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const dust = Array.from({ length: 34 }, () => ({ x: rnd() * 1920, y: rnd() * 1080, v: 8 + rnd() * 12, r: .8 + rnd() * 1.4, a: .18 + rnd() * .22 }));
+  function drawBg(t, camX, camY) {
+    cx.fillStyle = '#0A0D14'; cx.fillRect(0, 0, 1920, 1080);
+    const br = 1 + .04 * Math.sin(t * Math.PI * 2 / 7);
+    let g = cx.createRadialGradient(380 + camX + 30 * Math.sin(t / 3), 180 + camY, 0, 380 + camX, 180 + camY, 950);
+    g.addColorStop(0, `rgba(61,214,245,${(.17 * br).toFixed(3)})`); g.addColorStop(1, 'rgba(61,214,245,0)');
+    cx.fillStyle = g; cx.fillRect(0, 0, 1920, 1080);
+    g = cx.createRadialGradient(1620 + camX, 940 + camY + 20 * Math.cos(t / 4), 0, 1620 + camX, 940 + camY, 900);
+    g.addColorStop(0, `rgba(155,140,255,${(.15 * (2 - br)).toFixed(3)})`); g.addColorStop(1, 'rgba(155,140,255,0)');
+    cx.fillStyle = g; cx.fillRect(0, 0, 1920, 1080);
+    // lab grid, bottom 40%, fading toward the centre
+    const top = 640, gx = ((camX % 48) + 48) % 48;
+    const vg = cx.createLinearGradient(0, top, 0, 1080);
+    vg.addColorStop(0, 'rgba(255,255,255,0)'); vg.addColorStop(1, 'rgba(255,255,255,.065)');
+    cx.strokeStyle = vg; cx.lineWidth = 1; cx.beginPath();
+    for (let x = gx; x <= 1920; x += 48) { cx.moveTo(x + .5, top); cx.lineTo(x + .5, 1080); }
+    cx.stroke();
+    for (let y = top + 48; y <= 1080; y += 48) {
+      cx.strokeStyle = `rgba(255,255,255,${(.065 * (y - top) / 440).toFixed(3)})`;
+      cx.beginPath(); cx.moveTo(0, y + .5); cx.lineTo(1920, y + .5); cx.stroke();
+    }
+    for (const d of dust) {
+      const y = ((d.y - t * d.v) % 1080 + 1080) % 1080;
+      cx.fillStyle = `rgba(214,236,255,${d.a})`; cx.beginPath(); cx.arc(d.x + camX * .5, y, d.r, 0, 6.283); cx.fill();
+    }
+  }
+
+  /* ---------- crowd: n = 96, 16 × 6 ---------- */
+  const crowd = $('crowd'); const people = [];
+  const icon = '<svg viewBox="0 0 30 36"><circle cx="15" cy="9" r="7.5"/><path d="M2 36v-6c0-7 6-12 13-12s13 5 13 12v6z"/></svg>';
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 16; c++) {
+    const el = document.createElement('div'); el.className = 'person'; el.innerHTML = icon;
+    el.style.left = (c * 45.3) + 'px'; el.style.top = (r * 50) + 'px';
+    crowd.appendChild(el); people.push({ el, r, c, d: c * .045 + r * .03 });
+  }
+  const P18 = people[1 * 16 + 3], P254 = people[4 * 16 + 13];
+  const tag18 = document.createElement('div'); tag18.className = 'ptag'; tag18.textContent = '18 days';
+  tag18.style.cssText += 'color:#0A0D14;background:#3DD6F5;left:' + (3 * 45.3 - 26) + 'px;top:4px';
+  const tag254 = document.createElement('div'); tag254.className = 'ptag'; tag254.textContent = '~254 days';
+  tag254.style.cssText += 'color:#0A0D14;background:#9B8CFF;left:' + (13 * 45.3 - 40) + 'px;top:154px';
+  crowd.append(tag18, tag254);
+
+  /* ---------- subtitles (stand-in for the voiceover) ---------- */
+  const lines = [
+    { s: 0.5, e: 2.6, txt: 'Everyone says it takes 21 days to build a habit.' },
+    { s: 2.6, e: 5.4, txt: 'The number comes from a 1960 self-help book, not from an experiment.' },
+    { s: 5.6, e: 8.0, txt: 'In 2010, researchers followed 96 people building a new daily habit.' },
+    { s: 8.0, e: 10.6, txt: 'It took a median of 66 days. Some needed 18. Some, about 254.' },
+    { s: 10.9, e: 14.3, txt: 'Verdict: myth. And missing a single day barely mattered.' }
+  ];
+  const subbox = $('subbox'); let curLine = -1, spans = [];
+  function drawSub(t) {
+    let i = lines.findIndex(l => t >= l.s && t < l.e);
+    if (i !== curLine) {
+      curLine = i;
+      subbox.innerHTML = i < 0 ? '' : lines[i].txt.split(' ').map(w => `<span>${w}</span>`).join('');
+      spans = [...subbox.children];
+      subbox.style.visibility = i < 0 ? 'hidden' : 'visible';
+    }
+    if (i < 0) return;
+    const l = lines[i], p = clamp((t - l.s) / (l.e - l.s - .35));
+    const n = Math.floor(p * spans.length + .999);
+    spans.forEach((s, j) => s.classList.toggle('on', j < n));
+  }
+
+  /* ---------- lines ---------- */
+  const paths = [1, 2, 3].map(i => {
+    const p = $('p' + i), L = p.getTotalLength(); p.style.strokeDasharray = L;
+    return { p, L, d: $('d' + i), k: $('k' + i) };
+  });
+
+  const E = {}; ['eyebrow', 'steps', 'claim', 'qmark', 'n21', 'n66', 'n21v', 'n66v', 'strike', 'c1', 'c2', 'c3', 'study', 'crowd', 'range', 'track', 'mark', 'marklab', 'rlL', 'rlR', 'src1', 'src2', 'neuron', 'flash', 'stamp', 'world', 'sub', 'st1', 'st2', 'st3', 'pl', 'pr', 'mouth'].forEach(id => E[id] = $(id));
+
+  function render(t) {
+    // camera drift: content 100→102.5 %, background parallax at 0.5×
+    const dr = t / T, camX = -14 * dr, camY = -6 * dr;
+    const end = eIn(P(t, 14.4, .6));                      // loop fade
+    E.world.style.transform = `translate(${camX}px,${camY}px) scale(${1 + .025 * dr})`;
+    E.world.style.opacity = 1 - end;
+    drawBg(t, camX * .5, camY * .5);
+
+    // verdict dims everything else to 32 %
+    const V = eInOut(P(t, 10.75, .35)), vd = lerp(1, .32, V);
+
+    show(E.eyebrow, t, .2, { ph: 1 });
+    show(E.steps, t, .35, { from: 'right', ph: 2 });
+    E.st1.classList.toggle('on', t < 5.5); E.st2.classList.toggle('on', t >= 5.5 && t < 10.8); E.st3.classList.toggle('on', t >= 10.8);
+
+    // CLAIM
+    const claimFocus = win(t, .6, 1.5);
+    show(E.claim, t, .6, { dim: lerp(.62, 1, claimFocus) * vd * (t > 5.5 ? lerp(1, .8, P(t, 5.5, .3)) : 1), ph: .4 });
+    { const k = spring(P(t, 1.15, .6)); put(E.qmark, clamp(k * 1.5), 0, 0, lerp(1.6, 1, k), 0, lerp(-20, 0, k)); }
+
+    // 21 — counter, then struck through and moved aside (morph)
+    { const k = eOut(P(t, 1.4, .45));
+      const heroFocus = win(t, 1.4, 2.6);
+      const m = eInOut(P(t, 8.35, .55));               // morph away
+      E.n21v.textContent = Math.round(21 * eOut(P(t, 1.4, 1.0)));
+      const dim = lerp(.65, 1, Math.max(heroFocus, win(t, 7.95, 8.4))) * lerp(1, .55, m) * vd;
+      put(E.n21, k * dim, lerp(0, 520, m), (1 - k) * 24 + bob(t, 2) * k + lerp(0, 10, m), (.96 + .04 * k) * lerp(1, .32, m), (1 - k) * 8);
+      E.n21.querySelector('.cap').style.opacity = (1 - m).toFixed(3);
+      E.strike.style.transform = `scaleX(${eInOut(P(t, 8.0, .3)).toFixed(3)})`;
+    }
+    // 66 — rolls up from 21 to 66 where the 21 stood
+    { const k = show(E.n66, t, 8.45, { dim: lerp(.7, 1, win(t, 8.45, 9.3)) * (V > 0 ? lerp(1, .55, V) : 1), ph: 3 });
+      E.n66v.textContent = Math.round(lerp(21, 66, eOut(P(t, 8.45, 1.0)))); }
+
+    // right stack + connector lines (scene 1)
+    const cs = [2.6, 3.4, 4.3];
+    [E.c1, E.c2, E.c3].forEach((el, i) => {
+      const act = win(t, cs[i], i < 2 ? cs[i + 1] : 5.4);
+      el.style.setProperty('--act', act.toFixed(3));
+      show(el, t, cs[i], { from: 'right', exit: 5.45 + i * .05, dim: lerp(.62, 1, act), ph: i });
+      const pth = paths[i], dk = eInOut(P(t, cs[i] - .25, .6)), xk = eIn(P(t, 5.4, .3));
+      pth.p.style.strokeDashoffset = (pth.L * (1 - dk)).toFixed(1);
+      pth.p.style.opacity = (1 - xk) * lerp(.5, 1, act);
+      pth.k.style.opacity = (dk >= 1 ? 1 : 0) * (1 - xk);
+      const tr = ((t - cs[i] - .35) / 1.2) % 1;
+      if (dk >= 1 && xk < 1) { const pt = pth.p.getPointAtLength(pth.L * tr); pth.d.setAttribute('cx', pt.x); pth.d.setAttribute('cy', pt.y); pth.d.style.opacity = Math.sin(tr * Math.PI) * (1 - xk); }
+      else pth.d.style.opacity = 0;
+    });
+
+    // EVIDENCE
+    { const act = win(t, 5.7, 6.3);
+      E.study.style.setProperty('--act', act.toFixed(3));
+      show(E.study, t, 5.7, { from: 'right', dim: lerp(.7, 1, act) * vd, ph: 1.7 }); }
+    put(E.crowd, vd, 0, 0, 1, 0);
+    for (const p of people) {
+      const k = eOut(P(t, 6.0 + p.d, .3));
+      let col = '#EEF2F8', s = 1, o = k * .72;
+      if (p === P18) { const h = eOut(P(t, 9.55, .35)); if (h > 0) { col = '#3DD6F5'; s = lerp(1, 1.35, h); o = lerp(o, 1, h); } }
+      if (p === P254) { const h = eOut(P(t, 9.95, .35)); if (h > 0) { col = '#9B8CFF'; s = lerp(1, 1.35, h); o = lerp(o, 1, h); } }
+      p.el.style.opacity = o.toFixed(3);
+      p.el.style.transform = `translateY(${((1 - k) * 12).toFixed(1)}px) scale(${s.toFixed(3)})`;
+      p.el.firstChild.style.fill = col; p.el.querySelectorAll('path,circle').forEach(n => n.style.fill = col);
+    }
+    { const a = spring(P(t, 9.55, .5)), b = spring(P(t, 9.95, .5));
+      tag18.style.opacity = clamp(a * 1.4); tag18.style.transform = `translateY(-34px) scale(${lerp(.6, 1, a)})`;
+      tag254.style.opacity = clamp(b * 1.4); tag254.style.transform = `translateY(-34px) scale(${lerp(.6, 1, b)})`; }
+
+    // range bar
+    { const k = eInOut(P(t, 9.15, .55)), act = win(t, 9.15, 10.75);
+      put(E.range, (k > 0 ? 1 : 0) * lerp(.7, 1, act) * vd, 0, 0, 1, 0);
+      E.track.style.transform = `scaleX(${k.toFixed(3)})`;
+      E.rlL.style.opacity = eOut(P(t, 9.2, .3)); E.rlR.style.opacity = eOut(P(t, 9.55, .3));
+      const mk = spring(P(t, 9.5, .5)), mx = 724 * (66 - 18) / (254 - 18);
+      E.mark.style.left = mx + 'px'; E.marklab.style.left = mx + 'px';
+      E.mark.style.opacity = clamp(mk * 1.5); E.mark.style.transform = `scale(${lerp(.3, 1, mk)})`;
+      E.marklab.style.opacity = eOut(P(t, 9.65, .3)); }
+
+    // source chips swap at the scene change
+    show(E.src1, t, .9, { exit: 5.5, ph: .2 });
+    show(E.src2, t, 5.85, { dim: vd, ph: .2 });
+
+    // VERDICT
+    { const f = P(t, 10.85, .7); E.flash.style.opacity = (Math.sin(f * Math.PI) * .9 * (1 - end)).toFixed(3); }
+    { const k = spring(P(t, 10.9, .55)), sk = eOut(P(t, 11.35, .45));
+      E.stamp.style.opacity = (clamp(k * 2) * (1 - end)).toFixed(3);
+      E.stamp.style.transform = `translate(-50%,-50%) scale(${lerp(1.45, 1, k).toFixed(4)}) rotate(${lerp(-14, -6, k).toFixed(2)}deg)`;
+      E.stamp.lastElementChild.style.opacity = sk; E.stamp.lastElementChild.style.transform = `translateY(${(1 - sk) * 16}px) rotate(6deg)`; }
+
+    // mascot reacts: pops in surprised, then blinks
+    { const k = spring(P(t, 12.0, .6));
+      put(E.neuron, clamp(k * 1.6), 0, bob(t, 4) * k, lerp(.4, 1, k), 0, Math.sin(t * 2.2) * 3 * k);
+      const sur = eOut(P(t, 12.1, .3)) * (1 - eInOut(P(t, 13.4, .4)));
+      const blink = t > 13.0 && t < 13.12 ? .1 : 1;
+      ['pl', 'pr'].forEach(id => { E[id].setAttribute('r', (lerp(7, 4, sur)).toFixed(2)); });
+      $('eyes').style.transform = `scaleY(${blink})`; $('eyes').style.transformOrigin = '85px 96px';
+      E.mouth.setAttribute('ry', lerp(3, 10, sur).toFixed(2)); E.mouth.setAttribute('rx', lerp(12, 8, sur).toFixed(2)); }
+
+    E.sub.style.opacity = 1 - end;
+    drawSub(t);
+  }
+
+  /* ---------- sound design (synthesised, starts only after a click) ---------- */
+  let ac = null, soundOn = false;
+  function noise(dur) { const b = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const s = ac.createBufferSource(); s.buffer = b; return s; }
+  function env(g, a, peak, rel) { const n = ac.currentTime; g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(peak, n + a); g.gain.exponentialRampToValueAtTime(0.0001, n + a + rel); }
+  const sfx = {
+    pop() { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(900, ac.currentTime); o.frequency.exponentialRampToValueAtTime(480, ac.currentTime + .07); env(g, .005, .12, .1); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .15); },
+    tick() { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'triangle'; o.frequency.value = 2100; env(g, .002, .045, .03); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .06); },
+    whoosh() { const s = noise(.6), f = ac.createBiquadFilter(), g = ac.createGain(); f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(300, ac.currentTime); f.frequency.exponentialRampToValueAtTime(2400, ac.currentTime + .45); env(g, .2, .1, .35); s.connect(f).connect(g).connect(ac.destination); s.start(); },
+    riser() { const s = noise(.6), f = ac.createBiquadFilter(), g = ac.createGain(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, ac.currentTime); f.frequency.exponentialRampToValueAtTime(3600, ac.currentTime + .5); g.gain.setValueAtTime(.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(.09, ac.currentTime + .48); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + .55); s.connect(f).connect(g).connect(ac.destination); s.start(); },
+    thud() { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(150, ac.currentTime); o.frequency.exponentialRampToValueAtTime(48, ac.currentTime + .28); env(g, .004, .4, .35); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .45);
+      const s = noise(.15), f = ac.createBiquadFilter(), g2 = ac.createGain(); f.type = 'lowpass'; f.frequency.value = 900; env(g2, .002, .12, .1); s.connect(f).connect(g2).connect(ac.destination); s.start(); },
+    swish() { const s = noise(.3), f = ac.createBiquadFilter(), g = ac.createGain(); f.type = 'highpass'; f.frequency.value = 2500; env(g, .02, .06, .18); s.connect(f).connect(g).connect(ac.destination); s.start(); }
+  };
+  const events = [[.2, 'pop'], [.6, 'pop'], [1.15, 'pop'], [2.6, 'pop'], [3.4, 'pop'], [4.3, 'pop'], [5.4, 'whoosh'], [5.7, 'pop'], [6.0, 'pop'], [8.0, 'swish'], [9.15, 'pop'], [9.55, 'tick'], [9.95, 'tick'], [10.35, 'riser'], [10.9, 'thud'], [12.0, 'pop'], [14.3, 'whoosh']];
+  for (let x = 1.45; x < 2.35; x += .09) events.push([x, 'tick']);
+  for (let x = 8.5; x < 9.4; x += .08) events.push([x, 'tick']);
+  events.sort((a, b) => a[0] - b[0]);
+
+  /* ---------- transport ---------- */
+  const stage = $('stage'), vp = $('viewport'), scrub = $('scrub'), tc = $('tc'), playBtn = $('play'), cover = $('cover'), snd = $('snd');
+  const fit = () => { stage.style.transform = `scale(${vp.clientWidth / 1920})`; };
+  new ResizeObserver(fit).observe(vp); fit();
+
+  let t = 12.6, playing = false, last = 0;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ui() { scrub.value = t.toFixed(3); tc.textContent = `${t.toFixed(2).padStart(5, '0')} s · кадр ${Math.floor(t * FPS)}`; playBtn.textContent = playing ? '❚❚' : '▶'; }
+  function frame(now) {
+    if (playing) {
+      const dt = Math.min(.1, (now - last) / 1000); last = now;
+      const prev = t; t += dt;
+      if (t >= T) { t = 0; }
+      else if (soundOn && ac) for (const [et, n] of events) if (et > prev && et <= t) sfx[n]();
+      render(t); ui();
+    }
+    requestAnimationFrame(frame);
+  }
+  function play() { playing = true; last = performance.now(); cover.hidden = true; ui(); }
+  function pause() { playing = false; ui(); }
+  playBtn.addEventListener('click', () => playing ? pause() : play());
+  $('restart').addEventListener('click', () => { t = 0; render(t); play(); });
+  cover.addEventListener('click', () => { t = 0; render(t); play(); });
+  scrub.addEventListener('input', () => { t = +scrub.value; playing = false; cover.hidden = true; render(t); ui(); });
+  snd.addEventListener('click', () => {
+    try { if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch (e) { return; }
+    soundOn = !soundOn; snd.setAttribute('aria-pressed', soundOn); snd.textContent = soundOn ? 'Звук: вкл' : 'Звук: выкл';
+  });
+
+  const start = () => { render(t); ui(); requestAnimationFrame(frame); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
+  if (reduce) cover.querySelector('span').textContent = 'PLAY SCENE (анимация включается по кнопке)';
+})();
+</script>

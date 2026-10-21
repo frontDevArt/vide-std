@@ -6,3 +6,7 @@ tools/piper-voices/
 tools/setup.log
 __pycache__/
 *.pyc
+.env
+logs/
+output/
+.channel-kit-incoming/
