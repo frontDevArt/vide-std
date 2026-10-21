@@ -51,7 +51,7 @@ python -m studio frame    <проект> <сек>    # один кадр PNG
 ## Развитие студии
 План доработок с критериями «готово» — `docs/ROADMAP.md` (команда `/roadmap`). История решений и замеры —
 `docs/history/SESSION_LOG.md`. Перед изменением движка прочитай `docs/LESSONS.md` и `docs/ARCHITECTURE.md`;
-после — `python -m studio all minutka` и `python -m studio all habit-demo` должны остаться ✅.
+после — регресс: `python -m studio new regress --lang en` → `python -m studio demo regress` — QA ✅, потом удалить `projects/regress*`.
 
 ## Свои шаблоны
 Если встроенных не хватает — пиши `projects/<slug>/templates/<имя>.py` по контракту из

@@ -19,9 +19,10 @@ claude                                           # открыть Claude Code в
 ```
 Подробно по ОС — `docs/LOCAL_SETUP.md`.
 
-Первая проверка, что всё живо (пересоберёт демо у вас и прогонит QA):
+Первая проверка, что всё живо (соберёт демо стиля 10–15 с из заготовки и прогонит QA):
 ```bash
-python -m studio all minutka
+python -m studio new regress --lang en
+python -m studio demo regress      # потом удалить projects/regress*
 ```
 
 ## 3. Команды в Claude CLI
@@ -56,8 +57,6 @@ studio/                  движок (Python, ~2700 строк)
 tools/setup_rhvoice.sh   установка офлайн-голоса
 projects/
   _template/             заготовка нового проекта
-  minutka/               демо: 30 с, вертикаль, 2 главы — исходники + готовый MP4 + QA
-  habit-demo/            демо: горизонталь на универсальных шаблонах — исходники + MP4 + QA
 .claude/commands/        слэш-команды; .claude/settings.json — разрешения без лишних вопросов
 ```
 

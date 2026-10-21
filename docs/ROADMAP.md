@@ -4,8 +4,9 @@
 который можно вставить в Claude CLI как есть (или выполнить `/roadmap` — он возьмёт первую невыполненную).
 Отмечайте выполненное `[x]` прямо в этом файле.
 
-Общее правило для всех задач: после изменения кода — прогнать `python -m studio all minutka`
-и `python -m studio all habit-demo`; оба QA должны остаться ✅.
+Общее правило для всех задач: после изменения кода — регресс:
+`python -m studio new regress --lang en` → `python -m studio demo regress` — QA ✅, потом удалить `projects/regress*`.
+(Демо-проекты minutka/habit-demo удалены 2026-10-21; упоминания ниже — история.)
 
 ---
 

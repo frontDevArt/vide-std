@@ -21,7 +21,7 @@ claude                                    # открыть Claude Code в это
 /qa            # собрать, проверить, отдать
 /roadmap       # следующая задача развития студии (docs/ROADMAP.md)
 ```
-Или вручную: `python -m studio all projects/minutka`.
+Или вручную: `python -m studio new "тема"` → сценарий → `python -m studio all <slug>`.
 
 ## Что внутри
 - `CLAUDE.md` — правила для Claude (читает автоматически).
@@ -29,8 +29,7 @@ claude                                    # открыть Claude Code в это
 - `docs/LESSONS.md` — уроки первого прогона: что делать один раз и каких ошибок не повторять.
 - `docs/ARCHITECTURE.md` — устройство и план для часовых роликов.
 - `docs/SCENE_SPEC.md` — формат сценария и шаблоны; `docs/TTS.md` — голоса.
-- `studio/` — движок; `projects/_template/` — заготовка; `projects/minutka/` — демо 30 с (2 главы);
-  `projects/habit-demo/` — горизонтальное демо на универсальных шаблонах.
+- `studio/` — движок; `projects/_template/` — заготовка (+ `demo/ch01.yaml` — демо стиля).
 
 ## Требования
 Python 3.10+, ffmpeg/ffprobe, шрифт с кириллицей (по умолчанию Inter Display; иначе DejaVu/Arial —
