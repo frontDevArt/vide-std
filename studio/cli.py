@@ -171,6 +171,7 @@ def cmd_validate(a):
         warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило канала: 1–2 акцента "
                      f"на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
     _validate_style(proj, errs, warns)
+    _validate_triggers(proj, errs, warns)
     tgt = proj.cfg.get("target_duration")
     est = words / lp["wpm"] * 60
     print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
@@ -234,6 +235,21 @@ def _validate_style(proj, errs, warns):
             errs.append(f"{ch}: {e}")
 
 
+def _validate_triggers(proj, errs, warns):
+    """Триггеры at: (B8) — по словам озвучки, только если timeline.json актуален (иначе слова старые)."""
+    from .lab import trigger_errors
+    from .templates import REGISTRY
+    from .timing import source_hash
+    p = proj.build / "timeline.json"
+    if not p.exists():
+        return
+    tl = json.loads(p.read_text(encoding="utf-8"))
+    if tl.get("src") != source_hash(proj):
+        warns.append("timeline.json устарел — триггеры at: проверит voice")
+        return
+    errs += trigger_errors(tl["scenes"], REGISTRY)
+
+
 def _elevenlabs_guard(proj, yes):
     """Платный синтез: темп числом (подбор темпа синтезирует несколько раз) + оценка символов и подтверждение."""
     from . import tts
@@ -264,7 +280,15 @@ def cmd_voice(a):
     for s in tl["scenes"]:
         print(f"  {s['chapter']}/{s['id']:<6} {s['start']:7.2f}–{s['start'] + s['dur']:7.2f}  {s['template']:<12} "
               f"битов {len(s['beats'])}, субтитров {len(s['subs'])}")
-    return 0
+    from .lab import trigger_errors
+    from .templates import REGISTRY, load_project_templates
+    load_project_templates(proj.root)
+    errs = trigger_errors(tl["scenes"], REGISTRY)
+    for e in errs:
+        print("  ❌", e)
+    if errs:
+        print(f"Триггеры at: не найдено {len(errs)} — элементы появятся не в такт. Поправьте at или текст и повторите voice")
+    return 1 if errs else 0
 
 
 def cmd_stills(a):
