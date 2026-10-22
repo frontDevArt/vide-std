@@ -42,6 +42,7 @@ def sheet(imgs, labels, cols, out):
 
 def run(proj: Project, log=print, fast=False):
     tl = load_timeline(proj)
+    G.apply_style(proj.cfg["style"])  # ширина субтитров — тем шрифтом, что рисуется (B4)
     final = proj.final_path()
     res = []
 

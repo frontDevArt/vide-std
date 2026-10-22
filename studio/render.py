@@ -38,7 +38,6 @@ def prepare(proj: Project):
     """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены."""
     tl = load_timeline(proj)
     G.apply_style(proj.cfg["style"])
-    G.FONT_FAMILY = proj.cfg["style"].get("font", G.FONT_FAMILY)
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
     ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"]}
@@ -198,9 +197,8 @@ def frame(ctx, tpl, scene, f, sub_size):
     return img
 
 
-def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, style, font_family):
+def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, style):
     G.apply_style(style)
-    G.FONT_FAMILY = font_family
     TP.load_project_templates(proj_root)
     t0 = time.time()
     tpl = make_template(ctx, scene)
@@ -245,7 +243,7 @@ def render(proj: Project, chapter=None, workers=None, log=print, force=False):
     todo.sort(key=lambda s: -s["n_frames"])
     t0 = time.time()
     done = 0
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], proj.cfg["style"], G.FONT_FAMILY)
+    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], proj.cfg["style"])
     with ProcessPoolExecutor(max_workers=workers) as ex:
         futs = [ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, scene_out(proj, s), *args) for s in todo]
         for fu in as_completed(futs):
