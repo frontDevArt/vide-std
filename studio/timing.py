@@ -146,6 +146,19 @@ def base_total(proj, voiced):
     return tot
 
 
+def _too_long(target, tot, rate, hi=None):
+    """Речь с паузами не помещается в target_duration: остановка, а не обрезка (B2, B11).
+    hi=None — темп задан числом в tts.rate."""
+    if hi is None:
+        why = f"при темпе {rate:.0f} (tts.rate)"
+    elif rate >= hi:
+        why = f"даже при темпе {hi:.0f}"
+    else:
+        why = f"при темпе {rate:.0f} (подбор остановился, потолок rate_range {hi:.0f} не проверен)"
+    return SystemExit(f"Текст не помещается в {target} c {why}. "
+                      f"Сократите текст (оценка: {tot:.1f} c) — ускорять дальше неестественно.")
+
+
 def choose_rate(proj: Project, log=print):
     """Темп: число из конфига, либо подбор под target_duration в естественном диапазоне."""
     tcfg = proj.cfg["tts"]
@@ -158,6 +171,7 @@ def choose_rate(proj: Project, log=print):
     for _ in range(6):
         voiced = measure(proj, r)
         tot = base_total(proj, voiced)
+        tried = r
         log(f"  темп {r:.0f}: базовая длительность {tot:.2f} c (цель {target})")
         if tot <= target - 0.15:
             return r, voiced
@@ -166,8 +180,7 @@ def choose_rate(proj: Project, log=print):
         speech = sum(_speech_len(v[2]) for v in voiced)
         need = speech - (tot - (target - 0.3))
         r = min(hi, max(r + 1, math.ceil(r * speech / max(need, 0.1))))
-    raise SystemExit(f"Текст не помещается в {target} c даже при темпе {hi}. "
-                     f"Сократите текст (оценка: {tot:.1f} c) — ускорять дальше неестественно.")
+    raise _too_long(target, tot, tried, hi)
 
 
 def layout(proj: Project, log=print) -> dict:
@@ -183,6 +196,8 @@ def layout(proj: Project, log=print) -> dict:
     n = len(voiced)
     target = proj.cfg.get("target_duration")
     base = base_total(proj, voiced)
+    if target and base > target:  # rate числом: подбор не проверял, а сжимать последнюю сцену нельзя (B2)
+        raise _too_long(target, base, rate)
     slack = max(0.0, (target - base)) if target else 0.0
 
     # раскладываем запас: 1) сценам с want_duration (мягкое желание), 2) паузам между сценами
