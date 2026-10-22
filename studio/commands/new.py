@@ -5,7 +5,7 @@ import json
 import re
 import shutil
 
-from ..project import STUDIO_ROOT
+from .. import workspace
 
 
 def add(sp):
@@ -37,11 +37,11 @@ def default_backend(lang):
     import os
     from .. import tts  # noqa: F401 — подхватывает .env в окружение
     if (os.environ.get("ELEVENLABS_API_KEY", "").strip() and lang == "en"
-            and (STUDIO_ROOT / "channel" / "POSITIONING.md").exists()):
+            and workspace.current().is_channel()):
         return "elevenlabs"
     if _has_edge():
         return "edge"
-    if (STUDIO_ROOT / "tools" / "rhvoice" / "rhvoice").exists():
+    if (workspace.current().tools / "rhvoice" / "rhvoice").exists():
         return "rhvoice"
     return None
 
@@ -53,10 +53,11 @@ def run(a):
         print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"
               "   поставьте голос (python -m studio doctor, bash tools/setup_rhvoice.sh) или укажите --tts")
     slug = a.slug or slugify(a.topic)
-    dst = STUDIO_ROOT / "projects" / slug
+    ws = workspace.current()
+    dst = ws.project(slug)
     if dst.exists():
         raise SystemExit(f"Уже есть: {dst}")
-    shutil.copytree(STUDIO_ROOT / "projects" / "_template", dst)
+    shutil.copytree(ws.template, dst)
     y = (dst / "project.yaml").read_text(encoding="utf-8")
     # JSON-строка — валидный YAML при любых кавычках и `: `/`#` в теме; комментарии заготовки сохраняются
     y = y.replace("topic: TODO", f"topic: {json.dumps(a.topic, ensure_ascii=False)}")

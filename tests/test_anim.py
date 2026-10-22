@@ -48,6 +48,5 @@ def _cycles(files):
 
 def test_no_import_cycles_in_drawing_code():
     # __init__.py пакетов импортируют свои модули по построению — их не считаем
-    files = [f for f in C.STUDIO.rglob("*.py") if f.name != "__init__.py"
-             and f.stem not in ("project", "tts")]  # project → tts (ленивый load_env) — P2.8
+    files = [f for f in C.STUDIO.rglob("*.py") if f.name != "__init__.py"]
     assert _cycles(files) == []

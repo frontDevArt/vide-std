@@ -321,8 +321,20 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   ключи сцен не меняются. Проверено: `tests/test_log.py` (вывод консоли целиком в логе, потоки восстановлены, без
   лога у `status`/`templates`, корневой лог для ненайденного проекта, трассировка, очистка и имена за одну секунду);
   тесты пишут корневые логи во временную папку (`conftest`); `pytest` и `selftest` ✅ (golden байт в байт).
-- [ ] **P2.8 Резолвер путей `studio/workspace.py`:** где проекты, каналы, брифы, секреты. Пока корень один и поведение
+- [x] **P2.8 Резолвер путей `studio/workspace.py`:** где проекты, каналы, брифы, секреты. Пока корень один и поведение
   прежнее, но это точка входа мультистудии (ROADMAP A1). Убрать `STUDIO_ROOT / "projects"` из остального кода.
+  *Сделано:* `studio/workspace.py` — `Workspace` (`projects`, `channel`, `briefs`, `research`, `logs`, `env`, `tools`,
+  `template`, `project(slug)`, `is_channel()`), `current()` — рабочая область по умолчанию = корень студии (раскладка
+  прежняя), `use(root | ws, **пути)` — временно другая (тесты, позже `--studio`). Модуль без импортов из `studio`.
+  Сюда же переехал `load_env` (секреты из `.env` рабочей области; `tts.load_env` — то же имя), поэтому ленивый цикл
+  `project → tts` исчез — исключение в тесте циклов из P2.6 убрано. На `current()` переведены `project.load` и
+  `resolve_project` (slug), `new` (заготовка, проект, признак канала, RHVoice), `demo`, `log` (корневые логи), пути
+  голосов в `tts`. `STUDIO_ROOT` остался для кода студии (`tests/`, `assets/`, `pyproject.toml`, `studio/`) — старое имя
+  `workspace.ROOT`. Код рисования не тронут — ключи сцен не меняются. Проверено: `tests/test_workspace.py` (раскладка по
+  умолчанию = прежняя; склеек `ROOT / "projects"|"channel"|…` вне `workspace.py` нет; `use()` переключает slug,
+  `load` и восстанавливается; `load_env` не перетирает окружение и пропускает пустые); тесты `new` и логов
+  переключают рабочую область через `use()` вместо подмены `STUDIO_ROOT`/`ROOT_LOGS`; `status fake-discounts` по slug;
+  `pytest` 292 ✅, `selftest` ✅ (кадры в процессе байт в байт, макс 0).
 - [ ] **P2.9 Разобрать `projects/fake-discounts/templates/money.py`:** общее («ценник», «число с единицей») →
   `studio/packs/commerce/` (пригодится брендам), специфичное для ролика — оставить в проекте.
 

@@ -8,7 +8,8 @@ fake (тон вместо речи — только тесты и чернови
 Повторный запуск не синтезирует заново. Таймкоды слов (если бэкенд их даёт) — build/tts/<hash>.words.json,
 времена уже относительно срезанного WAV.
 
-Ключи — только из окружения или .env в корне студии (он в .gitignore). В лог и в чат ключ не выводится.
+Ключи — только из окружения или .env рабочей области (studio/workspace.py; он в .gitignore).
+В лог и в чат ключ не выводится.
 """
 from __future__ import annotations
 
@@ -25,7 +26,9 @@ from pathlib import Path
 
 import numpy as np
 
-from .project import STUDIO_ROOT, stable_hash
+from .project import STUDIO_ROOT, stable_hash  # noqa: F401 — STUDIO_ROOT: старое имя
+from . import workspace
+from .workspace import load_env  # noqa: F401 — tts.load_env: старое имя
 
 SR = 48000
 TRIM = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
@@ -37,22 +40,7 @@ class TTSUnavailable(RuntimeError):
     pass
 
 
-def load_env():
-    """KEY=VALUE из <студия>/.env -> os.environ (не перетирая уже заданные). Пустые значения пропускаются."""
-    f = STUDIO_ROOT / ".env"
-    if not f.exists():
-        return
-    for line in f.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        k, v = k.strip(), v.strip().strip('"').strip("'")
-        if v and k not in os.environ:
-            os.environ[k] = v
-
-
-load_env()
+workspace.load_env()
 
 
 def run(cmd, **kw):
@@ -62,7 +50,7 @@ def run(cmd, **kw):
 
 # ---------------------------------------------------------------- backends
 def _rhvoice(text, voice, rate, out_raw):
-    exe = STUDIO_ROOT / "tools" / "rhvoice" / "rhvoice"
+    exe = workspace.current().tools / "rhvoice" / "rhvoice"
     if not exe.exists():
         raise TTSUnavailable("RHVoice не установлен: bash tools/setup_rhvoice.sh")
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
@@ -129,7 +117,7 @@ def _piper(text, voice, rate, out_raw):
     exe = shutil.which("piper")
     model = Path(voice)
     if not model.is_absolute():
-        model = STUDIO_ROOT / "tools" / "piper-voices" / f"{voice}.onnx"
+        model = workspace.current().tools / "piper-voices" / f"{voice}.onnx"
     if not exe or not model.exists():
         raise TTSUnavailable("piper или модель не найдены (см. docs/TTS.md)")
     r = subprocess.run([exe, "--model", str(model), "--output_file", str(out_raw),

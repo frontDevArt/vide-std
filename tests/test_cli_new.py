@@ -5,16 +5,16 @@ import shutil
 import pytest
 import yaml
 
-from studio import cli
+from studio import cli, workspace
 from studio.commands import new as new_cmd
 from studio.project import STUDIO_ROOT
 
 
 @pytest.fixture
-def studio_root(tmp_path, monkeypatch):
+def studio_root(tmp_path):
     shutil.copytree(STUDIO_ROOT / "projects" / "_template", tmp_path / "projects" / "_template")
-    monkeypatch.setattr(new_cmd, "STUDIO_ROOT", tmp_path)
-    return tmp_path
+    with workspace.use(tmp_path):
+        yield tmp_path
 
 
 def new(root, topic, **kw):

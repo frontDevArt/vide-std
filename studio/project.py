@@ -10,8 +10,8 @@ from pathlib import Path
 import yaml
 
 from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
-
-STUDIO_ROOT = Path(__file__).resolve().parent.parent
+from . import workspace
+from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
 
 FORMATS = {
@@ -62,8 +62,8 @@ class Project:
 
 def load(root) -> Project:
     root = Path(root).resolve()
-    if (root / "project.yaml").exists() is False and (STUDIO_ROOT / "projects" / str(root.name)).exists():
-        root = STUDIO_ROOT / "projects" / root.name
+    if (root / "project.yaml").exists() is False and workspace.current().project(root.name).exists():
+        root = workspace.current().project(root.name)
     with open(root / "project.yaml", encoding="utf-8") as f:
         user = yaml.safe_load(f) or {}
     for w in check(user):  # опечатка в ключе не должна молча игнорироваться (studio/config.py)
@@ -72,12 +72,10 @@ def load(root) -> Project:
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
     if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):
-        from .tts import load_env
-        load_env()  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
+        workspace.load_env()  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
         cfg["tts"]["voice"] = os.environ.get("ELEVENLABS_VOICE_ID", "")
     if cfg["tts"]["backend"] == "elevenlabs" and not cfg["tts"].get("model"):
-        from .tts import load_env
-        load_env()  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
+        workspace.load_env()  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
         if os.environ.get("ELEVENLABS_MODEL_ID", "").strip():
             cfg["tts"]["model"] = os.environ["ELEVENLABS_MODEL_ID"].strip()
     if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
@@ -99,7 +97,8 @@ def load(root) -> Project:
 
 
 def resolve_project(arg: str | None) -> Path:
-    """Аргумент может быть путём или slug из projects/. Без аргумента — текущий каталог."""
+    """Аргумент может быть путём или slug из projects/ рабочей области (studio/workspace.py).
+    Без аргумента — текущий каталог."""
     if not arg:
         cwd = Path(os.getcwd())
         if (cwd / "project.yaml").exists():
@@ -108,7 +107,7 @@ def resolve_project(arg: str | None) -> Path:
     p = Path(arg)
     if (p / "project.yaml").exists():
         return p.resolve()
-    q = STUDIO_ROOT / "projects" / arg
+    q = workspace.current().project(arg)
     if (q / "project.yaml").exists():
         return q
     raise SystemExit(f"Проект не найден: {arg}")

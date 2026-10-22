@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import shutil
 
-from ..project import STUDIO_ROOT, load, resolve_project
+from .. import workspace
+from ..project import load, resolve_project
 
 
 def add(sp):
@@ -24,8 +25,9 @@ def run(a):
         raise SystemExit("Это уже демо-проект — укажите исходный")
     script = src / "demo" / "ch01.yaml"
     if not script.exists():
-        script = STUDIO_ROOT / "projects" / "_template" / "demo" / "ch01.yaml"
-        print(f"⚠️  нет {src.name}/demo/ch01.yaml — беру заготовку {script.relative_to(STUDIO_ROOT)} "
+        ws = workspace.current()
+        script = ws.template / "demo" / "ch01.yaml"
+        print(f"⚠️  нет {src.name}/demo/ch01.yaml — беру заготовку {script.relative_to(ws.root)} "
               "(без метафоры ролика; язык заготовки — en)")
     dst = src.parent / f"{src.name}-demo"
     (dst / "script").mkdir(parents=True, exist_ok=True)

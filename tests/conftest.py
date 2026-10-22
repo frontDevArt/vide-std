@@ -11,8 +11,9 @@ pin_fonts()
 @pytest.fixture(autouse=True)
 def _root_logs(tmp_path_factory, monkeypatch):
     """Логи команд без проекта (P2.7) — во временную папку, а не в logs/ студии."""
-    from studio import log
-    monkeypatch.setattr(log, "ROOT_LOGS", tmp_path_factory.mktemp("logs"))
+    from studio import workspace
+    with workspace.use(workspace.current(), logs=tmp_path_factory.mktemp("logs")):
+        yield
 
 
 def pytest_addoption(parser):

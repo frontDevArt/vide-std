@@ -4,7 +4,7 @@ import sys
 import pytest
 
 from conftest import make_gallery
-from studio import cli, log
+from studio import cli, log, workspace
 
 
 def logs(root, cmd):
@@ -32,7 +32,7 @@ def test_read_only_commands_have_no_log(tmp_path, capsys):
 def test_no_project_goes_to_root_logs(tmp_path, capsys):
     with pytest.raises(SystemExit):
         cli.main(["validate", str(tmp_path / "nope")])
-    [p] = sorted(log.ROOT_LOGS.glob("validate-*.log"))
+    [p] = sorted(workspace.current().logs.glob("validate-*.log"))
     assert "Проект не найден" in p.read_text(encoding="utf-8")
 
 

@@ -1,5 +1,5 @@
 """Логи команд из одного места: всё, что команда пишет в консоль, дублируется в файл
-`projects/<slug>/logs/<команда>-<время>.log` (команды без проекта — `logs/` в корне студии).
+`projects/<slug>/logs/<команда>-<время>.log` (команды без проекта — `logs/` рабочей области, studio/workspace.py).
 Консоль не меняется: поток-«тройник» отдаёт вывод в прежний `sys.stdout`/`sys.stderr` как есть."""
 from __future__ import annotations
 
@@ -9,9 +9,8 @@ import time
 import traceback
 from pathlib import Path
 
-from .project import STUDIO_ROOT
+from . import workspace
 
-ROOT_LOGS = STUDIO_ROOT / "logs"
 KEEP = 20  # сколько последних логов одной команды хранить в папке
 
 
@@ -35,7 +34,7 @@ class Tee:
 
 
 def log_dir(project_root: Path | None) -> Path:
-    return Path(project_root) / "logs" if project_root else ROOT_LOGS
+    return Path(project_root) / "logs" if project_root else workspace.current().logs
 
 
 def _prune(d: Path, command: str):
