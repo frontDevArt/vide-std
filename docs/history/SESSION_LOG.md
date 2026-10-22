@@ -112,3 +112,6 @@ selftest работает в коротком `tempfile.mkdtemp`.
 `project` рендерит копию проекта во временной папке с голосом из `build/tts` — без синтеза и без касания проекта.
 Работа продолжена поверх ветки с P0.5–P0.7 (`claude/regression-selftest-refactor-9e9b5b`); ветки других сессий
 с P0.5 без коммита (`…-automation-c2f185`) и P0.6 от старой базы (`…-pyproject-7d66ff`) устарели.
+Эталонные листы `fake-discounts` (правило 7) — `tests/reference/fake-discounts/`, 4 главы, 15 МБ, сняты на копии
+проекта с timeline готового ролика. `status` на копии требует `voice` не из-за сценария (он совпадает с timeline),
+а потому что в worktree нет `.env`: голос (`ELEVENLABS_VOICE_ID`) входит в `source_hash`.

@@ -95,6 +95,8 @@
 
 **Этап готов, если:** на чистом клоне под Windows `pip install -r requirements-dev.txt && pytest && python -m studio selftest`
 зелёные без сети; CI зелёный; эталонные листы `fake-discounts` сохранены.
+*Листы сохранены:* `tests/reference/fake-discounts/` — 4 главы, 307 кадров, сняты с timeline готового ролика,
+посмотрены (как снять заново — README там же). Осталось: первый зелёный прогон CI на GitHub.
 
 ---
 
