@@ -1,7 +1,11 @@
 """Рендер: сцена -> mp4 (кадры идут в ffmpeg через pipe, без PNG на диске).
 
 Кэш: build/render/<chapter>/<scene>.mp4 + .key. Ключ = хэш тайминга сцены + кода её шаблона (`codehash`) + стиля.
-Сцены рендерятся параллельно процессами; прерванный рендер продолжается с недоделанных сцен.
+Сцены рендерятся параллельно процессами; длинная сцена — кусками по ~CHUNK кадров (build/render/<chapter>/parts/,
+каждый кусок — свой mp4 с ключевым кадром в начале), куски склеиваются `concat` без перекодирования (P3.3).
+Прерванный рендер продолжается с недоделанных сцен и кусков.
+Черновик (`render --draft`, P3.4): половина разрешения, x264 `ultrafast`, свой кэш build/render-draft/ — чистовой
+кэш не трогает. Шаблоны рисуют в долях W/H (self.u, self.z), поэтому на полразмера кадр тот же, только мельче.
 """
 from __future__ import annotations
 
@@ -23,13 +27,20 @@ from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
 
 
-def prepare(proj: Project):
-    """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены."""
+DRAFT_PRESET = "ultrafast"
+
+
+def prepare(proj: Project, draft=False):
+    """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены.
+    draft — черновик: кадр вдвое меньше (стороны чётные — для yuv420p), сцены пишутся в build/render-draft/."""
     tl = load_timeline(proj)
     style = G.apply_style(proj.cfg["style"])
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style}
+    if draft:
+        W, H = W // 4 * 2, H // 4 * 2
+    preset = DRAFT_PRESET if draft else proj.cfg["render"]["preset"]
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset}
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
@@ -43,6 +54,7 @@ def prepare(proj: Project):
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
         s["state_in"] = dict(state)
+        s["render_dir"] = "render-draft" if draft else "render"
         if use_glow:
             s["glow"] = {"from": state["lab_glow"], "to": glows.get(s["chapter"]) or base_glow}
             state["lab_glow"] = s["glow"]["to"]
@@ -63,7 +75,7 @@ def prepare(proj: Project):
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
-                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else [])
+                                proj.cfg["render"]["crf"], preset, W, H] + ([extra] if extra else [])
                                + ([s["glow"]] if use_glow else []))
     return tl, ctx
 
@@ -182,17 +194,18 @@ def frame(ctx, tpl, scene, f, sub_size):
     bg = _bg(ctx["W"], ctx["H"], style)
     img = bg.frame(T, glow) if glow else bg.frame(T)
     if getattr(tpl, "camera", False) and style.camera:
-        from .packs.lab.background import apply_camera
+        from .packs.lab.background import composite_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
-        img.alpha_composite(apply_camera(layer, T))
+        composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
     draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style)
     return img
 
 
-def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
+def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, f0, f1, key):
+    """Кадры [f0, f1) сцены → out (mp4, первый кадр — ключевой) + out.key."""
     G.apply_style(ctx["style"])  # активный — для хелперов gfx без style= (шаблоны проектов)
     TP.load_project_templates(proj_root)
     t0 = time.time()
@@ -203,7 +216,7 @@ def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
            "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", preset, "-crf", str(crf),
            "-pix_fmt", "yuv420p", "-g", str(fps * 2), "-threads", "1", "-movflags", "+faststart", tmp]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    for f in range(scene["n_frames"]):
+    for f in range(f0, f1):
         img = frame(ctx, tpl, scene, f, sub_size)
         p.stdin.write(img.convert("RGB").tobytes())
     p.stdin.close()
@@ -211,43 +224,130 @@ def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
     if p.wait() != 0:
         raise RuntimeError(f"ffmpeg ({scene['id']}): {err[-400:]}")
     os.replace(tmp, out)
-    Path(str(out) + ".key").write_text(scene["key"])
-    return scene["id"], scene["n_frames"], time.time() - t0
+    Path(str(out) + ".key").write_text(key)
+    return scene["id"], f1 - f0, time.time() - t0
+
+
+CHUNK = 120  # кадров (4 с при 30 fps): кусок длинной сцены — нет одинокого «хвоста» в конце рендера (P3.3)
+
+
+def chunks(n, size=None):
+    """Границы кусков [f0, f1) сцены из n кадров: поровну, около size кадров; короче 1,5 size — один кусок."""
+    k = max(1, round(n / (size or CHUNK)))
+    return [(n * i // k, n * (i + 1) // k) for i in range(k)]
+
+
+def sub_size(proj, ctx):
+    """Кегль субтитров под размер кадра ctx (у черновика вдвое меньше)."""
+    return S.font_size(proj) * ctx["W"] // proj.size[0]
 
 
 def scene_out(proj, s):
-    return proj.bdir("render", s["chapter"]) / f"{s['id']}.mp4"
+    return proj.bdir(s.get("render_dir", "render"), s["chapter"]) / f"{s['id']}.mp4"
+
+
+def parts_dir(proj, s):
+    return proj.bdir(s.get("render_dir", "render"), s["chapter"], "parts")
+
+
+def part_out(proj, s, f0, f1):
+    return parts_dir(proj, s) / f"{s['id']}.{f0:05d}-{f1:05d}.mp4"
+
+
+def part_key(s, f0, f1):
+    return f"{s['key']}:{f0}-{f1}"
+
+
+def _fresh(out, key):
+    k = Path(str(out) + ".key")
+    return out.exists() and k.exists() and k.read_text().strip() == key
 
 
 def is_fresh(proj, s):
-    o = scene_out(proj, s)
-    k = Path(str(o) + ".key")
-    return o.exists() and k.exists() and k.read_text().strip() == s["key"]
+    return _fresh(scene_out(proj, s), s["key"])
 
 
-def render(proj: Project, chapter=None, workers=None, log=print, force=False):
-    tl, ctx = prepare(proj)
+def join_parts(parts, out):
+    """Куски сцены → один mp4 без перекодирования (параметры кодека у кусков одинаковые)."""
+    lst = Path(str(out) + ".txt")
+    lst.write_text("".join(f"file '{p}'\n" for p in parts))
+    tmp = str(out) + ".part.mp4"
+    r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy",
+                        "-movflags", "+faststart", tmp], capture_output=True, stdin=subprocess.DEVNULL)
+    lst.unlink()
+    if r.returncode:
+        raise RuntimeError(f"ffmpeg concat ({out.name}): {r.stderr.decode(errors='replace')[-400:]}")
+    os.replace(tmp, out)
+
+
+def _finish_scene(proj, s):
+    parts = [part_out(proj, s, f0, f1) for f0, f1 in chunks(s["n_frames"])]
+    out = scene_out(proj, s)
+    join_parts(parts, out)
+    Path(str(out) + ".key").write_text(s["key"])
+    for p in parts_dir(proj, s).glob(f"{s['id']}.*"):  # и куски прежних ключей/границ
+        p.unlink()
+
+
+def default_workers():
+    """Половина логических ядер: у каждого процесса свой ffmpeg (x264 ≈ столько же CPU, сколько рисование кадра).
+    Замер P3.3 (i7-13700, 24 потока): 6 → 195 с, 8 → 166, 12 → 159, 16 → 164, 24 → 185."""
+    return max(1, (os.cpu_count() or 2) // 2)
+
+
+def render_scenes(proj: Project, todo, ctx, workers, log=print, force=False):
+    """Сцены todo → build/render. Длинные — кусками; workers=0 — в этом процессе (тесты)."""
+    sub_px = sub_size(proj, ctx)
+    args = (proj.cfg["render"]["crf"], ctx.get("preset") or proj.cfg["render"]["preset"])
+    jobs, left = [], {}  # (сцена, out, f0, f1, ключ); сцена → сколько её кусков ещё рендерится
+    for s in sorted(todo, key=lambda s: -s["n_frames"]):
+        bounds = chunks(s["n_frames"])
+        if len(bounds) == 1:
+            jobs.append((s, scene_out(proj, s), 0, s["n_frames"], s["key"]))
+            continue
+        need = [(f0, f1) for f0, f1 in bounds if force or not _fresh(part_out(proj, s, f0, f1), part_key(s, f0, f1))]
+        jobs += [(s, part_out(proj, s, f0, f1), f0, f1, part_key(s, f0, f1)) for f0, f1 in need]
+        left[id(s)] = len(need)
+        if not need:
+            _finish_scene(proj, s)
+    frames = sum(f1 - f0 for _, _, f0, f1, _ in jobs)
+    t0, done = time.time(), 0
+
+    def finished(s, f0, f1, n, dt):
+        nonlocal done
+        done += n
+        if id(s) in left:
+            left[id(s)] -= 1
+            if not left[id(s)]:
+                _finish_scene(proj, s)
+        el = time.time() - t0
+        part = f" [{f0}–{f1}]" if id(s) in left else ""
+        log(f"  {s['id']}{part}: {n} кадров за {dt:.0f} c ({n / dt:.1f} fps) | всего {done}/{frames}, "
+            f"осталось ~{el / done * (frames - done):.0f} c")
+        sys.stdout.flush()
+
+    if not workers:
+        for s, out, f0, f1, key in jobs:
+            _, n, dt = _render_scene_job(str(proj.root), s, ctx, sub_px, out, *args, f0, f1, key)
+            finished(s, f0, f1, n, dt)
+        return
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_px, out, *args, f0, f1, key): (s, f0, f1)
+                for s, out, f0, f1, key in jobs}
+        for fu in as_completed(futs):
+            _, n, dt = fu.result()
+            finished(*futs[fu], n, dt)
+
+
+def render(proj: Project, chapter=None, workers=None, log=print, force=False, draft=False):
+    tl, ctx = prepare(proj, draft)
     todo = [s for s in tl["scenes"] if (chapter in (None, s["chapter"])) and (force or not is_fresh(proj, s))]
     if not todo:
         log("Все сцены актуальны — рендерить нечего.")
         return tl
-    workers = workers or proj.cfg["render"].get("workers") or max(1, (os.cpu_count() or 2))
-    sub_size = S.font_size(proj)
-    frames = sum(s["n_frames"] for s in todo)
-    log(f"Рендер {len(todo)} сцен, {frames} кадров, процессов: {workers}")
-    todo.sort(key=lambda s: -s["n_frames"])
-    t0 = time.time()
-    done = 0
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"])
-    with ProcessPoolExecutor(max_workers=workers) as ex:
-        futs = [ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, scene_out(proj, s), *args) for s in todo]
-        for fu in as_completed(futs):
-            sid, n, dt = fu.result()
-            done += n
-            el = time.time() - t0
-            log(f"  {sid}: {n} кадров за {dt:.0f} c ({n / dt:.1f} fps) | всего {done}/{frames}, "
-                f"осталось ~{el / done * (frames - done):.0f} c")
-            sys.stdout.flush()
+    workers = workers or proj.cfg["render"].get("workers") or default_workers()
+    log(f"{'Черновой рендер' if draft else 'Рендер'} {ctx['W']}×{ctx['H']}: {len(todo)} сцен, {sum(s['n_frames'] for s in todo)} кадров, процессов: {workers}")
+    render_scenes(proj, todo, ctx, workers, log, force)
     return tl
 
 

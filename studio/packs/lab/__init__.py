@@ -7,6 +7,6 @@
 через state (`lab_chrome`, `lab_hero`, `lab_clock`), как требует SCENE_SPEC.
 """
 from . import background, elements, triggers, base, check, hero, crowd, templates  # noqa: F401
-from .background import LabBackground, apply_camera  # noqa: F401
+from .background import LabBackground, apply_camera, composite_camera  # noqa: F401
 from .base import LabTemplate  # noqa: F401
 from .check import trigger_errors  # noqa: F401

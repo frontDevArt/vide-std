@@ -3,9 +3,9 @@
   python tools/bench.py templates [--format horizontal|vertical] [--frames 48]
       кадров/с по каждому шаблону фикстуры gallery, 1 процесс, без кодирования; разбивка кадра по фазам
       (фон, рисование шаблона, камера, субтитры, RGB-байты для ffmpeg).
-  python tools/bench.py project <проект> [--workers N]
+  python tools/bench.py project <проект> [--workers N] [--draft]
       полный рендер + assemble копии проекта во временной папке (голос и timeline.json берутся из его build/,
-      синтеза нет), время и размер build/ по папкам. Сам проект не трогается.
+      синтеза нет), время и размер build/ по папкам. Сам проект не трогается. --draft — черновой рендер (P3.4).
 
 Офлайн, денег не тратит: gallery — голос fake, у проекта — готовый кэш tts.
 """
@@ -42,11 +42,11 @@ def _frame_phases(ctx, tpl, scene, f, sub_size, acc):
     img = bg.frame(T, glow) if glow else bg.frame(T)
     c1 = time.perf_counter()
     if getattr(tpl, "camera", False) and ctx["style"].camera:
-        from studio.lab import apply_camera
+        from studio.packs.lab.background import composite_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
         c2 = time.perf_counter()
-        img.alpha_composite(apply_camera(layer, T))
+        composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
         c2 = time.perf_counter()
@@ -95,7 +95,7 @@ def _size(p: Path):
     return sum(f.stat().st_size for f in p.rglob("*") if f.is_file()) if p.exists() else 0
 
 
-def bench_project(src, workers):
+def bench_project(src, workers, draft=False):
     from studio.assemble import assemble
     src = project.load(src).root
     if not (src / "build" / "timeline.json").exists():
@@ -109,16 +109,16 @@ def bench_project(src, workers):
         shutil.copytree(src / "build" / "tts", dst / "build" / "tts")
         proj = project.load(dst)
         tl = render.load_timeline(proj)
-        workers = workers or proj.cfg["render"].get("workers") or os.cpu_count()
+        workers = workers or proj.cfg["render"].get("workers") or render.default_workers()
         print(f"{src.name}: {tl['size'][0]}×{tl['size'][1]}, {len(tl['scenes'])} сцен, {tl['total_frames']} кадров "
-              f"({tl['total_frames'] / tl['fps']:.0f} с), процессов: {workers}; копия в {work}")
+              f"({tl['total_frames'] / tl['fps']:.0f} с), процессов: {workers}{', черновик' if draft else ''}; копия в {work}")
         t0 = time.time()
         with contextlib.redirect_stdout(io.StringIO()):
-            render.render(proj, workers=workers, log=lambda *a, **k: None)
+            render.render(proj, workers=workers, log=lambda *a, **k: None, draft=draft)
         t_render = time.time() - t0
         t0 = time.time()
         with contextlib.redirect_stdout(io.StringIO()):
-            assemble(proj, log=lambda *a, **k: None)
+            assemble(proj, log=lambda *a, **k: None, draft=draft)
         t_asm = time.time() - t0
         print(f"render: {t_render:.0f} с ({tl['total_frames'] / t_render:.1f} кадр/с), assemble: {t_asm:.0f} с")
         b = proj.build
@@ -137,11 +137,12 @@ def main(argv=None):
     p = sp.add_parser("project")
     p.add_argument("project")
     p.add_argument("--workers", type=int)
+    p.add_argument("--draft", action="store_true")
     a = ap.parse_args(argv)
     if a.cmd == "templates":
         bench_templates(a.format, a.frames)
     else:
-        bench_project(a.project, a.workers)
+        bench_project(a.project, a.workers, a.draft)
 
 
 if __name__ == "__main__":

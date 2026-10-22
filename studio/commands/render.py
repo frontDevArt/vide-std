@@ -10,10 +10,11 @@ def add(sp):
     q.add_argument("--chapter")
     q.add_argument("--workers", type=int)
     q.add_argument("--force", action="store_true")
+    q.add_argument("--draft", action="store_true", help="черновик: полразмера, ultrafast, кэш build/render-draft/")
 
 
 def run(a):
     from ..render import render
     proj = load(resolve_project(a.project))
-    render(proj, a.chapter, a.workers, force=a.force)
+    render(proj, a.chapter, a.workers, force=a.force, draft=a.draft)
     return 0
