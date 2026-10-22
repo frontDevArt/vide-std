@@ -1,5 +1,6 @@
 """Синтез речи с кэшем. Бэкенды: rhvoice (офлайн, проверен), edge (онлайн, лучшее качество),
-piper (офлайн нейросетевой), elevenlabs (онлайн, платный, таймкоды символов).
+piper (офлайн нейросетевой), elevenlabs (онлайн, платный, таймкоды символов),
+fake (тон вместо речи — только тесты и черновики, детерминированный).
 Результат всегда: WAV 48 кГц моно 16 бит, тишина по краям срезана.
 
 Кэш: build/tts/<hash>.wav, ключ = бэкенд+голос+темп+текст (+модель, настройки голоса, voice-override
@@ -14,6 +15,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -207,9 +209,66 @@ def _elevenlabs(text, voice, rate, out_raw):
 BACKENDS = {"rhvoice": _rhvoice, "edge": _edge, "piper": _piper, "elevenlabs": _elevenlabs}
 
 
+# ---------------------------------------------------------------- fake (тесты и черновики)
+# Тон вместо речи: офлайн, без ffmpeg, байт в байт одинаково на любой ОС (только целочисленная арифметика
+# по сэмплам). Длительность слова — по слогам (textutil.weight), паузы — на знаках и границах битов '|',
+# чтобы silences()/_split_bounds и таймкоды слов (.words.json -> триггеры at:, караоке) работали как с живым голосом.
+FAKE_UNIT = 0.16  # с на единицу weight при темпе 100
+FAKE_MIN_WORD = 0.12
+FAKE_GAP = 0.03  # между словами: короче min_len в silences(), паузой не считается
+FAKE_BEAT = 0.12  # граница бита '|' без знака препинания
+FAKE_PAUSE = {",": 0.16, "-": 0.16, ":": 0.22, ";": 0.22, "—": 0.22, "–": 0.22,
+              ".": 0.32, "!": 0.32, "?": 0.32, "…": 0.36}
+FAKE_PERIOD, FAKE_AMP, FAKE_FADE = 240, 9600, 240  # треугольник 200 Гц, ~−11 dBFS, фронты 5 мс
+
+
+def _fake_pause(token: str) -> float:
+    tail = token.rstrip("\"'»”)]")
+    return FAKE_PAUSE.get(tail[-1], 0.0) if tail else 0.0
+
+
+def _fake(text: str, rate: float, out: Path, beats=None):
+    """Пишет готовый (уже «срезанный») WAV и .words.json. beats — тексты битов строки (по '|')."""
+    from .textutil import AUDIO_TAG, weight
+    words = AUDIO_TAG.sub(" ", text).split()
+    ends, n = set(), 0  # индексы слов, после которых кончается бит
+    for b in (beats or [])[:-1]:
+        n += len(AUDIO_TAG.sub(" ", b).split())
+        ends.add(n - 1)
+    k = 100.0 / float(rate)
+    spans, t = [], 0  # [(слово, сэмпл начала, сэмпл конца)]
+    for i, w in enumerate(words):
+        letters = re.sub(r"[^\w]+", "", w)
+        if letters:
+            d = int(round(max(FAKE_MIN_WORD, weight(letters) * FAKE_UNIT) * k * SR))
+            spans.append((w, t, t + d))
+            t += d
+        if i == len(words) - 1:
+            break
+        gap = max(_fake_pause(w), FAKE_BEAT if i in ends else 0.0, FAKE_GAP if letters else 0.0)
+        t += int(round(gap * k * SR))
+    if not spans:
+        raise TTSUnavailable(f"fake: в строке нет слов: {text[:60]!r}")
+    t = spans[-1][2]  # знак после последнего слова — не тишина в конце (её всё равно срезали бы)
+    x = np.zeros(t, dtype=np.int32)
+    for _, a, b in spans:
+        i = np.arange(b - a, dtype=np.int32)
+        tone = (np.abs(i % FAKE_PERIOD - FAKE_PERIOD // 2) - FAKE_PERIOD // 4) * (FAKE_AMP // (FAKE_PERIOD // 4))
+        ramp = np.minimum(np.minimum(i + 1, (b - a) - i), FAKE_FADE)
+        x[a:b] = tone * ramp // FAKE_FADE
+    with wave.open(str(out), "wb") as f:
+        f.setnchannels(1); f.setsampwidth(2); f.setframerate(SR)
+        f.writeframes(x.astype("<i2").tobytes())
+    out.with_suffix(".words.json").write_text(
+        json.dumps([[w, round(a / SR, 3), round(b / SR, 3)] for w, a, b in spans], ensure_ascii=False),
+        encoding="utf-8")
+
+
 def probe(tts_cfg, language="ru") -> str:
     """Проверяет, что синтез реально работает (а не просто «бинарник есть»)."""
     from .lang import profile
+    if tts_cfg["backend"] == "fake":
+        return "ok"
     if tts_cfg["backend"] == "elevenlabs":  # бесплатная проверка: ключ и голос, без синтеза (символы платные)
         _el_request("/user")
         if not tts_cfg.get("voice") or tts_cfg["voice"] in ("auto", "env"):
@@ -237,10 +296,12 @@ def el_call_cfg(tts_cfg: dict, prev=None, nxt=None, voice=None) -> dict:
     return c
 
 
-def cache_key(text: str, tts_cfg: dict, rate: float, prev=None, nxt=None, voice=None) -> str:
+def cache_key(text: str, tts_cfg: dict, rate: float, prev=None, nxt=None, voice=None, beats=None) -> str:
     parts = [tts_cfg["backend"], tts_cfg["voice"], round(float(rate), 1), text]
     if tts_cfg["backend"] == "elevenlabs":  # у офлайн-бэкендов контекста нет — их кэш не трогаем
         parts.append(el_call_cfg(tts_cfg, prev, nxt, voice))
+    if tts_cfg["backend"] == "fake":  # паузы fake зависят от битов '|'
+        parts.append(list(beats or []))
     return stable_hash(parts, 16)
 
 
@@ -253,13 +314,18 @@ def _lead_silence(raw) -> float:
     return float(idx[0]) / SR if len(idx) else 0.0
 
 
-def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt=None, voice=None) -> Path:
-    """prev/nxt — тексты соседних строк, voice — override настроек голоса (оба только для elevenlabs)."""
-    key = cache_key(text, tts_cfg, rate, prev, nxt, voice)
+def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt=None, voice=None,
+          beats=None) -> Path:
+    """prev/nxt — тексты соседних строк, voice — override настроек голоса (оба только для elevenlabs),
+    beats — тексты битов строки (только для fake: паузы на границах '|')."""
+    key = cache_key(text, tts_cfg, rate, prev, nxt, voice, beats)
     out = cache_dir / f"{key}.wav"
     if out.exists() and out.stat().st_size > 1000:
         return out
     cache_dir.mkdir(parents=True, exist_ok=True)
+    if tts_cfg["backend"] == "fake":
+        _fake(text, rate, out, beats)
+        return out
     if tts_cfg["backend"] == "elevenlabs":
         _EL_CFG.clear()
         _EL_CFG.update(el_call_cfg(tts_cfg, prev, nxt, voice))

@@ -1,0 +1,9 @@
+chapter: ch01
+title: "fake tts"
+scenes:
+  - id: s01
+    template: statement
+    lines: ["People say | it takes three weeks to build a habit.", "One careful study | found it takes much longer."]
+  - id: s02
+    template: statement
+    lines: ["Sixty-six days, on average. | The verdict: myth."]

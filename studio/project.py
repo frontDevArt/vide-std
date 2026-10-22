@@ -103,6 +103,8 @@ def load(root) -> Project:
         load_env()  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
         if os.environ.get("ELEVENLABS_MODEL_ID", "").strip():
             cfg["tts"]["model"] = os.environ["ELEVENLABS_MODEL_ID"].strip()
+    if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
+        cfg["tts"]["voice"] = "fake"  # голос не нужен; не берём из LANGS, чтобы doctor не считал fake «синтезом»
     if cfg["tts"].get("voice") in (None, "auto"):
         from .lang import default_voice
         v = default_voice(cfg["language"], cfg["tts"]["backend"])

@@ -106,7 +106,7 @@ def voice_scene(proj: Project, jobs, rate: float, cache):
     lines_out = []
     for raw, text, prev, nxt, voice in jobs:
         segs = segments(raw)
-        wav = T.synth(text, proj.cfg["tts"], rate, cache, prev, nxt, voice)
+        wav = T.synth(text, proj.cfg["tts"], rate, cache, prev, nxt, voice, [tts_text(x) for x in segs])
         x = T.read_wav(wav)
         dur = len(x) / T.SR
         sil = T.silences(x)
@@ -173,6 +173,8 @@ def choose_rate(proj: Project, log=print):
 def layout(proj: Project, log=print) -> dict:
     """Полная раскладка проекта -> build/timeline.json (+ субтитры). Идемпотентно, с кэшем TTS."""
     T.probe(proj.cfg["tts"], proj.cfg["language"])
+    if proj.cfg["tts"]["backend"] == "fake":
+        log("⚠️  tts.backend: fake — тон вместо речи: только для тестов и черновиков, не для публикации")
     from . import gfx
     gfx.apply_style(proj.cfg["style"])  # ширина субтитров — шрифтом стиля
     rate, voiced = choose_rate(proj, log)

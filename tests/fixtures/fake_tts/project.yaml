@@ -1,0 +1,17 @@
+# Фикстура P0.1: минимальный проект на голосе fake (офлайн, детерминированный). Не для рендера.
+title: fake tts fixture
+topic: fake tts fixture
+language: en
+format: vertical
+fps: 30
+target_duration: null
+
+tts:
+  backend: fake
+  voice: auto
+  rate: 105
+
+style:
+  palette: lab
+
+chapters: [ch01]
