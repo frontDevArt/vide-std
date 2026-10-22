@@ -70,5 +70,6 @@ def run(a):
             line(True, "TTS ElevenLabs —", tts.el_check() + " (бесплатная проверка, без синтеза)")
         except Exception as e:
             line(False, "TTS ElevenLabs:", str(e)[:200])
-    print(f"  ℹ️  ядер CPU: {os.cpu_count()}")
+    from ..render import default_workers
+    print(f"  ℹ️  ядер CPU: {os.cpu_count()}, процессов рендера по умолчанию: {default_workers()}")
     return 0 if ok else 1

@@ -1,7 +1,9 @@
 """Рендер: сцена -> mp4 (кадры идут в ffmpeg через pipe, без PNG на диске).
 
 Кэш: build/render/<chapter>/<scene>.mp4 + .key. Ключ = хэш тайминга сцены + кода её шаблона (`codehash`) + стиля.
-Сцены рендерятся параллельно процессами; прерванный рендер продолжается с недоделанных сцен.
+Сцены рендерятся параллельно процессами; длинная сцена — кусками по ~CHUNK кадров (build/render/<chapter>/parts/,
+каждый кусок — свой mp4 с ключевым кадром в начале), куски склеиваются `concat` без перекодирования (P3.3).
+Прерванный рендер продолжается с недоделанных сцен и кусков.
 """
 from __future__ import annotations
 
@@ -192,7 +194,8 @@ def frame(ctx, tpl, scene, f, sub_size):
     return img
 
 
-def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
+def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, f0, f1, key):
+    """Кадры [f0, f1) сцены → out (mp4, первый кадр — ключевой) + out.key."""
     G.apply_style(ctx["style"])  # активный — для хелперов gfx без style= (шаблоны проектов)
     TP.load_project_templates(proj_root)
     t0 = time.time()
@@ -203,7 +206,7 @@ def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
            "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", preset, "-crf", str(crf),
            "-pix_fmt", "yuv420p", "-g", str(fps * 2), "-threads", "1", "-movflags", "+faststart", tmp]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-    for f in range(scene["n_frames"]):
+    for f in range(f0, f1):
         img = frame(ctx, tpl, scene, f, sub_size)
         p.stdin.write(img.convert("RGB").tobytes())
     p.stdin.close()
@@ -211,18 +214,114 @@ def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
     if p.wait() != 0:
         raise RuntimeError(f"ffmpeg ({scene['id']}): {err[-400:]}")
     os.replace(tmp, out)
-    Path(str(out) + ".key").write_text(scene["key"])
-    return scene["id"], scene["n_frames"], time.time() - t0
+    Path(str(out) + ".key").write_text(key)
+    return scene["id"], f1 - f0, time.time() - t0
+
+
+CHUNK = 120  # кадров (4 с при 30 fps): кусок длинной сцены — нет одинокого «хвоста» в конце рендера (P3.3)
+
+
+def chunks(n, size=None):
+    """Границы кусков [f0, f1) сцены из n кадров: поровну, около size кадров; короче 1,5 size — один кусок."""
+    k = max(1, round(n / (size or CHUNK)))
+    return [(n * i // k, n * (i + 1) // k) for i in range(k)]
 
 
 def scene_out(proj, s):
     return proj.bdir("render", s["chapter"]) / f"{s['id']}.mp4"
 
 
+def parts_dir(proj, s):
+    return proj.bdir("render", s["chapter"], "parts")
+
+
+def part_out(proj, s, f0, f1):
+    return parts_dir(proj, s) / f"{s['id']}.{f0:05d}-{f1:05d}.mp4"
+
+
+def part_key(s, f0, f1):
+    return f"{s['key']}:{f0}-{f1}"
+
+
+def _fresh(out, key):
+    k = Path(str(out) + ".key")
+    return out.exists() and k.exists() and k.read_text().strip() == key
+
+
 def is_fresh(proj, s):
-    o = scene_out(proj, s)
-    k = Path(str(o) + ".key")
-    return o.exists() and k.exists() and k.read_text().strip() == s["key"]
+    return _fresh(scene_out(proj, s), s["key"])
+
+
+def join_parts(parts, out):
+    """Куски сцены → один mp4 без перекодирования (параметры кодека у кусков одинаковые)."""
+    lst = Path(str(out) + ".txt")
+    lst.write_text("".join(f"file '{p}'\n" for p in parts))
+    tmp = str(out) + ".part.mp4"
+    r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy",
+                        "-movflags", "+faststart", tmp], capture_output=True, stdin=subprocess.DEVNULL)
+    lst.unlink()
+    if r.returncode:
+        raise RuntimeError(f"ffmpeg concat ({out.name}): {r.stderr.decode(errors='replace')[-400:]}")
+    os.replace(tmp, out)
+
+
+def _finish_scene(proj, s):
+    parts = [part_out(proj, s, f0, f1) for f0, f1 in chunks(s["n_frames"])]
+    out = scene_out(proj, s)
+    join_parts(parts, out)
+    Path(str(out) + ".key").write_text(s["key"])
+    for p in parts_dir(proj, s).glob(f"{s['id']}.*"):  # и куски прежних ключей/границ
+        p.unlink()
+
+
+def default_workers():
+    """Половина логических ядер: у каждого процесса свой ffmpeg (x264 ≈ столько же CPU, сколько рисование кадра).
+    Замер P3.3 (i7-13700, 24 потока): 6 → 195 с, 8 → 166, 12 → 159, 16 → 164, 24 → 185."""
+    return max(1, (os.cpu_count() or 2) // 2)
+
+
+def render_scenes(proj: Project, todo, ctx, workers, log=print, force=False):
+    """Сцены todo → build/render. Длинные — кусками; workers=0 — в этом процессе (тесты)."""
+    sub_size = S.font_size(proj)
+    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"])
+    jobs, left = [], {}  # (сцена, out, f0, f1, ключ); сцена → сколько её кусков ещё рендерится
+    for s in sorted(todo, key=lambda s: -s["n_frames"]):
+        bounds = chunks(s["n_frames"])
+        if len(bounds) == 1:
+            jobs.append((s, scene_out(proj, s), 0, s["n_frames"], s["key"]))
+            continue
+        need = [(f0, f1) for f0, f1 in bounds if force or not _fresh(part_out(proj, s, f0, f1), part_key(s, f0, f1))]
+        jobs += [(s, part_out(proj, s, f0, f1), f0, f1, part_key(s, f0, f1)) for f0, f1 in need]
+        left[id(s)] = len(need)
+        if not need:
+            _finish_scene(proj, s)
+    frames = sum(f1 - f0 for _, _, f0, f1, _ in jobs)
+    t0, done = time.time(), 0
+
+    def finished(s, f0, f1, n, dt):
+        nonlocal done
+        done += n
+        if id(s) in left:
+            left[id(s)] -= 1
+            if not left[id(s)]:
+                _finish_scene(proj, s)
+        el = time.time() - t0
+        part = f" [{f0}–{f1}]" if id(s) in left else ""
+        log(f"  {s['id']}{part}: {n} кадров за {dt:.0f} c ({n / dt:.1f} fps) | всего {done}/{frames}, "
+            f"осталось ~{el / done * (frames - done):.0f} c")
+        sys.stdout.flush()
+
+    if not workers:
+        for s, out, f0, f1, key in jobs:
+            _, n, dt = _render_scene_job(str(proj.root), s, ctx, sub_size, out, *args, f0, f1, key)
+            finished(s, f0, f1, n, dt)
+        return
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, out, *args, f0, f1, key): (s, f0, f1)
+                for s, out, f0, f1, key in jobs}
+        for fu in as_completed(futs):
+            _, n, dt = fu.result()
+            finished(*futs[fu], n, dt)
 
 
 def render(proj: Project, chapter=None, workers=None, log=print, force=False):
@@ -231,23 +330,9 @@ def render(proj: Project, chapter=None, workers=None, log=print, force=False):
     if not todo:
         log("Все сцены актуальны — рендерить нечего.")
         return tl
-    workers = workers or proj.cfg["render"].get("workers") or max(1, (os.cpu_count() or 2))
-    sub_size = S.font_size(proj)
-    frames = sum(s["n_frames"] for s in todo)
-    log(f"Рендер {len(todo)} сцен, {frames} кадров, процессов: {workers}")
-    todo.sort(key=lambda s: -s["n_frames"])
-    t0 = time.time()
-    done = 0
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"])
-    with ProcessPoolExecutor(max_workers=workers) as ex:
-        futs = [ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, scene_out(proj, s), *args) for s in todo]
-        for fu in as_completed(futs):
-            sid, n, dt = fu.result()
-            done += n
-            el = time.time() - t0
-            log(f"  {sid}: {n} кадров за {dt:.0f} c ({n / dt:.1f} fps) | всего {done}/{frames}, "
-                f"осталось ~{el / done * (frames - done):.0f} c")
-            sys.stdout.flush()
+    workers = workers or proj.cfg["render"].get("workers") or default_workers()
+    log(f"Рендер {len(todo)} сцен, {sum(s['n_frames'] for s in todo)} кадров, процессов: {workers}")
+    render_scenes(proj, todo, ctx, workers, log, force)
     return tl
 
 

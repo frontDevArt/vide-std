@@ -109,7 +109,7 @@ def bench_project(src, workers):
         shutil.copytree(src / "build" / "tts", dst / "build" / "tts")
         proj = project.load(dst)
         tl = render.load_timeline(proj)
-        workers = workers or proj.cfg["render"].get("workers") or os.cpu_count()
+        workers = workers or proj.cfg["render"].get("workers") or render.default_workers()
         print(f"{src.name}: {tl['size'][0]}×{tl['size'][1]}, {len(tl['scenes'])} сцен, {tl['total_frames']} кадров "
               f"({tl['total_frames'] / tl['fps']:.0f} с), процессов: {workers}; копия в {work}")
         t0 = time.time()
