@@ -8,9 +8,9 @@ from __future__ import annotations
 import sys
 import types
 
-from .packs.lab import background, base, crowd, elements, hero, templates, triggers
+from .packs.lab import background, base, check, crowd, elements, hero, templates, triggers
 
-_PARTS = (elements, background, triggers, base, hero, crowd, templates)
+_PARTS = (elements, background, triggers, base, check, hero, crowd, templates)
 
 for _m in _PARTS:
     globals().update({k: v for k, v in vars(_m).items() if not k.startswith("__") and k != "annotations"})

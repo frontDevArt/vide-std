@@ -70,7 +70,7 @@ eye, chart, star, phone, hourglass, target, brain, lock.
 Файл `projects/<slug>/templates/my.py`:
 ```python
 from studio.templates import P, Template, template
-from studio import gfx as G
+from studio import anim as A, gfx as G
 
 @template("big_quote", doc="Цитата", params={"text": P("", "текст цитаты")}, beats="с бита 0",
           formats=("vertical", "horizontal"))
@@ -79,9 +79,12 @@ class BigQuote(Template):
         self.spr = G.text_sprite(self.p.get("text", ""), int(80 * self.u), "black", glow=int(18 * self.u),
                                  maxw=int(self.W * 0.8))
     def draw(self, img, t, T):
-        k = G.prog(t, self.bt(0, 0.2), self.bt(0, 0.2) + 0.5)
-        G.blitc(img, self.spr, self.W / 2, self.H * 0.42, G.eo(k) * self.io(t))
+        k = A.span(t, self.bt(0, 0.2), self.bt(0, 0.2) + 0.5)
+        G.blitc(img, self.spr, self.W / 2, self.H * 0.42, A.eo(k) * self.io(t))
 ```
+Прогресс и кривые — `studio/anim.py` (`from studio import anim as A`): `A.span(t, a, b)` — 0..1 на отрезке [a, b],
+`A.ramp(t, start, dur)` — 0..1 за `dur` секунд от `start`. Старые `G.prog` (= `span`) и `M.prog` (= `ramp`) работают:
+имя одно, семантика разная — в новом коде не использовать.
 Шаблон проекта регистрируется в пространстве `project` (`project.big_quote`), в сценарии — просто `big_quote`.
 Имя, совпадающее со встроенным (`title`, `lab_flow`), — ошибка `validate` и рендера: встроенный не перетирается.
 `params`: просто значение по умолчанию (тип выводится из него) или `P(умолчание, "описание", type=…)`;
@@ -99,7 +102,7 @@ class BigQuote(Template):
 Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `channel/STYLE.md`, эталон движения —
 `channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
 Код: пакет `studio/packs/lab/` (`background` — фон и камера, `elements` — примитивы и фирменные элементы,
-`triggers` — `at`, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны; полные имена `lab.flow` и т. п.), `studio/motion.py` (кривые и тайминги в кадрах @30), `studio/sfx.py` (звуки).
+`triggers` — `at`, `check` — их проверка, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны; полные имена `lab.flow` и т. п.), `studio/motion.py` (тайминги в кадрах @30), `studio/anim.py` (кривые), `studio/sfx.py` (звуки).
 
 | Шаблон (§5 STYLE) | Для чего | Главные params |
 |---|---|---|

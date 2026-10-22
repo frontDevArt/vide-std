@@ -17,6 +17,9 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 from . import style as SM
+# прогресс и кривые — studio/anim.py (P2.6); prog здесь — span(t, a, b): отрезок [a, b]
+from .anim import clamp, ei, eio, eo, eob, lerp  # noqa: F401
+from .anim import span as prog  # noqa: F401
 from .style import (ASSETS, DEFAULT_FONT, MOOD_KEYS, MOODS, PALETTES, STYLES, Style,  # noqa: F401
                     hex_rgb, mood_colors)
 
@@ -69,37 +72,6 @@ def col(c, a=255, style=None):
     return _st(style).col(c, a)
 
 
-# ------------------------------------------------------------------ easing
-def clamp(x, a=0.0, b=1.0):
-    return a if x < a else b if x > b else x
-
-
-def prog(t, a, b):
-    return clamp((t - a) / (b - a)) if b > a else float(t >= a)
-
-
-def lerp(a, b, k):
-    return a + (b - a) * k
-
-
-def eo(k):  # ease out cubic
-    return 1 - (1 - k) ** 3
-
-
-def eio(k):  # ease in-out cubic
-    return 4 * k ** 3 if k < 0.5 else 1 - (-2 * k + 2) ** 3 / 2
-
-
-def eob(k, s=1.6):  # ease out back
-    k -= 1
-    return 1 + (s + 1) * k ** 3 + s * k ** 2
-
-
-def ei(k):
-    return k ** 3
-
-
-# ------------------------------------------------------------------ fonts
 WEIGHTS = {"black": "Black", "extrabold": "ExtraBold", "bold": "Bold", "semibold": "SemiBold",
            "medium": "Medium", "regular": "Regular", "light": "Light"}
 FALLBACKS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",

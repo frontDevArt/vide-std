@@ -37,6 +37,9 @@ def test_every_pack_file_stales_its_scenes(pack, gallery, monkeypatch):
         with monkeypatch.context() as m:
             _edit(m, f)
             stale = _stale(before, _keys(gallery))
+        if f.name == "check.py":  # проверка триггеров для validate/voice — не рисует
+            assert stale == set(), f
+            continue
         assert pack in stale, f
         if f.name != "background.py":  # фон lab рисует render для всех сцен стиля lab
             assert stale == {pack}, f
@@ -44,7 +47,7 @@ def test_every_pack_file_stales_its_scenes(pack, gallery, monkeypatch):
 
 def test_drawing_core_stales_everything(gallery, monkeypatch):
     before = _keys(gallery)
-    for name in ("gfx.py", "style.py", "subs.py", "render.py"):
+    for name in ("anim.py", "gfx.py", "motion.py", "style.py", "subs.py", "render.py"):
         with monkeypatch.context() as m:
             _edit(m, STUDIO / name)
             assert _stale(before, _keys(gallery)) == {"core", "phone", "lab"}, name

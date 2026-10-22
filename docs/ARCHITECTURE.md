@@ -22,10 +22,11 @@
 | `calibration.py` | замер слов/мин голоса после `voice` → `build/voice_calibration.json`; темп для `validate`/`status` |
 | `subs.py` | нарезка субтитров по битам, перенос ≤ N строк по реальной ширине шрифта, SRT/VTT |
 | `style.py` | `Style` — палитра, настроение, шрифты по ролям, фон, камера, режим субтитров; строится из `project.yaml → style`, неизменяемый; `use()`/`active()` — стиль для хелперов gfx без `style=` |
-| `gfx.py` | шрифты, easing, спрайты со свечением, фон, иконки, телефон (`style=` у хелперов, стиль — в ключе кэшей) |
-| `packs/` | пакеты шаблонов сцен: `registry.py` (реестр с пространствами имён `core.title`, `lab.flow`, `project.<имя>`; старые плоские имена — алиасы; коллизия → ошибка; `Param` — тип, умолчание, описание; `formats`), `base.py` (`Template`), `core/` (title, statement, bullets, counter, outro), `phone/` (телефон с лентой + 5 шаблонов первого ролика), `lab/` (пресет канала: `background` — фон и камера, `elements` — примитивы и фирменные элементы, `triggers` — `at`, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны); `load_project_templates` — шаблоны проекта в пространство `project` |
+| `anim.py` | прогресс и кривые для всех пакетов: `span(t, a, b)` — отрезок, `ramp(t, start, dur)` — длительность; кубические `eo`/`eio`/`eob`/`ei`, CSS-кривые STYLE §6 (`ease_out_expo`, `ease_in_out`, `ease_in`), `spring` |
+| `gfx.py` | шрифты, easing (из `anim`, `prog` = `span`), спрайты со свечением, фон, иконки, телефон (`style=` у хелперов, стиль — в ключе кэшей) |
+| `packs/` | пакеты шаблонов сцен: `registry.py` (реестр с пространствами имён `core.title`, `lab.flow`, `project.<имя>`; старые плоские имена — алиасы; коллизия → ошибка; `Param` — тип, умолчание, описание; `formats`), `base.py` (`Template`), `core/` (title, statement, bullets, counter, outro), `phone/` (телефон с лентой + 5 шаблонов первого ролика), `lab/` (пресет канала: `background` — фон и камера, `elements` — примитивы и фирменные элементы, `triggers` — `at`, `check` — проверка `at` для validate/voice, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны); `load_project_templates` — шаблоны проекта в пространство `project` |
 | `templates.py`, `lab.py` | прежние входы (шаблоны проектов, тесты): те же имена из `packs/`; запись `studio.lab.<имя> = …` доходит до модуля пакета |
-| `motion.py` | кривые и тайминги STYLE §6 (кадры @30), камера как функция глобального времени |
+| `motion.py` | тайминги STYLE §6 (кадры @30) и составные анимации (кривые — из `anim`, `prog` = `ramp`), камера как функция глобального времени |
 | `sfx.py` | синтез звуков появления, дорожка SFX по событиям шаблонов (−28…−32 dB к голосу) |
 | `render.py` | непрерывное состояние между сценами, параллельный рендер с кэшем, stills |
 | `codehash.py` | хэш кода рисования для ключа сцены: файлы ищутся по импортам шаблона сцены, а не по списку |

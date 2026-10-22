@@ -298,8 +298,18 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   сцены своего пакета и только их, кроме фона lab; `gfx`/`style`/`subs`/`render` — все сцены; `tts`/`timing`/
   `validate`/`cli`/`qa` — ни одной; новый модуль находится по импорту; проектный шаблон — все сцены); `pytest` 276 ✅,
   `selftest` ✅ (golden байт в байт).
-- [ ] **P2.6 `studio/anim.py`:** единые easing и функции прогресса с разными именами (`span(t, a, b)` и `ramp(t, start, dur)`),
+- [x] **P2.6 `studio/anim.py`:** единые easing и функции прогресса с разными именами (`span(t, a, b)` и `ramp(t, start, dur)`),
   старые `gfx.prog`/`motion.prog` — алиасы. Убрать циклический импорт `templates` ↔ `lab`.
+  *Сделано:* `studio/anim.py` — `clamp`, `lerp`, `span`, `ramp`, кубические `eo`/`eio`/`eob`/`ei` (и длинные имена
+  `ease_out_cubic` …), `bezier` и кривые STYLE §6, `spring`; тела перенесены без правок. В `gfx` и `motion` остались
+  только импорты: `gfx.prog is anim.span`, `motion.prog is anim.ramp`, `motion._bezier is anim.bezier`, дубли
+  `clamp`/`lerp` ушли. Цикл `templates ↔ lab` исчез ещё в P2.4; оставался ленивый `lab/triggers ↔ lab/base`
+  (`trigger_errors` импортировал `LabTemplate`) — проверка вынесена в `packs/lab/check.py`, `triggers.py` теперь
+  без импортов пакета. `check.py` не рисует, поэтому в ключ сцены не входит. Вне рисования остался ленивый
+  `project → tts.load_env` — это секреты, разбирается в P2.8. Проверено: `tests/test_anim.py` (семантика
+  `span`/`ramp`, старые имена — те же объекты, концы кривых, нет циклов импорта в `studio/` кроме `project/tts`);
+  в `test_codehash` правка `anim.py`/`motion.py` устаревает все сцены, `check.py` — ни одной; `pytest` 280 ✅,
+  `selftest` ✅ (кадры в процессе байт в байт, макс 0).
 - [ ] **P2.7 Логи из одного места** `studio/log.py` → `projects/<slug>/logs/<команда>-<время>.log`; в консоли — как сейчас.
 - [ ] **P2.8 Резолвер путей `studio/workspace.py`:** где проекты, каналы, брифы, секреты. Пока корень один и поведение
   прежнее, но это точка входа мультистудии (ROADMAP A1). Убрать `STUDIO_ROOT / "projects"` из остального кода.
