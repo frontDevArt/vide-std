@@ -39,9 +39,16 @@
   *Замечено (движок не трогали):* `*слово*,` — акцент не закрывается перед знаком препинания, `*` виден в кадре
   (ch02/s06, → P1.11); `phone_*` в horizontal и `lab_chapter`/`lab_crowd`/вердикт в vertical обрезаны (STYLE §12);
   Pillow 12 предупреждает об устаревшем `Image.fromarray(..., mode)` (к P0.6).
-- [ ] **P0.3 Unit-тесты чистых функций:** `timing._split_bounds`, `choose_rate`/`base_total`, `subs.wrap`/`chunks_for_scene`,
+- [x] **P0.3 Unit-тесты чистых функций:** `timing._split_bounds`, `choose_rate`/`base_total`, `subs.wrap`/`chunks_for_scene`,
   `textutil.*`, `templates.plural`, `motion` (bezier, spring), `gfx.mood_colors`/`chapter_glow`, `tts.cache_key`
   (стабильность ключа — защита кэша и денег), `lab.at` (разбор триггеров).
+  *Сделано:* 111 тестов в 7 файлах (`test_textutil`, `test_timing_units`, `test_subs`, `test_motion`, `test_gfx_colors`,
+  `test_tts_cache_key`, `test_lab_at`), ~3 с, без синтеза и шрифтов: `choose_rate` — через подмену `measure`,
+  субтитры — моноширинный «шрифт». Якоря: ключи кэша всех бэкендов (SHA), значения кривых ease. Баги B2/B11 тестами
+  не закреплены — их падающие тесты в P1.2.
+  *Замечено (движок не трогали):* `spring` — перелёт 110,6 % около x = 0,36, а не «≈108 % около 0,45» (докстринг);
+  `lab.at(n)` для несуществующего бита вычитает опережение и из запасного значения (конец сцены − 4 кадра);
+  `choose_rate` падает с `KeyError`, если в `tts` нет `rate` (из `project.load` он всегда есть).
 - [ ] **P0.4 Golden-тесты:** `timeline.json` и `.srt` фикстуры — точное совпадение; кадры (по 2–3 на сцену) — PNG
   с допуском (макс. разница ≤ 2/255, средняя ≤ 0,1). Обновление golden — только явным флагом `--update-golden`.
 - [ ] **P0.5 `python -m studio selftest`** заменяет ручной регресс: фикстура → voice (fake) → render → assemble → qa →
