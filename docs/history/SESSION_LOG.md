@@ -124,3 +124,5 @@ CI на GitHub не запускался (нет push). Причина пута�
 «Продолжай план» = `/roadmap` (CLAUDE.md).
 Ветки с этапа 1: **один этап = одна ветка `stage-N`**, пункт = коммит в ней, в конце этапа — `merge --no-ff` в `master`
 и push (CI). Правило 2 REFACTOR_PLAN, `/roadmap` п. 0, 6–7, CLAUDE.md.
+Первый CI на GitHub: Linux красный из-за ОС — CRLF в `timeline.json`/`.srt` (теперь LF везде, golden переведены)
+и раскладки текста raqm в Pillow для Linux (теперь `Layout.BASIC`, как на Windows; кадры golden прежние).

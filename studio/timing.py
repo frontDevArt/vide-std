@@ -258,7 +258,7 @@ def layout(proj: Project, log=print) -> dict:
     out = proj.build / "timeline.json"
     txt = json.dumps(tl, ensure_ascii=False, indent=1)
     if not out.exists() or out.read_text(encoding="utf-8") != txt:  # не трогаем файл без изменений
-        out.write_text(txt, encoding="utf-8")
+        out.write_text(txt, encoding="utf-8", newline="\n")  # LF на любой ОС: golden сравнивается байт в байт
     S.write_srt(proj, tl)
     return tl
 

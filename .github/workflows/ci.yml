@@ -71,4 +71,5 @@ jobs:
         with:
           name: golden-diff-${{ matrix.os }}
           path: tests/.golden-diff/
+          include-hidden-files: true  # .golden-diff — скрытая папка, без этого артефакт пустой
           if-no-files-found: ignore

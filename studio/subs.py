@@ -110,10 +110,10 @@ def write_srt(proj, tl):
         for c in s["subs"]:
             items.append((s["start"] + c["t0"], s["start"] + c["t1"], "\n".join(c["lines"])))
     d = proj.bdir("final")
-    with open(d / f"{proj.slug}.srt", "w", encoding="utf-8") as f:
+    with open(d / f"{proj.slug}.srt", "w", encoding="utf-8", newline="\n") as f:  # LF на любой ОС (golden)
         for i, (a, b, t) in enumerate(items, 1):
             f.write(f"{i}\n{_ts(a)} --> {_ts(b)}\n{t}\n\n")
-    with open(d / f"{proj.slug}.vtt", "w", encoding="utf-8") as f:
+    with open(d / f"{proj.slug}.vtt", "w", encoding="utf-8", newline="\n") as f:
         f.write("WEBVTT\n\n")
         for a, b, t in items:
             f.write(f"{_ts(a, '.')} --> {_ts(b, '.')}\n{t}\n\n")

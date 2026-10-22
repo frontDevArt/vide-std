@@ -191,20 +191,25 @@ def _font_file(weight):
 WEIGHT_NUM = {"black": 900, "extrabold": 800, "bold": 700, "semibold": 600, "medium": 500, "regular": 400, "light": 300}
 
 
+# Раскладка текста одна на всех ОС: Pillow с raqm (обычно Linux) ставит кернинг иначе, чем без него (Windows),
+# и кадры расходятся с golden. BASIC = как на Windows.
+LAYOUT = ImageFont.Layout.BASIC
+
+
 @functools.lru_cache(None)
 def font(size, weight="bold", family=None):
     """family: head | num | mono — шрифт роли из пресета (локальный файл из assets/). Без пресета — как раньше."""
     files = STYLE.get("fonts") or {}
     rel = files.get(family or "head")
     if rel:
-        f = ImageFont.truetype(os.path.join(ASSETS, rel), int(size))
+        f = ImageFont.truetype(os.path.join(ASSETS, rel), int(size), layout_engine=LAYOUT)
         try:
             ax = f.get_variation_axes()[0]
             f.set_variation_by_axes([max(ax["minimum"], min(ax["maximum"], WEIGHT_NUM.get(weight, 700)))])
         except Exception:
             pass
         return f
-    return ImageFont.truetype(_font_file(weight), int(size))
+    return ImageFont.truetype(_font_file(weight), int(size), layout_engine=LAYOUT)
 
 
 # ------------------------------------------------------------------ compositing

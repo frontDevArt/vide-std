@@ -87,8 +87,12 @@
   *Сделано:* `.github/workflows/ci.yml` — push в `master`, PR, ручной запуск; Python 3.14 (как при съёмке golden),
   ffmpeg из apt / choco, `PYTHONUTF8=1`, `ruff check --select E9,F63,F7,F82`, `pytest`, `selftest`; при падении —
   артефакт `golden-diff-<ос>` из `tests/.golden-diff/`. Локально шаги зелёные (135 тестов, selftest 127 с).
-  *Не проверено:* сам прогон на GitHub — нужен push. Linux впервые сверит golden, снятые на Windows (шрифты
-  из `assets/fonts/`, Pillow с тем же FreeType из wheel): если покраснеет — разбирать артефакт, а не обновлять golden.
+  *Первый прогон на GitHub (2026-10-22):* Windows ✅, Linux ❌ — две зависимости от ОС, не движок. (1) `timeline.json`,
+  `.srt`, `.vtt` писались текстовым режимом: на Windows CRLF, на Linux LF → теперь всегда `newline="\n"`, golden
+  переведены CRLF → LF (содержимое то же, `git diff --ignore-cr-at-eol` пуст). (2) Кадры: текст разошёлся до 233/255
+  по буквам — Pillow на Linux раскладывает через raqm (свой кернинг), на Windows raqm нет → `gfx.LAYOUT =
+  ImageFont.Layout.BASIC` для всех шрифтов, кадры на Windows те же, golden кадров не менялись. Артефакт
+  `golden-diff` был пуст: папка скрытая → `include-hidden-files: true`.
 - [x] **P0.8 Базовые замеры → `docs/history/BENCH.md`:** кадров/с по каждому шаблону (1 процесс), время selftest,
   полный рендер `fake-discounts` (время, 24 процесса), размер `build/`. Это точка отсчёта для этапов 3–4.
   *Сделано:* `tools/bench.py` (`templates` — кадр/с и доли фаз кадра: фон / шаблон / камера / субтитры / RGB;
