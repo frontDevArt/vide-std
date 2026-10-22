@@ -8,7 +8,8 @@ fake (тон вместо речи — только тесты и чернови
 Повторный запуск не синтезирует заново. Таймкоды слов (если бэкенд их даёт) — build/tts/<hash>.words.json,
 времена уже относительно срезанного WAV.
 
-Ключи — только из окружения или .env в корне студии (он в .gitignore). В лог и в чат ключ не выводится.
+Ключи — только из окружения или .env рабочей области (studio/workspace.py; он в .gitignore).
+В лог и в чат ключ не выводится.
 """
 from __future__ import annotations
 
@@ -25,7 +26,9 @@ from pathlib import Path
 
 import numpy as np
 
-from .project import STUDIO_ROOT, stable_hash
+from .project import STUDIO_ROOT, stable_hash  # noqa: F401 — STUDIO_ROOT: старое имя
+from . import workspace
+from .workspace import load_env  # noqa: F401 — tts.load_env: старое имя
 
 SR = 48000
 TRIM = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
@@ -37,22 +40,7 @@ class TTSUnavailable(RuntimeError):
     pass
 
 
-def load_env():
-    """KEY=VALUE из <студия>/.env -> os.environ (не перетирая уже заданные). Пустые значения пропускаются."""
-    f = STUDIO_ROOT / ".env"
-    if not f.exists():
-        return
-    for line in f.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        k, v = k.strip(), v.strip().strip('"').strip("'")
-        if v and k not in os.environ:
-            os.environ[k] = v
-
-
-load_env()
+workspace.load_env()
 
 
 def run(cmd, **kw):
@@ -62,7 +50,7 @@ def run(cmd, **kw):
 
 # ---------------------------------------------------------------- backends
 def _rhvoice(text, voice, rate, out_raw):
-    exe = STUDIO_ROOT / "tools" / "rhvoice" / "rhvoice"
+    exe = workspace.current().tools / "rhvoice" / "rhvoice"
     if not exe.exists():
         raise TTSUnavailable("RHVoice не установлен: bash tools/setup_rhvoice.sh")
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
@@ -129,7 +117,7 @@ def _piper(text, voice, rate, out_raw):
     exe = shutil.which("piper")
     model = Path(voice)
     if not model.is_absolute():
-        model = STUDIO_ROOT / "tools" / "piper-voices" / f"{voice}.onnx"
+        model = workspace.current().tools / "piper-voices" / f"{voice}.onnx"
     if not exe or not model.exists():
         raise TTSUnavailable("piper или модель не найдены (см. docs/TTS.md)")
     r = subprocess.run([exe, "--model", str(model), "--output_file", str(out_raw),
@@ -145,7 +133,6 @@ EL_DEFAULTS = {"model": "eleven_multilingual_v2", "stability": 0.5, "similarity_
 EL_VOICE_KEYS = ("stability", "similarity_boost", "style", "use_speaker_boost", "speed", "model")  # voice: сцены/строки
 EL_SPEED = (0.7, 1.2)  # диапазон speed, который принимает API
 _RAW_WORDS = {}  # out_raw -> [[слово, t0, t1]] относительно сырого звука (до срезки тишины)
-_EL_CFG = {}  # настройки текущего вызова: проектные + voice-override + previous_text/next_text
 
 
 def _el_key():
@@ -181,9 +168,10 @@ def _el_request(path, body=None, method="GET"):
         raise TTSUnavailable(f"ElevenLabs недоступен: {e.reason}")
 
 
-def _elevenlabs(text, voice, rate, out_raw):
-    """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова."""
-    c = dict(EL_DEFAULTS, **_EL_CFG)
+def _elevenlabs(text, voice, rate, out_raw, cfg=None):
+    """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова.
+    cfg — настройки вызова (el_call_cfg): проектные + voice-override + previous_text/next_text."""
+    c = dict(EL_DEFAULTS, **(cfg or {}))
     speed = max(EL_SPEED[0], min(EL_SPEED[1], float(c.get("speed") or rate / 100.0)))
     body = {"text": text, "model_id": c["model"],
             "voice_settings": {"stability": c["stability"], "similarity_boost": c["similarity_boost"],
@@ -346,11 +334,9 @@ def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt
     if tts_cfg["backend"] == "fake":
         _fake(text, rate, out, beats)
         return out
-    if tts_cfg["backend"] == "elevenlabs":
-        _EL_CFG.clear()
-        _EL_CFG.update(el_call_cfg(tts_cfg, prev, nxt, voice))
     raw = cache_dir / f"{key}.raw{'.mp3' if tts_cfg['backend'] in ('edge', 'elevenlabs') else '.wav'}"
-    BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw)
+    extra = {"cfg": el_call_cfg(tts_cfg, prev, nxt, voice)} if tts_cfg["backend"] == "elevenlabs" else {}
+    BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw, **extra)
     if not raw.exists() or raw.stat().st_size < 1000:
         raise TTSUnavailable(f"Синтез не дал звука для: {text[:60]!r}")
     words = _RAW_WORDS.pop(str(raw), None)

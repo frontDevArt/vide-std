@@ -26,7 +26,11 @@ def test_covers_every_template():
     for ch in yaml.safe_load((FIXTURE / "project.yaml").read_text(encoding="utf-8"))["chapters"]:
         data = yaml.safe_load((FIXTURE / "script" / f"{ch}.yaml").read_text(encoding="utf-8"))
         used |= {s["template"] for s in data["scenes"]}
-    assert used == set(REGISTRY), (set(REGISTRY) - used, used - set(REGISTRY))
+    used = {REGISTRY.canonical(n) or n for n in used}  # в фикстуре — старые имена (алиасы)
+    # commerce (P2.9) пришёл на этапе 2, где golden меняться не может; рисование проверяет test_commerce.py
+    # (lab_anchor ≡ commerce.price_tag, листы fake-discounts). В фикстуру — вместе с ближайшей сменой golden.
+    full = {n for n in REGISTRY.templates() if not n.startswith("commerce.")}
+    assert used == full, (full - used, used - full)
 
 
 def test_validate_is_clean(tmp_path, capsys):

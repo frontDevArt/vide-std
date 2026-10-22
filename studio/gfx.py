@@ -16,94 +16,37 @@ import subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-# ------------------------------------------------------------------ palette
-PALETTES = {
-    "neon": {
-        "bg_top": (7, 6, 16), "bg_bot": (14, 10, 32), "text": (244, 241, 255), "dim": (141, 134, 181),
-        "cyan": (56, 243, 255), "magenta": (255, 61, 242), "violet": (139, 92, 255),
-        "lime": (182, 255, 61), "amber": (255, 194, 61), "red": (255, 77, 109),
-        "panel": (20, 17, 40), "accent": (56, 243, 255), "accent2": (255, 61, 242),
-    },
-    "calm": {
-        "bg_top": (8, 14, 18), "bg_bot": (10, 24, 30), "text": (236, 248, 246), "dim": (126, 160, 160),
-        "cyan": (90, 230, 210), "magenta": (255, 140, 120), "violet": (120, 150, 255),
-        "lime": (170, 240, 120), "amber": (255, 205, 110), "red": (255, 110, 110),
-        "panel": (16, 30, 36), "accent": (90, 230, 210), "accent2": (255, 205, 110),
-    },
-    # канал Notes From The Mind: channel/STYLE.md, раздел 2. Цвета вердиктов — только для вердиктов.
-    "lab": {
-        "bg_top": (10, 13, 20), "bg_bot": (10, 13, 20), "bg": (10, 13, 20), "bg2": (17, 23, 38),
-        "text": (238, 242, 248), "dim": (139, 149, 167),
-        "cyan": (61, 214, 245), "magenta": (155, 140, 255), "violet": (155, 140, 255),
-        "lime": (52, 211, 153), "amber": (251, 191, 36), "red": (242, 84, 91),
-        "panel": (17, 23, 38), "accent": (61, 214, 245), "accent2": (155, 140, 255),
-        "true": (52, 211, 153), "half": (251, 191, 36), "myth": (242, 84, 91), "noev": (139, 149, 167),
-        "ink": (20, 28, 46),
-    },
-}
-PAL = dict(PALETTES["neon"])
+from . import style as SM
+# прогресс и кривые — studio/anim.py (P2.6); prog здесь — span(t, a, b): отрезок [a, b]
+from .anim import clamp, ei, eio, eo, eob, lerp  # noqa: F401
+from .anim import span as prog  # noqa: F401
+from .style import (ASSETS, DEFAULT_FONT, MOOD_KEYS, MOODS, PALETTES, STYLES, Style,  # noqa: F401
+                    hex_rgb, mood_colors)
 
-# Пресет = палитра + (необязательно) фон, шрифты по ролям, камера. Без записи здесь — прежнее поведение.
-ASSETS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
-STYLES = {
-    "lab": {
-        "background": "lab",          # studio/lab.py: LabBackground
-        "camera": True,                # дрейф камеры для шаблонов с camera = True
-        "subs": "karaoke",             # слова загораются по мере произнесения
-        "fonts": {"head": "fonts/Manrope-VF.ttf", "num": "fonts/Unbounded-VF.ttf", "mono": "fonts/JetBrainsMono-VF.ttf"},
-    },
-}
-STYLE = {}
-STYLE_NAME = "neon"
-STYLE_KEY = ("neon", None, ())
-
-# Цветовые настроения поверх палитры (channel/STYLE.md §14): подсветки фона + второй акцент.
-# `lab` — значения самой палитры, т.е. «без настроения». Каркас (bg, accent, вердикты) не трогаем.
-MOODS = {
-    "lab": {"glow_cool": (61, 214, 245), "glow_warm": (155, 140, 255), "accent2": (155, 140, 255)},
-    "night": {"glow_cool": (91, 124, 255), "glow_warm": (155, 140, 255), "accent2": (109, 124, 255)},
-    "ember": {"glow_cool": (61, 214, 245), "glow_warm": (255, 159, 107), "accent2": (247, 143, 179)},
-    "deep": {"glow_cool": (43, 179, 201), "glow_warm": (109, 124, 255), "accent2": (165, 200, 255)},
-    "orchid": {"glow_cool": (61, 214, 245), "glow_warm": (213, 140, 255), "accent2": (213, 140, 255)},
-}
-MOOD_KEYS = ("glow_cool", "glow_warm", "accent2")
+# ------------------------------------------------------------------ style
+# Палитры, пресеты и настроения — в studio/style.py (P2.2); имена остаются и здесь. Хелперы ниже принимают
+# style=; без него — активный стиль (style.use). Кэши держат стиль в ключе.
+def _st(style):
+    return style or SM.active()
 
 
-def hex_rgb(s):
-    s = str(s).strip().lstrip("#")
-    if not re.fullmatch(r"[0-9a-fA-F]{6}", s):
-        raise ValueError(f"цвет '{s}' — нужен #RRGGBB")
-    return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
-
-
-def mood_colors(mood=None, overrides=None, base=None):
-    """Цвета настроения: {glow_cool, glow_warm, accent2}. Без настроения — accent/accent2 палитры."""
-    base = base or PAL
-    out = {"glow_cool": base["accent"], "glow_warm": base["accent2"], "accent2": base["accent2"]}
-    if mood:
-        if mood not in MOODS:
-            raise ValueError(f"нет настроения '{mood}' (есть: {', '.join(MOODS)})")
-        out.update(MOODS[mood])
-    for k, v in (overrides or {}).items():
-        if k not in MOOD_KEYS:
-            raise ValueError(f"style.overrides.{k}: можно только {', '.join(MOOD_KEYS)}")
-        out[k] = hex_rgb(v)
-    return out
+def __getattr__(name):
+    """Совместимость: PAL / STYLE / FONT_FAMILY / STYLE_NAME / STYLE_KEY — снимки активного стиля (только чтение).
+    Новый код берёт `self.style` (шаблон) или `ctx["style"]`."""
+    st = SM.active()
+    views = {"PAL": lambda: dict(st.pal), "STYLE": lambda: dict(st.preset), "FONT_FAMILY": lambda: st.font,
+             "STYLE_NAME": lambda: st.palette, "STYLE_KEY": lambda: st.key}
+    if name in views:
+        return views[name]()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def set_palette(name, mood=None, overrides=None):
-    global STYLE_NAME, STYLE_KEY
-    PAL.clear(); PAL.update(PALETTES.get(name, PALETTES["neon"]))
-    PAL.update(mood_colors(mood, overrides))
-    STYLE.clear(); STYLE.update(STYLES.get(name, {}))
-    key = (name, mood, tuple(sorted((overrides or {}).items())))
-    STYLE_NAME = name
-    if STYLE_KEY != key:
-        STYLE_KEY = key
-        font.cache_clear(); text_sprite.cache_clear()
+    """Старое имя: палитра + настроение при прежнем семействе шрифта."""
+    return SM.use(Style(name, mood, tuple(sorted((overrides or {}).items())), SM.active().font))
 
 
-def chapter_glow(spec):
+def chapter_glow(spec, style=None):
     """script/chNN.yaml → glow: <настроение> | {cool: "#hex", warm: "#hex"} → (cool, warm) или None."""
     if not spec:
         return None
@@ -111,65 +54,24 @@ def chapter_glow(spec):
         m = mood_colors(spec)
         return m["glow_cool"], m["glow_warm"]
     if isinstance(spec, dict) and set(spec) <= {"cool", "warm"}:
-        return (hex_rgb(spec["cool"]) if "cool" in spec else PAL.get("glow_cool", PAL["accent"]),
-                hex_rgb(spec["warm"]) if "warm" in spec else PAL.get("glow_warm", PAL["accent2"]))
+        pal = _st(style).pal
+        return (hex_rgb(spec["cool"]) if "cool" in spec else pal.get("glow_cool", pal["accent"]),
+                hex_rgb(spec["warm"]) if "warm" in spec else pal.get("glow_warm", pal["accent2"]))
     raise ValueError(f"glow: {spec!r} — нужно имя настроения или {{cool, warm}}")
 
 
 def apply_style(style):
-    """project.yaml → style: palette, mood, overrides, font. Единственная точка применения стиля: layout, prepare
-    (stills), воркеры рендера и qa зовут её одинаково — субтитры переносятся и меряются тем шрифтом, что рисуются."""
-    global FONT_FAMILY
-    family = style.get("font") or DEFAULT_FONT
-    if family != FONT_FAMILY:
-        FONT_FAMILY = family
-        _font_file.cache_clear(); font.cache_clear(); text_sprite.cache_clear()
-    set_palette(style.get("palette", "neon"), style.get("mood"), style.get("overrides"))
+    """project.yaml → style: palette, mood, overrides, font → активный `Style` (его же и возвращает). Одна точка:
+    layout, prepare (stills), воркеры рендера и qa зовут её одинаково — субтитры переносятся и меряются тем
+    шрифтом, что рисуются."""
+    return SM.use(style if isinstance(style, Style) else Style.from_cfg(style))
 
 
-def col(c, a=255):
+def col(c, a=255, style=None):
     """'cyan' | (r,g,b) | '#rrggbb' -> (r,g,b,a)"""
-    if isinstance(c, str):
-        if c.startswith("#"):
-            c = tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))
-        else:
-            c = PAL.get(c, PAL["accent"])
-    return (c[0], c[1], c[2], a)
+    return _st(style).col(c, a)
 
 
-# ------------------------------------------------------------------ easing
-def clamp(x, a=0.0, b=1.0):
-    return a if x < a else b if x > b else x
-
-
-def prog(t, a, b):
-    return clamp((t - a) / (b - a)) if b > a else float(t >= a)
-
-
-def lerp(a, b, k):
-    return a + (b - a) * k
-
-
-def eo(k):  # ease out cubic
-    return 1 - (1 - k) ** 3
-
-
-def eio(k):  # ease in-out cubic
-    return 4 * k ** 3 if k < 0.5 else 1 - (-2 * k + 2) ** 3 / 2
-
-
-def eob(k, s=1.6):  # ease out back
-    k -= 1
-    return 1 + (s + 1) * k ** 3 + s * k ** 2
-
-
-def ei(k):
-    return k ** 3
-
-
-# ------------------------------------------------------------------ fonts
-DEFAULT_FONT = "Inter Display"
-FONT_FAMILY = DEFAULT_FONT  # меняется только через apply_style
 WEIGHTS = {"black": "Black", "extrabold": "ExtraBold", "bold": "Bold", "semibold": "SemiBold",
            "medium": "Medium", "regular": "Regular", "light": "Light"}
 FALLBACKS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -177,10 +79,13 @@ FALLBACKS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
              "C:/Windows/Fonts/arialbd.ttf"]
 
 
-@functools.lru_cache(None)
 def _font_file(weight, family=None):
-    """Файл шрифта семейства (по умолчанию — FONT_FAMILY стиля): семейство входит в ключ кэша."""
-    family = family or FONT_FAMILY
+    """Файл шрифта семейства (по умолчанию — семейство активного стиля): семейство входит в ключ кэша."""
+    return _font_file_for(weight, family or SM.active().font)
+
+
+@functools.lru_cache(None)
+def _font_file_for(weight, family):
     env = os.environ.get("STUDIO_FONT_" + weight.upper())
     if env and os.path.exists(env):
         return env
@@ -197,6 +102,8 @@ def _font_file(weight, family=None):
     raise RuntimeError("Не найден шрифт с кириллицей. Установите Inter или задайте STUDIO_FONT_BOLD.")
 
 
+_font_file.cache_clear = _font_file_for.cache_clear  # selftest.pin_fonts: сброс после смены STUDIO_FONT_*
+
 WEIGHT_NUM = {"black": 900, "extrabold": 800, "bold": 700, "semibold": 600, "medium": 500, "regular": 400, "light": 300}
 
 
@@ -205,11 +112,14 @@ WEIGHT_NUM = {"black": 900, "extrabold": 800, "bold": 700, "semibold": 600, "med
 LAYOUT = ImageFont.Layout.BASIC
 
 
-@functools.lru_cache(None)
-def font(size, weight="bold", family=None):
+def font(size, weight="bold", family=None, style=None):
     """family: head | num | mono — шрифт роли из пресета (локальный файл из assets/). Без пресета — как раньше."""
-    files = STYLE.get("fonts") or {}
-    rel = files.get(family or "head")
+    return _font(size, weight, family, _st(style))
+
+
+@functools.lru_cache(None)
+def _font(size, weight, family, style):
+    rel = style.fonts.get(family or "head")
     if rel:
         f = ImageFont.truetype(os.path.join(ASSETS, rel), int(size), layout_engine=LAYOUT)
         try:
@@ -218,7 +128,10 @@ def font(size, weight="bold", family=None):
         except Exception:
             pass
         return f
-    return ImageFont.truetype(_font_file(weight, FONT_FAMILY), int(size), layout_engine=LAYOUT)
+    return ImageFont.truetype(_font_file(weight, style.font), int(size), layout_engine=LAYOUT)
+
+
+font.cache_clear = _font.cache_clear
 
 
 # ------------------------------------------------------------------ compositing
@@ -267,7 +180,7 @@ def blitc(dst, spr, cx, cy, alpha=1.0, scale=1.0, rot=0.0):
     blit(dst, spr, cx - spr.width / 2, cy - spr.height / 2, alpha)
 
 
-def glowify(base, color, radius, strength=1.0, mask=None):
+def glowify(base, color, radius, strength=1.0, mask=None, style=None):
     """Спрайт + цветное свечение по его альфе. Рисуется один раз."""
     pad = int(radius * 2.5)
     W, H = base.width + 2 * pad, base.height + 2 * pad
@@ -276,7 +189,7 @@ def glowify(base, color, radius, strength=1.0, mask=None):
     a.paste(mask if mask is not None else base.getchannel("A"), (pad, pad))
     for r, s in ((radius, 0.9 * strength), (radius * 0.35, 0.6 * strength)):
         g = a.filter(ImageFilter.GaussianBlur(r)).point(lambda v, s=s: min(255, int(v * s)))
-        layer = Image.new("RGBA", (W, H), col(color))
+        layer = Image.new("RGBA", (W, H), col(color, style=style))
         layer.putalpha(g)
         out.alpha_composite(layer)
     out.alpha_composite(base, (pad, pad))
@@ -316,12 +229,17 @@ def wrap_runs(runs, f, maxw):
     return lines
 
 
-@functools.lru_cache(maxsize=512)
 def text_sprite(text, size, weight="bold", color="text", accent="accent", glow=0, glow_color=None,
-                maxw=0, align="center", spacing=1.12, family=None, tracking=0.0):
-    f = font(size, weight, family)
+                maxw=0, align="center", spacing=1.12, family=None, tracking=0.0, style=None):
+    return _text_sprite(text, size, weight, color, accent, glow, glow_color, maxw, align, spacing, family, tracking,
+                        _st(style))
+
+
+@functools.lru_cache(maxsize=512)
+def _text_sprite(text, size, weight, color, accent, glow, glow_color, maxw, align, spacing, family, tracking, style):
+    f = font(size, weight, family, style)
     if tracking:
-        return _tracked_sprite(text, f, size, color, tracking)
+        return _tracked_sprite(text, f, size, color, tracking, style)
     lines = wrap_runs(_runs(text), f, maxw)
     asc, desc = f.getmetrics()
     lh = int(size * spacing)
@@ -335,14 +253,17 @@ def text_sprite(text, size, weight="bold", color="text", accent="accent", glow=0
         x = {"center": (W - widths[i]) / 2, "left": size * 0.15, "right": W - widths[i] - size * 0.15}[align]
         y = i * lh
         for w, hl in L:
-            d.text((x, y), w, font=f, fill=col(accent if hl else color))
+            d.text((x, y), w, font=f, fill=style.col(accent if hl else color))
             x += f.getlength(w) + sp
     if glow:
-        img = glowify(img, glow_color or accent, glow, 0.85)
+        img = glowify(img, glow_color or accent, glow, 0.85, style=style)
     return img
 
 
-def _tracked_sprite(text, f, size, color, tracking):
+text_sprite.cache_clear = _text_sprite.cache_clear
+
+
+def _tracked_sprite(text, f, size, color, tracking, style=None):
     """Одна строка с трекингом (доля кегля между буквами) — капс-заголовки и ярлыки."""
     gap = size * tracking
     adv = [f.getlength(c) for c in text]
@@ -352,7 +273,7 @@ def _tracked_sprite(text, f, size, color, tracking):
     d = ImageDraw.Draw(img)
     x = size * 0.15
     for c, a in zip(text, adv):
-        d.text((x, 0), c, font=f, fill=col(color))
+        d.text((x, 0), c, font=f, fill=col(color, style=style))
         x += a + gap
     return img
 
@@ -372,35 +293,41 @@ def rr_mask(w, h, r):
     return m
 
 
-@functools.lru_cache(maxsize=64)
-def radial(size, color, alpha=1.0, sharp=2.2):
+def radial(size, color, alpha=1.0, sharp=2.2, style=None):
     """Мягкое световое пятно."""
+    return _radial(size, color, alpha, sharp, _st(style))
+
+
+@functools.lru_cache(maxsize=64)
+def _radial(size, color, alpha, sharp, style):
     n = size
     yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
     r = np.sqrt((xx - n / 2) ** 2 + (yy - n / 2) ** 2) / (n / 2)
     a = np.clip(1 - r, 0, 1) ** sharp * 255 * alpha
-    img = Image.new("RGBA", (n, n), col(color))
+    img = Image.new("RGBA", (n, n), style.col(color))
     img.putalpha(Image.fromarray(a.astype(np.uint8), "L"))
     return img
 
 
-def panel(w, h, r, border="accent", fill=None, glow=14, bw=3, fill_alpha=230):
+def panel(w, h, r, border="accent", fill=None, glow=14, bw=3, fill_alpha=230, style=None):
     """Тёмная карточка с неоновой рамкой."""
-    fill = fill or PAL["panel"]
-    base = rrect((w, h), r, col(fill, fill_alpha), outline=col(border, 255), width=bw)
+    style = _st(style)
+    fill = fill or style.pal["panel"]
+    base = rrect((w, h), r, style.col(fill, fill_alpha), outline=style.col(border, 255), width=bw)
     ring = Image.new("L", (w, h), 0)
     ImageDraw.Draw(ring).rounded_rectangle((0, 0, w - 1, h - 1), r, outline=255, width=bw + 2)
-    return glowify(base, border, glow, 0.9, mask=ring) if glow else base
+    return glowify(base, border, glow, 0.9, mask=ring, style=style) if glow else base
 
 
 # ------------------------------------------------------------------ background
 class Background:
     """Градиент + зерно (статично) + плавающие световые пятна (функция глобального времени)."""
 
-    def __init__(self, W, H, seed=7):
+    def __init__(self, W, H, seed=7, style=None):
         self.W, self.H = W, H
+        style = _st(style)
         y = np.linspace(0, 1, H, dtype=np.float32)[:, None]
-        top, bot = np.array(PAL["bg_top"], np.float32), np.array(PAL["bg_bot"], np.float32)
+        top, bot = np.array(style.pal["bg_top"], np.float32), np.array(style.pal["bg_bot"], np.float32)
         g = top + (bot - top) * y
         g = np.repeat(g[:, None, :], W, axis=1).reshape(H, W, 3)
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -414,7 +341,7 @@ class Background:
         self.blobs = []
         for c in ("violet", "magenta", "cyan", "violet"):
             s = int(m * rnd.uniform(0.75, 1.1))
-            self.blobs.append({"spr": radial(s, c, 0.22), "x": rnd.uniform(0.1, 0.9), "y": rnd.uniform(0.1, 0.9),
+            self.blobs.append({"spr": radial(s, c, 0.22, style=style), "x": rnd.uniform(0.1, 0.9), "y": rnd.uniform(0.1, 0.9),
                                "ax": rnd.uniform(0.08, 0.16), "ay": rnd.uniform(0.05, 0.12),
                                "wx": rnd.uniform(0.05, 0.11), "wy": rnd.uniform(0.04, 0.09),
                                "p": rnd.uniform(0, 6.28)})
@@ -551,23 +478,28 @@ ICONS = {"clock": _ic_clock, "laugh": _ic_laugh, "book": _ic_book, "story": _ic_
          "lock": _ic_lock}
 
 
+def icon(name, size, color="accent", glow=True, style=None):
+    return _icon(name, size, color, glow, _st(style))
+
+
 @functools.lru_cache(maxsize=128)
-def icon(name, size, color="accent", glow=True):
+def _icon(name, size, color, glow, style):
     ss = 3  # суперсэмплинг для гладких линий
     S = size * ss
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    ICONS.get(name, _ic_star)(d, S, col(color), max(3, int(S * 0.07)))
+    ICONS.get(name, _ic_star)(d, S, style.col(color), max(3, int(S * 0.07)))
     img = img.resize((size, size), Image.LANCZOS)
-    return glowify(img, color, size * 0.12, 0.9) if glow else img
+    return glowify(img, color, size * 0.12, 0.9, style=style) if glow else img
 
 
 # ------------------------------------------------------------------ phone
 class Phone:
     """Геометрия и корпус смартфона; одинаковы во всех сценах -> склейки незаметны."""
 
-    def __init__(self, W, H):
+    def __init__(self, W, H, style=None):
         self.W, self.H = W, H
+        style = _st(style)
         if H >= W:
             self.sh = int(H * 0.60)
         else:
@@ -577,10 +509,10 @@ class Phone:
         self.bez = max(10, int(self.sw * 0.035))
         self.cx, self.cy = W / 2, H * (0.44 if H >= W else 0.45)
         bw, bh = self.sw + 2 * self.bez, self.sh + 2 * self.bez
-        body = rrect((bw, bh), self.r + self.bez, (10, 9, 20, 255), outline=col("violet", 255), width=3)
+        body = rrect((bw, bh), self.r + self.bez, (10, 9, 20, 255), outline=style.col("violet", 255), width=3)
         ring = Image.new("L", (bw, bh), 0)
         ImageDraw.Draw(ring).rounded_rectangle((0, 0, bw - 1, bh - 1), self.r + self.bez, outline=255, width=5)
-        self.body = glowify(body, "violet", int(self.sw * 0.05), 0.9, mask=ring)
+        self.body = glowify(body, "violet", int(self.sw * 0.05), 0.9, mask=ring, style=style)
         self.pad = (self.body.width - bw) // 2
         self.mask = rr_mask(self.sw, self.sh, self.r)
         nw, nh = int(self.sw * 0.3), int(self.sw * 0.075)

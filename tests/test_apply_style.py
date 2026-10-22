@@ -41,7 +41,7 @@ def test_layout_applies_font_family(tmp_path):
                  encoding="utf-8")
     proj = project.load(root)
     timing.layout(proj, log=lambda *_: None)
-    assert G.FONT_FAMILY == "Some Font"
+    assert G.SM.active().font == "Some Font"
 
 
 def test_font_file_follows_family(tmp_path, monkeypatch):

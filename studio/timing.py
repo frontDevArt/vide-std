@@ -261,7 +261,7 @@ def layout(proj: Project, log=print) -> dict:
         s["dur"] = s["n_frames"] / fps
         s["subs"] = S.chunks_for_scene(proj, s)
         s["hash"] = stable_hash([s["template"], s["params"], s["lines"], s["beats"], s["subs"],
-                                 s["start_frame"], s["n_frames"]] + ([s["words"]] if s["template"].startswith("lab_") else []))
+                                 s["start_frame"], s["n_frames"]] + ([s["words"]] if s["template"].startswith(("lab_", "lab.")) else []))
 
     words = sum(word_count(l["text"]) for s in scenes for l in s["lines"])
     speech = sum(l["t1"] - l["t0"] for s in scenes for l in s["lines"])

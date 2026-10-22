@@ -41,7 +41,7 @@ def voice_track(proj: Project, tl) -> str:
 def sfx_events(proj: Project, tl):
     """События звуков из шаблонов (у кого есть sfx_events: шаблоны lab) -> [(t_глобальное, имя)]."""
     from .render import prepare
-    from . import templates as TP
+    from . import packs as TP
     tl2, ctx = prepare(proj)
     ev = []
     for s in tl2["scenes"]:

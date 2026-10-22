@@ -7,7 +7,7 @@ import urllib.error
 
 import pytest
 
-from studio import cli, tts
+from studio import cli, tts, workspace
 
 KEY = "sk_test_0123456789abcdef"
 
@@ -35,7 +35,7 @@ def net(monkeypatch):
 
     monkeypatch.setattr(tts, "_el_urlopen", urlopen)
     monkeypatch.setattr(tts, "probe", lambda *a, **k: (_ for _ in ()).throw(tts.TTSUnavailable("офлайн-тест")))
-    monkeypatch.setattr(tts, "load_env", lambda: None)  # настоящий .env в тест не попадает
+    monkeypatch.setattr(workspace, "load_env", lambda *a: None)  # настоящий .env в тест не попадает
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     monkeypatch.delenv("ELEVENLABS_VOICE_ID", raising=False)
     return calls, routes

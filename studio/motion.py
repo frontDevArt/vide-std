@@ -1,4 +1,4 @@
-"""Движение по channel/STYLE.md, раздел 6: кривые, тайминги (в кадрах при 30 fps), базовые анимации.
+"""Движение по channel/STYLE.md, раздел 6: тайминги (в кадрах при 30 fps), базовые анимации.
 
 Всё — чистые функции от времени: кадр считается из t, без состояния (как в channel/style-demo.html).
 Время везде в секундах; константы F_* — длительности в кадрах при 30 fps, переводятся через fr().
@@ -6,6 +6,11 @@
 from __future__ import annotations
 
 import math
+
+# прогресс и кривые — studio/anim.py (P2.6); prog здесь — ramp(t, start, dur): от start за dur секунд
+from .anim import bezier as _bezier  # noqa: F401
+from .anim import clamp, ease_in, ease_in_out, ease_out_expo, lerp, spring  # noqa: F401
+from .anim import ramp as prog
 
 FPS = 30
 
@@ -26,66 +31,6 @@ DIM = 0.62         # неактивные элементы: 55–70 % яркос
 def fr(n):
     """кадры -> секунды"""
     return n / FPS
-
-
-def clamp(x, a=0.0, b=1.0):
-    return a if x < a else b if x > b else x
-
-
-def prog(t, start, dur):
-    return clamp((t - start) / dur) if dur > 0 else float(t >= start)
-
-
-def lerp(a, b, k):
-    return a + (b - a) * k
-
-
-def _bezier(p1x, p1y, p2x, p2y):
-    """cubic-bezier(p1x, p1y, p2x, p2y) как в CSS: x -> y (Ньютон + бисекция)."""
-    def bx(u):
-        return 3 * p1x * u * (1 - u) ** 2 + 3 * p2x * u * u * (1 - u) + u ** 3
-
-    def by(u):
-        return 3 * p1y * u * (1 - u) ** 2 + 3 * p2y * u * u * (1 - u) + u ** 3
-
-    def dbx(u):
-        return 3 * p1x * (1 - u) ** 2 + 6 * (p2x - p1x) * u * (1 - u) + 3 * (1 - p2x) * u * u
-
-    def f(x):
-        if x <= 0:
-            return 0.0
-        if x >= 1:
-            return 1.0
-        u = x
-        for _ in range(6):
-            d = dbx(u)
-            if abs(d) < 1e-6:
-                break
-            u -= (bx(u) - x) / d
-        if not 0 <= u <= 1 or abs(bx(u) - x) > 1e-4:
-            lo, hi = 0.0, 1.0
-            for _ in range(30):
-                u = (lo + hi) / 2
-                if bx(u) < x:
-                    lo = u
-                else:
-                    hi = u
-        return by(u)
-    return f
-
-
-ease_out_expo = _bezier(0.16, 1, 0.3, 1)     # появления (по умолчанию)
-ease_in_out = _bezier(0.65, 0, 0.35, 1)      # перемещения, отрисовка линий
-ease_in = _bezier(0.7, 0, 0.84, 0)           # уходы
-
-
-def spring(x):
-    """Пружина «шлепка»: перелёт ≈ 108 % около x = 0,45, дальше затухает (STYLE §6)."""
-    if x <= 0:
-        return 0.0
-    if x >= 1:
-        return 1.0
-    return 1 - math.exp(-5.6 * x) * math.cos(x * math.pi * 2.2)
 
 
 def bob(T, phase=0.0, period=5.0, amp=3.0):

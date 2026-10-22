@@ -224,31 +224,140 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
 
 ## Этап 2 — Структура (поведение не меняется: golden байт в байт)
 
-- [ ] **P2.1 Схема конфига `studio/config.py`.** Типы и значения по умолчанию в одном месте (сейчас это `DEFAULTS` в
+- [x] **P2.1 Схема конфига `studio/config.py`.** Типы и значения по умолчанию в одном месте (сейчас это `DEFAULTS` в
   `project.py` и разбор по месту); `schema_version: 1`; `migrate()` для старых файлов. Неизвестный ключ → ⚠️ с подсказкой
   ближайшего (`subtitle` → `subtitles`).
-- [ ] **P2.2 Объект стиля вместо глобалов.** `Style` (палитра, настроение, шрифты по ролям, фон, камера, режим субтитров)
+  *Сделано:* `studio/config.py` — `SCHEMA` (поле = типы, значение по умолчанию, описание), из неё собирается
+  `DEFAULTS` (тест: совпадает со старым словарём ключ в ключ), `check()` — неизвестный ключ с подсказкой через `difflib`
+  (`subtitle` → `subtitles?`, `tts.rat` → `tts.rate?`) и тип не тот (`bool` за число не считается), `migrate()` — файл
+  без `schema_version` = версия 0 → 1 в памяти, версия новее студии → ошибка. `load()` печатает ⚠️ `project.yaml: …`;
+  неизвестный ключ остаётся в cfg (только предупреждение). `project.DEFAULTS`/`deep_merge` — прежние имена.
+  `_template` пишет `schema_version: 1`. Проверено: `tests/test_config.py` (12, включая «все проекты и фикстуры без ⚠️»),
+  `pytest` 217 ✅, `selftest` ✅ (кадры в процессе — макс 0), `validate fake-discounts` — OK без новых ⚠️.
+- [x] **P2.2 Объект стиля вместо глобалов.** `Style` (палитра, настроение, шрифты по ролям, фон, камера, режим субтитров)
   строится из конфига и передаётся шаблонам через `ctx`. Три шага: (1) адаптер, который заодно выставляет старые
   `gfx.PAL`/`STYLE` (совместимость); (2) шаблоны читают `self.style`; (3) глобалы удаляются. Туда же `tts._EL_CFG` →
   явный параметр бэкенда.
-- [ ] **P2.3 Распил `cli.py`:** `studio/commands/<команда>.py` + `studio/validate.py`. Интерфейс CLI не меняется.
-- [ ] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
+  *Сделано:* `studio/style.py` — `Style` (frozen dataclass: `palette`, `mood`, `overrides`, `font`; производные `pal`
+  только для чтения, `preset`, `background`, `camera`, `subs`, `fonts`, `col()`), `Style.from_cfg()`; туда же переехали
+  `PALETTES`/`STYLES`/`MOODS`/`hex_rgb`/`mood_colors` (в gfx — те же имена). В `gfx` нет изменяемых глобалов стиля:
+  `PAL`/`STYLE`/`STYLE_KEY`/`STYLE_NAME`/`FONT_FAMILY` — снимки активного стиля через модульный `__getattr__`
+  (совместимость, запись не действует). Хелперы (`col`, `font`, `text_sprite`, `icon`, `radial`, `panel`, `glowify`,
+  `Background`, `Phone`) принимают `style=`; кэши держат стиль в ключе — `cache_clear` при смене стиля больше не нужен.
+  `apply_style()` строит `Style`, делает активным (`style.use`) и возвращает. `render.prepare` кладёт стиль в
+  `ctx["style"]`, `Template.self.style`; `render`/`lab`/`templates` читают его вместо `G.PAL`/`G.STYLE`; фон и плашки
+  субтитров кэшируются по стилю; воркер получает стиль в `ctx` (pickle — по входам). Остался один указатель
+  «активного стиля» в `style.py` — для хелперов, вызванных без `style=` (шаблоны проектов, `money.py`).
+  `style.py` добавлен в `render.code_hash`. `tts._EL_CFG` удалён: `_elevenlabs(…, cfg)` получает `el_call_cfg` от
+  `synth`. Проверено: `tests/test_style.py` (8: из cfg = старый `set_palette`, значение/хэш/pickle, ключи кэшей по
+  стилю, снимки `G.PAL`, `self.style`, конфиг ElevenLabs параметром), `pytest` 225 ✅, `selftest` ✅ (кадры в
+  процессе — макс 0, golden байт в байт), `validate fake-discounts` — OK.
+- [x] **P2.3 Распил `cli.py`:** `studio/commands/<команда>.py` + `studio/validate.py`. Интерфейс CLI не меняется.
+  *Сделано:* `cli.py` 469 → 37 строк: только `argparse` и перехват `TTSUnavailable`. 14 модулей `studio/commands/`
+  (`doctor`, `new`, `validate`, `voice`, `stills`, `render`, `assemble`, `qa`, `all`, `status`, `templates`, `frame`,
+  `demo`, `selftest`) — у каждого `add(sp)` и `run(a)`; порядок подкоманд — `commands.NAMES`. Логика проверки сценария —
+  `studio/validate.py`: `check(proj) → Report` без печати, проверки `voice`/`style`/`triggers` (бывшие `_validate_*`).
+  Прежние имена работают: `cli.cmd_<команда>` (модульный `__getattr__`), `cli.pinned_deps`/`slugify`/`default_backend`/
+  `STUDIO_ROOT`. `pyproject.toml`: пакет `studio.commands`. Проверено: `--help` всех 14 команд и общий — байт в байт
+  со старым; вывод и код `validate fake-discounts` — как у старого `cli.py`; `tests/test_cli_split.py` (31: модули =
+  подкоманды, старые `cmd_*`, все прежние флаги разбираются в те же значения, `cli.py` ≤ 400 строк);
+  `test_cli_new.py` патчит `studio.commands.new`. `pytest` 256 ✅, `selftest` ✅ (кадры в процессе — макс 0).
+- [x] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
   `studio/packs/phone/` (5 «телефонных»), `studio/packs/lab/` (`background.py`, `elements.py`, `templates.py`; распил
   `lab.py`). Реестр ловит коллизии имён; старые имена (`lab_flow`) — алиасы. Метаданные шаблона: `formats`
   (vertical/horizontal/square), типизированные `PARAMS` (тип, значение по умолчанию, описание) — `validate` проверяет по ним.
   Проектные шаблоны регистрируются в пространстве проекта.
-- [ ] **P2.5 Ключ кэша рендера считается автоматически:** хэш исходников всех реально загруженных модулей пакетов и
+  *Сделано:* `studio/packs/`: `registry.py` — `Registry` (полное имя `<пакет>.<имя>` → класс, алиасы; пакет — по
+  модулю класса, вне `studio.packs` — `project`), `TemplateNameError` на чужое имя или алиас (перезагрузка того же
+  модуля — не коллизия), `Param(тип, умолчание, описание)` + `P()`, `formats`; `base.py` — `Template`, `plural`;
+  `core/` (5), `phone/` (`feed.py` — телефон и лента, `templates.py` — 5 шаблонов), `lab/` — `lab.py` 1549 строк
+  разрезан дословно: `background`, `elements`, `triggers`, `base` (`LabTemplate`), `hero`, `crowd`, `templates` — самый
+  длинный файл пакетов 395 строк. Полные имена `core.title`, `phone.feed`, `lab.flow`; все 18 прежних имён — алиасы.
+  У всех встроенных шаблонов параметры типизированы и описаны; `lab.*` — `formats: horizontal` (STYLE §12), прочие — все
+  три. `validate`: тип параметра не тот → ⚠️, формат проекта не из `formats` → одна ⚠️ со списком, нет шаблона → ❌ с
+  ближайшим именем, коллизия в `templates/` проекта → ❌. `load_project_templates` чистит пространство `project` перед
+  загрузкой (шаблоны прошлого проекта не висят). `templates` печатает алиасы, форматы, параметры. Цикл
+  `templates ↔ lab` убран: пакеты не импортируют старые модули; `studio/templates.py` и `studio/lab.py` — прежние
+  входы с теми же именами, запись `studio.lab._li = …` (подмена иконок в `money.py`) доходит до `packs/lab/elements`.
+  `timing`: слова в хэше сцены — для `lab_*` и `lab.*` (старые хэши те же). `render.code_hash` — все `packs/**/*.py`.
+  Проверено: `tests/test_packs.py` (13: алиасы, пакеты, форматы и типы, коллизии, проектное пространство и
+  перезагрузка, старые импорты, подмена `_li`, шаблоны `fake-discounts`, `validate` с типом/форматом/опечаткой, нет
+  цикла импорта), `test_gallery` сравнивает полные имена; `validate fake-discounts` — вывод байт в байт как до правки;
+  `pytest` 268 ✅, `selftest` ✅ (golden байт в байт).
+- [x] **P2.5 Ключ кэша рендера считается автоматически:** хэш исходников всех реально загруженных модулей пакетов и
   проектных шаблонов, а не ручной список из `render.py:29`. *Тест:* правка любого файла пакета делает сцены этого пакета устаревшими.
-- [ ] **P2.6 `studio/anim.py`:** единые easing и функции прогресса с разными именами (`span(t, a, b)` и `ramp(t, start, dur)`),
+  *Сделано:* `studio/codehash.py`: зависимости — замыкание импортов по `ast` (ленивые внутри функций тоже,
+  `from . import x` различает модуль и имя) по файлам `studio/` и `templates/` проекта. Ключ сцены = общая часть
+  (`render.py` и что он импортирует для рисования: `gfx`, `style`, `subs`, `motion`, фон `packs/lab/background`;
+  не обходятся `project`, `timing` — их итог уже в хэше сцены — и `packs/__init__`, который грузит все пакеты) +
+  замыкание модуля шаблона сцены с `__init__.py` его пакетов + все проектные шаблоны с их импортами (они могут подменять
+  функции пакетов, как `money.py`). Правка `lab/elements.py` теперь не сбрасывает сцены `core`/`phone`; `subs.py`
+  раньше в ключе не было — теперь есть. `render.code_hash` — прежнее имя (весь код рисования проекта). Ленивый импорт
+  в `render` — из `packs.lab.background` (поведение то же, зависимость точнее). Ключи сцен у всех проектов сменились
+  один раз (правило 6). Проверено: `tests/test_codehash.py` (8: правка каждого файла `core`/`phone`/`lab` устаревает
+  сцены своего пакета и только их, кроме фона lab; `gfx`/`style`/`subs`/`render` — все сцены; `tts`/`timing`/
+  `validate`/`cli`/`qa` — ни одной; новый модуль находится по импорту; проектный шаблон — все сцены); `pytest` 276 ✅,
+  `selftest` ✅ (golden байт в байт).
+- [x] **P2.6 `studio/anim.py`:** единые easing и функции прогресса с разными именами (`span(t, a, b)` и `ramp(t, start, dur)`),
   старые `gfx.prog`/`motion.prog` — алиасы. Убрать циклический импорт `templates` ↔ `lab`.
-- [ ] **P2.7 Логи из одного места** `studio/log.py` → `projects/<slug>/logs/<команда>-<время>.log`; в консоли — как сейчас.
-- [ ] **P2.8 Резолвер путей `studio/workspace.py`:** где проекты, каналы, брифы, секреты. Пока корень один и поведение
+  *Сделано:* `studio/anim.py` — `clamp`, `lerp`, `span`, `ramp`, кубические `eo`/`eio`/`eob`/`ei` (и длинные имена
+  `ease_out_cubic` …), `bezier` и кривые STYLE §6, `spring`; тела перенесены без правок. В `gfx` и `motion` остались
+  только импорты: `gfx.prog is anim.span`, `motion.prog is anim.ramp`, `motion._bezier is anim.bezier`, дубли
+  `clamp`/`lerp` ушли. Цикл `templates ↔ lab` исчез ещё в P2.4; оставался ленивый `lab/triggers ↔ lab/base`
+  (`trigger_errors` импортировал `LabTemplate`) — проверка вынесена в `packs/lab/check.py`, `triggers.py` теперь
+  без импортов пакета. `check.py` не рисует, поэтому в ключ сцены не входит. Вне рисования остался ленивый
+  `project → tts.load_env` — это секреты, разбирается в P2.8. Проверено: `tests/test_anim.py` (семантика
+  `span`/`ramp`, старые имена — те же объекты, концы кривых, нет циклов импорта в `studio/` кроме `project/tts`);
+  в `test_codehash` правка `anim.py`/`motion.py` устаревает все сцены, `check.py` — ни одной; `pytest` 280 ✅,
+  `selftest` ✅ (кадры в процессе байт в байт, макс 0).
+- [x] **P2.7 Логи из одного места** `studio/log.py` → `projects/<slug>/logs/<команда>-<время>.log`; в консоли — как сейчас.
+  *Сделано:* `studio/log.py` — `session(команда, проект)`: на время команды `sys.stdout`/`sys.stderr` заменяются
+  «тройником», который пишет в прежний поток как есть (консоль, `isatty`, `capsys` — без изменений) и в файл. Включено
+  в `cli.main` для всех команд: с проектом — `projects/<slug>/logs/`, без проекта (`doctor`, `new`, `selftest`, не
+  найденный проект) — `logs/` в корне; `status`/`templates` (только чтение) — `LOG = False`. В шапке лога — командная
+  строка, в конце — время или код выхода, падение — с трассировкой (исключение летит дальше). Хранятся последние 20
+  логов команды; несколько запусков за секунду — `_01`, `_02`. Рендер-процессы сами не печатают — прогресс пишет
+  главный процесс, поэтому в лог попадает всё. `logs/` уже в `.gitignore` (на любом уровне). Код рисования не тронут —
+  ключи сцен не меняются. Проверено: `tests/test_log.py` (вывод консоли целиком в логе, потоки восстановлены, без
+  лога у `status`/`templates`, корневой лог для ненайденного проекта, трассировка, очистка и имена за одну секунду);
+  тесты пишут корневые логи во временную папку (`conftest`); `pytest` и `selftest` ✅ (golden байт в байт).
+- [x] **P2.8 Резолвер путей `studio/workspace.py`:** где проекты, каналы, брифы, секреты. Пока корень один и поведение
   прежнее, но это точка входа мультистудии (ROADMAP A1). Убрать `STUDIO_ROOT / "projects"` из остального кода.
-- [ ] **P2.9 Разобрать `projects/fake-discounts/templates/money.py`:** общее («ценник», «число с единицей») →
+  *Сделано:* `studio/workspace.py` — `Workspace` (`projects`, `channel`, `briefs`, `research`, `logs`, `env`, `tools`,
+  `template`, `project(slug)`, `is_channel()`), `current()` — рабочая область по умолчанию = корень студии (раскладка
+  прежняя), `use(root | ws, **пути)` — временно другая (тесты, позже `--studio`). Модуль без импортов из `studio`.
+  Сюда же переехал `load_env` (секреты из `.env` рабочей области; `tts.load_env` — то же имя), поэтому ленивый цикл
+  `project → tts` исчез — исключение в тесте циклов из P2.6 убрано. На `current()` переведены `project.load` и
+  `resolve_project` (slug), `new` (заготовка, проект, признак канала, RHVoice), `demo`, `log` (корневые логи), пути
+  голосов в `tts`. `STUDIO_ROOT` остался для кода студии (`tests/`, `assets/`, `pyproject.toml`, `studio/`) — старое имя
+  `workspace.ROOT`. Код рисования не тронут — ключи сцен не меняются. Проверено: `tests/test_workspace.py` (раскладка по
+  умолчанию = прежняя; склеек `ROOT / "projects"|"channel"|…` вне `workspace.py` нет; `use()` переключает slug,
+  `load` и восстанавливается; `load_env` не перетирает окружение и пропускает пустые); тесты `new` и логов
+  переключают рабочую область через `use()` вместо подмены `STUDIO_ROOT`/`ROOT_LOGS`; `status fake-discounts` по slug;
+  `pytest` 292 ✅, `selftest` ✅ (кадры в процессе байт в байт, макс 0).
+- [x] **P2.9 Разобрать `projects/fake-discounts/templates/money.py`:** общее («ценник», «число с единицей») →
   `studio/packs/commerce/` (пригодится брендам), специфичное для ролика — оставить в проекте.
+  *Сделано:* `studio/packs/commerce/`: `elements.py` — спрайт бирки `tag_parts` (подписи WAS/NOW — параметры), бумага
+  чека `receipt_paper` (шапка — параметр), цепь `chain`, `rot`, `thousands`; `tag.py` — миксин `PriceTag` (падение,
+  качание с импульсами в глобальном времени, зачёркивание, новая цена пружиной, груз на бирке с «просадкой», state
+  `TAG_STATE`); `receipt.py` — миксин `Receipt` (печать строк по триггерам, отрыв, state `RC_STATE`); `templates.py` —
+  `commerce.price_tag` (бирка + чек) и `commerce.number` (Full Number с запятыми). Формат — horizontal, как `lab.*`
+  (пакет построен на `LabTemplate`). Иконки wheel/house/timer/anchor/receipt — обычные линейные иконки §9 — переехали
+  в `lab/elements._li`, подмена `studio.lab._li` из проекта ушла. В проекте осталось своё: якорь, шкала «perceived
+  value», ярлыки; `lab_anchor` = `PriceTag` + `Receipt` + `LabTemplate` с прежними ключами state (`fd_tag`,
+  `fd_receipt`) и шапкой «MONEY BRAIN · RECEIPT», `fd_number` — наследник `commerce.number`; `money.py` 683 → 314 строк.
+  В фикстуру gallery commerce не добавлен — это сменило бы golden; рисование проверяет `test_commerce.py`, исключение
+  записано в `test_gallery`. Проверено: `stills` всех 4 глав `fake-discounts` (тот же `timeline.json`) до и после
+  правки — пиксель в пиксель, и с эталоном `tests/reference/` тоже (макс 0); `validate` — вывод байт в байт;
+  `tests/test_commerce.py` (6: регистрация и формат, `thousands`/`rot`, запятые в числе, бирка и чек рисуются и
+  переходят через state, `lab_anchor` ≡ `commerce.price_tag` попиксельно, иконки в lab); `test_codehash` — правка
+  файлов commerce не устаревает сцены других пакетов; `pytest` 299 ✅, `selftest` ✅ (кадры в процессе — макс 0).
 
 **Этап готов, если:** golden байт в байт; `fake-discounts` проходит `validate` и `stills` без изменений в листах;
 `lab.py` и `cli.py` не длиннее 400 строк на файл; глобалов стиля в `gfx` нет.
+✅ *Проверено (2026-10-22, после P2.9):* selftest — кадры в процессе = golden, макс 0; листы `stills` fake-discounts =
+`tests/reference/` попиксельно (4 главы, 307 кадров), `validate` без ошибок; `lab.py` 27 строк, `cli.py` 56, самый
+длинный файл `packs/lab` — 348; изменяемых глобалов стиля в `gfx` нет (стиль — `style.active()`, P2.2).
 
 ---
 
