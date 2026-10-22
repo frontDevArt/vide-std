@@ -5,7 +5,7 @@ chapter: ch01
 title: "Название главы"
 scenes:
   - id: s01                 # уникален в главе
-    template: phone_lock    # см. python -m studio templates
+    template: phone_lock    # см. python -m studio templates (полное имя phone.lock — то же)
     lines:                  # что говорит диктор; строка = синтез целиком
       - "Зашёл проверить одно уведомление."
       - "Очнулся — прошёл час."
@@ -43,6 +43,13 @@ lines:
   `ui` профиля языка в `studio/lang.py`. Склонения (`counter_label`): ru `[пост, поста, постов]`, en `[post, posts]`.
 
 ## Шаблоны (встроенные)
+Шаблоны разложены по пакетам `studio/packs/`: `core` (title, statement, bullets, counter, outro), `phone` (cards,
+questions и три `phone_*`), `lab` (канал, ниже). Полное имя — `<пакет>.<имя>` (`core.title`, `phone.feed`,
+`lab.flow`); прежние имена из таблиц — алиасы, в сценарии годятся оба. `python -m studio templates` показывает
+у каждого шаблона алиас, форматы кадра (`formats`) и параметры с типом, умолчанием и описанием. `validate`:
+неизвестный параметр или значение не того типа (строка вместо числа) — ⚠️; шаблон не свёрстан под `format`
+проекта — ⚠️ (сейчас так у `lab.*` в vertical/square); опечатка в имени шаблона — ❌ с подсказкой ближайшего.
+
 | Шаблон | Для чего | Биты |
 |---|---|---|
 | `title` | заставка/глава | появление с битом 0 |
@@ -62,10 +69,11 @@ eye, chart, star, phone, hourglass, target, brain, lock.
 ## Свой шаблон для проекта
 Файл `projects/<slug>/templates/my.py`:
 ```python
-from studio.templates import Template, template
+from studio.templates import P, Template, template
 from studio import gfx as G
 
-@template("big_quote", doc="Цитата", params={"text": ""}, beats="с бита 0")
+@template("big_quote", doc="Цитата", params={"text": P("", "текст цитаты")}, beats="с бита 0",
+          formats=("vertical", "horizontal"))
 class BigQuote(Template):
     def setup(self):
         self.spr = G.text_sprite(self.p.get("text", ""), int(80 * self.u), "black", glow=int(18 * self.u),
@@ -74,6 +82,10 @@ class BigQuote(Template):
         k = G.prog(t, self.bt(0, 0.2), self.bt(0, 0.2) + 0.5)
         G.blitc(img, self.spr, self.W / 2, self.H * 0.42, G.eo(k) * self.io(t))
 ```
+Шаблон проекта регистрируется в пространстве `project` (`project.big_quote`), в сценарии — просто `big_quote`.
+Имя, совпадающее со встроенным (`title`, `lab_flow`), — ошибка `validate` и рендера: встроенный не перетирается.
+`params`: просто значение по умолчанию (тип выводится из него) или `P(умолчание, "описание", type=…)`;
+`formats` — форматы кадра, под которые шаблон свёрстан (по умолчанию все три).
 Правила: дорогое — в `setup`; `draw` только композиция; всё, что должно продолжаться через склейку,
 передавать через `state` (как `feed_offset`, `screen_dim`), а не начинать заново. `draw` рисует только контент поверх
 переданного кадра (не заливает его целиком): `safezone` рисует шаблон на прозрачный слой и по непрозрачным пикселям
@@ -86,7 +98,8 @@ class BigQuote(Template):
 ## Шаблоны канала: пресет `lab` (Notes From The Mind)
 Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `channel/STYLE.md`, эталон движения —
 `channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
-Код: `studio/lab.py` (фон, элементы, шаблоны), `studio/motion.py` (кривые и тайминги в кадрах @30), `studio/sfx.py` (звуки).
+Код: пакет `studio/packs/lab/` (`background` — фон и камера, `elements` — примитивы и фирменные элементы,
+`triggers` — `at`, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны; полные имена `lab.flow` и т. п.), `studio/motion.py` (кривые и тайминги в кадрах @30), `studio/sfx.py` (звуки).
 
 | Шаблон (§5 STYLE) | Для чего | Главные params |
 |---|---|---|

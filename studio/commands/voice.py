@@ -43,8 +43,8 @@ def run(a):
     for s in tl["scenes"]:
         print(f"  {s['chapter']}/{s['id']:<6} {s['start']:7.2f}–{s['start'] + s['dur']:7.2f}  {s['template']:<12} "
               f"битов {len(s['beats'])}, субтитров {len(s['subs'])}")
-    from ..lab import trigger_errors
-    from ..templates import REGISTRY, load_project_templates
+    from ..packs import REGISTRY, load_project_templates
+    from ..packs.lab import trigger_errors
     load_project_templates(proj.root)
     errs = trigger_errors(tl["scenes"], REGISTRY)
     for e in errs:

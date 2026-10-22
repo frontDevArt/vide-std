@@ -18,7 +18,7 @@ from PIL import Image
 
 from . import gfx as G
 from . import subs as S
-from . import templates as TP
+from . import packs as TP
 from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
 
@@ -26,7 +26,9 @@ from .timing import load_timeline
 def code_hash(proj_root=None):
     # только код, который рисует кадр; данные сцены (тексты, тайминги) уже в хэше сцены
     h = hashlib.sha1(b"render")
-    files = [STUDIO_ROOT / "studio" / n for n in ("gfx.py", "style.py", "templates.py", "render.py", "lab.py", "motion.py")]
+    studio = STUDIO_ROOT / "studio"
+    files = [studio / n for n in ("gfx.py", "style.py", "render.py", "motion.py")]
+    files += sorted((studio / "packs").rglob("*.py"), key=lambda f: f.relative_to(studio).as_posix())  # пакеты шаблонов
     if proj_root and (Path(proj_root) / "templates").exists():
         files += sorted((Path(proj_root) / "templates").glob("*.py"))
     for f in files:
@@ -96,7 +98,7 @@ def _bg(W, H, style=None):
     key = (W, H, style)
     if key not in _BG:
         if style.background == "lab":
-            from .lab import LabBackground
+            from .packs.lab import LabBackground
             _BG[key] = LabBackground(W, H, style=style)
         else:
             _BG[key] = G.Background(W, H, style=style)
@@ -191,7 +193,7 @@ def frame(ctx, tpl, scene, f, sub_size):
     bg = _bg(ctx["W"], ctx["H"], style)
     img = bg.frame(T, glow) if glow else bg.frame(T)
     if getattr(tpl, "camera", False) and style.camera:
-        from .lab import apply_camera
+        from .packs.lab import apply_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
         img.alpha_composite(apply_camera(layer, T))

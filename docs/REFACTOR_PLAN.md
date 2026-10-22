@@ -262,11 +262,28 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   со старым; вывод и код `validate fake-discounts` — как у старого `cli.py`; `tests/test_cli_split.py` (31: модули =
   подкоманды, старые `cmd_*`, все прежние флаги разбираются в те же значения, `cli.py` ≤ 400 строк);
   `test_cli_new.py` патчит `studio.commands.new`. `pytest` 256 ✅, `selftest` ✅ (кадры в процессе — макс 0).
-- [ ] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
+- [x] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
   `studio/packs/phone/` (5 «телефонных»), `studio/packs/lab/` (`background.py`, `elements.py`, `templates.py`; распил
   `lab.py`). Реестр ловит коллизии имён; старые имена (`lab_flow`) — алиасы. Метаданные шаблона: `formats`
   (vertical/horizontal/square), типизированные `PARAMS` (тип, значение по умолчанию, описание) — `validate` проверяет по ним.
   Проектные шаблоны регистрируются в пространстве проекта.
+  *Сделано:* `studio/packs/`: `registry.py` — `Registry` (полное имя `<пакет>.<имя>` → класс, алиасы; пакет — по
+  модулю класса, вне `studio.packs` — `project`), `TemplateNameError` на чужое имя или алиас (перезагрузка того же
+  модуля — не коллизия), `Param(тип, умолчание, описание)` + `P()`, `formats`; `base.py` — `Template`, `plural`;
+  `core/` (5), `phone/` (`feed.py` — телефон и лента, `templates.py` — 5 шаблонов), `lab/` — `lab.py` 1549 строк
+  разрезан дословно: `background`, `elements`, `triggers`, `base` (`LabTemplate`), `hero`, `crowd`, `templates` — самый
+  длинный файл пакетов 395 строк. Полные имена `core.title`, `phone.feed`, `lab.flow`; все 18 прежних имён — алиасы.
+  У всех встроенных шаблонов параметры типизированы и описаны; `lab.*` — `formats: horizontal` (STYLE §12), прочие — все
+  три. `validate`: тип параметра не тот → ⚠️, формат проекта не из `formats` → одна ⚠️ со списком, нет шаблона → ❌ с
+  ближайшим именем, коллизия в `templates/` проекта → ❌. `load_project_templates` чистит пространство `project` перед
+  загрузкой (шаблоны прошлого проекта не висят). `templates` печатает алиасы, форматы, параметры. Цикл
+  `templates ↔ lab` убран: пакеты не импортируют старые модули; `studio/templates.py` и `studio/lab.py` — прежние
+  входы с теми же именами, запись `studio.lab._li = …` (подмена иконок в `money.py`) доходит до `packs/lab/elements`.
+  `timing`: слова в хэше сцены — для `lab_*` и `lab.*` (старые хэши те же). `render.code_hash` — все `packs/**/*.py`.
+  Проверено: `tests/test_packs.py` (13: алиасы, пакеты, форматы и типы, коллизии, проектное пространство и
+  перезагрузка, старые импорты, подмена `_li`, шаблоны `fake-discounts`, `validate` с типом/форматом/опечаткой, нет
+  цикла импорта), `test_gallery` сравнивает полные имена; `validate fake-discounts` — вывод байт в байт как до правки;
+  `pytest` 268 ✅, `selftest` ✅ (golden байт в байт).
 - [ ] **P2.5 Ключ кэша рендера считается автоматически:** хэш исходников всех реально загруженных модулей пакетов и
   проектных шаблонов, а не ручной список из `render.py:29`. *Тест:* правка любого файла пакета делает сцены этого пакета устаревшими.
 - [ ] **P2.6 `studio/anim.py`:** единые easing и функции прогресса с разными именами (`span(t, a, b)` и `ramp(t, start, dur)`),

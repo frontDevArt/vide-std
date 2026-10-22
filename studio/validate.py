@@ -1,6 +1,7 @@
 """Проверка сценария (`python -m studio validate`): ошибки и предупреждения без печати — печатает команда."""
 from __future__ import annotations
 
+import difflib
 import json
 import re
 from dataclasses import dataclass, field
@@ -22,12 +23,16 @@ class Report:
 
 
 def check(proj) -> Report:
-    from .templates import REGISTRY, load_project_templates
+    from .packs import REGISTRY, TemplateNameError, load_project_templates
     from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG
     from .lang import profile
     lp = profile(proj.cfg["language"])
-    load_project_templates(proj.root)
     errs, warns = [], []
+    try:
+        load_project_templates(proj.root)
+    except TemplateNameError as e:
+        errs.append(f"templates/: {e}")
+    off_format = {}  # шаблон → сцены, когда шаблон не свёрстан под format проекта
     ids = set()
     words = 0
     accents = []  # где переопределён голос: правило канала — 1–2 на ролик (крючок, вердикт)
@@ -39,11 +44,14 @@ def check(proj) -> Report:
             ids.add((ch, sid))
             tp = s.get("template", "statement")
             if tp not in REGISTRY:
-                errs.append(f"{ch}/{sid}: нет шаблона '{tp}' (есть: {', '.join(sorted(REGISTRY))})")
+                near = difflib.get_close_matches(str(tp), list(REGISTRY), n=3)
+                errs.append(f"{ch}/{sid}: нет шаблона '{tp}'" + (f" — может, {' / '.join(near)}?" if near else "")
+                            + f" (есть: {', '.join(sorted(REGISTRY))})")
             else:
-                unknown = set((s.get("params") or {})) - set(REGISTRY[tp].PARAMS)
-                if unknown:
-                    warns.append(f"{ch}/{sid}: неизвестные параметры {sorted(unknown)} для {tp}")
+                cls = REGISTRY[tp]
+                warns += params(cls, tp, s.get("params"), f"{ch}/{sid}")
+                if proj.cfg["format"] not in cls.FORMATS:
+                    off_format.setdefault(cls, []).append(f"{ch}/{sid}")
             lines = s.get("lines") or []
             if not lines and not s.get("min_duration"):
                 errs.append(f"{ch}/{sid}: нет текста и не задан min_duration")
@@ -67,6 +75,11 @@ def check(proj) -> Report:
                     warns.append(f"{ch}/{sid}: очень длинная строка ({len(l)} симв.) — разбейте на предложения")
                 if any(len(x) > 90 for x in segments(l)):
                     warns.append(f"{ch}/{sid}: длинный бит без '|' — субтитры порежутся по словам")
+    if off_format:
+        where = [w for ws in off_format.values() for w in ws]
+        warns.append(f"format: {proj.cfg['format']} — шаблоны свёрстаны под другой формат: "
+                     + ", ".join(f"{c.NAME} ({'/'.join(c.FORMATS)})" for c in off_format)
+                     + f"; сцен {len(where)}: {', '.join(where[:4])}{' …' if len(where) > 4 else ''}")
     if len(accents) > 2:
         warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило канала: 1–2 акцента "
                      f"на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
@@ -79,6 +92,20 @@ def check(proj) -> Report:
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
     return Report(errs, warns, len(ids), words, est, pace, pace_src)
+
+
+def params(cls, tp, p, where):
+    """Параметры сцены по PARAMS шаблона (registry.Param): неизвестные ключи и тип значения → предупреждения."""
+    p = p or {}
+    out = []
+    unknown = set(p) - set(cls.PARAMS)
+    if unknown:
+        out.append(f"{where}: неизвестные параметры {sorted(unknown)} для {tp}")
+    for k, v in p.items():
+        bad = k in cls.PARAMS and cls.PARAMS[k].check(v)
+        if bad:
+            out.append(f"{where}: {tp}.{k} = {v!r} — {bad}")
+    return out
 
 
 def voice(proj, v, where, errs, warns):
@@ -133,8 +160,8 @@ def style(proj, errs, warns):
 
 def triggers(proj, errs, warns):
     """Триггеры at: (B8) — по словам озвучки, только если timeline.json актуален (иначе слова старые)."""
-    from .lab import trigger_errors
-    from .templates import REGISTRY
+    from .packs import REGISTRY
+    from .packs.lab import trigger_errors
     from .timing import source_hash
     p = proj.build / "timeline.json"
     if not p.exists():

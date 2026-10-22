@@ -10,9 +10,13 @@ def add(sp):
 
 
 def run(a):
-    from ..templates import REGISTRY, load_project_templates
+    from ..packs import REGISTRY, load_project_templates
     if a.project:
         load_project_templates(resolve_project(a.project))
-    for n, c in sorted(REGISTRY.items()):
-        print(f"\n## {n}\n{c.DOC}\n  биты: {c.BEATS}\n  параметры: {c.PARAMS}")
+    for n, c in sorted(REGISTRY.templates().items()):
+        al = REGISTRY.aliases(n)
+        print(f"\n## {n}" + (f"  (алиас: {', '.join(al)})" if al else "") + f"\n{c.DOC}\n  биты: {c.BEATS}"
+              f"\n  форматы: {', '.join(c.FORMATS)}\n  параметры:")
+        for k, p in c.PARAMS.items():
+            print(f"    {k}: {p!r}")
     return 0

@@ -26,7 +26,9 @@ def test_covers_every_template():
     for ch in yaml.safe_load((FIXTURE / "project.yaml").read_text(encoding="utf-8"))["chapters"]:
         data = yaml.safe_load((FIXTURE / "script" / f"{ch}.yaml").read_text(encoding="utf-8"))
         used |= {s["template"] for s in data["scenes"]}
-    assert used == set(REGISTRY), (set(REGISTRY) - used, used - set(REGISTRY))
+    used = {REGISTRY.canonical(n) or n for n in used}  # в фикстуре — старые имена (алиасы)
+    full = set(REGISTRY.templates())
+    assert used == full, (full - used, used - full)
 
 
 def test_validate_is_clean(tmp_path, capsys):
