@@ -252,7 +252,16 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   `synth`. Проверено: `tests/test_style.py` (8: из cfg = старый `set_palette`, значение/хэш/pickle, ключи кэшей по
   стилю, снимки `G.PAL`, `self.style`, конфиг ElevenLabs параметром), `pytest` 225 ✅, `selftest` ✅ (кадры в
   процессе — макс 0, golden байт в байт), `validate fake-discounts` — OK.
-- [ ] **P2.3 Распил `cli.py`:** `studio/commands/<команда>.py` + `studio/validate.py`. Интерфейс CLI не меняется.
+- [x] **P2.3 Распил `cli.py`:** `studio/commands/<команда>.py` + `studio/validate.py`. Интерфейс CLI не меняется.
+  *Сделано:* `cli.py` 469 → 37 строк: только `argparse` и перехват `TTSUnavailable`. 14 модулей `studio/commands/`
+  (`doctor`, `new`, `validate`, `voice`, `stills`, `render`, `assemble`, `qa`, `all`, `status`, `templates`, `frame`,
+  `demo`, `selftest`) — у каждого `add(sp)` и `run(a)`; порядок подкоманд — `commands.NAMES`. Логика проверки сценария —
+  `studio/validate.py`: `check(proj) → Report` без печати, проверки `voice`/`style`/`triggers` (бывшие `_validate_*`).
+  Прежние имена работают: `cli.cmd_<команда>` (модульный `__getattr__`), `cli.pinned_deps`/`slugify`/`default_backend`/
+  `STUDIO_ROOT`. `pyproject.toml`: пакет `studio.commands`. Проверено: `--help` всех 14 команд и общий — байт в байт
+  со старым; вывод и код `validate fake-discounts` — как у старого `cli.py`; `tests/test_cli_split.py` (31: модули =
+  подкоманды, старые `cmd_*`, все прежние флаги разбираются в те же значения, `cli.py` ≤ 400 строк);
+  `test_cli_new.py` патчит `studio.commands.new`. `pytest` 256 ✅, `selftest` ✅ (кадры в процессе — макс 0).
 - [ ] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
   `studio/packs/phone/` (5 «телефонных»), `studio/packs/lab/` (`background.py`, `elements.py`, `templates.py`; распил
   `lab.py`). Реестр ловит коллизии имён; старые имена (`lab_flow`) — алиасы. Метаданные шаблона: `formats`

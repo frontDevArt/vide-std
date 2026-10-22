@@ -6,13 +6,14 @@ import pytest
 import yaml
 
 from studio import cli
+from studio.commands import new as new_cmd
 from studio.project import STUDIO_ROOT
 
 
 @pytest.fixture
 def studio_root(tmp_path, monkeypatch):
     shutil.copytree(STUDIO_ROOT / "projects" / "_template", tmp_path / "projects" / "_template")
-    monkeypatch.setattr(cli, "STUDIO_ROOT", tmp_path)
+    monkeypatch.setattr(new_cmd, "STUDIO_ROOT", tmp_path)
     return tmp_path
 
 
@@ -43,7 +44,7 @@ def machine(studio_root, monkeypatch):
     """Машина без голосов: ни ключа, ни edge_tts, ни RHVoice. Тест включает нужное."""
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     have = {"root": studio_root, "edge": False}
-    monkeypatch.setattr(cli, "_has_edge", lambda: have["edge"])
+    monkeypatch.setattr(new_cmd, "_has_edge", lambda: have["edge"])
     return have
 
 
