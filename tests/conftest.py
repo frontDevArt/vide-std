@@ -1,9 +1,18 @@
 """Общее для тестов: шрифты только из assets/fonts (кадры и ширина субтитров не зависят от системы).
 Фикстура и шрифты — те же, что у `python -m studio selftest` (studio/selftest.py), чтобы pytest и selftest не разошлись."""
+import pytest
+
 from studio.project import STUDIO_ROOT as ROOT
 from studio.selftest import FONT, make_gallery, pin_fonts  # noqa: F401 — make_gallery берут тесты
 
 pin_fonts()
+
+
+@pytest.fixture(autouse=True)
+def _root_logs(tmp_path_factory, monkeypatch):
+    """Логи команд без проекта (P2.7) — во временную папку, а не в logs/ студии."""
+    from studio import log
+    monkeypatch.setattr(log, "ROOT_LOGS", tmp_path_factory.mktemp("logs"))
 
 
 def pytest_addoption(parser):

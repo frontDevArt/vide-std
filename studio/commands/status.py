@@ -4,6 +4,8 @@ from __future__ import annotations
 from . import project_parser
 from ..project import load, resolve_project
 
+LOG = False  # только чтение — лог в projects/<slug>/logs/ не пишем (studio/log.py)
+
 
 def add(sp):
     project_parser(sp, "status", "фазы и следующий шаг")

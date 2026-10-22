@@ -23,9 +23,29 @@ def main(argv=None):
     for name in commands.NAMES:
         commands.module(name).add(sp)
     a = p.parse_args(argv)
+    mod = commands.module(a.cmd)
+    if not getattr(mod, "LOG", True):
+        return _run(mod, a)
+    from .log import session
+    with session(a.cmd, _log_root(a), sys.argv[1:] if argv is None else argv):
+        return _run(mod, a)
+
+
+def _log_root(a):
+    """Папка проекта для лога (projects/<slug>/logs/) или None — тогда logs/ в корне студии."""
+    from .project import resolve_project
+    if not hasattr(a, "project"):
+        return None
+    try:
+        return resolve_project(a.project)
+    except SystemExit:  # проекта нет — команда сама скажет об этом, лог в корень
+        return None
+
+
+def _run(mod, a):
     from .tts import TTSUnavailable
     try:
-        return commands.module(a.cmd).run(a)
+        return mod.run(a)
     except TTSUnavailable as e:
         print(f"❌ Синтез речи недоступен: {e}\n"
               "Ролик без озвучки не делаем: сообщите пользователю и предложите установку (docs/TTS.md).")

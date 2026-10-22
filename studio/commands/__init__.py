@@ -1,5 +1,6 @@
 """Команды CLI: по модулю на команду. В модуле `add(sp)` — подкоманда и её аргументы, `run(a)` — код возврата.
-Тяжёлые импорты — внутри `run`: разбор аргументов не тянет numpy/Pillow."""
+Тяжёлые импорты — внутри `run`: разбор аргументов не тянет numpy/Pillow.
+Вывод команды дублируется в `projects/<slug>/logs/<команда>-<время>.log` (studio/log.py); `LOG = False` в модуле — без лога."""
 from __future__ import annotations
 
 import importlib
