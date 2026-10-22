@@ -50,6 +50,10 @@ def run(proj: Project, log=print, fast=False):
         res.append(("PASS" if ok else "FAIL", name, detail))
         log(f"[{'PASS' if ok else 'FAIL'}] {name} {detail}")
 
+    def warn(status, name, detail=""):  # WARN — ⚠️ в отчёте, на итог не влияет
+        res.append((status, name, detail))
+        log(f"[{status}] {name} {detail}")
+
     def skip(name, why):  # проверка неприменима к ролику — пометка в отчёте, на итог не влияет (B7)
         res.append(("SKIP", name, why))
         log(f"[SKIP] {name} — {why}")
@@ -115,6 +119,10 @@ def run(proj: Project, log=print, fast=False):
     else:
         _check_subs(proj, chk, subs, lines)
 
+    # --- вёрстка: контент сцены в полях кадра (P1.10)
+    from .safezone import qa_check
+    qa_check(proj, warn)
+
     # --- листы кадров из ГОТОВОГО файла (заодно доказывает воспроизведение)
     tmp = proj.qa_dir / "_g.png"
     y0 = int(H * (0.70 if H >= W else 0.76))
@@ -132,7 +140,7 @@ def run(proj: Project, log=print, fast=False):
     tmp.unlink(missing_ok=True)
 
     ok = all(r[0] != "FAIL" for r in res)
-    mark = {"PASS": "✅", "FAIL": "❌", "SKIP": "⏭️"}
+    mark = {"PASS": "✅", "FAIL": "❌", "SKIP": "⏭️", "WARN": "⚠️"}
     with open(proj.qa_dir / "report.md", "w", encoding="utf-8") as fh:
         fh.write(f"# QA: {proj.slug}\n\nИтог: **{'PASS' if ok else 'FAIL'}**\n\n")
         for st, n, d in res:

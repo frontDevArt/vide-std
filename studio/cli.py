@@ -309,6 +309,8 @@ def cmd_stills(a):
     proj = load(resolve_project(a.project))
     times = [float(x) for x in a.times.split(",")] if a.times else None
     stills(proj, a.chapter, times)
+    from .safezone import report
+    report(proj, a.chapter)  # вёрстка: контент в полях кадра (P1.10, пока только ⚠️)
     return 0
 
 
