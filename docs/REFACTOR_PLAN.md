@@ -108,8 +108,9 @@
 **✅ Этап 0 закрыт локально (2026-10-22).** Проверено на чистом клоне `master` (`0193ec6`) в свежем venv под Windows:
 `pip install -r requirements-dev.txt` поставил ровно закреплённые версии; шаги CI — `ruff check --select E9,F63,F7,F82`
 чисто, `pytest` 135 ✅, `selftest` ✅ за 78 с (кадры из MP4: макс 43, средняя 1,29); клон после прогона чистый.
-Сеть — только pip. *Осталось:* первый прогон CI на GitHub — нужен push (`origin/master` отстаёт на 12 коммитов);
-красный Linux — разбирать артефакт `golden-diff`, а не обновлять golden. Известное: Pillow предупреждает про
+Сеть — только pip. **CI зелёный** ([frontDevArt/vide-std](https://github.com/frontDevArt/vide-std), прогон
+`39757713381`, `c588c4a`): Windows 3 мин, Ubuntu 9 мин (из них `apt` ffmpeg ~5 мин); на Linux кадры = golden
+(макс 0), selftest 184 с — дольше бюджета 120 с только на 4-ядерном раннере. Известное: Pillow предупреждает про
 `Image.fromarray(..., mode)` (см. P0.6), под `-W error` падают 4 теста кадров.
 
 ---
