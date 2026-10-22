@@ -117,7 +117,13 @@ def chapter_glow(spec):
 
 
 def apply_style(style):
-    """project.yaml → style: palette, mood, overrides (font задаётся отдельно)."""
+    """project.yaml → style: palette, mood, overrides, font. Единственная точка применения стиля: layout, prepare
+    (stills), воркеры рендера и qa зовут её одинаково — субтитры переносятся и меряются тем шрифтом, что рисуются."""
+    global FONT_FAMILY
+    family = style.get("font") or DEFAULT_FONT
+    if family != FONT_FAMILY:
+        FONT_FAMILY = family
+        _font_file.cache_clear(); font.cache_clear(); text_sprite.cache_clear()
     set_palette(style.get("palette", "neon"), style.get("mood"), style.get("overrides"))
 
 
@@ -162,7 +168,8 @@ def ei(k):
 
 
 # ------------------------------------------------------------------ fonts
-FONT_FAMILY = "Inter Display"
+DEFAULT_FONT = "Inter Display"
+FONT_FAMILY = DEFAULT_FONT  # меняется только через apply_style
 WEIGHTS = {"black": "Black", "extrabold": "ExtraBold", "bold": "Bold", "semibold": "SemiBold",
            "medium": "Medium", "regular": "Regular", "light": "Light"}
 FALLBACKS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -171,12 +178,14 @@ FALLBACKS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
 
 
 @functools.lru_cache(None)
-def _font_file(weight):
+def _font_file(weight, family=None):
+    """Файл шрифта семейства (по умолчанию — FONT_FAMILY стиля): семейство входит в ключ кэша."""
+    family = family or FONT_FAMILY
     env = os.environ.get("STUDIO_FONT_" + weight.upper())
     if env and os.path.exists(env):
         return env
     try:
-        r = subprocess.run(["fc-match", "-f", "%{file}", f"{FONT_FAMILY}:style={WEIGHTS.get(weight, 'Bold')}"],
+        r = subprocess.run(["fc-match", "-f", "%{file}", f"{family}:style={WEIGHTS.get(weight, 'Bold')}"],
                            capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=10)
         if r.returncode == 0 and os.path.exists(r.stdout.strip()):
             return r.stdout.strip()
@@ -209,7 +218,7 @@ def font(size, weight="bold", family=None):
         except Exception:
             pass
         return f
-    return ImageFont.truetype(_font_file(weight), int(size), layout_engine=LAYOUT)
+    return ImageFont.truetype(_font_file(weight, FONT_FAMILY), int(size), layout_engine=LAYOUT)
 
 
 # ------------------------------------------------------------------ compositing
@@ -275,16 +284,19 @@ def glowify(base, color, radius, strength=1.0, mask=None):
 
 
 # ------------------------------------------------------------------ text
+# `*` по краям слова, пунктуация снаружи звёздочек остаётся в слове: '(*word*),' -> '(word),'
+_RUN_TOK = re.compile(r"([^\w*]*)(\**)(.*?)(\**)([^\w*]*)", re.S)
+
+
 def _runs(text):
-    """'Твоё *время*' -> [('Твоё', False), ('время', True)] по словам."""
+    """'Твоё *время*, да' -> [('Твоё', False), ('время,', True), ('да', False)] по словам."""
     out, acc = [], False
     for tok in text.split():
-        starts, ends = tok.startswith("*"), tok.endswith("*") and len(tok) > 1
-        if starts:
+        lead, opens, core, closes, trail = _RUN_TOK.fullmatch(tok).groups()
+        if opens:
             acc = True
-        word = tok.strip("*")
-        out.append((word, acc))
-        if ends or (starts and tok.endswith("*") and len(tok) > 1):
+        out.append((lead + core + trail, acc))
+        if closes:
             acc = False
     return out
 

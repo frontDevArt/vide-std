@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 import subprocess
@@ -63,6 +64,13 @@ def cmd_doctor(a):
             except Exception as e:
                 print(f"  ⬜ TTS [{code}] {be}: {str(e)[:110]}")
     import os
+    if not os.environ.get("ELEVENLABS_API_KEY", "").strip():  # .env уже прочитан при импорте tts
+        print("  ⬜ TTS ElevenLabs: ключа нет (ELEVENLABS_API_KEY в .env) — не проверяем")
+    else:
+        try:  # платный голос канала: проверяем бесплатно, без синтеза; ключ не печатается
+            line(True, "TTS ElevenLabs —", tts.el_check() + " (бесплатная проверка, без синтеза)")
+        except Exception as e:
+            line(False, "TTS ElevenLabs:", str(e)[:200])
     print(f"  ℹ️  ядер CPU: {os.cpu_count()}")
     return 0 if ok else 1
 
@@ -75,19 +83,47 @@ def slugify(s):
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")[:40] or "video"
 
 
+def _has_edge():
+    import importlib.util
+    return importlib.util.find_spec("edge_tts") is not None or bool(shutil.which("edge-tts"))
+
+
+def default_backend(lang):
+    """Голос нового проекта — первый доступный по дешёвой проверке (без сети и синтеза), иначе None.
+    ElevenLabs платный: только для канала (есть channel/POSITIONING.md, ролики англоязычные) и с ключом в .env."""
+    import os
+    from . import tts  # noqa: F401 — подхватывает .env в окружение
+    if (os.environ.get("ELEVENLABS_API_KEY", "").strip() and lang == "en"
+            and (STUDIO_ROOT / "channel" / "POSITIONING.md").exists()):
+        return "elevenlabs"
+    if _has_edge():
+        return "edge"
+    if (STUDIO_ROOT / "tools" / "rhvoice" / "rhvoice").exists():
+        return "rhvoice"
+    return None
+
+
 def cmd_new(a):
+    backend = a.tts or default_backend(a.lang)
+    if not backend:
+        backend = "rhvoice"
+        print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"
+              "   поставьте голос (python -m studio doctor, bash tools/setup_rhvoice.sh) или укажите --tts")
     slug = a.slug or slugify(a.topic)
     dst = STUDIO_ROOT / "projects" / slug
     if dst.exists():
         raise SystemExit(f"Уже есть: {dst}")
     shutil.copytree(STUDIO_ROOT / "projects" / "_template", dst)
     y = (dst / "project.yaml").read_text(encoding="utf-8")
-    y = y.replace("topic: TODO", f"topic: {a.topic!r}".replace("'", '"'))
+    # JSON-строка — валидный YAML при любых кавычках и `: `/`#` в теме; комментарии заготовки сохраняются
+    y = y.replace("topic: TODO", f"topic: {json.dumps(a.topic, ensure_ascii=False)}")
     y = y.replace("language: ru", f"language: {a.lang}")
     y = y.replace("format: vertical", f"format: {a.format}")
     y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
+    # явно в project.yaml, а не «по умолчанию»: бэкенд входит в ключ кэша TTS и не должен зависеть от машины
+    y = y.replace("  backend: rhvoice ", f"  backend: {backend} ", 1)
     (dst / "project.yaml").write_text(y, encoding="utf-8")
-    print(f"Создан проект: {dst}\nДальше: фаза 1 (бриф) — docs/PHASES.md")
+    print(f"Создан проект: {dst} (голос: {backend})\nДальше: фаза 1 (бриф) — docs/PHASES.md")
     return 0
 
 
@@ -142,9 +178,13 @@ def cmd_validate(a):
         warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило канала: 1–2 акцента "
                      f"на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
     _validate_style(proj, errs, warns)
+    _validate_triggers(proj, errs, warns)
     tgt = proj.cfg.get("target_duration")
-    est = words / lp["wpm"] * 60
-    print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
+    from .calibration import wpm
+    pace, pace_src = wpm(proj)
+    est = words / pace * 60
+    print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, "
+          f"оценка речи ≈ {est:.0f} c ({pace:g} слов/мин, {pace_src})")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
     for w in warns:
@@ -205,6 +245,21 @@ def _validate_style(proj, errs, warns):
             errs.append(f"{ch}: {e}")
 
 
+def _validate_triggers(proj, errs, warns):
+    """Триггеры at: (B8) — по словам озвучки, только если timeline.json актуален (иначе слова старые)."""
+    from .lab import trigger_errors
+    from .templates import REGISTRY
+    from .timing import source_hash
+    p = proj.build / "timeline.json"
+    if not p.exists():
+        return
+    tl = json.loads(p.read_text(encoding="utf-8"))
+    if tl.get("src") != source_hash(proj):
+        warns.append("timeline.json устарел — триггеры at: проверит voice")
+        return
+    errs += trigger_errors(tl["scenes"], REGISTRY)
+
+
 def _elevenlabs_guard(proj, yes):
     """Платный синтез: темп числом (подбор темпа синтезирует несколько раз) + оценка символов и подтверждение."""
     from . import tts
@@ -232,10 +287,21 @@ def cmd_voice(a):
     tl = layout(proj)
     print(f"Темп {tl['rate']:.0f}, длительность {tl['duration']:.2f} c, {len(tl['scenes'])} сцен, "
           f"{tl['wpm_speech']} слов/мин в речи")
+    from .calibration import calibrate
+    for w in calibrate(proj, tl):
+        print("  ⚠️ ", w)
     for s in tl["scenes"]:
         print(f"  {s['chapter']}/{s['id']:<6} {s['start']:7.2f}–{s['start'] + s['dur']:7.2f}  {s['template']:<12} "
               f"битов {len(s['beats'])}, субтитров {len(s['subs'])}")
-    return 0
+    from .lab import trigger_errors
+    from .templates import REGISTRY, load_project_templates
+    load_project_templates(proj.root)
+    errs = trigger_errors(tl["scenes"], REGISTRY)
+    for e in errs:
+        print("  ❌", e)
+    if errs:
+        print(f"Триггеры at: не найдено {len(errs)} — элементы появятся не в такт. Поправьте at или текст и повторите voice")
+    return 1 if errs else 0
 
 
 def cmd_stills(a):
@@ -243,6 +309,8 @@ def cmd_stills(a):
     proj = load(resolve_project(a.project))
     times = [float(x) for x in a.times.split(",")] if a.times else None
     stills(proj, a.chapter, times)
+    from .safezone import report
+    report(proj, a.chapter)  # вёрстка: контент в полях кадра (P1.10, пока только ⚠️)
     return 0
 
 
@@ -354,6 +422,8 @@ def main(argv=None):
                                                                       choices=["vertical", "horizontal", "square"])
     n.add_argument("--duration", type=float, default=None, help="точная длительность, c (иначе — по речи)")
     n.add_argument("--lang", default="ru", help="язык ролика: ru | en | ... (studio/lang.py)")
+    n.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake"],
+                   help="голос; без флага — первый доступный: elevenlabs (канал + ключ) → edge → rhvoice")
     for name, h in (("validate", "проверить сценарий"), ("voice", "озвучка + тайминги"),
                     ("stills", "контрольные кадры"), ("render", "рендер сцен"), ("assemble", "сборка финала"),
                     ("qa", "проверка финала"), ("all", "voice→render→assemble→qa"), ("status", "фазы и следующий шаг"),

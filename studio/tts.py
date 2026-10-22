@@ -155,18 +155,24 @@ def _el_key():
     return k
 
 
+def _el_urlopen(req, timeout):
+    import urllib.request
+    return urllib.request.urlopen(req, timeout=timeout)
+
+
 def _el_request(path, body=None, method="GET"):
     import urllib.error
     import urllib.request
+    key = _el_key()
     req = urllib.request.Request(EL_API + path, method=method,
                                  data=json.dumps(body).encode() if body is not None else None,
-                                 headers={"xi-api-key": _el_key(), "Content-Type": "application/json",
+                                 headers={"xi-api-key": key, "Content-Type": "application/json",
                                           "Accept": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=120) as r:
+        with _el_urlopen(req, timeout=120) as r:
             return json.loads(r.read().decode())
     except urllib.error.HTTPError as e:  # 401/403/429 — без ретраев, понятная ошибка
-        msg = e.read().decode(errors="replace")[:300]
+        msg = e.read().decode(errors="replace").replace(key, "***")[:300]  # ключ не печатаем, даже из ответа API
         hint = {400: "неверный запрос (если ругается на previous_text/next_text — tts.context: false)",
                 401: "ключ неверный", 403: "доступ запрещён (тариф/прокси) — не ретраим",
                 429: "лимит запросов или символов"}.get(e.code, "")
@@ -283,6 +289,20 @@ def probe(tts_cfg, language="ru") -> str:
         return "ok"
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+
+def el_check(voice=None) -> str:
+    """doctor: ключ и голос ElevenLabs бесплатными запросами (/user, /voices/{id}), без синтеза.
+    voice — ID голоса (по умолчанию ELEVENLABS_VOICE_ID). Возвращает «голос, тариф, остаток символов»; ключ не печатается."""
+    sub = _el_request("/user").get("subscription") or {}
+    voice = voice or os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
+    if not voice:
+        raise TTSUnavailable("ключ верный, но не задан голос: ELEVENLABS_VOICE_ID в .env")
+    name = _el_request(f"/voices/{voice}").get("name") or voice
+    left = ""
+    if isinstance(sub.get("character_limit"), int) and isinstance(sub.get("character_count"), int):
+        left = f", осталось {sub['character_limit'] - sub['character_count']} из {sub['character_limit']} символов"
+    return f"голос {name}" + (f", тариф {sub['tier']}" if sub.get("tier") else "") + left
 
 
 # ---------------------------------------------------------------- synth + cache

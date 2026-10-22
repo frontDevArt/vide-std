@@ -248,7 +248,7 @@ Notes From The Mind — «у каждой цифры источник» (про�
 | R3a Настроения `lab`, демо стиля | ✅ сделано 2026-10-21 |
 | R4 Прозрачный фон | → C2 |
 | R5 Проверка edge/piper | edge ✅ (`doctor`, регресс 2026-10-22); piper — по необходимости |
-| R5a ElevenLabs | ✅ в бою (`fake-discounts`); `doctor` для ElevenLabs → REFACTOR P1.7 |
+| R5a ElevenLabs | ✅ в бою (`fake-discounts`); `doctor` проверяет ключ, голос и остаток символов (REFACTOR P1.7) |
 | R6 Новые шаблоны | → C4 |
 | R7 Пилот 5–10 минут | ✅ фактически (F1) |
 | R8 Музыка по главам | → C3 |

@@ -66,13 +66,27 @@ NEXT = {
 }
 
 
-def report(proj: Project, log=print):
-    ph = phases(proj)
+def pace(proj: Project):
+    """(слов в сценарии, слов/мин, откуда темп): замер из timeline.json после voice, иначе wpm языка."""
     words = sum(word_count(line_text(l)) for _, d in proj.chapters for s in d.get("scenes") or []
                 for l in s.get("lines") or [])
+    tl = proj.build / "timeline.json"
+    if tl.exists():
+        import json
+        wpm = json.loads(tl.read_text(encoding="utf-8")).get("wpm_speech")
+        if wpm:
+            return words, wpm, "замер timeline.json"
+    from .calibration import wpm
+    return (words, *wpm(proj))
+
+
+def report(proj: Project, log=print):
+    ph = phases(proj)
+    words, wpm, src = pace(proj)
     log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')}")
     log(f"Формат {proj.cfg['format']} {proj.size[0]}×{proj.size[1]}, {proj.fps} fps; "
-        f"цель {proj.cfg.get('target_duration') or 'по речи'}; слов в сценарии: {words} (~{words / 140:.1f} мин речи)")
+        f"цель {proj.cfg.get('target_duration') or 'по речи'}; слов в сценарии: {words} "
+        f"(~{words / wpm:.1f} мин речи при {wpm:g} слов/мин, {src})")
     nxt = None
     for name, ok, det in ph:
         log(f"  {'✅' if ok else '⬜'} {name}: {det}")

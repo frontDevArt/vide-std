@@ -32,6 +32,7 @@ DEFAULTS = {
     "subtitles": {"enabled": True, "max_lines": 2, "size": None},
     "render": {"workers": None, "crf": 18, "preset": "medium"},
     "loudness": -16,
+    "qa": {"safe_margin": 0.04},  # поля кадра для контента сцены (доля стороны), проверка safezone
     "chapters": [],
 }
 
