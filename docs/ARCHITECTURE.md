@@ -13,7 +13,8 @@
 ## Модули `studio/`
 | Файл | Что делает |
 |---|---|
-| `project.py` | загрузка `project.yaml` + глав, значения по умолчанию, пути |
+| `project.py` | загрузка `project.yaml` + глав, пути |
+| `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |
 | `tts.py` | бэкенды TTS, кэш, обрезка тишины, поиск пауз |
 | `timing.py` | раскладка: строки → биты → сцены → кадры; подбор темпа под точную длительность |
 | `calibration.py` | замер слов/мин голоса после `voice` → `build/voice_calibration.json`; темп для `validate`/`status` |

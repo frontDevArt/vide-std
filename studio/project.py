@@ -9,6 +9,8 @@ from pathlib import Path
 
 import yaml
 
+from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
+
 STUDIO_ROOT = Path(__file__).resolve().parent.parent
 VERSION = "0.3.0"
 
@@ -17,34 +19,6 @@ FORMATS = {
     "horizontal": (1920, 1080),
     "square": (1080, 1080),
 }
-
-DEFAULTS = {
-    "language": "ru",  # язык озвучки и текста ролика (studio/lang.py: LANGS)
-    "fps": 30,
-    "format": "vertical",
-    "target_duration": None,
-    "tts": {"backend": "rhvoice", "voice": "auto", "rate": 105, "rate_range": [98, 125]},
-    "pauses": {"start": 0.45, "comma": 0.18, "sentence": 0.40, "scene": 0.55, "end": 0.6,
-               "max_extra_gap": 0.45},
-    "style": {"palette": "neon", "font": "Inter Display"},
-    "music": {"enabled": True, "level_db": -13, "duck": True},
-    "sfx": {"enabled": True, "level_db": 0},  # звуки появления — только у шаблонов с sfx_events (lab_*)
-    "subtitles": {"enabled": True, "max_lines": 2, "size": None},
-    "render": {"workers": None, "crf": 18, "preset": "medium"},
-    "loudness": -16,
-    "qa": {"safe_margin": 0.04},  # поля кадра для контента сцены (доля стороны), проверка safezone
-    "chapters": [],
-}
-
-
-def deep_merge(base: dict, over: dict) -> dict:
-    out = dict(base)
-    for k, v in (over or {}).items():
-        if isinstance(v, dict) and isinstance(out.get(k), dict):
-            out[k] = deep_merge(out[k], v)
-        else:
-            out[k] = v
-    return out
 
 
 def stable_hash(obj, n=12) -> str:
@@ -92,7 +66,9 @@ def load(root) -> Project:
         root = STUDIO_ROOT / "projects" / root.name
     with open(root / "project.yaml", encoding="utf-8") as f:
         user = yaml.safe_load(f) or {}
-    cfg = deep_merge(DEFAULTS, user)
+    for w in check(user):  # опечатка в ключе не должна молча игнорироваться (studio/config.py)
+        print(f"⚠️  project.yaml: {w}")
+    cfg = deep_merge(DEFAULTS, migrate(user))
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
     if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):
