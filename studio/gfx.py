@@ -284,16 +284,19 @@ def glowify(base, color, radius, strength=1.0, mask=None):
 
 
 # ------------------------------------------------------------------ text
+# `*` по краям слова, пунктуация снаружи звёздочек остаётся в слове: '(*word*),' -> '(word),'
+_RUN_TOK = re.compile(r"([^\w*]*)(\**)(.*?)(\**)([^\w*]*)", re.S)
+
+
 def _runs(text):
-    """'Твоё *время*' -> [('Твоё', False), ('время', True)] по словам."""
+    """'Твоё *время*, да' -> [('Твоё', False), ('время,', True), ('да', False)] по словам."""
     out, acc = [], False
     for tok in text.split():
-        starts, ends = tok.startswith("*"), tok.endswith("*") and len(tok) > 1
-        if starts:
+        lead, opens, core, closes, trail = _RUN_TOK.fullmatch(tok).groups()
+        if opens:
             acc = True
-        word = tok.strip("*")
-        out.append((word, acc))
-        if ends or (starts and tok.endswith("*") and len(tok) > 1):
+        out.append((lead + core + trail, acc))
+        if closes:
             acc = False
     return out
 
