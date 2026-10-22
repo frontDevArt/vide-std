@@ -1,0 +1,2296 @@
+{
+ "src": "cb904ffae9c4",
+ "fps": 30,
+ "size": [
+  1080,
+  1920
+ ],
+ "rate": 105.0,
+ "voice": "fake",
+ "backend": "fake",
+ "total_frames": 2264,
+ "duration": 75.46666666666667,
+ "words": 149,
+ "wpm_speech": 142.6,
+ "wpm_overall": 118.5,
+ "scenes": [
+  {
+   "chapter": "ch01",
+   "id": "s01",
+   "template": "lab_chapter",
+   "params": {
+    "number": 1,
+    "total": 2,
+    "title": "The claim",
+    "subtitle": "gallery · lab"
+   },
+   "lines": [
+    {
+     "text": "Chapter one. The claim.",
+     "wav": "993541e166a6c34a.wav",
+     "t0": 0.582,
+     "t1": 2.48
+    }
+   ],
+   "beats": [
+    {
+     "text": "Chapter one.",
+     "line": 0,
+     "t0": 0.582,
+     "t1": 1.482
+    },
+    {
+     "text": "The claim.",
+     "line": 0,
+     "t0": 1.772,
+     "t1": 2.48
+    }
+   ],
+   "words": [
+    {
+     "w": "Chapter",
+     "line": 0,
+     "t0": 0.582,
+     "t1": 1.1
+    },
+    {
+     "w": "one.",
+     "line": 0,
+     "t0": 1.129,
+     "t1": 1.476
+    },
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 1.781,
+     "t1": 2.019
+    },
+    {
+     "w": "claim.",
+     "line": 0,
+     "t0": 2.047,
+     "t1": 2.48
+    }
+   ],
+   "start": 0.0,
+   "dur": 3.0,
+   "start_frame": 0,
+   "n_frames": 90,
+   "subs": [
+    {
+     "lines": [
+      "Chapter one."
+     ],
+     "t0": 0.532,
+     "t1": 1.702
+    },
+    {
+     "lines": [
+      "The claim."
+     ],
+     "t0": 1.722,
+     "t1": 2.83
+    }
+   ],
+   "hash": "35bba6290446"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s02",
+   "template": "lab_hero_stack",
+   "params": {
+    "chrome": {
+     "rubric": "Myth on Trial",
+     "number": "№ 01",
+     "steps": [
+      "CLAIM",
+      "EVIDENCE",
+      "VERDICT"
+     ],
+     "step": 1
+    },
+    "claim": {
+     "label": "VIRAL CLAIM",
+     "text": "“It takes *21 days* to build a habit.”",
+     "at": "w:say"
+    },
+    "hero": {
+     "value": 21,
+     "caption": "days",
+     "sub": "the popular claim",
+     "color": "text",
+     "at": "twenty-one"
+    },
+    "cards": [
+     {
+      "icon": "book",
+      "title": "One study",
+      "sub": "ninety-six people",
+      "at": "three"
+     },
+     {
+      "icon": "chart",
+      "title": "Wide range",
+      "sub": "18 to 254 days",
+      "chip": "EVIDENCE",
+      "chip_color": "true",
+      "at": "findings"
+     },
+     {
+      "icon": "flask",
+      "title": "No magic number",
+      "sub": "it depends",
+      "at": "different"
+     }
+    ],
+    "keep": [
+     "hero"
+    ]
+   },
+   "lines": [
+    {
+     "text": "People say it takes twenty-one days to build a habit.",
+     "wav": "ea0551133cc36c17.wav",
+     "t0": 0.275,
+     "t1": 4.604
+    },
+    {
+     "text": "Three findings tell a different story.",
+     "wav": "72d01785bc1aac4f.wav",
+     "t0": 5.004,
+     "t1": 7.805
+    }
+   ],
+   "beats": [
+    {
+     "text": "People say",
+     "line": 0,
+     "t0": 0.275,
+     "t1": 1.245
+    },
+    {
+     "text": "it takes twenty-one days to build a habit.",
+     "line": 0,
+     "t0": 1.345,
+     "t1": 4.604
+    },
+    {
+     "text": "Three findings",
+     "line": 1,
+     "t0": 5.004,
+     "t1": 6.034
+    },
+    {
+     "text": "tell a different story.",
+     "line": 1,
+     "t0": 6.134,
+     "t1": 7.805
+    }
+   ],
+   "words": [
+    {
+     "w": "People",
+     "line": 0,
+     "t0": 0.275,
+     "t1": 0.86
+    },
+    {
+     "w": "say",
+     "line": 0,
+     "t0": 0.889,
+     "t1": 1.236
+    },
+    {
+     "w": "it",
+     "line": 0,
+     "t0": 1.35,
+     "t1": 1.545
+    },
+    {
+     "w": "takes",
+     "line": 0,
+     "t0": 1.574,
+     "t1": 2.007
+    },
+    {
+     "w": "twenty-one",
+     "line": 0,
+     "t0": 2.035,
+     "t1": 2.858
+    },
+    {
+     "w": "days",
+     "line": 0,
+     "t0": 2.887,
+     "t1": 3.277
+    },
+    {
+     "w": "to",
+     "line": 0,
+     "t0": 3.305,
+     "t1": 3.5
+    },
+    {
+     "w": "build",
+     "line": 0,
+     "t0": 3.529,
+     "t1": 3.962
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 3.99,
+     "t1": 4.143
+    },
+    {
+     "w": "habit.",
+     "line": 0,
+     "t0": 4.171,
+     "t1": 4.604
+    },
+    {
+     "w": "Three",
+     "line": 1,
+     "t0": 5.004,
+     "t1": 5.437
+    },
+    {
+     "w": "findings",
+     "line": 1,
+     "t0": 5.465,
+     "t1": 6.026
+    },
+    {
+     "w": "tell",
+     "line": 1,
+     "t0": 6.14,
+     "t1": 6.421
+    },
+    {
+     "w": "a",
+     "line": 1,
+     "t0": 6.449,
+     "t1": 6.602
+    },
+    {
+     "w": "different",
+     "line": 1,
+     "t0": 6.63,
+     "t1": 7.343
+    },
+    {
+     "w": "story.",
+     "line": 1,
+     "t0": 7.372,
+     "t1": 7.805
+    }
+   ],
+   "start": 3.0,
+   "dur": 8.066666666666666,
+   "start_frame": 90,
+   "n_frames": 242,
+   "subs": [
+    {
+     "lines": [
+      "People say"
+     ],
+     "t0": 0.225,
+     "t1": 1.275
+    },
+    {
+     "lines": [
+      "it takes twenty-one",
+      "days to build a habit."
+     ],
+     "t0": 1.295,
+     "t1": 4.934
+    },
+    {
+     "lines": [
+      "Three findings"
+     ],
+     "t0": 4.954,
+     "t1": 6.064
+    },
+    {
+     "lines": [
+      "tell a different story."
+     ],
+     "t0": 6.084,
+     "t1": 8.017
+    }
+   ],
+   "hash": "678044931424"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s03",
+   "template": "lab_crowd",
+   "params": {
+    "chrome": {
+     "step": 2
+    },
+    "hero": {
+     "value": 66,
+     "from_prev": true,
+     "caption": "median days",
+     "at": "study",
+     "strike_at": "w:tracked"
+    },
+    "study": {
+     "authors": "Lally, van Jaarsveld, Potts & Wardle",
+     "where": "Eur. J. of Social Psychology · 2010 · n = 96",
+     "evidence": 3,
+     "at": "study"
+    },
+    "crowd": {
+     "n": 96,
+     "cols": 16,
+     "at": "ninety-six",
+     "highlight": [
+      {
+       "index": 19,
+       "label": "18 days",
+       "color": "accent",
+       "at": "tracked"
+      }
+     ]
+    },
+    "range": {
+     "min": 18,
+     "max": 254,
+     "mark": 66,
+     "min_label": "18 days",
+     "max_label": "~254 days",
+     "mark_label": "66 · median",
+     "at": "habit"
+    },
+    "source": {
+     "label": "SOURCE",
+     "text": "Lally et al., 2010",
+     "at": "study"
+    }
+   },
+   "lines": [
+    {
+     "text": "In one study ninety-six people tracked a new habit.",
+     "wav": "e4f50960f44ce440.wav",
+     "t0": 0.2883,
+     "t1": 4.4123
+    }
+   ],
+   "beats": [
+    {
+     "text": "In one study",
+     "line": 0,
+     "t0": 0.2883,
+     "t1": 1.3283
+    },
+    {
+     "text": "ninety-six people",
+     "line": 0,
+     "t0": 1.4283,
+     "t1": 2.8783
+    },
+    {
+     "text": "tracked a new habit.",
+     "line": 0,
+     "t0": 2.9783,
+     "t1": 4.4123
+    }
+   ],
+   "words": [
+    {
+     "w": "In",
+     "line": 0,
+     "t0": 0.2883,
+     "t1": 0.4833
+    },
+    {
+     "w": "one",
+     "line": 0,
+     "t0": 0.5123,
+     "t1": 0.8593
+    },
+    {
+     "w": "study",
+     "line": 0,
+     "t0": 0.8883,
+     "t1": 1.3203
+    },
+    {
+     "w": "ninety-six",
+     "line": 0,
+     "t0": 1.4353,
+     "t1": 2.2583
+    },
+    {
+     "w": "people",
+     "line": 0,
+     "t0": 2.2863,
+     "t1": 2.8713
+    },
+    {
+     "w": "tracked",
+     "line": 0,
+     "t0": 2.9863,
+     "t1": 3.5043
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 3.5323,
+     "t1": 3.6853
+    },
+    {
+     "w": "new",
+     "line": 0,
+     "t0": 3.7133,
+     "t1": 3.9513
+    },
+    {
+     "w": "habit.",
+     "line": 0,
+     "t0": 3.9793,
+     "t1": 4.4123
+    }
+   ],
+   "start": 11.066666666666666,
+   "dur": 4.7,
+   "start_frame": 332,
+   "n_frames": 141,
+   "subs": [
+    {
+     "lines": [
+      "In one study"
+     ],
+     "t0": 0.238,
+     "t1": 1.358
+    },
+    {
+     "lines": [
+      "ninety-six people"
+     ],
+     "t0": 1.378,
+     "t1": 2.908
+    },
+    {
+     "lines": [
+      "tracked a new habit."
+     ],
+     "t0": 2.928,
+     "t1": 4.65
+    }
+   ],
+   "hash": "3495fa5c636b"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s04",
+   "template": "lab_flow",
+   "params": {
+    "chrome": {
+     "clock": "07:00"
+    },
+    "stations": [
+     {
+      "icon": "alarm",
+      "title": "Cue",
+      "sub": "same time, same place",
+      "at": "cue"
+     },
+     {
+      "icon": "check",
+      "title": "Routine",
+      "sub": "the action itself",
+      "at": "routine"
+     },
+     {
+      "icon": "chart",
+      "title": "Reward",
+      "sub": "a small payoff",
+      "at": "reward"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "A habit forms in three steps: a cue, a routine, and a reward.",
+     "wav": "6a2f79e79f40cd65.wav",
+     "t0": 0.2623,
+     "t1": 5.1483
+    }
+   ],
+   "beats": [
+    {
+     "text": "A habit forms in three steps:",
+     "line": 0,
+     "t0": 0.2623,
+     "t1": 2.2723
+    },
+    {
+     "text": "a cue,",
+     "line": 0,
+     "t0": 2.4723,
+     "t1": 3.0023
+    },
+    {
+     "text": "a routine,",
+     "line": 0,
+     "t0": 3.1523,
+     "t1": 4.0723
+    },
+    {
+     "text": "and a reward.",
+     "line": 0,
+     "t0": 4.2223,
+     "t1": 5.1483
+    }
+   ],
+   "words": [
+    {
+     "w": "A",
+     "line": 0,
+     "t0": 0.2623,
+     "t1": 0.4143
+    },
+    {
+     "w": "habit",
+     "line": 0,
+     "t0": 0.4433,
+     "t1": 0.8763
+    },
+    {
+     "w": "forms",
+     "line": 0,
+     "t0": 0.9043,
+     "t1": 1.2273
+    },
+    {
+     "w": "in",
+     "line": 0,
+     "t0": 1.2563,
+     "t1": 1.4513
+    },
+    {
+     "w": "three",
+     "line": 0,
+     "t0": 1.4793,
+     "t1": 1.9123
+    },
+    {
+     "w": "steps:",
+     "line": 0,
+     "t0": 1.9413,
+     "t1": 2.2643
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 2.4733,
+     "t1": 2.6263
+    },
+    {
+     "w": "cue,",
+     "line": 0,
+     "t0": 2.6543,
+     "t1": 3.0023
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 3.1543,
+     "t1": 3.3073
+    },
+    {
+     "w": "routine,",
+     "line": 0,
+     "t0": 3.3353,
+     "t1": 4.0733
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 4.2253,
+     "t1": 4.4633
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 4.4913,
+     "t1": 4.6443
+    },
+    {
+     "w": "reward.",
+     "line": 0,
+     "t0": 4.6723,
+     "t1": 5.1483
+    }
+   ],
+   "start": 15.766666666666667,
+   "dur": 5.433333333333334,
+   "start_frame": 473,
+   "n_frames": 163,
+   "subs": [
+    {
+     "lines": [
+      "A habit forms in three steps:"
+     ],
+     "t0": 0.212,
+     "t1": 2.402
+    },
+    {
+     "lines": [
+      "a cue,"
+     ],
+     "t0": 2.422,
+     "t1": 3.082
+    },
+    {
+     "lines": [
+      "a routine,"
+     ],
+     "t0": 3.102,
+     "t1": 4.152
+    },
+    {
+     "lines": [
+      "and a reward."
+     ],
+     "t0": 4.172,
+     "t1": 5.383
+    }
+   ],
+   "hash": "fde5f5780cdf"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s05",
+   "template": "lab_diagram",
+   "params": {
+    "chrome": {
+     "clock": "21:15"
+    },
+    "center": {
+     "icon": "phone",
+     "title": "Phone on desk",
+     "at": "phone"
+    },
+    "labels": [
+     {
+      "text": "attention",
+      "at": "attention"
+     },
+     {
+      "text": "memory",
+      "at": "memory"
+     },
+     {
+      "text": "mood",
+      "at": "mood"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Your phone on the desk pulls on attention, memory and mood.",
+     "wav": "b0dcaf9cff90118a.wav",
+     "t0": 0.265,
+     "t1": 5.045
+    }
+   ],
+   "beats": [
+    {
+     "text": "Your phone on the desk",
+     "line": 0,
+     "t0": 0.265,
+     "t1": 2.025
+    },
+    {
+     "text": "pulls on attention,",
+     "line": 0,
+     "t0": 2.135,
+     "t1": 3.545
+    },
+    {
+     "text": "memory",
+     "line": 0,
+     "t0": 3.685,
+     "t1": 4.275
+    },
+    {
+     "text": "and mood.",
+     "line": 0,
+     "t0": 4.385,
+     "t1": 5.045
+    }
+   ],
+   "words": [
+    {
+     "w": "Your",
+     "line": 0,
+     "t0": 0.265,
+     "t1": 0.765
+    },
+    {
+     "w": "phone",
+     "line": 0,
+     "t0": 0.793,
+     "t1": 1.226
+    },
+    {
+     "w": "on",
+     "line": 0,
+     "t0": 1.255,
+     "t1": 1.45
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 1.478,
+     "t1": 1.716
+    },
+    {
+     "w": "desk",
+     "line": 0,
+     "t0": 1.745,
+     "t1": 2.025
+    },
+    {
+     "w": "pulls",
+     "line": 0,
+     "t0": 2.139,
+     "t1": 2.462
+    },
+    {
+     "w": "on",
+     "line": 0,
+     "t0": 2.491,
+     "t1": 2.686
+    },
+    {
+     "w": "attention,",
+     "line": 0,
+     "t0": 2.714,
+     "t1": 3.537
+    },
+    {
+     "w": "memory",
+     "line": 0,
+     "t0": 3.69,
+     "t1": 4.275
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 4.389,
+     "t1": 4.627
+    },
+    {
+     "w": "mood.",
+     "line": 0,
+     "t0": 4.655,
+     "t1": 5.045
+    }
+   ],
+   "start": 21.2,
+   "dur": 5.333333333333333,
+   "start_frame": 636,
+   "n_frames": 160,
+   "subs": [
+    {
+     "lines": [
+      "Your phone on the desk"
+     ],
+     "t0": 0.215,
+     "t1": 2.065
+    },
+    {
+     "lines": [
+      "pulls on attention,"
+     ],
+     "t0": 2.085,
+     "t1": 3.615
+    },
+    {
+     "lines": [
+      "memory"
+     ],
+     "t0": 3.635,
+     "t1": 4.315
+    },
+    {
+     "lines": [
+      "and mood."
+     ],
+     "t0": 4.335,
+     "t1": 5.283
+    }
+   ],
+   "hash": "2aaa2d349f7f"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s06",
+   "template": "lab_versus",
+   "params": {
+    "chrome": {
+     "step": 2
+    },
+    "left": {
+     "title": "They say",
+     "items": [
+      {
+       "text": "21 days",
+       "at": "three"
+      }
+     ]
+    },
+    "right": {
+     "title": "Studies found",
+     "items": [
+      {
+       "text": "66 days (median)",
+       "at": "found"
+      },
+      {
+       "text": "18 to 254 days",
+       "at": "months"
+      }
+     ]
+    },
+    "neuron": {
+     "mood": "surprised",
+     "at": "two"
+    },
+    "verdict": {
+     "verdict": "HALF-TRUE",
+     "sub": "habits form, *slowly*",
+     "at": "months"
+    }
+   },
+   "lines": [
+    {
+     "text": "They say three weeks.",
+     "wav": "ce8dd3b98bc1f41d.wav",
+     "t0": 0.2617,
+     "t1": 2.0357
+    },
+    {
+     "text": "Studies found about two months.",
+     "wav": "ddead18c12774885.wav",
+     "t0": 2.4357,
+     "t1": 4.8417
+    }
+   ],
+   "beats": [
+    {
+     "text": "They say",
+     "line": 0,
+     "t0": 0.2617,
+     "t1": 1.0317
+    },
+    {
+     "text": "three weeks.",
+     "line": 0,
+     "t0": 1.1417,
+     "t1": 2.0357
+    },
+    {
+     "text": "Studies found",
+     "line": 1,
+     "t0": 2.4357,
+     "t1": 3.5257
+    },
+    {
+     "text": "about two months.",
+     "line": 1,
+     "t0": 3.6357,
+     "t1": 4.8417
+    }
+   ],
+   "words": [
+    {
+     "w": "They",
+     "line": 0,
+     "t0": 0.2617,
+     "t1": 0.6517
+    },
+    {
+     "w": "say",
+     "line": 0,
+     "t0": 0.6807,
+     "t1": 1.0277
+    },
+    {
+     "w": "three",
+     "line": 0,
+     "t0": 1.1417,
+     "t1": 1.5747
+    },
+    {
+     "w": "weeks.",
+     "line": 0,
+     "t0": 1.6037,
+     "t1": 2.0357
+    },
+    {
+     "w": "Studies",
+     "line": 1,
+     "t0": 2.4357,
+     "t1": 3.0637
+    },
+    {
+     "w": "found",
+     "line": 1,
+     "t0": 3.0917,
+     "t1": 3.5247
+    },
+    {
+     "w": "about",
+     "line": 1,
+     "t0": 3.6387,
+     "t1": 4.1817
+    },
+    {
+     "w": "two",
+     "line": 1,
+     "t0": 4.2097,
+     "t1": 4.4477
+    },
+    {
+     "w": "months.",
+     "line": 1,
+     "t0": 4.4767,
+     "t1": 4.8417
+    }
+   ],
+   "start": 26.533333333333335,
+   "dur": 5.133333333333334,
+   "start_frame": 796,
+   "n_frames": 154,
+   "subs": [
+    {
+     "lines": [
+      "They say"
+     ],
+     "t0": 0.212,
+     "t1": 1.072
+    },
+    {
+     "lines": [
+      "three weeks."
+     ],
+     "t0": 1.092,
+     "t1": 2.366
+    },
+    {
+     "lines": [
+      "Studies found"
+     ],
+     "t0": 2.386,
+     "t1": 3.566
+    },
+    {
+     "lines": [
+      "about two months."
+     ],
+     "t0": 3.586,
+     "t1": 5.083
+    }
+   ],
+   "hash": "76b36a15a10e"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s07",
+   "template": "lab_full_number",
+   "params": {
+    "value": 66,
+    "caption": "median days",
+    "sub": "Lally et al., 2010",
+    "at": "sixty-six",
+    "myth": {
+     "value": 21,
+     "at": "not",
+     "strike_at": "twenty-one"
+    },
+    "source": {
+     "label": "SOURCE",
+     "text": "Lally et al., 2010",
+     "at": "sixty-six"
+    }
+   },
+   "lines": [
+    {
+     "text": "Not twenty-one. Sixty-six days.",
+     "wav": "309f74c3883a6630.wav",
+     "t0": 0.2583,
+     "t1": 2.7413
+    }
+   ],
+   "beats": [
+    {
+     "text": "Not twenty-one.",
+     "line": 0,
+     "t0": 0.2583,
+     "t1": 1.3483
+    },
+    {
+     "text": "Sixty-six days.",
+     "line": 0,
+     "t0": 1.6483,
+     "t1": 2.7413
+    }
+   ],
+   "words": [
+    {
+     "w": "Not",
+     "line": 0,
+     "t0": 0.2583,
+     "t1": 0.4963
+    },
+    {
+     "w": "twenty-one.",
+     "line": 0,
+     "t0": 0.5243,
+     "t1": 1.3473
+    },
+    {
+     "w": "Sixty-six",
+     "line": 0,
+     "t0": 1.6523,
+     "t1": 2.3223
+    },
+    {
+     "w": "days.",
+     "line": 0,
+     "t0": 2.3513,
+     "t1": 2.7413
+    }
+   ],
+   "start": 31.666666666666668,
+   "dur": 3.0,
+   "start_frame": 950,
+   "n_frames": 90,
+   "subs": [
+    {
+     "lines": [
+      "Not twenty-one."
+     ],
+     "t0": 0.208,
+     "t1": 1.578
+    },
+    {
+     "lines": [
+      "Sixty-six days."
+     ],
+     "t0": 1.598,
+     "t1": 2.95
+    }
+   ],
+   "hash": "97f36c9a66a2"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s08",
+   "template": "lab_verdict",
+   "params": {
+    "chrome": {
+     "step": 3
+    },
+    "verdict": {
+     "verdict": "MYTH",
+     "sub": "21 days → median *66*",
+     "at": "myth"
+    }
+   },
+   "lines": [
+    {
+     "text": "The verdict: myth.",
+     "wav": "84b8e5e8e0fd40e7.wav",
+     "t0": 0.2913,
+     "t1": 1.5653
+    }
+   ],
+   "beats": [
+    {
+     "text": "The verdict:",
+     "line": 0,
+     "t0": 0.2913,
+     "t1": 1.0813
+    },
+    {
+     "text": "myth.",
+     "line": 0,
+     "t0": 1.2813,
+     "t1": 1.5653
+    }
+   ],
+   "words": [
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 0.2913,
+     "t1": 0.5293
+    },
+    {
+     "w": "verdict:",
+     "line": 0,
+     "t0": 0.5573,
+     "t1": 1.0753
+    },
+    {
+     "w": "myth.",
+     "line": 0,
+     "t0": 1.2853,
+     "t1": 1.5653
+    }
+   ],
+   "start": 34.666666666666664,
+   "dur": 1.8333333333333333,
+   "start_frame": 1040,
+   "n_frames": 55,
+   "subs": [
+    {
+     "lines": [
+      "The verdict: myth."
+     ],
+     "t0": 0.241,
+     "t1": 1.783
+    }
+   ],
+   "hash": "2b560bc7ec93"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s01",
+   "template": "title",
+   "params": {
+    "kicker": "Chapter 2",
+    "title": "The *feed*"
+   },
+   "lines": [
+    {
+     "text": "Part two. The feed.",
+     "wav": "bbfd44f017434234.wav",
+     "t0": 0.282,
+     "t1": 1.79
+    }
+   ],
+   "beats": [
+    {
+     "text": "Part two.",
+     "line": 0,
+     "t0": 0.282,
+     "t1": 0.832
+    },
+    {
+     "text": "The feed.",
+     "line": 0,
+     "t0": 1.132,
+     "t1": 1.79
+    }
+   ],
+   "words": [
+    {
+     "w": "Part",
+     "line": 0,
+     "t0": 0.282,
+     "t1": 0.562
+    },
+    {
+     "w": "two.",
+     "line": 0,
+     "t0": 0.591,
+     "t1": 0.829
+    },
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 1.133,
+     "t1": 1.371
+    },
+    {
+     "w": "feed.",
+     "line": 0,
+     "t0": 1.4,
+     "t1": 1.79
+    }
+   ],
+   "start": 36.5,
+   "dur": 2.066666666666667,
+   "start_frame": 1095,
+   "n_frames": 62,
+   "subs": [
+    {
+     "lines": [
+      "Part two."
+     ],
+     "t0": 0.232,
+     "t1": 1.062
+    },
+    {
+     "lines": [
+      "The feed."
+     ],
+     "t0": 1.082,
+     "t1": 2.017
+    }
+   ],
+   "hash": "3287e1e713dc"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s02",
+   "template": "phone_lock",
+   "params": {
+    "time_from": "21:04",
+    "time_to": "22:04",
+    "date": "Tuesday, October 20",
+    "notif_app": "Feed",
+    "notif_title": "New video for you",
+    "notif_text": "Watch it before it's gone",
+    "badge": "+1 hour",
+    "jump_beat": 1
+   },
+   "lines": [
+    {
+     "text": "I opened one notification.",
+     "wav": "9dc2c35488114c51.wav",
+     "t0": 0.2733,
+     "t1": 2.6143
+    },
+    {
+     "text": "An hour was gone.",
+     "wav": "614fdafbe6ee2b09.wav",
+     "t0": 3.0143,
+     "t1": 4.3133
+    }
+   ],
+   "beats": [
+    {
+     "text": "I opened one notification.",
+     "line": 0,
+     "t0": 0.2733,
+     "t1": 2.6143
+    },
+    {
+     "text": "An hour was gone.",
+     "line": 1,
+     "t0": 3.0143,
+     "t1": 4.3133
+    }
+   ],
+   "words": [
+    {
+     "w": "I",
+     "line": 0,
+     "t0": 0.2733,
+     "t1": 0.4253
+    },
+    {
+     "w": "opened",
+     "line": 0,
+     "t0": 0.4543,
+     "t1": 1.0393
+    },
+    {
+     "w": "one",
+     "line": 0,
+     "t0": 1.0683,
+     "t1": 1.4153
+    },
+    {
+     "w": "notification.",
+     "line": 0,
+     "t0": 1.4443,
+     "t1": 2.6143
+    },
+    {
+     "w": "An",
+     "line": 1,
+     "t0": 3.0143,
+     "t1": 3.2093
+    },
+    {
+     "w": "hour",
+     "line": 1,
+     "t0": 3.2383,
+     "t1": 3.6283
+    },
+    {
+     "w": "was",
+     "line": 1,
+     "t0": 3.6563,
+     "t1": 3.8943
+    },
+    {
+     "w": "gone.",
+     "line": 1,
+     "t0": 3.9233,
+     "t1": 4.3133
+    }
+   ],
+   "start": 38.56666666666667,
+   "dur": 4.6,
+   "start_frame": 1157,
+   "n_frames": 138,
+   "subs": [
+    {
+     "lines": [
+      "I opened one notification."
+     ],
+     "t0": 0.223,
+     "t1": 2.944
+    },
+    {
+     "lines": [
+      "An hour was gone."
+     ],
+     "t0": 2.964,
+     "t1": 4.55
+    }
+   ],
+   "hash": "cc0d9595faee"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s03",
+   "template": "phone_feed",
+   "params": {
+    "swipe_every": 0.7,
+    "counter_label": [
+     "post",
+     "posts"
+    ]
+   },
+   "lines": [
+    {
+     "text": "An endless feed has no last page.",
+     "wav": "08544dbc75bbb922.wav",
+     "t0": 0.2633,
+     "t1": 2.7273
+    }
+   ],
+   "beats": [
+    {
+     "text": "An endless feed",
+     "line": 0,
+     "t0": 0.2633,
+     "t1": 1.4233
+    },
+    {
+     "text": "has no last page.",
+     "line": 0,
+     "t0": 1.5333,
+     "t1": 2.7273
+    }
+   ],
+   "words": [
+    {
+     "w": "An",
+     "line": 0,
+     "t0": 0.2633,
+     "t1": 0.4583
+    },
+    {
+     "w": "endless",
+     "line": 0,
+     "t0": 0.4873,
+     "t1": 1.0053
+    },
+    {
+     "w": "feed",
+     "line": 0,
+     "t0": 1.0333,
+     "t1": 1.4233
+    },
+    {
+     "w": "has",
+     "line": 0,
+     "t0": 1.5383,
+     "t1": 1.7753
+    },
+    {
+     "w": "no",
+     "line": 0,
+     "t0": 1.8043,
+     "t1": 1.9993
+    },
+    {
+     "w": "last",
+     "line": 0,
+     "t0": 2.0283,
+     "t1": 2.3083
+    },
+    {
+     "w": "page.",
+     "line": 0,
+     "t0": 2.3363,
+     "t1": 2.7273
+    }
+   ],
+   "start": 43.166666666666664,
+   "dur": 3.0,
+   "start_frame": 1295,
+   "n_frames": 90,
+   "subs": [
+    {
+     "lines": [
+      "An endless feed"
+     ],
+     "t0": 0.213,
+     "t1": 1.463
+    },
+    {
+     "lines": [
+      "has no last page."
+     ],
+     "t0": 1.483,
+     "t1": 2.95
+    }
+   ],
+   "hash": "2fe1c1d917a1"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s04",
+   "template": "cards",
+   "params": {
+    "first_beat": 1,
+    "cards": [
+     {
+      "icon": "laugh",
+      "label": "Funny clip",
+      "color": "lime"
+     },
+     {
+      "icon": "book",
+      "label": "Strange story",
+      "color": "amber"
+     },
+     {
+      "icon": "news",
+      "label": "Big news",
+      "color": "cyan"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Every swipe promises something new: a funny clip, a strange story, big news.",
+     "wav": "e8fa8f9674b68e51.wav",
+     "t0": 0.2773,
+     "t1": 6.1323
+    }
+   ],
+   "beats": [
+    {
+     "text": "Every swipe promises something new:",
+     "line": 0,
+     "t0": 0.2773,
+     "t1": 2.9973
+    },
+    {
+     "text": "a funny clip,",
+     "line": 0,
+     "t0": 3.1973,
+     "t1": 4.1273
+    },
+    {
+     "text": "a strange story,",
+     "line": 0,
+     "t0": 4.2673,
+     "t1": 5.4373
+    },
+    {
+     "text": "big news.",
+     "line": 0,
+     "t0": 5.5773,
+     "t1": 6.1323
+    }
+   ],
+   "words": [
+    {
+     "w": "Every",
+     "line": 0,
+     "t0": 0.2773,
+     "t1": 0.8193
+    },
+    {
+     "w": "swipe",
+     "line": 0,
+     "t0": 0.8483,
+     "t1": 1.2813
+    },
+    {
+     "w": "promises",
+     "line": 0,
+     "t0": 1.3093,
+     "t1": 1.9803
+    },
+    {
+     "w": "something",
+     "line": 0,
+     "t0": 2.0083,
+     "t1": 2.7223
+    },
+    {
+     "w": "new:",
+     "line": 0,
+     "t0": 2.7503,
+     "t1": 2.9883
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 3.1973,
+     "t1": 3.3503
+    },
+    {
+     "w": "funny",
+     "line": 0,
+     "t0": 3.3783,
+     "t1": 3.8113
+    },
+    {
+     "w": "clip,",
+     "line": 0,
+     "t0": 3.8403,
+     "t1": 4.1203
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 4.2723,
+     "t1": 4.4253
+    },
+    {
+     "w": "strange",
+     "line": 0,
+     "t0": 4.4533,
+     "t1": 4.9713
+    },
+    {
+     "w": "story,",
+     "line": 0,
+     "t0": 5.0003,
+     "t1": 5.4333
+    },
+    {
+     "w": "big",
+     "line": 0,
+     "t0": 5.5853,
+     "t1": 5.8233
+    },
+    {
+     "w": "news.",
+     "line": 0,
+     "t0": 5.8513,
+     "t1": 6.1323
+    }
+   ],
+   "start": 46.166666666666664,
+   "dur": 6.4,
+   "start_frame": 1385,
+   "n_frames": 192,
+   "subs": [
+    {
+     "lines": [
+      "Every swipe promises",
+      "something new:"
+     ],
+     "t0": 0.227,
+     "t1": 3.127
+    },
+    {
+     "lines": [
+      "a funny clip,"
+     ],
+     "t0": 3.147,
+     "t1": 4.197
+    },
+    {
+     "lines": [
+      "a strange story,"
+     ],
+     "t0": 4.217,
+     "t1": 5.507
+    },
+    {
+     "lines": [
+      "big news."
+     ],
+     "t0": 5.527,
+     "t1": 6.35
+    }
+   ],
+   "hash": "2a80425be2ce"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s05",
+   "template": "questions",
+   "params": {
+    "first_beat": 1,
+    "questions": [
+     "Why am I here?",
+     "For how long?"
+    ],
+    "icons": [
+     "question",
+     "clock"
+    ]
+   },
+   "lines": [
+    {
+     "text": "Before you open it, ask: why am I here, and for how long?",
+     "wav": "4ce6bade6fc0bab3.wav",
+     "t0": 0.2823,
+     "t1": 4.8873
+    }
+   ],
+   "beats": [
+    {
+     "text": "Before you open it, ask:",
+     "line": 0,
+     "t0": 0.2823,
+     "t1": 2.3923
+    },
+    {
+     "text": "why am I here,",
+     "line": 0,
+     "t0": 2.5923,
+     "t1": 3.6623
+    },
+    {
+     "text": "and for how long?",
+     "line": 0,
+     "t0": 3.8023,
+     "t1": 4.8873
+    }
+   ],
+   "words": [
+    {
+     "w": "Before",
+     "line": 0,
+     "t0": 0.2823,
+     "t1": 0.8673
+    },
+    {
+     "w": "you",
+     "line": 0,
+     "t0": 0.8963,
+     "t1": 1.3533
+    },
+    {
+     "w": "open",
+     "line": 0,
+     "t0": 1.3813,
+     "t1": 1.7723
+    },
+    {
+     "w": "it,",
+     "line": 0,
+     "t0": 1.8003,
+     "t1": 1.9953
+    },
+    {
+     "w": "ask:",
+     "line": 0,
+     "t0": 2.1473,
+     "t1": 2.3853
+    },
+    {
+     "w": "why",
+     "line": 0,
+     "t0": 2.5953,
+     "t1": 2.8323
+    },
+    {
+     "w": "am",
+     "line": 0,
+     "t0": 2.8613,
+     "t1": 3.0563
+    },
+    {
+     "w": "I",
+     "line": 0,
+     "t0": 3.0853,
+     "t1": 3.2373
+    },
+    {
+     "w": "here,",
+     "line": 0,
+     "t0": 3.2663,
+     "t1": 3.6563
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 3.8083,
+     "t1": 4.0463
+    },
+    {
+     "w": "for",
+     "line": 0,
+     "t0": 4.0743,
+     "t1": 4.3123
+    },
+    {
+     "w": "how",
+     "line": 0,
+     "t0": 4.3413,
+     "t1": 4.5783
+    },
+    {
+     "w": "long?",
+     "line": 0,
+     "t0": 4.6073,
+     "t1": 4.8873
+    }
+   ],
+   "start": 52.56666666666667,
+   "dur": 5.166666666666667,
+   "start_frame": 1577,
+   "n_frames": 155,
+   "subs": [
+    {
+     "lines": [
+      "Before you open it, ask:"
+     ],
+     "t0": 0.232,
+     "t1": 2.522
+    },
+    {
+     "lines": [
+      "why am I here,"
+     ],
+     "t0": 2.542,
+     "t1": 3.732
+    },
+    {
+     "lines": [
+      "and for how long?"
+     ],
+     "t0": 3.752,
+     "t1": 5.117
+    }
+   ],
+   "hash": "7661120c4954"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s06",
+   "template": "phone_close",
+   "params": {
+    "close_beat": 1,
+    "final_text": "Your *time*, your choice"
+   },
+   "lines": [
+    {
+     "text": "Sometimes the best swipe is closing the app.",
+     "wav": "8627add9364be6de.wav",
+     "t0": 0.2707,
+     "t1": 3.5187
+    }
+   ],
+   "beats": [
+    {
+     "text": "Sometimes the best swipe",
+     "line": 0,
+     "t0": 0.2707,
+     "t1": 2.1307
+    },
+    {
+     "text": "is closing the app.",
+     "line": 0,
+     "t0": 2.2407,
+     "t1": 3.5187
+    }
+   ],
+   "words": [
+    {
+     "w": "Sometimes",
+     "line": 0,
+     "t0": 0.2707,
+     "t1": 1.0937
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 1.1217,
+     "t1": 1.3597
+    },
+    {
+     "w": "best",
+     "line": 0,
+     "t0": 1.3887,
+     "t1": 1.6687
+    },
+    {
+     "w": "swipe",
+     "line": 0,
+     "t0": 1.6977,
+     "t1": 2.1297
+    },
+    {
+     "w": "is",
+     "line": 0,
+     "t0": 2.2447,
+     "t1": 2.4397
+    },
+    {
+     "w": "closing",
+     "line": 0,
+     "t0": 2.4677,
+     "t1": 2.9857
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 3.0147,
+     "t1": 3.2527
+    },
+    {
+     "w": "app.",
+     "line": 0,
+     "t0": 3.2807,
+     "t1": 3.5187
+    }
+   ],
+   "start": 57.733333333333334,
+   "dur": 3.8,
+   "start_frame": 1732,
+   "n_frames": 114,
+   "subs": [
+    {
+     "lines": [
+      "Sometimes the best swipe"
+     ],
+     "t0": 0.221,
+     "t1": 2.171
+    },
+    {
+     "lines": [
+      "is closing the app."
+     ],
+     "t0": 2.191,
+     "t1": 3.75
+    }
+   ],
+   "hash": "8142d2a0c47f"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s07",
+   "template": "counter",
+   "params": {
+    "from": 0,
+    "to": 100,
+    "label": "count",
+    "at_beat": 1,
+    "color": "amber"
+   },
+   "lines": [
+    {
+     "text": "Count slowly from zero to one hundred.",
+     "wav": "08e8802d6441a9da.wav",
+     "t0": 0.2687,
+     "t1": 3.1647
+    }
+   ],
+   "beats": [
+    {
+     "text": "Count slowly",
+     "line": 0,
+     "t0": 0.2687,
+     "t1": 1.2087
+    },
+    {
+     "text": "from zero to one hundred.",
+     "line": 0,
+     "t0": 1.3187,
+     "t1": 3.1647
+    }
+   ],
+   "words": [
+    {
+     "w": "Count",
+     "line": 0,
+     "t0": 0.2687,
+     "t1": 0.7017
+    },
+    {
+     "w": "slowly",
+     "line": 0,
+     "t0": 0.7297,
+     "t1": 1.2057
+    },
+    {
+     "w": "from",
+     "line": 0,
+     "t0": 1.3197,
+     "t1": 1.5997
+    },
+    {
+     "w": "zero",
+     "line": 0,
+     "t0": 1.6287,
+     "t1": 2.0187
+    },
+    {
+     "w": "to",
+     "line": 0,
+     "t0": 2.0477,
+     "t1": 2.2427
+    },
+    {
+     "w": "one",
+     "line": 0,
+     "t0": 2.2707,
+     "t1": 2.6187
+    },
+    {
+     "w": "hundred.",
+     "line": 0,
+     "t0": 2.6467,
+     "t1": 3.1647
+    }
+   ],
+   "start": 61.53333333333333,
+   "dur": 3.433333333333333,
+   "start_frame": 1846,
+   "n_frames": 103,
+   "subs": [
+    {
+     "lines": [
+      "Count slowly"
+     ],
+     "t0": 0.219,
+     "t1": 1.249
+    },
+    {
+     "lines": [
+      "from zero to one hundred."
+     ],
+     "t0": 1.269,
+     "t1": 3.383
+    }
+   ],
+   "hash": "9bfa1eb6bc9e"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s08",
+   "template": "bullets",
+   "params": {
+    "header": "Three steps",
+    "first_beat": 1,
+    "items": [
+     {
+      "icon": "clock",
+      "text": "Pick a time"
+     },
+     {
+      "icon": "hourglass",
+      "text": "Set a limit"
+     },
+     {
+      "icon": "lock",
+      "text": "Close the app"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Three small steps: pick a time, set a limit, close the app.",
+     "wav": "d19534378a9a57ce.wav",
+     "t0": 0.2813,
+     "t1": 4.6573
+    }
+   ],
+   "beats": [
+    {
+     "text": "Three small steps:",
+     "line": 0,
+     "t0": 0.2813,
+     "t1": 1.4213
+    },
+    {
+     "text": "pick a time,",
+     "line": 0,
+     "t0": 1.6213,
+     "t1": 2.5113
+    },
+    {
+     "text": "set a limit,",
+     "line": 0,
+     "t0": 2.6513,
+     "t1": 3.5413
+    },
+    {
+     "text": "close the app.",
+     "line": 0,
+     "t0": 3.6913,
+     "t1": 4.6573
+    }
+   ],
+   "words": [
+    {
+     "w": "Three",
+     "line": 0,
+     "t0": 0.2813,
+     "t1": 0.7143
+    },
+    {
+     "w": "small",
+     "line": 0,
+     "t0": 0.7423,
+     "t1": 1.0653
+    },
+    {
+     "w": "steps:",
+     "line": 0,
+     "t0": 1.0943,
+     "t1": 1.4173
+    },
+    {
+     "w": "pick",
+     "line": 0,
+     "t0": 1.6263,
+     "t1": 1.9073
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 1.9353,
+     "t1": 2.0883
+    },
+    {
+     "w": "time,",
+     "line": 0,
+     "t0": 2.1163,
+     "t1": 2.5063
+    },
+    {
+     "w": "set",
+     "line": 0,
+     "t0": 2.6593,
+     "t1": 2.8973
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 2.9253,
+     "t1": 3.0773
+    },
+    {
+     "w": "limit,",
+     "line": 0,
+     "t0": 3.1063,
+     "t1": 3.5393
+    },
+    {
+     "w": "close",
+     "line": 0,
+     "t0": 3.6913,
+     "t1": 4.1243
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 4.1533,
+     "t1": 4.3903
+    },
+    {
+     "w": "app.",
+     "line": 0,
+     "t0": 4.4193,
+     "t1": 4.6573
+    }
+   ],
+   "start": 64.96666666666667,
+   "dur": 4.933333333333334,
+   "start_frame": 1949,
+   "n_frames": 148,
+   "subs": [
+    {
+     "lines": [
+      "Three small steps:"
+     ],
+     "t0": 0.231,
+     "t1": 1.551
+    },
+    {
+     "lines": [
+      "pick a time,"
+     ],
+     "t0": 1.571,
+     "t1": 2.581
+    },
+    {
+     "lines": [
+      "set a limit,"
+     ],
+     "t0": 2.601,
+     "t1": 3.621
+    },
+    {
+     "lines": [
+      "close the app."
+     ],
+     "t0": 3.641,
+     "t1": 4.883
+    }
+   ],
+   "hash": "0855debb414b"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s09",
+   "template": "statement",
+   "params": {
+    "text": "Notice the *habit*",
+    "icon": "brain",
+    "sub": "small steps",
+    "at_beat": 0
+   },
+   "lines": [
+    {
+     "text": "The real habit is noticing.",
+     "wav": "7748c6e72b88b08c.wav",
+     "t0": 0.274,
+     "t1": 2.4
+    }
+   ],
+   "beats": [
+    {
+     "text": "The real habit",
+     "line": 0,
+     "t0": 0.274,
+     "t1": 1.394
+    },
+    {
+     "text": "is noticing.",
+     "line": 0,
+     "t0": 1.504,
+     "t1": 2.4
+    }
+   ],
+   "words": [
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 0.274,
+     "t1": 0.512
+    },
+    {
+     "w": "real",
+     "line": 0,
+     "t0": 0.54,
+     "t1": 0.93
+    },
+    {
+     "w": "habit",
+     "line": 0,
+     "t0": 0.959,
+     "t1": 1.392
+    },
+    {
+     "w": "is",
+     "line": 0,
+     "t0": 1.506,
+     "t1": 1.701
+    },
+    {
+     "w": "noticing.",
+     "line": 0,
+     "t0": 1.73,
+     "t1": 2.4
+    }
+   ],
+   "start": 69.9,
+   "dur": 2.6666666666666665,
+   "start_frame": 2097,
+   "n_frames": 80,
+   "subs": [
+    {
+     "lines": [
+      "The real habit"
+     ],
+     "t0": 0.224,
+     "t1": 1.434
+    },
+    {
+     "lines": [
+      "is noticing."
+     ],
+     "t0": 1.454,
+     "t1": 2.617
+    }
+   ],
+   "hash": "2e5a2eb40f43"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s10",
+   "template": "outro",
+   "params": {
+    "text": "See you *next time*",
+    "sub": "gallery fixture"
+   },
+   "lines": [
+    {
+     "text": "Thanks for watching.",
+     "wav": "30d1e27a33f02b3e.wav",
+     "t0": 0.2833,
+     "t1": 1.5043
+    }
+   ],
+   "beats": [
+    {
+     "text": "Thanks for watching.",
+     "line": 0,
+     "t0": 0.2833,
+     "t1": 1.5043
+    }
+   ],
+   "words": [
+    {
+     "w": "Thanks",
+     "line": 0,
+     "t0": 0.2833,
+     "t1": 0.6493
+    },
+    {
+     "w": "for",
+     "line": 0,
+     "t0": 0.6773,
+     "t1": 0.9153
+    },
+    {
+     "w": "watching.",
+     "line": 0,
+     "t0": 0.9443,
+     "t1": 1.5043
+    }
+   ],
+   "start": 72.56666666666666,
+   "dur": 2.9,
+   "start_frame": 2177,
+   "n_frames": 87,
+   "subs": [
+    {
+     "lines": [
+      "Thanks for watching."
+     ],
+     "t0": 0.233,
+     "t1": 1.854
+    }
+   ],
+   "hash": "7b243e77b303"
+  }
+ ]
+}

@@ -8,6 +8,11 @@ for _w in ("black", "extrabold", "bold", "semibold", "medium", "regular", "light
     os.environ.setdefault("STUDIO_FONT_" + _w.upper(), str(FONT))
 
 
+def pytest_addoption(parser):
+    parser.addoption("--update-golden", action="store_true",
+                     help="перезаписать tests/golden/ текущим выводом (P0.4); без флага golden только сравнивается")
+
+
 def make_gallery(dst: Path, fmt: str = "horizontal") -> Path:
     """Копия фикстуры gallery (P0.2) в dst с нужным форматом: vertical | horizontal | square."""
     import shutil
