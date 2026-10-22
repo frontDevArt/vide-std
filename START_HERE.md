@@ -19,11 +19,10 @@ claude                                           # открыть Claude Code в
 ```
 Подробно по ОС — `docs/LOCAL_SETUP.md`.
 
-Первая проверка, что всё живо (соберёт демо стиля 10–15 с из заготовки и прогонит QA):
+Первая проверка, что всё живо (офлайн, без голоса и ключей, ~1,5 мин: соберёт фикстуру со всеми шаблонами,
+прогонит QA и сравнит с эталоном):
 ```bash
-python -m studio new regress --lang en
-# без RHVoice (Windows): в projects/regress/project.yaml → tts.backend: edge
-python -m studio demo regress      # потом удалить projects/regress*
+python -m studio selftest
 ```
 
 ## 3. Команды в Claude CLI

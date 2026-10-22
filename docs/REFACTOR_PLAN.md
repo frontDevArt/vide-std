@@ -59,9 +59,19 @@
   в `tests/.golden-diff/<формат>/` (в `.gitignore`). `.gitattributes`: `tests/golden/** -text` — иначе `autocrlf`
   на Windows ломает побайтное сравнение. Проверено: порча 3/255 в одном пикселе и одной строки `.srt` → красный.
   Весь `pytest` — ~12 с.
-- [ ] **P0.5 `python -m studio selftest`** заменяет ручной регресс: фикстура → voice (fake) → render → assemble → qa →
+- [x] **P0.5 `python -m studio selftest`** заменяет ручной регресс: фикстура → voice (fake) → render → assemble → qa →
   сравнение с golden, работает офлайн, укладывается в 2 минуты на этой машине. В `CLAUDE.md` и `/roadmap` регресс
   заменить на `selftest`.
+  *Сделано:* `studio/selftest.py`. На horizontal — полная цепочка: validate → voice → `timeline.json`/`.srt` байт в байт →
+  кадры в процессе (допуск P0.4) → render → assemble → qa (все PASS) → **те же кадры, вынутые из готового MP4**
+  (ловит расхождение воркеров рендера с процессом — класс B4–B6; допуск макс 80, средняя 1,6: шум кодека ≤ 43 / 1,3,
+  сдвиг на кадр — макс ≥ 121). Vertical — voice и кадры без кодирования; `--full` — цепочка на обоих. Работает во
+  временной папке (короткий путь: ffmpeg на Windows не открывает пути > 260 символов), удаляет её при успехе,
+  при падении оставляет; `--keep` — оставить всегда. Golden, допуски, фикстура и шрифты — общие с `tests/`
+  (`conftest`/`test_golden` импортируют их из `studio.selftest`; шрифты теперь закрепляются и при заданных
+  `STUDIO_FONT_*`). Замер на этой машине (24 потока): **76 с**, `--full` — 143 с. Проверено: подмена `PAL["accent"]`
+  только в воркере рендера → в процессе ✅, «кадры из MP4» ❌ (макс 214).
+  `CLAUDE.md`, `/roadmap`, `START_HERE.md`: регресс → `pytest` + `selftest`.
 - [ ] **P0.6 Зависимости:** `pyproject.toml` (или `requirements.lock`) с закреплёнными версиями numpy/Pillow/PyYAML: от
   версии Pillow зависят пиксели. `requirements-dev.txt`: pytest, ruff.
 - [ ] **P0.7 CI (GitHub Actions)** на `ubuntu-latest` и `windows-latest`: ruff (только ошибки, без стиля), pytest, selftest.
@@ -174,7 +184,7 @@
 
 - [ ] **P5.1** Обновить `START_HERE.md`, `README.md`, `ARCHITECTURE.md`: карта модулей после этапа 2, замеры из `BENCH.md`,
   убрать устаревшие таблицы «проверено / не проверено» и ссылки на старый ROADMAP.
-- [ ] **P5.2** `CLAUDE.md`: регресс → `selftest`; раздел «Развитие студии» → этот план и ROADMAP.
+- [ ] **P5.2** `CLAUDE.md`: ~~регресс → `selftest`~~ (сделано в P0.5); раздел «Развитие студии» → этот план и ROADMAP.
 - [ ] **P5.3** Раздел шаблонов в `SCENE_SPEC.md` генерировать из метаданных (`python -m studio templates --md`), чтобы
   документ не расходился с кодом.
 

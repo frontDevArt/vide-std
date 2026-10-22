@@ -316,6 +316,11 @@ def cmd_frame(a):
     return 0
 
 
+def cmd_selftest(a):
+    from .selftest import run
+    return 0 if run(full=a.full, keep=a.keep, workers=a.workers) else 1
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="python -m studio")
     sp = p.add_subparsers(dest="cmd", required=True)
@@ -353,6 +358,10 @@ def main(argv=None):
     dm.add_argument("--no-render", action="store_true", help="только создать проект демо")
     dm.add_argument("--workers", type=int)
     dm.add_argument("--yes", action="store_true", help="подтвердить платный синтез (elevenlabs)")
+    st = sp.add_parser("selftest", help="регресс студии офлайн: gallery → voice (fake) → render → assemble → qa → golden")
+    st.add_argument("--full", action="store_true", help="полная цепочка и на vertical (~2,5 мин), а не только horizontal")
+    st.add_argument("--keep", action="store_true", help="не удалять рабочую папку (посмотреть qa/*.png)")
+    st.add_argument("--workers", type=int)
     a = p.parse_args(argv)
     from .tts import TTSUnavailable
     try:
