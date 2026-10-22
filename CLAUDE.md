@@ -15,8 +15,8 @@ python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|squar
 python -m studio validate <проект>         # проверка сценария
 python -m studio voice    <проект>         # озвучка + тайминг (кэш)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
-python -m studio render   <проект> [--chapter chNN]  # рендер сцен (кэш) — ДОЛГО, запускать в фоне
-python -m studio assemble <проект>         # финальный MP4 + .srt/.vtt
+python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера
+python -m studio assemble <проект> [--draft] # финальный MP4 + .srt/.vtt (--draft → build/final/<slug>.draft.mp4)
 python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio frame    <проект> <сек>    # один кадр PNG

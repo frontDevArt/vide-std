@@ -40,6 +40,8 @@ ARGV = [
     (["stills", "p", "--chapter", "ch01", "--times", "1,2"], {"chapter": "ch01", "times": "1,2"}),
     (["render", "p", "--chapter", "ch02", "--workers", "3", "--force"], {"chapter": "ch02", "workers": 3, "force": True}),
     (["assemble", "p", "--allow-stale"], {"allow_stale": True}),
+    (["render", "p", "--draft"], {"draft": True, "force": False}),
+    (["assemble", "p", "--draft"], {"draft": True, "allow_stale": False}),
     (["qa", "p", "--fast"], {"fast": True}),
     (["all", "p", "--workers", "2", "--fast", "--yes"], {"workers": 2, "fast": True, "yes": True}),
     (["status"], {"project": None}),

@@ -4,6 +4,8 @@
 Сцены рендерятся параллельно процессами; длинная сцена — кусками по ~CHUNK кадров (build/render/<chapter>/parts/,
 каждый кусок — свой mp4 с ключевым кадром в начале), куски склеиваются `concat` без перекодирования (P3.3).
 Прерванный рендер продолжается с недоделанных сцен и кусков.
+Черновик (`render --draft`, P3.4): половина разрешения, x264 `ultrafast`, свой кэш build/render-draft/ — чистовой
+кэш не трогает. Шаблоны рисуют в долях W/H (self.u, self.z), поэтому на полразмера кадр тот же, только мельче.
 """
 from __future__ import annotations
 
@@ -25,13 +27,20 @@ from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
 
 
-def prepare(proj: Project):
-    """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены."""
+DRAFT_PRESET = "ultrafast"
+
+
+def prepare(proj: Project, draft=False):
+    """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены.
+    draft — черновик: кадр вдвое меньше (стороны чётные — для yuv420p), сцены пишутся в build/render-draft/."""
     tl = load_timeline(proj)
     style = G.apply_style(proj.cfg["style"])
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style}
+    if draft:
+        W, H = W // 4 * 2, H // 4 * 2
+    preset = DRAFT_PRESET if draft else proj.cfg["render"]["preset"]
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset}
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
@@ -45,6 +54,7 @@ def prepare(proj: Project):
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
         s["state_in"] = dict(state)
+        s["render_dir"] = "render-draft" if draft else "render"
         if use_glow:
             s["glow"] = {"from": state["lab_glow"], "to": glows.get(s["chapter"]) or base_glow}
             state["lab_glow"] = s["glow"]["to"]
@@ -65,7 +75,7 @@ def prepare(proj: Project):
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
-                                proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else [])
+                                proj.cfg["render"]["crf"], preset, W, H] + ([extra] if extra else [])
                                + ([s["glow"]] if use_glow else []))
     return tl, ctx
 
@@ -227,12 +237,17 @@ def chunks(n, size=None):
     return [(n * i // k, n * (i + 1) // k) for i in range(k)]
 
 
+def sub_size(proj, ctx):
+    """Кегль субтитров под размер кадра ctx (у черновика вдвое меньше)."""
+    return S.font_size(proj) * ctx["W"] // proj.size[0]
+
+
 def scene_out(proj, s):
-    return proj.bdir("render", s["chapter"]) / f"{s['id']}.mp4"
+    return proj.bdir(s.get("render_dir", "render"), s["chapter"]) / f"{s['id']}.mp4"
 
 
 def parts_dir(proj, s):
-    return proj.bdir("render", s["chapter"], "parts")
+    return proj.bdir(s.get("render_dir", "render"), s["chapter"], "parts")
 
 
 def part_out(proj, s, f0, f1):
@@ -282,8 +297,8 @@ def default_workers():
 
 def render_scenes(proj: Project, todo, ctx, workers, log=print, force=False):
     """Сцены todo → build/render. Длинные — кусками; workers=0 — в этом процессе (тесты)."""
-    sub_size = S.font_size(proj)
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"])
+    sub_px = sub_size(proj, ctx)
+    args = (proj.cfg["render"]["crf"], ctx.get("preset") or proj.cfg["render"]["preset"])
     jobs, left = [], {}  # (сцена, out, f0, f1, ключ); сцена → сколько её кусков ещё рендерится
     for s in sorted(todo, key=lambda s: -s["n_frames"]):
         bounds = chunks(s["n_frames"])
@@ -313,25 +328,25 @@ def render_scenes(proj: Project, todo, ctx, workers, log=print, force=False):
 
     if not workers:
         for s, out, f0, f1, key in jobs:
-            _, n, dt = _render_scene_job(str(proj.root), s, ctx, sub_size, out, *args, f0, f1, key)
+            _, n, dt = _render_scene_job(str(proj.root), s, ctx, sub_px, out, *args, f0, f1, key)
             finished(s, f0, f1, n, dt)
         return
     with ProcessPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, out, *args, f0, f1, key): (s, f0, f1)
+        futs = {ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_px, out, *args, f0, f1, key): (s, f0, f1)
                 for s, out, f0, f1, key in jobs}
         for fu in as_completed(futs):
             _, n, dt = fu.result()
             finished(*futs[fu], n, dt)
 
 
-def render(proj: Project, chapter=None, workers=None, log=print, force=False):
-    tl, ctx = prepare(proj)
+def render(proj: Project, chapter=None, workers=None, log=print, force=False, draft=False):
+    tl, ctx = prepare(proj, draft)
     todo = [s for s in tl["scenes"] if (chapter in (None, s["chapter"])) and (force or not is_fresh(proj, s))]
     if not todo:
         log("Все сцены актуальны — рендерить нечего.")
         return tl
     workers = workers or proj.cfg["render"].get("workers") or default_workers()
-    log(f"Рендер {len(todo)} сцен, {sum(s['n_frames'] for s in todo)} кадров, процессов: {workers}")
+    log(f"{'Черновой рендер' if draft else 'Рендер'} {ctx['W']}×{ctx['H']}: {len(todo)} сцен, {sum(s['n_frames'] for s in todo)} кадров, процессов: {workers}")
     render_scenes(proj, todo, ctx, workers, log, force)
     return tl
 
