@@ -180,8 +180,11 @@ def cmd_validate(a):
     _validate_style(proj, errs, warns)
     _validate_triggers(proj, errs, warns)
     tgt = proj.cfg.get("target_duration")
-    est = words / lp["wpm"] * 60
-    print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, оценка речи ≈ {est:.0f} c")
+    from .calibration import wpm
+    pace, pace_src = wpm(proj)
+    est = words / pace * 60
+    print(f"Язык: {proj.cfg['language']}. Глав: {len(proj.chapters)}, сцен: {len(ids)}, слов: {words}, "
+          f"оценка речи ≈ {est:.0f} c ({pace:g} слов/мин, {pace_src})")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
     for w in warns:
@@ -284,6 +287,9 @@ def cmd_voice(a):
     tl = layout(proj)
     print(f"Темп {tl['rate']:.0f}, длительность {tl['duration']:.2f} c, {len(tl['scenes'])} сцен, "
           f"{tl['wpm_speech']} слов/мин в речи")
+    from .calibration import calibrate
+    for w in calibrate(proj, tl):
+        print("  ⚠️ ", w)
     for s in tl["scenes"]:
         print(f"  {s['chapter']}/{s['id']:<6} {s['start']:7.2f}–{s['start'] + s['dur']:7.2f}  {s['template']:<12} "
               f"битов {len(s['beats'])}, субтитров {len(s['subs'])}")

@@ -26,6 +26,8 @@
 - piper: `en_US-lessac-medium`, `en_US-ryan-medium`.
 
 Английский путь пока не проверялся end-to-end: голоса по умолчанию и `wpm: 155` — оценка, уточнить на первом ролике.
+`wpm` языка — только ориентир до первой озвучки: `voice` меряет реальный темп и кладёт его в
+`build/voice_calibration.json` (`studio/calibration.py`), `validate` берёт замер, пока не сменились язык, бэкенд и голос.
 
 Темп `rate` — проценты: 100 = норма бэкенда. Для edge переводится в `--rate=+N%`, для piper — в `length_scale`.
 

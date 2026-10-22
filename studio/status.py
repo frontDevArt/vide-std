@@ -76,9 +76,8 @@ def pace(proj: Project):
         wpm = json.loads(tl.read_text(encoding="utf-8")).get("wpm_speech")
         if wpm:
             return words, wpm, "замер timeline.json"
-    from .lang import profile
-    lang = proj.cfg.get("language")
-    return words, profile(lang)["wpm"], f"язык {lang}"
+    from .calibration import wpm
+    return (words, *wpm(proj))
 
 
 def report(proj: Project, log=print):
