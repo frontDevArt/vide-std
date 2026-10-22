@@ -18,8 +18,11 @@ OLD = {  # плоские имена до P2.4 → полное имя
 }
 
 
+NEW = {"commerce.price_tag", "commerce.number"}  # P2.9: новые шаблоны, старых имён у них нет
+
+
 def test_old_names_are_aliases():
-    assert set(REGISTRY.templates()) == set(OLD.values())
+    assert set(REGISTRY.templates()) == set(OLD.values()) | NEW
     for old, full in OLD.items():
         assert REGISTRY.canonical(old) == full and REGISTRY[old] is REGISTRY[full]
         assert REGISTRY[full].NAME == full and old in REGISTRY[full].ALIASES
@@ -34,7 +37,7 @@ def test_packs_by_module():
 
 def test_formats_and_typed_params():
     for full, cls in REGISTRY.templates().items():
-        assert cls.FORMATS == (("horizontal",) if full.startswith("lab.") else ("vertical", "horizontal", "square"))
+        assert cls.FORMATS == (("horizontal",) if full.startswith(("lab.", "commerce.")) else ("vertical", "horizontal", "square"))
         assert cls.PARAMS and all(isinstance(p, Param) for p in cls.PARAMS.values())
     assert REGISTRY["lab_full_number"].PARAMS["at"].check("w:median") is None
     assert REGISTRY["counter"].PARAMS["to"].check("сто") == "ожидается число, а не str"

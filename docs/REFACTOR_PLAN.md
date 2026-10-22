@@ -335,11 +335,29 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   `load` и восстанавливается; `load_env` не перетирает окружение и пропускает пустые); тесты `new` и логов
   переключают рабочую область через `use()` вместо подмены `STUDIO_ROOT`/`ROOT_LOGS`; `status fake-discounts` по slug;
   `pytest` 292 ✅, `selftest` ✅ (кадры в процессе байт в байт, макс 0).
-- [ ] **P2.9 Разобрать `projects/fake-discounts/templates/money.py`:** общее («ценник», «число с единицей») →
+- [x] **P2.9 Разобрать `projects/fake-discounts/templates/money.py`:** общее («ценник», «число с единицей») →
   `studio/packs/commerce/` (пригодится брендам), специфичное для ролика — оставить в проекте.
+  *Сделано:* `studio/packs/commerce/`: `elements.py` — спрайт бирки `tag_parts` (подписи WAS/NOW — параметры), бумага
+  чека `receipt_paper` (шапка — параметр), цепь `chain`, `rot`, `thousands`; `tag.py` — миксин `PriceTag` (падение,
+  качание с импульсами в глобальном времени, зачёркивание, новая цена пружиной, груз на бирке с «просадкой», state
+  `TAG_STATE`); `receipt.py` — миксин `Receipt` (печать строк по триггерам, отрыв, state `RC_STATE`); `templates.py` —
+  `commerce.price_tag` (бирка + чек) и `commerce.number` (Full Number с запятыми). Формат — horizontal, как `lab.*`
+  (пакет построен на `LabTemplate`). Иконки wheel/house/timer/anchor/receipt — обычные линейные иконки §9 — переехали
+  в `lab/elements._li`, подмена `studio.lab._li` из проекта ушла. В проекте осталось своё: якорь, шкала «perceived
+  value», ярлыки; `lab_anchor` = `PriceTag` + `Receipt` + `LabTemplate` с прежними ключами state (`fd_tag`,
+  `fd_receipt`) и шапкой «MONEY BRAIN · RECEIPT», `fd_number` — наследник `commerce.number`; `money.py` 683 → 314 строк.
+  В фикстуру gallery commerce не добавлен — это сменило бы golden; рисование проверяет `test_commerce.py`, исключение
+  записано в `test_gallery`. Проверено: `stills` всех 4 глав `fake-discounts` (тот же `timeline.json`) до и после
+  правки — пиксель в пиксель, и с эталоном `tests/reference/` тоже (макс 0); `validate` — вывод байт в байт;
+  `tests/test_commerce.py` (6: регистрация и формат, `thousands`/`rot`, запятые в числе, бирка и чек рисуются и
+  переходят через state, `lab_anchor` ≡ `commerce.price_tag` попиксельно, иконки в lab); `test_codehash` — правка
+  файлов commerce не устаревает сцены других пакетов; `pytest` 299 ✅, `selftest` ✅ (кадры в процессе — макс 0).
 
 **Этап готов, если:** golden байт в байт; `fake-discounts` проходит `validate` и `stills` без изменений в листах;
 `lab.py` и `cli.py` не длиннее 400 строк на файл; глобалов стиля в `gfx` нет.
+✅ *Проверено (2026-10-22, после P2.9):* selftest — кадры в процессе = golden, макс 0; листы `stills` fake-discounts =
+`tests/reference/` попиксельно (4 главы, 307 кадров), `validate` без ошибок; `lab.py` 27 строк, `cli.py` 56, самый
+длинный файл `packs/lab` — 348; изменяемых глобалов стиля в `gfx` нет (стиль — `style.active()`, P2.2).
 
 ---
 

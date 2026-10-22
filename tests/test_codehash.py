@@ -45,6 +45,15 @@ def test_every_pack_file_stales_its_scenes(pack, gallery, monkeypatch):
             assert stale == {pack}, f
 
 
+def test_commerce_does_not_stale_other_packs(gallery, monkeypatch):
+    # P2.9: commerce построен на lab, но lab от него не зависит — сцены галереи (без commerce) не устаревают
+    before = _keys(gallery)
+    for f in sorted((STUDIO / "packs" / "commerce").glob("*.py")):
+        with monkeypatch.context() as m:
+            _edit(m, f)
+            assert _stale(before, _keys(gallery)) == set(), f
+
+
 def test_drawing_core_stales_everything(gallery, monkeypatch):
     before = _keys(gallery)
     for name in ("anim.py", "gfx.py", "motion.py", "style.py", "subs.py", "render.py"):
@@ -72,7 +81,7 @@ def test_new_module_found_by_import(tmp_path):
 
 
 def test_project_templates_stale_all_scenes(gallery, monkeypatch):
-    # проектный шаблон может подменить функцию пакета (money.py → studio.lab._li): он в ключе каждой сцены
+    # проектный шаблон может подменить функцию пакета (studio.lab._li = …): он в ключе каждой сцены
     tdir = gallery.root / "templates"
     tdir.mkdir(exist_ok=True)
     (tdir / "extra.py").write_text("X = 1\n")

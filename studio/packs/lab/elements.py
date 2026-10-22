@@ -129,6 +129,40 @@ def _li(name, d, s, c, w):
     elif name == "question":
         d.arc((s * .3, s * .14, s * .7, s * .52), 200, 90, fill=c, width=w)
         d.line((s / 2, s * .52, s / 2, s * .64), fill=c, width=w); d.ellipse((s * .47, s * .76, s * .53, s * .82), fill=c)
+    elif name == "wheel":  # колесо фортуны: обод, спицы, флажок-указатель сверху
+        d.ellipse((m, m * 1.4, s - m, s - m * 0.6), outline=c, width=w)
+        cx, cy, r = s / 2, s / 2 + m * 0.4, s / 2 - m
+        for i in range(4):
+            a = i * math.pi / 4
+            d.line((cx - r * math.cos(a), cy - r * math.sin(a), cx + r * math.cos(a), cy + r * math.sin(a)), fill=c, width=w)
+        d.polygon([(cx - s * .07, m * 0.2), (cx + s * .07, m * 0.2), (cx, m * 1.6)], fill=c)
+    elif name == "house":
+        d.line((m, s * .48, s / 2, m), fill=c, width=w)
+        d.line((s / 2, m, s - m, s * .48), fill=c, width=w)
+        d.line((s * .26, s * .4, s * .26, s - m), fill=c, width=w)
+        d.line((s * .74, s * .4, s * .74, s - m), fill=c, width=w)
+        d.line((s * .26, s - m, s * .74, s - m), fill=c, width=w)
+        d.rectangle((s * .43, s * .6, s * .57, s - m), outline=c, width=w)
+    elif name == "timer":  # секундомер
+        d.ellipse((m, m * 1.6, s - m, s - m * 0.4), outline=c, width=w)
+        d.line((s * .42, m * 0.6, s * .58, m * 0.6), fill=c, width=w)
+        d.line((s / 2, m * 0.6, s / 2, m * 1.6), fill=c, width=w)
+        d.line((s / 2, s * .56, s * .66, s * .42), fill=c, width=w)
+    elif name == "anchor":
+        d.ellipse((s * .42, m * 0.6, s * .58, m * 1.5), outline=c, width=w)
+        d.line((s / 2, m * 1.5, s / 2, s - m), fill=c, width=w)
+        d.line((s * .32, s * .36, s * .68, s * .36), fill=c, width=w)
+        d.arc((m, s * .38, s - m, s - m), 20, 160, fill=c, width=w)
+    elif name == "receipt":
+        d.line((s * .28, m, s * .72, m), fill=c, width=w)
+        d.line((s * .28, m, s * .28, s - m), fill=c, width=w)
+        d.line((s * .72, m, s * .72, s - m), fill=c, width=w)
+        for i in range(4):
+            x0 = s * .28 + i * s * .11
+            d.line((x0, s - m, x0 + s * .055, s - m - s * .06), fill=c, width=w)
+            d.line((x0 + s * .055, s - m - s * .06, x0 + s * .11, s - m), fill=c, width=w)
+        for y in (.34, .48, .62):
+            d.line((s * .38, s * y, s * .62, s * y), fill=c, width=w)
     else:
         return False
     return True
