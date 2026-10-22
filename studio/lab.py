@@ -41,15 +41,16 @@ class LabBackground:
     """Сплошной bg + подсветки (glow_cool сверху-слева, glow_warm снизу-справа, дыхание ±4 % за 7 с),
     сетка 48 px в нижних 40 % с затуханием вверх, 34 пылинки 1–2 px плывут вверх 8–20 px/с."""
 
-    def __init__(self, W, H, seed=7):
+    def __init__(self, W, H, seed=7, style=None):
         self.W, self.H = W, H
+        pal = (style or G.SM.active()).pal
         self.z = W / 1920 if W >= H else H / 1920
         self.lw, self.lh = max(2, W // 4), max(2, H // 4)
         ys, xs = np.mgrid[0:self.lh, 0:self.lw].astype(np.float32)
         self.xs, self.ys = (xs + 0.5) * W / self.lw, (ys + 0.5) * H / self.lh
-        self.base = np.array(G.PAL["bg"], np.float32)
-        self.c1 = np.array(G.PAL["glow_cool"], np.float32)  # §14: настроение; без него = accent / accent2
-        self.c2 = np.array(G.PAL["glow_warm"], np.float32)
+        self.base = np.array(pal["bg"], np.float32)
+        self.c1 = np.array(pal["glow_cool"], np.float32)  # §14: настроение; без него = accent / accent2
+        self.c2 = np.array(pal["glow_warm"], np.float32)
         rng = np.random.default_rng(seed)
         g = np.clip(rng.normal(1.2, 0.9, (H, W)), 0, 3).astype(np.uint8)  # зерно против бандинга
         self.grain = Image.merge("RGB", [Image.fromarray(g, "L")] * 3)
@@ -1131,7 +1132,7 @@ class LabCrowd(HeroMixin, LabTemplate):
             self.rm = txt(rg.get("mark_label", str(rg.get("mark"))), 19 * z, "medium", "accent", "mono")
             w = int(724 * z)
             grad = np.zeros((max(2, int(4 * z)), w, 4), np.uint8)
-            c1, c2 = np.array(G.PAL["accent"]), np.array(G.PAL["accent2"])
+            c1, c2 = np.array(self.style.pal["accent"]), np.array(self.style.pal["accent2"])
             for x in range(w):
                 grad[:, x, :3] = c1 + (c2 - c1) * x / max(1, w - 1)
             grad[:, :, 3] = 255

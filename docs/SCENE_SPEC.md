@@ -78,6 +78,10 @@ class BigQuote(Template):
 передавать через `state` (как `feed_offset`, `screen_dim`), а не начинать заново. `draw` рисует только контент поверх
 переданного кадра (не заливает его целиком): `safezone` рисует шаблон на прозрачный слой и по непрозрачным пикселям
 проверяет поля кадра — сплошная заливка выглядела бы как «контент до края».
+Цвета и пресет — из `self.style` (`studio/style.py`): `self.style.pal["accent"]`, `self.style.col("dim", 120)`,
+`self.style.background`/`camera`/`subs`. Хелперы gfx (`text_sprite`, `icon`, `panel`, `radial`, `glowify`, `font`, `col`)
+принимают `style=`; без него берут стиль ролика (рендер делает его активным). `G.PAL`/`G.STYLE` — только для старых
+шаблонов: это снимок, запись в них ничего не меняет.
 
 ## Шаблоны канала: пресет `lab` (Notes From The Mind)
 Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `channel/STYLE.md`, эталон движения —

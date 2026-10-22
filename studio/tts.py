@@ -145,7 +145,6 @@ EL_DEFAULTS = {"model": "eleven_multilingual_v2", "stability": 0.5, "similarity_
 EL_VOICE_KEYS = ("stability", "similarity_boost", "style", "use_speaker_boost", "speed", "model")  # voice: сцены/строки
 EL_SPEED = (0.7, 1.2)  # диапазон speed, который принимает API
 _RAW_WORDS = {}  # out_raw -> [[слово, t0, t1]] относительно сырого звука (до срезки тишины)
-_EL_CFG = {}  # настройки текущего вызова: проектные + voice-override + previous_text/next_text
 
 
 def _el_key():
@@ -181,9 +180,10 @@ def _el_request(path, body=None, method="GET"):
         raise TTSUnavailable(f"ElevenLabs недоступен: {e.reason}")
 
 
-def _elevenlabs(text, voice, rate, out_raw):
-    """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова."""
-    c = dict(EL_DEFAULTS, **_EL_CFG)
+def _elevenlabs(text, voice, rate, out_raw, cfg=None):
+    """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова.
+    cfg — настройки вызова (el_call_cfg): проектные + voice-override + previous_text/next_text."""
+    c = dict(EL_DEFAULTS, **(cfg or {}))
     speed = max(EL_SPEED[0], min(EL_SPEED[1], float(c.get("speed") or rate / 100.0)))
     body = {"text": text, "model_id": c["model"],
             "voice_settings": {"stability": c["stability"], "similarity_boost": c["similarity_boost"],
@@ -346,11 +346,9 @@ def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt
     if tts_cfg["backend"] == "fake":
         _fake(text, rate, out, beats)
         return out
-    if tts_cfg["backend"] == "elevenlabs":
-        _EL_CFG.clear()
-        _EL_CFG.update(el_call_cfg(tts_cfg, prev, nxt, voice))
     raw = cache_dir / f"{key}.raw{'.mp3' if tts_cfg['backend'] in ('edge', 'elevenlabs') else '.wav'}"
-    BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw)
+    extra = {"cfg": el_call_cfg(tts_cfg, prev, nxt, voice)} if tts_cfg["backend"] == "elevenlabs" else {}
+    BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw, **extra)
     if not raw.exists() or raw.stat().st_size < 1000:
         raise TTSUnavailable(f"Синтез не дал звука для: {text[:60]!r}")
     words = _RAW_WORDS.pop(str(raw), None)

@@ -7,7 +7,8 @@
         def draw(self, img, t, T): ...  # каждый кадр: t — время сцены, T — глобальное
         def feed_speed(self, t): ...    # (опц.) скорость ленты px/s -> непрерывность между сценами
 Полезное: self.bt(i) / self.be(i) — начало/конец бита i; self.D — длительность сцены;
-self.io(t) — альфа плавного входа/выхода; self.u — масштаб (1.0 при 1080 по короткой стороне).
+self.io(t) — альфа плавного входа/выхода; self.u — масштаб (1.0 при 1080 по короткой стороне);
+self.style — стиль ролика (studio/style.py: палитра self.style.pal, цвет self.style.col("accent"), пресет).
 """
 from __future__ import annotations
 
@@ -18,7 +19,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from . import gfx as G
-from .gfx import PAL, blit, blitc, clamp, col, eio, eo, eob, lerp, prog
+from . import style as SM
+from .gfx import blit, blitc, clamp, col, eio, eo, eob, lerp, prog
 
 REGISTRY = {}
 
@@ -36,6 +38,7 @@ class Template:
 
     def __init__(self, ctx, scene, state):
         self.ctx, self.s, self.state = ctx, scene, state
+        self.style = ctx.get("style") or SM.active()
         self.p = scene.get("params") or {}
         self.W, self.H = ctx["W"], ctx["H"]
         self.u = min(self.W, self.H) / 1080
@@ -104,8 +107,9 @@ def plural(n, forms):
 class FeedStrip:
     """Длинная заранее отрисованная лента постов -> кадр = вырезка (быстро) + motion blur."""
 
-    def __init__(self, phone, seed=3, title="Лента"):
+    def __init__(self, phone, seed=3, title="Лента", style=None):
         self.title = title
+        pal = (style or SM.active()).pal
         sw, sh = phone.sw, phone.sh
         self.sw, self.sh = sw, sh
         m = int(sw * 0.045)
@@ -135,7 +139,7 @@ class FeedStrip:
             a = np.linspace(0, 1, gw, dtype=np.float32)[None, :, None]
             b = np.linspace(0, 1, mh, dtype=np.float32)[:, None, None]
             k = np.clip(0.55 * a + 0.45 * b, 0, 1)
-            ca, cb = np.array(PAL[c1], np.float32) * 0.55, np.array(PAL[c2], np.float32) * 0.35
+            ca, cb = np.array(pal[c1], np.float32) * 0.55, np.array(pal[c2], np.float32) * 0.35
             g = (ca * (1 - k) + cb * k + 10).astype(np.uint8)
             media = Image.fromarray(np.broadcast_to(g, (mh, gw, 3)).copy(), "RGB").convert("RGBA")
             media.putalpha(G.rr_mask(gw, mh, int(sw * 0.05)))
@@ -191,12 +195,13 @@ def phone_ctx(ctx):
     """Один телефон и одна лента на процесс (дорогие спрайты строятся один раз)."""
     from .lang import profile
     title = profile(ctx.get("language"))["ui"]["feed"]
-    key = (ctx["W"], ctx["H"], title)
+    style = ctx.get("style") or SM.active()
+    key = (ctx["W"], ctx["H"], title, style)
     if key not in _PHONES:
-        ph = G.Phone(ctx["W"], ctx["H"])
+        ph = G.Phone(ctx["W"], ctx["H"], style=style)
         if ctx["H"] < ctx["W"]:
             ph.cx = ctx["W"] * 0.30
-        _PHONES[key] = (ph, FeedStrip(ph, title=title))
+        _PHONES[key] = (ph, FeedStrip(ph, title=title, style=style))
     return _PHONES[key]
 
 

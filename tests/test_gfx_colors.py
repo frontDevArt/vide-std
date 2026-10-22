@@ -2,15 +2,16 @@
 import pytest
 
 from studio import gfx
+from studio import style as SM
 
 NEON = gfx.PALETTES["neon"]
 
 
 @pytest.fixture
 def pal(monkeypatch):
-    p = dict(NEON, glow_cool=(1, 1, 1), glow_warm=(2, 2, 2))
-    monkeypatch.setattr(gfx, "PAL", p)  # глобальная палитра процесса не меняется
-    return p
+    st = SM.Style("neon", overrides=(("glow_cool", "#010101"), ("glow_warm", "#020202")))
+    monkeypatch.setattr(SM, "_active", st)  # активный стиль процесса после теста — прежний
+    return st.pal
 
 
 def test_hex_rgb():
@@ -61,7 +62,7 @@ def test_chapter_glow(pal):
 
 
 def test_chapter_glow_falls_back_to_accents(monkeypatch):
-    monkeypatch.setattr(gfx, "PAL", dict(NEON))  # палитра без glow_*
+    monkeypatch.setattr(SM, "_active", SM.Style("neon"))  # без настроения: glow_* = accent / accent2
     assert gfx.chapter_glow({"cool": "#000001"}) == ((0, 0, 1), NEON["accent2"])
 
 

@@ -26,7 +26,7 @@ from .timing import load_timeline
 def code_hash(proj_root=None):
     # только код, который рисует кадр; данные сцены (тексты, тайминги) уже в хэше сцены
     h = hashlib.sha1(b"render")
-    files = [STUDIO_ROOT / "studio" / n for n in ("gfx.py", "templates.py", "render.py", "lab.py", "motion.py")]
+    files = [STUDIO_ROOT / "studio" / n for n in ("gfx.py", "style.py", "templates.py", "render.py", "lab.py", "motion.py")]
     if proj_root and (Path(proj_root) / "templates").exists():
         files += sorted((Path(proj_root) / "templates").glob("*.py"))
     for f in files:
@@ -37,16 +37,16 @@ def code_hash(proj_root=None):
 def prepare(proj: Project):
     """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены."""
     tl = load_timeline(proj)
-    G.apply_style(proj.cfg["style"])
+    style = G.apply_style(proj.cfg["style"])
     TP.load_project_templates(proj.root)
     W, H = tl["size"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"]}
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style}
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
-    glows = {ch: G.chapter_glow(d.get("glow")) for ch, d in proj.chapters}
-    base_glow = (G.PAL["glow_cool"], G.PAL["glow_warm"])
-    use_glow = G.STYLE.get("background") == "lab" and any(glows.values())
+    glows = {ch: G.chapter_glow(d.get("glow"), style) for ch, d in proj.chapters}
+    base_glow = (style.pal["glow_cool"], style.pal["glow_warm"])
+    use_glow = style.background == "lab" and any(glows.values())
     if use_glow and scenes:
         state["lab_glow"] = glows.get(scenes[0]["chapter"]) or base_glow  # начало ролика — без перехода
     ch_code = code_hash(proj.root)
@@ -91,22 +91,23 @@ def glow_at(scene, t):
     return tuple(tuple(G.lerp(a, b, k) for a, b in zip(A, B)) for A, B in zip(g["from"], g["to"]))
 
 
-def _bg(W, H):
-    key = (W, H, G.STYLE_KEY)
+def _bg(W, H, style=None):
+    style = style or G.SM.active()
+    key = (W, H, style)
     if key not in _BG:
-        if G.STYLE.get("background") == "lab":
+        if style.background == "lab":
             from .lab import LabBackground
-            _BG[key] = LabBackground(W, H)
+            _BG[key] = LabBackground(W, H, style=style)
         else:
-            _BG[key] = G.Background(W, H)
+            _BG[key] = G.Background(W, H, style=style)
     return _BG[key]
 
 
-def _sub_sprite(lines, size, W):
-    key = ("sub", tuple(lines), size)
+def _sub_sprite(lines, size, W, style):
+    key = ("sub", tuple(lines), size, style)
     if key in _BG:
         return _BG[key]
-    f = G.font(size, "bold")
+    f = G.font(size, "bold", style=style)
     lh = int(size * 1.2)
     tw = int(max(f.getlength(l) for l in lines))
     pw, ph = tw + int(size * 1.1), lh * len(lines) + int(size * 0.62)
@@ -117,17 +118,17 @@ def _sub_sprite(lines, size, W):
         x = (pw - f.getlength(l)) / 2
         y = int(size * 0.24) + i * lh
         d.text((x + 2, y + 3), l, font=f, fill=(0, 0, 0, 160))
-        d.text((x, y), l, font=f, fill=G.col("text"))
+        d.text((x, y), l, font=f, fill=style.col("text"))
     _BG[key] = box
     return box
 
 
-def _karaoke_sprite(lines, n_on, size):
+def _karaoke_sprite(lines, n_on, size, style):
     """Субтитры lab: плашка, слова загораются по мере произнесения (неспетые — 38 %)."""
-    key = ("kar", tuple(lines), n_on, size)
+    key = ("kar", tuple(lines), n_on, size, style)
     if key in _BG:
         return _BG[key]
-    f = G.font(size, "bold")
+    f = G.font(size, "bold", style=style)
     lh = int(size * 1.25)
     sp = f.getlength(" ") + size * 0.14
     widths = [sum(f.getlength(w) for w in l.split()) + sp * (len(l.split()) - 1) for l in lines]
@@ -140,25 +141,26 @@ def _karaoke_sprite(lines, n_on, size):
         x = (pw - widths[li]) / 2
         y = int(size * 0.18) + li * lh
         for w in l.split():
-            d.text((x, y), w, font=f, fill=G.col("text", 255 if i < n_on else 97))
+            d.text((x, y), w, font=f, fill=style.col("text", 255 if i < n_on else 97))
             x += f.getlength(w) + sp
             i += 1
     _BG[key] = box
     return box
 
 
-def draw_subs(img, scene, t, proj_sub_size, W, H):
-    if G.STYLE.get("subs") == "karaoke" and scene.get("words"):
-        return _draw_karaoke(img, scene, t, proj_sub_size, W, H)
+def draw_subs(img, scene, t, proj_sub_size, W, H, style=None):
+    style = style or G.SM.active()
+    if style.subs == "karaoke" and scene.get("words"):
+        return _draw_karaoke(img, scene, t, proj_sub_size, W, H, style)
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
             a = min(G.prog(t, c["t0"] - 0.02, c["t0"] + 0.08), 1 - G.prog(t, c["t1"] - 0.08, c["t1"]))
-            spr = _sub_sprite(tuple(c["lines"]), proj_sub_size, W)
+            spr = _sub_sprite(tuple(c["lines"]), proj_sub_size, W, style)
             y = H * (0.835 if H >= W else 0.885)
             G.blitc(img, spr, W / 2, y, max(0.0, a), 0.985 + 0.015 * G.eo(G.prog(t, c["t0"], c["t0"] + 0.12)))
 
 
-def _draw_karaoke(img, scene, t, size, W, H):
+def _draw_karaoke(img, scene, t, size, W, H, style):
     words = scene["words"]
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
@@ -168,7 +170,7 @@ def _draw_karaoke(img, scene, t, size, W, H):
             n_on = sum(1 for w in inside if w["t0"] <= t)
             if len(inside) != n_all:  # таймкоды не совпали с нарезкой — равномерно по времени фрагмента
                 n_on = int(n_all * G.prog(t, c["t0"], c["t1"] - 0.3) + 0.999)
-            spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size)
+            spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
             z = min(W, H) / 1080
             cy = H * 0.835 if H >= W else H - 24 * z - spr.height / 2  # горизонталь: низ плашки в 24 px от края (демо)
             G.blitc(img, spr, W / 2, cy, max(0.0, a))
@@ -184,21 +186,23 @@ def frame(ctx, tpl, scene, f, sub_size):
     fps = ctx["fps"]
     t = f / fps
     T = (scene["start_frame"] + f) / fps
+    style = ctx["style"]
     glow = glow_at(scene, t)
-    img = _bg(ctx["W"], ctx["H"]).frame(T, glow) if glow else _bg(ctx["W"], ctx["H"]).frame(T)
-    if getattr(tpl, "camera", False) and G.STYLE.get("camera"):
+    bg = _bg(ctx["W"], ctx["H"], style)
+    img = bg.frame(T, glow) if glow else bg.frame(T)
+    if getattr(tpl, "camera", False) and style.camera:
         from .lab import apply_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
         img.alpha_composite(apply_camera(layer, T))
     else:
         tpl.draw(img, t, T)
-    draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"])
+    draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style)
     return img
 
 
-def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, style):
-    G.apply_style(style)
+def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset):
+    G.apply_style(ctx["style"])  # активный — для хелперов gfx без style= (шаблоны проектов)
     TP.load_project_templates(proj_root)
     t0 = time.time()
     tpl = make_template(ctx, scene)
@@ -243,7 +247,7 @@ def render(proj: Project, chapter=None, workers=None, log=print, force=False):
     todo.sort(key=lambda s: -s["n_frames"])
     t0 = time.time()
     done = 0
-    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], proj.cfg["style"])
+    args = (proj.cfg["render"]["crf"], proj.cfg["render"]["preset"])
     with ProcessPoolExecutor(max_workers=workers) as ex:
         futs = [ex.submit(_render_scene_job, str(proj.root), s, ctx, sub_size, scene_out(proj, s), *args) for s in todo]
         for fu in as_completed(futs):

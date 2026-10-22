@@ -38,10 +38,10 @@ def _frame_phases(ctx, tpl, scene, f, sub_size, acc):
     t, T = f / fps, (scene["start_frame"] + f) / fps
     c0 = time.perf_counter()
     glow = render.glow_at(scene, t)
-    bg = render._bg(ctx["W"], ctx["H"])
+    bg = render._bg(ctx["W"], ctx["H"], ctx["style"])
     img = bg.frame(T, glow) if glow else bg.frame(T)
     c1 = time.perf_counter()
-    if getattr(tpl, "camera", False) and G.STYLE.get("camera"):
+    if getattr(tpl, "camera", False) and ctx["style"].camera:
         from studio.lab import apply_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
@@ -51,7 +51,7 @@ def _frame_phases(ctx, tpl, scene, f, sub_size, acc):
         tpl.draw(img, t, T)
         c2 = time.perf_counter()
     c3 = time.perf_counter()
-    render.draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"])
+    render.draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], ctx["style"])
     c4 = time.perf_counter()
     img.convert("RGB").tobytes()
     c5 = time.perf_counter()

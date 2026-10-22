@@ -234,10 +234,24 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   неизвестный ключ остаётся в cfg (только предупреждение). `project.DEFAULTS`/`deep_merge` — прежние имена.
   `_template` пишет `schema_version: 1`. Проверено: `tests/test_config.py` (12, включая «все проекты и фикстуры без ⚠️»),
   `pytest` 217 ✅, `selftest` ✅ (кадры в процессе — макс 0), `validate fake-discounts` — OK без новых ⚠️.
-- [ ] **P2.2 Объект стиля вместо глобалов.** `Style` (палитра, настроение, шрифты по ролям, фон, камера, режим субтитров)
+- [x] **P2.2 Объект стиля вместо глобалов.** `Style` (палитра, настроение, шрифты по ролям, фон, камера, режим субтитров)
   строится из конфига и передаётся шаблонам через `ctx`. Три шага: (1) адаптер, который заодно выставляет старые
   `gfx.PAL`/`STYLE` (совместимость); (2) шаблоны читают `self.style`; (3) глобалы удаляются. Туда же `tts._EL_CFG` →
   явный параметр бэкенда.
+  *Сделано:* `studio/style.py` — `Style` (frozen dataclass: `palette`, `mood`, `overrides`, `font`; производные `pal`
+  только для чтения, `preset`, `background`, `camera`, `subs`, `fonts`, `col()`), `Style.from_cfg()`; туда же переехали
+  `PALETTES`/`STYLES`/`MOODS`/`hex_rgb`/`mood_colors` (в gfx — те же имена). В `gfx` нет изменяемых глобалов стиля:
+  `PAL`/`STYLE`/`STYLE_KEY`/`STYLE_NAME`/`FONT_FAMILY` — снимки активного стиля через модульный `__getattr__`
+  (совместимость, запись не действует). Хелперы (`col`, `font`, `text_sprite`, `icon`, `radial`, `panel`, `glowify`,
+  `Background`, `Phone`) принимают `style=`; кэши держат стиль в ключе — `cache_clear` при смене стиля больше не нужен.
+  `apply_style()` строит `Style`, делает активным (`style.use`) и возвращает. `render.prepare` кладёт стиль в
+  `ctx["style"]`, `Template.self.style`; `render`/`lab`/`templates` читают его вместо `G.PAL`/`G.STYLE`; фон и плашки
+  субтитров кэшируются по стилю; воркер получает стиль в `ctx` (pickle — по входам). Остался один указатель
+  «активного стиля» в `style.py` — для хелперов, вызванных без `style=` (шаблоны проектов, `money.py`).
+  `style.py` добавлен в `render.code_hash`. `tts._EL_CFG` удалён: `_elevenlabs(…, cfg)` получает `el_call_cfg` от
+  `synth`. Проверено: `tests/test_style.py` (8: из cfg = старый `set_palette`, значение/хэш/pickle, ключи кэшей по
+  стилю, снимки `G.PAL`, `self.style`, конфиг ElevenLabs параметром), `pytest` 225 ✅, `selftest` ✅ (кадры в
+  процессе — макс 0, golden байт в байт), `validate fake-discounts` — OK.
 - [ ] **P2.3 Распил `cli.py`:** `studio/commands/<команда>.py` + `studio/validate.py`. Интерфейс CLI не меняется.
 - [ ] **P2.4 Пакеты шаблонов с пространствами имён:** `studio/packs/core/` (title, statement, bullets, counter, outro),
   `studio/packs/phone/` (5 «телефонных»), `studio/packs/lab/` (`background.py`, `elements.py`, `templates.py`; распил
