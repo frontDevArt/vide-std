@@ -79,7 +79,12 @@
   `requirements-dev.txt` — pytest 9.1.1, ruff 0.17.1. `doctor` пишет ⚠️, если установленная версия не совпадает с пином.
   `ruff check --select E9,F63,F7,F82` чистый. *Замечено:* Pillow 11.3 предупреждает, что `Image.fromarray(..., mode)`
   уберут в Pillow 13 — 10 вызовов в `gfx`/`lab`/`templates`; править вместе с подъёмом пина Pillow.
-- [ ] **P0.7 CI (GitHub Actions)** на `ubuntu-latest` и `windows-latest`: ruff (только ошибки, без стиля), pytest, selftest.
+- [x] **P0.7 CI (GitHub Actions)** на `ubuntu-latest` и `windows-latest`: ruff (только ошибки, без стиля), pytest, selftest.
+  *Сделано:* `.github/workflows/ci.yml` — push в `master`, PR, ручной запуск; Python 3.14 (как при съёмке golden),
+  ffmpeg из apt / choco, `PYTHONUTF8=1`, `ruff check --select E9,F63,F7,F82`, `pytest`, `selftest`; при падении —
+  артефакт `golden-diff-<ос>` из `tests/.golden-diff/`. Локально шаги зелёные (135 тестов, selftest 127 с).
+  *Не проверено:* сам прогон на GitHub — нужен push. Linux впервые сверит golden, снятые на Windows (шрифты
+  из `assets/fonts/`, Pillow с тем же FreeType из wheel): если покраснеет — разбирать артефакт, а не обновлять golden.
 - [ ] **P0.8 Базовые замеры → `docs/history/BENCH.md`:** кадров/с по каждому шаблону (1 процесс), время selftest,
   полный рендер `fake-discounts` (время, 24 процесса), размер `build/`. Это точка отсчёта для этапов 3–4.
 
