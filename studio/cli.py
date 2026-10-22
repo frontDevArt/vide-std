@@ -64,6 +64,13 @@ def cmd_doctor(a):
             except Exception as e:
                 print(f"  ⬜ TTS [{code}] {be}: {str(e)[:110]}")
     import os
+    if not os.environ.get("ELEVENLABS_API_KEY", "").strip():  # .env уже прочитан при импорте tts
+        print("  ⬜ TTS ElevenLabs: ключа нет (ELEVENLABS_API_KEY в .env) — не проверяем")
+    else:
+        try:  # платный голос канала: проверяем бесплатно, без синтеза; ключ не печатается
+            line(True, "TTS ElevenLabs —", tts.el_check() + " (бесплатная проверка, без синтеза)")
+        except Exception as e:
+            line(False, "TTS ElevenLabs:", str(e)[:200])
     print(f"  ℹ️  ядер CPU: {os.cpu_count()}")
     return 0 if ok else 1
 
