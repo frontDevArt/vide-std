@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 import subprocess
@@ -82,7 +83,8 @@ def cmd_new(a):
         raise SystemExit(f"Уже есть: {dst}")
     shutil.copytree(STUDIO_ROOT / "projects" / "_template", dst)
     y = (dst / "project.yaml").read_text(encoding="utf-8")
-    y = y.replace("topic: TODO", f"topic: {a.topic!r}".replace("'", '"'))
+    # JSON-строка — валидный YAML при любых кавычках и `: `/`#` в теме; комментарии заготовки сохраняются
+    y = y.replace("topic: TODO", f"topic: {json.dumps(a.topic, ensure_ascii=False)}")
     y = y.replace("language: ru", f"language: {a.lang}")
     y = y.replace("format: vertical", f"format: {a.format}")
     y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
