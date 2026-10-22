@@ -76,7 +76,32 @@ def slugify(s):
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")[:40] or "video"
 
 
+def _has_edge():
+    import importlib.util
+    return importlib.util.find_spec("edge_tts") is not None or bool(shutil.which("edge-tts"))
+
+
+def default_backend(lang):
+    """Голос нового проекта — первый доступный по дешёвой проверке (без сети и синтеза), иначе None.
+    ElevenLabs платный: только для канала (есть channel/POSITIONING.md, ролики англоязычные) и с ключом в .env."""
+    import os
+    from . import tts  # noqa: F401 — подхватывает .env в окружение
+    if (os.environ.get("ELEVENLABS_API_KEY", "").strip() and lang == "en"
+            and (STUDIO_ROOT / "channel" / "POSITIONING.md").exists()):
+        return "elevenlabs"
+    if _has_edge():
+        return "edge"
+    if (STUDIO_ROOT / "tools" / "rhvoice" / "rhvoice").exists():
+        return "rhvoice"
+    return None
+
+
 def cmd_new(a):
+    backend = a.tts or default_backend(a.lang)
+    if not backend:
+        backend = "rhvoice"
+        print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"
+              "   поставьте голос (python -m studio doctor, bash tools/setup_rhvoice.sh) или укажите --tts")
     slug = a.slug or slugify(a.topic)
     dst = STUDIO_ROOT / "projects" / slug
     if dst.exists():
@@ -88,8 +113,10 @@ def cmd_new(a):
     y = y.replace("language: ru", f"language: {a.lang}")
     y = y.replace("format: vertical", f"format: {a.format}")
     y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
+    # явно в project.yaml, а не «по умолчанию»: бэкенд входит в ключ кэша TTS и не должен зависеть от машины
+    y = y.replace("  backend: rhvoice ", f"  backend: {backend} ", 1)
     (dst / "project.yaml").write_text(y, encoding="utf-8")
-    print(f"Создан проект: {dst}\nДальше: фаза 1 (бриф) — docs/PHASES.md")
+    print(f"Создан проект: {dst} (голос: {backend})\nДальше: фаза 1 (бриф) — docs/PHASES.md")
     return 0
 
 
@@ -356,6 +383,8 @@ def main(argv=None):
                                                                       choices=["vertical", "horizontal", "square"])
     n.add_argument("--duration", type=float, default=None, help="точная длительность, c (иначе — по речи)")
     n.add_argument("--lang", default="ru", help="язык ролика: ru | en | ... (studio/lang.py)")
+    n.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake"],
+                   help="голос; без флага — первый доступный: elevenlabs (канал + ключ) → edge → rhvoice")
     for name, h in (("validate", "проверить сценарий"), ("voice", "озвучка + тайминги"),
                     ("stills", "контрольные кадры"), ("render", "рендер сцен"), ("assemble", "сборка финала"),
                     ("qa", "проверка финала"), ("all", "voice→render→assemble→qa"), ("status", "фазы и следующий шаг"),

@@ -11,7 +11,7 @@
 
 ## Команды
 ```
-python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--duration 30]
+python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--duration 30] [--tts edge]
 python -m studio validate <проект>         # проверка сценария
 python -m studio voice    <проект>         # озвучка + тайминг (кэш)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры

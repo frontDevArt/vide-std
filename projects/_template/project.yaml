@@ -8,7 +8,7 @@ fps: 30
 target_duration: null     # секунды, если длительность должна быть ТОЧНОЙ (Shorts/Reels); null — по речи
 
 tts:
-  backend: rhvoice        # rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
+  backend: rhvoice        # `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
                           #   | fake (тон вместо речи — только тесты/черновики)
   voice: auto             # auto — по языку (studio/lang.py). ru: aleksandr-hq | ru-RU-DmitryNeural | ru_RU-dmitri-medium;
                           #   en: slt | en-US-GuyNeural | en_US-lessac-medium

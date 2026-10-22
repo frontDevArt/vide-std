@@ -130,9 +130,15 @@
   последний проверенный темп, а не «даже при темпе {hi}». `tests/test_speech_fit.py`: фикстура `fake_tts` с `rate: 105` и
   `target_duration: 2` (до фикса проходила молча), с `target_duration: 60` проходит, текст ошибки B11 (до фикса падал)
   и потолка. pytest 146, selftest 77 с — зелёные, golden прежний.
-- [ ] **P1.3 (B3) Голос по умолчанию.** `new --tts <backend>`; без флага — первый доступный на машине по дешёвой проверке
+- [x] **P1.3 (B3) Голос по умолчанию.** `new --tts <backend>`; без флага — первый доступный на машине по дешёвой проверке
   (есть ключ ElevenLabs и это канал → `elevenlabs`; установлен `edge_tts` → `edge`; есть `rhvoice` → `rhvoice`), и выбор
   записывается в `project.yaml` явно, чтобы ключи кэша не плавали.
+  *Сделано:* `new --tts {elevenlabs,edge,rhvoice,piper,fake}`; без флага `cli.default_backend` без сети и синтеза:
+  ключ `ELEVENLABS_API_KEY` + `--lang en` + есть `channel/POSITIONING.md` → `elevenlabs` (платный — только для канала);
+  `edge_tts` импортируется или `edge-tts` в PATH → `edge`; есть `tools/rhvoice/rhvoice` → `rhvoice`; ничего → ⚠️ и
+  `rhvoice`. Выбор пишется в `tts.backend` заготовки. `DEFAULTS` не менялся — старые проекты грузятся как раньше.
+  `tests/test_cli_new.py`: флаг, канал с ключом, ключ при `ru` → не платный, порядок edge → rhvoice, «нет голоса»
+  (до фикса все 5 падали). pytest 151, selftest 76 с — зелёные, golden прежний. PHASES, CLAUDE.md, `/new-video` — про флаг.
 - [ ] **P1.4 (B4, B5, B6) Одна функция применения стиля** `apply_style(cfg)`: палитра, настроение, шрифт, сброс кэшей шрифтов
   (включая `_font_file`). Вызывается в `layout`, `prepare`, `qa`, `stills` — везде одинаково. *Тест:* ширина субтитров
   в QA меряется тем же шрифтом, что рисуется.
