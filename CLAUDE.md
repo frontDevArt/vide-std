@@ -49,9 +49,12 @@ python -m studio frame    <проект> <сек>    # один кадр PNG
 зафиксировать `tts.rate` числом. Подробно — `docs/ARCHITECTURE.md`, раздел «Длинный ролик».
 
 ## Развитие студии
-План доработок с критериями «готово» — `docs/ROADMAP.md` (команда `/roadmap`). История решений и замеры —
-`docs/history/SESSION_LOG.md`. Перед изменением движка прочитай `docs/LESSONS.md` и `docs/ARCHITECTURE.md`;
-после — регресс: `python -m studio new regress --lang en` → `python -m studio demo regress` — QA ✅, потом удалить `projects/regress*`.
+Аудит — `docs/AUDIT.md`. Порядок работ: сначала `docs/REFACTOR_PLAN.md` (этапы 0–2 обязательны, правила «ничего не
+сломать» — там же), потом `docs/ROADMAP.md` (мультистудия, площадки, типы роликов); команда `/roadmap`. История решений
+и замеры — `docs/history/SESSION_LOG.md`. Перед изменением движка прочитай `docs/LESSONS.md` и `docs/ARCHITECTURE.md`;
+после — регресс: `python -m studio new regress --lang en`, в `projects/regress/project.yaml` поставить
+`tts.backend: edge`, если нет RHVoice (на Windows его нет), → `python -m studio demo regress` — QA ✅ **и** открыть
+`qa/final_frames.png` (QA не видит вёрстку), потом удалить `projects/regress*`. После REFACTOR P0.5 — `python -m studio selftest`.
 
 ## Свои шаблоны
 Если встроенных не хватает — пиши `projects/<slug>/templates/<имя>.py` по контракту из
