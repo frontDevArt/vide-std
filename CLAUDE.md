@@ -51,7 +51,9 @@ python -m studio selftest [--full]          # регресс студии офл
 
 ## Развитие студии
 Аудит — `docs/AUDIT.md`. Порядок работ: сначала `docs/REFACTOR_PLAN.md` (этапы 0–2 обязательны, правила «ничего не
-сломать» — там же), потом `docs/ROADMAP.md` (мультистудия, площадки, типы роликов); команда `/roadmap`. История решений
+сломать» — там же), потом `docs/ROADMAP.md` (мультистудия, площадки, типы роликов); команда `/roadmap`. «Продолжай план» (и любое «продолжай» без
+названного проекта) = `/roadmap`: синхронизация с локальным `master`, следующая задача, в конце — отметка [x] в документе
+и fast-forward `master`. История решений
 и замеры — `docs/history/SESSION_LOG.md`. Перед изменением движка прочитай `docs/LESSONS.md` и `docs/ARCHITECTURE.md`;
 после — регресс: `pytest` и `python -m studio selftest` — оба ✅ (офлайн, голос `fake`, ~1,5 мин: фикстура gallery →
 voice → render → assemble → qa → сравнение с `tests/golden/`, вёрстку проверяют кадры golden). Golden не обновлять

@@ -115,3 +115,10 @@ selftest работает в коротком `tempfile.mkdtemp`.
 Эталонные листы `fake-discounts` (правило 7) — `tests/reference/fake-discounts/`, 4 главы, 15 МБ, сняты на копии
 проекта с timeline готового ролика. `status` на копии требует `voice` не из-за сценария (он совпадает с timeline),
 а потому что в worktree нет `.env`: голос (`ELEVENLABS_VOICE_ID`) входит в `source_hash`.
+
+## 2026-10-22 — этап 0 закрыт, `/roadmap` синхронизируется с master
+Проверка критерия этапа 0 на чистом клоне `master` в свежем venv (Windows): ruff, pytest 135, selftest 78 с — зелёные.
+CI на GitHub не запускался (нет push). Причина путаницы сессий: worktree создавались от старых веток и видели
+устаревший план — P0.5/P0.6 были сделаны дважды. `/roadmap` теперь начинает с `merge --ff-only master` и проверки
+свежих `claude/*` на сделанное-но-не-отмеченное, а заканчивает обязательной отметкой [x] и fast-forward `master`.
+«Продолжай план» = `/roadmap` (CLAUDE.md).
