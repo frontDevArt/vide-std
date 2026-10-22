@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-studio"
+version = "0.1.0"
+description = "Тема -> MP4 с озвучкой, анимацией кодом и субтитрами"
+requires-python = ">=3.12"
+# Версии закреплены точно: от Pillow (и numpy) зависят пиксели кадров,
+# а значит кэш рендера и эталоны QA. Обновлять осознанно, с регрессом
+# (см. CLAUDE.md, «Развитие студии»), и синхронно с requirements.txt.
+dependencies = [
+    "numpy==2.5.4",
+    "Pillow==11.3.0",
+    "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+edge = ["edge-tts>=6.1"]
+
+# Ставить зависимости: pip install -r requirements.txt (или pip install -e .).
+# Обычный `pip install .` не подходит: студия ищет projects/ рядом с пакетом.
+[tool.setuptools]
+packages = ["studio"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

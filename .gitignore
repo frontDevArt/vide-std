@@ -27,8 +27,10 @@ tools/piper-voices/
 __pycache__/
 *.pyc
 .venv/
-venv/
+*.egg-info/
 .pytest_cache/
+.ruff_cache/
+venv/
 tests/.golden-diff/
 
 # IDE / ОС

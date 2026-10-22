@@ -72,8 +72,13 @@
   `STUDIO_FONT_*`). Замер на этой машине (24 потока): **76 с**, `--full` — 143 с. Проверено: подмена `PAL["accent"]`
   только в воркере рендера → в процессе ✅, «кадры из MP4» ❌ (макс 214).
   `CLAUDE.md`, `/roadmap`, `START_HERE.md`: регресс → `pytest` + `selftest`.
-- [ ] **P0.6 Зависимости:** `pyproject.toml` (или `requirements.lock`) с закреплёнными версиями numpy/Pillow/PyYAML: от
+- [x] **P0.6 Зависимости:** `pyproject.toml` (или `requirements.lock`) с закреплёнными версиями numpy/Pillow/PyYAML: от
   версии Pillow зависят пиксели. `requirements-dev.txt`: pytest, ruff.
+  *Сделано:* `pyproject.toml` — numpy 2.5.4, Pillow 11.3.0, PyYAML 6.0.3 (на них сняты golden P0.4), Python ≥ 3.12,
+  настройки ruff/pytest; `requirements.txt` — копия пинов, `tests/test_deps.py` следит за синхроном;
+  `requirements-dev.txt` — pytest 9.1.1, ruff 0.17.1. `doctor` пишет ⚠️, если установленная версия не совпадает с пином.
+  `ruff check --select E9,F63,F7,F82` чистый. *Замечено:* Pillow 11.3 предупреждает, что `Image.fromarray(..., mode)`
+  уберут в Pillow 13 — 10 вызовов в `gfx`/`lab`/`templates`; править вместе с подъёмом пина Pillow.
 - [ ] **P0.7 CI (GitHub Actions)** на `ubuntu-latest` и `windows-latest`: ruff (только ошибки, без стиля), pytest, selftest.
 - [ ] **P0.8 Базовые замеры → `docs/history/BENCH.md`:** кадров/с по каждому шаблону (1 процесс), время selftest,
   полный рендер `fake-discounts` (время, 24 процесса), размер `build/`. Это точка отсчёта для этапов 3–4.

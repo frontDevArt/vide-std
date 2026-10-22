@@ -11,6 +11,26 @@ from pathlib import Path
 from .project import STUDIO_ROOT, load, resolve_project
 
 
+def pinned_deps():
+    """{пакет: версия} из [project].dependencies в pyproject.toml (только точные пины `==`)."""
+    import tomllib
+    data = tomllib.loads((STUDIO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    return dict(d.split("==", 1) for d in data["project"]["dependencies"] if "==" in d)
+
+
+def pinned_mismatches():
+    from importlib.metadata import PackageNotFoundError, version
+    out = []
+    for name, want in pinned_deps().items():
+        try:
+            have = version(name)
+        except PackageNotFoundError:
+            have = "нет"
+        if have != want:
+            out.append((name, want, have))
+    return out
+
+
 def cmd_doctor(a):
     ok = True
     def line(good, name, det=""):
@@ -23,6 +43,9 @@ def cmd_doctor(a):
     try:
         import numpy, PIL, yaml  # noqa
         line(True, "python: numpy, Pillow, PyYAML")
+        for name, want, have in pinned_mismatches():
+            # другая версия Pillow/numpy = другие пиксели; не ошибка, но кэш и эталоны QA поплывут
+            print(f"  ⚠️  {name} {have}, закреплена {want} -> pip install -r requirements.txt")
     except ImportError as e:
         line(False, "python-библиотеки", f"({e}) -> pip install -r requirements.txt")
     from . import gfx

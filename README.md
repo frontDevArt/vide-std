@@ -8,7 +8,7 @@
 ## Быстрый старт
 ```bash
 cd video-studio
-pip install -r requirements.txt          # numpy, Pillow, PyYAML (+ ffmpeg в системе)
+pip install -r requirements.txt          # numpy, Pillow, PyYAML — точные версии (+ ffmpeg в системе)
 python -m studio doctor                   # что работает на этой машине
 bash tools/setup_rhvoice.sh               # один раз: офлайн-голос RHVoice (сборка ~5–10 мин)
 claude                                    # открыть Claude Code в этой папке
@@ -32,6 +32,6 @@ claude                                    # открыть Claude Code в это
 - `studio/` — движок; `projects/_template/` — заготовка (+ `demo/ch01.yaml` — демо стиля).
 
 ## Требования
-Python 3.10+, ffmpeg/ffprobe, шрифт с кириллицей (по умолчанию Inter Display; иначе DejaVu/Arial —
+Python 3.12+, ffmpeg/ffprobe, шрифт с кириллицей (по умолчанию Inter Display; иначе DejaVu/Arial —
 или `STUDIO_FONT_BOLD=/путь/к/шрифту.ttf`). Для сборки RHVoice: git, cmake, g++ (Linux; на macOS —
 Xcode CLT; на Windows проще бэкенд `edge`: `pip install edge-tts`).

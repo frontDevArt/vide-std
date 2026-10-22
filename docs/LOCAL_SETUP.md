@@ -1,10 +1,15 @@
 # Установка на своём компьютере
 
-Нужно всегда: **Python 3.10+**, **ffmpeg/ffprobe**, Python-пакеты из `requirements.txt`, Claude Code.
+Нужно всегда: **Python 3.12+**, **ffmpeg/ffprobe**, Python-пакеты из `requirements.txt`, Claude Code.
 Шрифт: по умолчанию Inter Display (бесплатный, rsms.me/inter). Без него студия возьмёт DejaVu/Arial;
 свой шрифт: `export STUDIO_FONT_BOLD=/путь/Bold.ttf` (и `_BLACK`, `_SEMIBOLD`, `_MEDIUM`, `_REGULAR`).
 
-После установки: `python -m studio doctor` — он реально синтезирует фразу каждым бэкендом.
+Версии numpy/Pillow/PyYAML закреплены точно (`pyproject.toml` = `requirements.txt`): от версии Pillow
+зависят пиксели кадров, а значит кэш рендера и эталоны QA. Обновлять пины только вместе с регрессом.
+Для разработки движка: `pip install -r requirements-dev.txt` (pytest, ruff) → `python -m pytest`.
+
+После установки: `python -m studio doctor` — он реально синтезирует фразу каждым бэкендом
+и предупреждает (⚠️), если установленные версии не совпадают с закреплёнными.
 
 ## Linux (Ubuntu/Debian)
 ```bash

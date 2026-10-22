@@ -1,5 +1,7 @@
-numpy>=1.24
-Pillow>=10.0
-PyYAML>=6.0
+# Точные версии — копия [project].dependencies из pyproject.toml (держать в синхроне,
+# проверяет tests/test_deps.py). От версии Pillow зависят пиксели кадров.
+numpy==2.5.4
+Pillow==11.3.0
+PyYAML==6.0.3
 # опционально, лучшее качество голоса (нужен интернет):
 # edge-tts>=6.1
