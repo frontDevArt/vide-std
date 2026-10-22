@@ -1,11 +1,10 @@
 """Рендер: сцена -> mp4 (кадры идут в ffmpeg через pipe, без PNG на диске).
 
-Кэш: build/render/<chapter>/<scene>.mp4 + .key. Ключ = хэш тайминга сцены + кода + стиля.
+Кэш: build/render/<chapter>/<scene>.mp4 + .key. Ключ = хэш тайминга сцены + кода её шаблона (`codehash`) + стиля.
 Сцены рендерятся параллельно процессами; прерванный рендер продолжается с недоделанных сцен.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import subprocess
@@ -19,21 +18,9 @@ from PIL import Image
 from . import gfx as G
 from . import subs as S
 from . import packs as TP
+from .codehash import code_hash, scene_code_hash  # noqa: F401  — code_hash: прежнее имя
 from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
-
-
-def code_hash(proj_root=None):
-    # только код, который рисует кадр; данные сцены (тексты, тайминги) уже в хэше сцены
-    h = hashlib.sha1(b"render")
-    studio = STUDIO_ROOT / "studio"
-    files = [studio / n for n in ("gfx.py", "style.py", "render.py", "motion.py")]
-    files += sorted((studio / "packs").rglob("*.py"), key=lambda f: f.relative_to(studio).as_posix())  # пакеты шаблонов
-    if proj_root and (Path(proj_root) / "templates").exists():
-        files += sorted((Path(proj_root) / "templates").glob("*.py"))
-    for f in files:
-        h.update(f.read_bytes())
-    return h.hexdigest()[:10]
 
 
 def prepare(proj: Project):
@@ -51,7 +38,7 @@ def prepare(proj: Project):
     use_glow = style.background == "lab" and any(glows.values())
     if use_glow and scenes:
         state["lab_glow"] = glows.get(scenes[0]["chapter"]) or base_glow  # начало ролика — без перехода
-    ch_code = code_hash(proj.root)
+    codes = {}  # класс шаблона → хэш кода, который рисует его сцены
     style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
@@ -62,6 +49,8 @@ def prepare(proj: Project):
         cls = TP.REGISTRY.get(s["template"])
         if cls is None:
             raise SystemExit(f"Неизвестный шаблон '{s['template']}' в сцене {s['chapter']}/{s['id']}")
+        if cls not in codes:
+            codes[cls] = scene_code_hash(cls, proj.root)
         tpl = cls(ctx, s, s["state_in"])
         if tpl.feed_speed:
             off = state["feed_offset"]
@@ -73,7 +62,7 @@ def prepare(proj: Project):
         if hasattr(tpl, "state_out"):  # шаблоны lab: шапка, часы, перенос цифры через склейку
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
-        s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], ch_code, style_key,
+        s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
                                 proj.cfg["render"]["crf"], proj.cfg["render"]["preset"], W, H] + ([extra] if extra else [])
                                + ([s["glow"]] if use_glow else []))
     return tl, ctx
@@ -98,7 +87,7 @@ def _bg(W, H, style=None):
     key = (W, H, style)
     if key not in _BG:
         if style.background == "lab":
-            from .packs.lab import LabBackground
+            from .packs.lab.background import LabBackground
             _BG[key] = LabBackground(W, H, style=style)
         else:
             _BG[key] = G.Background(W, H, style=style)
@@ -193,7 +182,7 @@ def frame(ctx, tpl, scene, f, sub_size):
     bg = _bg(ctx["W"], ctx["H"], style)
     img = bg.frame(T, glow) if glow else bg.frame(T)
     if getattr(tpl, "camera", False) and style.camera:
-        from .packs.lab import apply_camera
+        from .packs.lab.background import apply_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
         img.alpha_composite(apply_camera(layer, T))
