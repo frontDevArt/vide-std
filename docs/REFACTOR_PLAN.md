@@ -30,9 +30,15 @@
   *Готово, если:* `voice` на фикстуре даёт одинаковый `timeline.json` на Windows и Linux.
   *Сделано:* `tts._fake`, фикстура `tests/fixtures/fake_tts/`, `tests/test_fake_tts.py` (якорь — SHA байтов WAV+слов).
   Windows проверен; Linux подтвердит CI (P0.7) тем же якорем.
-- [ ] **P0.2 Фикстура `tests/fixtures/gallery/`.** Каждый шаблон (базовые + `lab_*`) хотя бы по разу, 2 главы (есть стык),
+- [x] **P0.2 Фикстура `tests/fixtures/gallery/`.** Каждый шаблон (базовые + `lab_*`) хотя бы по разу, 2 главы (есть стык),
   варианты vertical и horizontal, голос `fake`. Шрифты — только из `assets/fonts/` (через `STUDIO_FONT_*` в `conftest.py`),
   чтобы кадры не зависели от системных шрифтов.
+  *Сделано:* 18 сцен = 18 шаблонов (ch01 — `lab_*` с chrome/keep/source/verdict/neuron, ch02 — базовые, `glow: ember`
+  на стыке); формат подменяет `conftest.make_gallery`. `tests/test_gallery.py`: покрытие `REGISTRY`, чистый `validate`,
+  стык (glow, keep), кадр каждой сцены в обоих форматах без «триггер не найден».
+  *Замечено (движок не трогали):* `*слово*,` — акцент не закрывается перед знаком препинания, `*` виден в кадре
+  (ch02/s06); `phone_*` в horizontal и `lab_chapter`/`lab_crowd`/вердикт в vertical обрезаны (STYLE §12);
+  Pillow 12 предупреждает об устаревшем `Image.fromarray(..., mode)` (к P0.6).
 - [ ] **P0.3 Unit-тесты чистых функций:** `timing._split_bounds`, `choose_rate`/`base_total`, `subs.wrap`/`chunks_for_scene`,
   `textutil.*`, `templates.plural`, `motion` (bezier, spring), `gfx.mood_colors`/`chapter_glow`, `tts.cache_key`
   (стабильность ключа — защита кэша и денег), `lab.at` (разбор триггеров).

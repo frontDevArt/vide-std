@@ -1,0 +1,62 @@
+# Глава 2: базовые шаблоны; glow — смена подсветки на стыке глав (переход через state).
+chapter: ch02
+title: "base templates"
+glow: ember
+scenes:
+  - id: s01
+    template: title
+    lines: ["Part two. | The feed."]
+    params: {kicker: "Chapter 2", title: "The *feed*"}
+  - id: s02
+    template: phone_lock
+    lines: ["I opened one notification.", "An hour was gone."]
+    params:
+      time_from: "21:04"
+      time_to: "22:04"
+      date: "Tuesday, October 20"
+      notif_app: "Feed"
+      notif_title: "New video for you"
+      notif_text: "Watch it before it's gone"
+      badge: "+1 hour"
+      jump_beat: 1
+  - id: s03
+    template: phone_feed
+    lines: ["An endless feed | has no last page."]
+    params: {swipe_every: 0.7, counter_label: [post, posts]}
+  - id: s04
+    template: cards
+    lines: ["Every swipe promises something new: | a funny clip, | a strange story, | big news."]
+    params:
+      first_beat: 1
+      cards:
+        - {icon: laugh, label: "Funny clip", color: lime}
+        - {icon: book, label: "Strange story", color: amber}
+        - {icon: news, label: "Big news", color: cyan}
+  - id: s05
+    template: questions
+    lines: ["Before you open it, ask: | why am I here, | and for how long?"]
+    params: {first_beat: 1, questions: ["Why am I here?", "For how long?"], icons: [question, clock]}
+  - id: s06
+    template: phone_close
+    lines: ["Sometimes the best swipe | is closing the app."]
+    params: {close_beat: 1, final_text: "Your *time*, your choice"}
+  - id: s07
+    template: counter
+    lines: ["Count slowly | from zero to one hundred."]
+    params: {from: 0, to: 100, label: "count", at_beat: 1, color: amber}
+  - id: s08
+    template: bullets
+    lines: ["Three small steps: | pick a time, | set a limit, | close the app."]
+    params:
+      header: "Three steps"
+      first_beat: 1
+      items: [{icon: clock, text: "Pick a time"}, {icon: hourglass, text: "Set a limit"}, {icon: lock, text: "Close the app"}]
+  - id: s09
+    template: statement
+    lines: ["The real habit | is noticing."]
+    params: {text: "Notice the *habit*", icon: brain, sub: "small steps", at_beat: 0}
+  - id: s10
+    template: outro
+    lines: ["Thanks for watching."]
+    hold: 0.8
+    params: {text: "See you *next time*", sub: "gallery fixture"}

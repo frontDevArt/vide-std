@@ -1,0 +1,72 @@
+# Глава 1: шаблоны lab_* и общие params (chrome, keep, source, verdict, neuron).
+chapter: ch01
+title: "lab templates"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines: ["Chapter one. | The claim."]
+    min_duration: 3
+    params: {number: 1, total: 2, title: "The claim", subtitle: "gallery · lab"}
+  - id: s02
+    template: lab_hero_stack
+    lines: ["People say | it takes twenty-one days to build a habit.", "Three findings | tell a different story."]
+    params:
+      chrome: {rubric: "Myth on Trial", number: "№ 01", steps: [CLAIM, EVIDENCE, VERDICT], step: 1}
+      claim: {label: "VIRAL CLAIM", text: "“It takes *21 days* to build a habit.”", at: "w:say"}
+      hero: {value: 21, caption: "days", sub: "the popular claim", color: text, at: "twenty-one"}
+      cards:
+        - {icon: book, title: "One study", sub: "ninety-six people", at: "three"}
+        - {icon: chart, title: "Wide range", sub: "18 to 254 days", chip: "EVIDENCE", chip_color: "true", at: "findings"}
+        - {icon: flask, title: "No magic number", sub: "it depends", at: "different"}
+      keep: [hero]
+  - id: s03
+    template: lab_crowd
+    lines: ["In one study | ninety-six people | tracked a new habit."]
+    params:
+      chrome: {step: 2}
+      hero: {value: 66, from_prev: true, caption: "median days", at: "study", strike_at: "w:tracked"}
+      study: {authors: "Lally, van Jaarsveld, Potts & Wardle", where: "Eur. J. of Social Psychology · 2010 · n = 96", evidence: 3, at: "study"}
+      crowd: {n: 96, cols: 16, at: "ninety-six", highlight: [{index: 19, label: "18 days", color: accent, at: "tracked"}]}
+      range: {min: 18, max: 254, mark: 66, min_label: "18 days", max_label: "~254 days", mark_label: "66 · median", at: "habit"}
+      source: {label: "SOURCE", text: "Lally et al., 2010", at: "study"}
+  - id: s04
+    template: lab_flow
+    lines: ["A habit forms in three steps: | a cue, | a routine, | and a reward."]
+    params:
+      chrome: {clock: "07:00"}
+      stations:
+        - {icon: alarm, title: "Cue", sub: "same time, same place", at: "cue"}
+        - {icon: check, title: "Routine", sub: "the action itself", at: "routine"}
+        - {icon: chart, title: "Reward", sub: "a small payoff", at: "reward"}
+  - id: s05
+    template: lab_diagram
+    lines: ["Your phone on the desk | pulls on attention, | memory | and mood."]
+    params:
+      chrome: {clock: "21:15"}
+      center: {icon: phone, title: "Phone on desk", at: "phone"}
+      labels: [{text: "attention", at: "attention"}, {text: "memory", at: "memory"}, {text: "mood", at: "mood"}]
+  - id: s06
+    template: lab_versus
+    lines: ["They say | three weeks.", "Studies found | about two months."]
+    params:
+      chrome: {step: 2}
+      left: {title: "They say", items: [{text: "21 days", at: "three"}]}
+      right: {title: "Studies found", items: [{text: "66 days (median)", at: "found"}, {text: "18 to 254 days", at: "months"}]}
+      neuron: {mood: surprised, at: "two"}
+      verdict: {verdict: HALF-TRUE, sub: "habits form, *slowly*", at: "months"}
+  - id: s07
+    template: lab_full_number
+    lines: ["Not twenty-one. | Sixty-six days."]
+    params:
+      value: 66
+      caption: "median days"
+      sub: "Lally et al., 2010"
+      at: "sixty-six"
+      myth: {value: 21, at: "not", strike_at: "twenty-one"}
+      source: {label: "SOURCE", text: "Lally et al., 2010", at: "sixty-six"}
+  - id: s08
+    template: lab_verdict
+    lines: ["The verdict: | myth."]
+    params:
+      chrome: {step: 3}
+      verdict: {verdict: MYTH, sub: "21 days → median *66*", at: "myth"}

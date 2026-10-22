@@ -1,0 +1,19 @@
+# Фикстура P0.2: все шаблоны (базовые + lab_*) хотя бы по разу, 2 главы со стыком, голос fake (офлайн).
+# Формат здесь horizontal; вертикальный вариант тесты получают подменой format (tests/conftest.py: gallery).
+# Новый шаблон в studio/templates.py или studio/lab.py — добавить сцену сюда, иначе упадёт test_gallery.
+title: gallery fixture
+topic: gallery fixture
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+
+tts:
+  backend: fake
+  voice: auto
+  rate: 105
+
+style:
+  palette: lab
+
+chapters: [ch01, ch02]
