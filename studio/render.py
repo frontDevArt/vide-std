@@ -182,10 +182,10 @@ def frame(ctx, tpl, scene, f, sub_size):
     bg = _bg(ctx["W"], ctx["H"], style)
     img = bg.frame(T, glow) if glow else bg.frame(T)
     if getattr(tpl, "camera", False) and style.camera:
-        from .packs.lab.background import apply_camera
+        from .packs.lab.background import composite_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
-        img.alpha_composite(apply_camera(layer, T))
+        composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
     draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style)

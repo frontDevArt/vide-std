@@ -42,11 +42,11 @@ def _frame_phases(ctx, tpl, scene, f, sub_size, acc):
     img = bg.frame(T, glow) if glow else bg.frame(T)
     c1 = time.perf_counter()
     if getattr(tpl, "camera", False) and ctx["style"].camera:
-        from studio.lab import apply_camera
+        from studio.packs.lab.background import composite_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
         tpl.draw(layer, t, T)
         c2 = time.perf_counter()
-        img.alpha_composite(apply_camera(layer, T))
+        composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
         c2 = time.perf_counter()
