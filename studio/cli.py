@@ -43,9 +43,11 @@ def _log_root(a):
 
 
 def _run(mod, a):
+    from .render import prepare_once
     from .tts import TTSUnavailable
     try:
-        return mod.run(a)
+        with prepare_once():  # P3.5: prepare() один раз на команду
+            return mod.run(a)
     except TTSUnavailable as e:
         print(f"❌ Синтез речи недоступен: {e}\n"
               "Ролик без озвучки не делаем: сообщите пользователю и предложите установку (docs/TTS.md).")
