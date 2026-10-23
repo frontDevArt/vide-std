@@ -39,9 +39,7 @@ def _has_edge():
 def default_backend(lang):
     """Голос нового проекта — первый доступный по дешёвой проверке (без сети и синтеза), иначе None.
     ElevenLabs платный: только для канала (есть channel/POSITIONING.md, ролики англоязычные) и с ключом в .env."""
-    import os
-    from .. import tts  # noqa: F401 — подхватывает .env в окружение
-    if (os.environ.get("ELEVENLABS_API_KEY", "").strip() and lang == "en"
+    if (workspace.secret("ELEVENLABS_API_KEY") and lang == "en"
             and workspace.current().is_channel()):
         return "elevenlabs"
     if _has_edge():
@@ -62,7 +60,9 @@ def _create(a, ws):
     d = ws.config.get("defaults") or {}
     lang = a.lang or d.get("language") or "ru"
     fmt = a.format or d.get("format") or "vertical"
-    backend = a.tts or default_backend(lang)
+    from .. import voices
+    vl = voices.layer(ws, lang)  # голос студии для языка (ROADMAP A3): бэкенд и темп — оттуда
+    backend = a.tts or vl.get("backend") or default_backend(lang)
     if not backend:
         backend = "rhvoice"
         print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"

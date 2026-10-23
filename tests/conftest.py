@@ -16,6 +16,24 @@ def _root_logs(tmp_path_factory, monkeypatch):
         yield
 
 
+@pytest.fixture(autouse=True)
+def _no_real_env(monkeypatch):
+    """Настоящие `.env` студии (корень и studios/<id>/) в тесты не попадают: `workspace.secret` читает файлы напрямую
+    (ROADMAP A3), а в основном checkout там живой ключ ElevenLabs. `.env` во временных папках тестов читаются."""
+    from pathlib import Path
+    from studio import workspace
+    real, orig = Path(ROOT).resolve(), workspace._parse_env
+
+    def parse(f):
+        d = Path(f).resolve().parent
+        if d == real or (d.parent.name == "studios" and d.parent.parent == real):
+            return {}
+        return orig(f)
+
+    monkeypatch.setattr(workspace, "_parse_env", parse)
+    yield
+
+
 def pytest_addoption(parser):
     parser.addoption("--update-golden", action="store_true",
                      help="перезаписать tests/golden/ текущим выводом (P0.4); без флага golden только сравнивается")

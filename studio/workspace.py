@@ -137,21 +137,64 @@ def use(ws: Workspace | Path | str, **paths):
 
 def load_env(ws: Workspace | None = None):
     """KEY=VALUE из `.env` рабочей области -> os.environ (не перетирая уже заданные). Пустые значения пропускаются.
-    У студии из `studios/<id>/` запасной — `.env` корня (`studios/../.env`): свой ключ студии важнее общего."""
+    У студии из `studios/<id>/` запасной — `.env` корня (`studios/../.env`): свой ключ студии важнее общего.
+    Для секретов студии в процессе, где студий несколько, — `secret()`: os.environ один на всех."""
     ws = ws or current()
     _read_env(ws.env)
     if ws.id != DEFAULT:
-        _read_env(ws.root.parent.parent / ".env")
+        _read_env(_root_env(ws))
 
 
-def _read_env(f: Path):
+_FROM_FILE: dict[str, str] = {}  # что load_env положил в os.environ из файлов (не настоящее окружение процесса)
+
+
+def _root_env(ws: Workspace) -> Path:
+    return ws.env if ws.id == DEFAULT else ws.root.parent.parent / ".env"
+
+
+def _parse_env(f: Path) -> dict:
+    out = {}
     if not f.exists():
-        return
+        return out
     for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
         k, v = line.split("=", 1)
         k, v = k.strip(), v.strip().strip('"').strip("'")
-        if v and k not in os.environ:
+        if v:
+            out[k] = v
+    return out
+
+
+def _read_env(f: Path):
+    for k, v in _parse_env(f).items():
+        if k not in os.environ:
             os.environ[k] = v
+            _FROM_FILE[k] = v
+
+
+def secret(name: str, ws: Workspace | None = None) -> str:
+    """Секрет (ключ, ID голоса) для студии (ROADMAP A3): свой `studios/<id>/.env` → окружение процесса →
+    корневой `.env`; нет — пустая строка. У `default` свой `.env` и есть корневой: окружение → `.env`, как раньше.
+    Значение никуда не печатать: ни в лог, ни в чат, ни в ключи кэша."""
+    ws = ws or current()
+    if ws.id != DEFAULT:
+        v = _parse_env(ws.env).get(name)
+        if v:
+            return v
+    v = os.environ.get(name, "").strip()
+    if v and _FROM_FILE.get(name) != v:  # из load_env — это файл, а не окружение: порядок решают файлы
+        return v
+    return _parse_env(_root_env(ws)).get(name, "")
+
+
+def secret_source(name: str, ws: Workspace | None = None) -> str:
+    """Откуда `secret()` возьмёт значение: «свой .env» | «окружение» | «корневой .env» | «нет» (без значения)."""
+    ws = ws or current()
+    if ws.id != DEFAULT and _parse_env(ws.env).get(name):
+        return "свой .env"
+    v = os.environ.get(name, "").strip()
+    if v and _FROM_FILE.get(name) != v:
+        return "окружение"
+    return "корневой .env" if _parse_env(_root_env(ws)).get(name) else "нет"

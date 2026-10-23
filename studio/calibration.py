@@ -1,10 +1,12 @@
 """Калибровка темпа голоса: `wpm` языка из `studio/lang.py` — ориентир, реальный голос бывает быстрее на ~20 %
 (ElevenLabs en ≈ 185 против 155). После `voice` замер кладётся в `build/voice_calibration.json`, `validate` берёт его.
-Замер годится, пока не сменились язык, бэкенд и голос."""
+Замер годится, пока не сменились язык, бэкенд и голос. Он же сохраняется на студию — `voices.yaml` рядом со
+`studio.yaml` (ROADMAP A3, studio/voices.py): новый проект студии с тем же голосом считается по замеру с первого `validate`."""
 from __future__ import annotations
 
 import json
 
+from . import voices
 from .lang import profile
 from .project import Project
 
@@ -27,6 +29,8 @@ def calibrate(proj: Project, tl: dict) -> list[str]:
     data = {**_key(proj), "wpm": measured, "table_wpm": table, "rate": tl.get("rate"), "words": tl.get("words")}
     proj.build.mkdir(parents=True, exist_ok=True)
     _path(proj).write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
+    voices.save_measurement(proj.ws, data["language"], data["backend"], data["voice"], measured,
+                            tl.get("rate"), tl.get("words"), proj.slug)
     diff = measured / table - 1
     if abs(diff) <= TOLERANCE:
         return []
@@ -37,11 +41,15 @@ def calibrate(proj: Project, tl: dict) -> list[str]:
 
 
 def wpm(proj: Project) -> tuple[float, str]:
-    """(слов/мин, откуда): замер этого голоса, если есть, иначе wpm языка."""
+    """(слов/мин, откуда): замер этого голоса в проекте, иначе в студии (voices.yaml), иначе wpm языка."""
     p = _path(proj)
+    key = _key(proj)
     if p.exists():
         data = json.loads(p.read_text(encoding="utf-8"))
-        if all(data.get(k) == v for k, v in _key(proj).items()) and data.get("wpm"):
+        if all(data.get(k) == v for k, v in key.items()) and data.get("wpm"):
             return data["wpm"], f"замер голоса {data['backend']}"
+    m = voices.measured_wpm(proj.ws, key["language"], key["backend"], key["voice"])
+    if m:
+        return m, f"замер голоса {key['backend']} в студии {proj.ws.id}"
     lang = proj.cfg.get("language")
     return profile(lang)["wpm"], f"язык {lang}"

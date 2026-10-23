@@ -8,8 +8,9 @@ fake (тон вместо речи — только тесты и чернови
 Повторный запуск не синтезирует заново. Таймкоды слов (если бэкенд их даёт) — build/tts/<hash>.words.json,
 времена уже относительно срезанного WAV.
 
-Ключи — только из окружения или .env рабочей области (studio/workspace.py; он в .gitignore).
-В лог и в чат ключ не выводится.
+Ключи — только из окружения или .env студии (workspace.secret: свой studios/<id>/.env → окружение → корневой
+.env; он в .gitignore). Студия передаётся явно (ws=…): в одном процессе бывают проекты разных клиентов.
+В лог, в чат и в ключ кэша ключ не попадает.
 """
 from __future__ import annotations
 
@@ -135,10 +136,11 @@ EL_SPEED = (0.7, 1.2)  # диапазон speed, который принимае
 _RAW_WORDS = {}  # out_raw -> [[слово, t0, t1]] относительно сырого звука (до срезки тишины)
 
 
-def _el_key():
-    k = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+def _el_key(ws=None):
+    k = workspace.secret("ELEVENLABS_API_KEY", ws)
     if not k:
-        raise TTSUnavailable("нет ключа ElevenLabs: впишите ELEVENLABS_API_KEY в .env (корень студии)")
+        raise TTSUnavailable("нет ключа ElevenLabs: впишите ELEVENLABS_API_KEY в .env студии (studios/<id>/.env) "
+                             "или в корневой .env")
     return k
 
 
@@ -147,10 +149,10 @@ def _el_urlopen(req, timeout):
     return urllib.request.urlopen(req, timeout=timeout)
 
 
-def _el_request(path, body=None, method="GET"):
+def _el_request(path, body=None, method="GET", ws=None):
     import urllib.error
     import urllib.request
-    key = _el_key()
+    key = _el_key(ws)
     req = urllib.request.Request(EL_API + path, method=method,
                                  data=json.dumps(body).encode() if body is not None else None,
                                  headers={"xi-api-key": key, "Content-Type": "application/json",
@@ -168,7 +170,7 @@ def _el_request(path, body=None, method="GET"):
         raise TTSUnavailable(f"ElevenLabs недоступен: {e.reason}")
 
 
-def _elevenlabs(text, voice, rate, out_raw, cfg=None):
+def _elevenlabs(text, voice, rate, out_raw, cfg=None, ws=None):
     """POST /v1/text-to-speech/{voice_id}/with-timestamps: mp3 + посимвольные времена -> слова.
     cfg — настройки вызова (el_call_cfg): проектные + voice-override + previous_text/next_text."""
     c = dict(EL_DEFAULTS, **(cfg or {}))
@@ -179,7 +181,7 @@ def _elevenlabs(text, voice, rate, out_raw, cfg=None):
     for k in ("previous_text", "next_text"):  # соседние строки: модель держит общую интонацию (платим только за text)
         if c.get(k):
             body[k] = c[k]
-    r = _el_request(f"/text-to-speech/{voice}/with-timestamps?output_format=mp3_44100_128", body, "POST")
+    r = _el_request(f"/text-to-speech/{voice}/with-timestamps?output_format=mp3_44100_128", body, "POST", ws)
     Path(out_raw).write_bytes(base64.b64decode(r["audio_base64"]))
     al = r.get("alignment") or {}
     words, cur = [], None
@@ -258,16 +260,17 @@ def _fake(text: str, rate: float, out: Path, beats=None):
         encoding="utf-8")
 
 
-def probe(tts_cfg, language="ru") -> str:
-    """Проверяет, что синтез реально работает (а не просто «бинарник есть»)."""
+def probe(tts_cfg, language="ru", ws=None) -> str:
+    """Проверяет, что синтез реально работает (а не просто «бинарник есть»). ws — студия (её ключ ElevenLabs)."""
     from .lang import profile
     if tts_cfg["backend"] == "fake":
         return "ok"
     if tts_cfg["backend"] == "elevenlabs":  # бесплатная проверка: ключ и голос, без синтеза (символы платные)
-        _el_request("/user")
+        _el_request("/user", ws=ws)
         if not tts_cfg.get("voice") or tts_cfg["voice"] in ("auto", "env"):
-            raise TTSUnavailable("не задан голос ElevenLabs: ELEVENLABS_VOICE_ID в .env или tts.voice")
-        _el_request(f"/voices/{tts_cfg['voice']}")
+            raise TTSUnavailable("не задан голос ElevenLabs: ELEVENLABS_VOICE_ID в .env студии, voices: в studio.yaml "
+                                 "или tts.voice")
+        _el_request(f"/voices/{tts_cfg['voice']}", ws=ws)
         return "ok"
     tmp = Path(tempfile.mkdtemp())
     try:
@@ -279,14 +282,15 @@ def probe(tts_cfg, language="ru") -> str:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def el_check(voice=None) -> str:
+def el_check(voice=None, ws=None) -> str:
     """doctor: ключ и голос ElevenLabs бесплатными запросами (/user, /voices/{id}), без синтеза.
-    voice — ID голоса (по умолчанию ELEVENLABS_VOICE_ID). Возвращает «голос, тариф, остаток символов»; ключ не печатается."""
-    sub = _el_request("/user").get("subscription") or {}
-    voice = voice or os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
+    voice — ID голоса (по умолчанию ELEVENLABS_VOICE_ID студии ws). Возвращает «голос, тариф, остаток символов»;
+    ключ не печатается."""
+    sub = _el_request("/user", ws=ws).get("subscription") or {}
+    voice = voice or workspace.secret("ELEVENLABS_VOICE_ID", ws)
     if not voice:
         raise TTSUnavailable("ключ верный, но не задан голос: ELEVENLABS_VOICE_ID в .env")
-    name = _el_request(f"/voices/{voice}").get("name") or voice
+    name = _el_request(f"/voices/{voice}", ws=ws).get("name") or voice
     left = ""
     if isinstance(sub.get("character_limit"), int) and isinstance(sub.get("character_count"), int):
         left = f", осталось {sub['character_limit'] - sub['character_count']} из {sub['character_limit']} символов"
@@ -323,9 +327,10 @@ def _lead_silence(raw) -> float:
 
 
 def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt=None, voice=None,
-          beats=None) -> Path:
+          beats=None, ws=None) -> Path:
     """prev/nxt — тексты соседних строк, voice — override настроек голоса (оба только для elevenlabs),
-    beats — тексты битов строки (только для fake: паузы на границах '|')."""
+    beats — тексты битов строки (только для fake: паузы на границах '|'), ws — студия (ключ ElevenLabs;
+    в ключ кэша не входит: голос тот же — звук тот же, чей бы ни был ключ)."""
     key = cache_key(text, tts_cfg, rate, prev, nxt, voice, beats)
     out = cache_dir / f"{key}.wav"
     if out.exists() and out.stat().st_size > 1000:
@@ -336,6 +341,8 @@ def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt
         return out
     raw = cache_dir / f"{key}.raw{'.mp3' if tts_cfg['backend'] in ('edge', 'elevenlabs') else '.wav'}"
     extra = {"cfg": el_call_cfg(tts_cfg, prev, nxt, voice)} if tts_cfg["backend"] == "elevenlabs" else {}
+    if extra and ws is not None:
+        extra["ws"] = ws
     BACKENDS[tts_cfg["backend"]](text, tts_cfg["voice"], rate, raw, **extra)
     if not raw.exists() or raw.stat().st_size < 1000:
         raise TTSUnavailable(f"Синтез не дал звука для: {text[:60]!r}")

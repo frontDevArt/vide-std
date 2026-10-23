@@ -80,9 +80,11 @@ def check(proj) -> Report:
         warns.append(f"format: {proj.cfg['format']} — шаблоны свёрстаны под другой формат: "
                      + ", ".join(f"{c.NAME} ({'/'.join(c.FORMATS)})" for c in off_format)
                      + f"; сцен {len(where)}: {', '.join(where[:4])}{' …' if len(where) > 4 else ''}")
-    if len(accents) > 2:
-        warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило канала: 1–2 акцента "
-                     f"на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
+    from .voices import max_accents
+    most = max_accents(proj.ws)  # политика студии (studio.yaml: max_accents), по умолчанию 2
+    if len(accents) > most:
+        warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило студии: не больше "
+                     f"{most} акцентов на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
     style(proj, errs, warns)
     triggers(proj, errs, warns)
     from .calibration import wpm

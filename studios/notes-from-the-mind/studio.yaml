@@ -1,6 +1,7 @@
 # Студия Notes From The Mind (ROADMAP A1): англоязычный YouTube-канал, психология — мифы под проверкой.
 # Правила — CLAUDE.md рядом; позиционирование — channel/POSITIONING.md; стиль — channel/STYLE.md, бренд-кит — brand/brand.yaml.
-# Секреты (ключ и голос ElevenLabs) — только в .env: свой studios/notes-from-the-mind/.env или корневой.
+# Секреты (ключ и голос ElevenLabs) — только в .env: свой studios/notes-from-the-mind/.env или корневой (запасной).
+# Голос по языкам — voices: ниже; замеры темпа голоса пишет `voice` в voices.yaml рядом (ROADMAP A3, docs/TTS.md).
 name: Notes From The Mind
 kind: youtube              # youtube | brand | client
 languages: [en]
@@ -19,3 +20,9 @@ defaults:
   loudness: -14
   subtitles:
     size: 36
+
+# Голос студии по языку проекта: DEFAULTS → defaults → voices[язык] → project.yaml. `voice: auto`/`rate: auto`
+# в project.yaml голос и темп студии не перебивают. env:ИМЯ — значение из .env студии (в git и чат не попадает).
+voices:
+  en: {backend: elevenlabs, voice: env:ELEVENLABS_VOICE_ID, rate: 100}
+max_accents: 2             # переопределений голоса (voice: сцен/строк) на ролик без ⚠️ — крючок и вердикт

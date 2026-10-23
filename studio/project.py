@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
-from . import brand, workspace
+from . import brand, voices, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
 
@@ -56,6 +56,11 @@ class Project:
     def slug(self) -> str:
         return self.root.name
 
+    @property
+    def ws(self) -> "workspace.Workspace":
+        """Студия проекта: её `.env` (ключ и голос), `voices.yaml` (замеры темпа), правила."""
+        return workspace.owner(self.root)
+
     def final_path(self) -> Path:
         return self.bdir("final") / f"{self.slug}.mp4"
 
@@ -75,17 +80,27 @@ def load(root) -> Project:
     studio_defaults = ws.config.get("defaults") or {}
     for w in check(studio_defaults):
         print(f"⚠️  {ws.root.name}/studio.yaml, defaults: {w}")
-    cfg = deep_merge(DEFAULTS, deep_merge(migrate(studio_defaults), migrate(user)))
+    user, studio_defaults = migrate(user), migrate(studio_defaults)
+    # голос студии для языка проекта (ROADMAP A3): DEFAULTS → defaults → voices[язык] → project.yaml
+    lang = user.get("language") or studio_defaults.get("language") or DEFAULTS["language"]
+    vl, ut = voices.merge_user(voices.layer(ws, lang), user.get("tts"))
+    if "tts" in user:
+        user["tts"] = ut
+    cfg = deep_merge(DEFAULTS, deep_merge(studio_defaults, deep_merge({"tts": vl} if vl else {}, user)))
     cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
-    if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):
-        workspace.load_env(ws)  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
-        cfg["tts"]["voice"] = os.environ.get("ELEVENLABS_VOICE_ID", "")
-    if cfg["tts"]["backend"] == "elevenlabs" and not cfg["tts"].get("model"):
-        workspace.load_env(ws)  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
-        if os.environ.get("ELEVENLABS_MODEL_ID", "").strip():
-            cfg["tts"]["model"] = os.environ["ELEVENLABS_MODEL_ID"].strip()
+    tc = cfg["tts"]
+    for k in ("voice", "model"):  # env:ИМЯ — из .env студии (свой голос клиента)
+        if k in tc:
+            tc[k] = voices.resolve_env(tc[k], ws)
+    if tc["backend"] == "elevenlabs" and tc.get("voice") in (None, "auto", "env"):
+        # голос студии — ELEVENLABS_VOICE_ID: свой .env студии, иначе корневой (ID голоса — не секрет, ключ — секрет)
+        tc["voice"] = workspace.secret("ELEVENLABS_VOICE_ID", ws)
+    if tc["backend"] == "elevenlabs" and not tc.get("model"):
+        # модель студии — ELEVENLABS_MODEL_ID; входит в ключ кэша (tts.cache_key)
+        if workspace.secret("ELEVENLABS_MODEL_ID", ws):
+            tc["model"] = workspace.secret("ELEVENLABS_MODEL_ID", ws)
     if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
         cfg["tts"]["voice"] = "fake"  # голос не нужен; не берём из LANGS, чтобы doctor не считал fake «синтезом»
     if cfg["tts"].get("voice") in (None, "auto"):

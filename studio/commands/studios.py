@@ -18,7 +18,8 @@ def check(ws: workspace.Workspace) -> list[str]:
     if ws.id != workspace.DEFAULT and cfg.get("kind") not in workspace.KINDS:
         out.append(f"kind: {cfg.get('kind')!r} — нужно одно из {', '.join(workspace.KINDS)}")
     out += [f"defaults: {w}" for w in check_cfg(cfg.get("defaults") or {})]
-    return out
+    from ..voices import check as check_voices
+    return out + check_voices(ws)
 
 
 def run(a):
@@ -33,6 +34,11 @@ def run(a):
         print(f"{mark} {ws.id:<22} {kind:<8} {langs:<8} {where}  — {ws.name}")
         for w in check(ws):
             print(f"    ⚠️  studio.yaml: {w}")
+        vs = cfg.get("voices") if isinstance(cfg.get("voices"), dict) else {}
+        if vs:  # ID голоса и ключ не печатаем — только бэкенд и откуда ключ (ROADMAP A3)
+            print("    голоса: " + ", ".join(f"{k} {v.get('backend', '?')}" for k, v in vs.items() if isinstance(v, dict)))
+        if any(isinstance(v, dict) and v.get("backend") == "elevenlabs" for v in vs.values())                 or ((cfg.get("defaults") or {}).get("tts") or {}).get("backend") == "elevenlabs":
+            print(f"    ключ ElevenLabs: {workspace.secret_source('ELEVENLABS_API_KEY', ws)}")
         if projs:
             print("    проекты: " + ", ".join(p.name for p in projs))
         else:
