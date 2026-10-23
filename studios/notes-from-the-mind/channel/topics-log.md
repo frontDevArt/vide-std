@@ -47,3 +47,4 @@
 | 2026-W43 | A gratitude list makes you happier | Myth on Trial | radar | HALF-TRUE |
 | 2026-W43 | The marshmallow test predicts a child's success | Myth on Trial | radar | HALF-TRUE |
 | 2026-W43 | A pay raise changes your personality | Fresh Study | radar | HALF-TRUE |
+| 2026-W43 | Your morning coffee makes you more alert (projects/coffee-wake, ~2 мин) | Myth on Trial | brief | HALF-TRUE |

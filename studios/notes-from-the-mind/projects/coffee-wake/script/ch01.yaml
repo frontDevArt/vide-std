@@ -1,0 +1,174 @@
+# coffee-wake: «Does coffee wake you up?» — Myth on Trial № 01, ~2 мин, вердикт HALF-TRUE. План — outline.md.
+chapter: ch01
+title: "Does coffee wake you up?"
+scenes:
+  - id: s01
+    template: lab_mug
+    voice: {style: 0.3}
+    lines:
+      - "Every morning, | millions of people repeat the same ritual."
+      - "First the coffee. | Then the brain."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "№ 01", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      mug: {level: 0.6, at: 0, x: 620}
+      moves:
+        - {to: 0.88, at: "coffee"}
+      baseline: null
+      labels:
+        - {text: "the morning ritual", at: "ritual", color: accent}
+        - {text: "then the brain", at: "brain", color: accent}
+
+  - id: s02
+    template: lab_versus
+    lines:
+      - "The claim is simple: | coffee makes you sharper."
+      - "But researchers ask a sharper question: | sharper than what?"
+    params:
+      left: {title: "THEY SAY", items: [{text: "coffee = extra alertness", at: "simple"}]}
+      right: {title: "RESEARCHERS ASK", items: [{text: "extra compared to what?", at: "what"}]}
+
+  - id: s03
+    template: lab_mug
+    lines:
+      - "Caffeine wears off overnight."
+      - "So by morning, | daily drinkers are in mild withdrawal, | and their alertness dips | below their natural level."
+    params:
+      chrome: {step: 1}
+      mug: {level: 0.6, at: 0, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE", at: "natural"}
+      moves:
+        - {to: 0.3, at: "dips"}
+      labels:
+        - {text: "caffeine wears off", at: "overnight", color: accent2}
+        - {text: "mild withdrawal", at: "withdrawal", color: accent2}
+
+  - id: s04
+    template: lab_hero_stack
+    lines:
+      - "A review of fifty-seven experiments | found the classic signs: | headaches, | tiredness, | and trouble focusing."
+    params:
+      claim: null
+      hero: {value: 57, from: 0, caption: "experiments", sub: "reviewed", color: accent, at: "fifty-seven"}
+      cards:
+        - {icon: brain, title: "Headaches", sub: "withdrawal sign", at: "headaches"}
+        - {icon: hourglass, title: "Tiredness", sub: "withdrawal sign", at: "tiredness"}
+        - {icon: eye, title: "Trouble focusing", sub: "withdrawal sign", at: "focusing"}
+      source: {label: "REVIEW", text: "Juliano & Griffiths, 2004 · Psychopharmacology", at: "review"}
+
+  - id: s05
+    template: lab_crowd
+    lines:
+      - "Then a team in Bristol | took three hundred seventy-nine people, | kept them off caffeine for sixteen hours, | and gave half of them caffeine | and half a placebo."
+    params:
+      hero: {value: 16, from: 0, caption: "hours", sub: "no caffeine", color: accent, at: "sixteen"}
+      study: {authors: "Rogers et al.", where: "Neuropsychopharmacology · 2010 · n = 379", evidence: 3, at: "Bristol"}
+      crowd: {n: 379, cols: 30, at: "seventy-nine", highlight: []}
+      range: null
+
+  - id: s06
+    template: lab_mug
+    lines:
+      - "Caffeine did lift the regular drinkers."
+      - "But only back to the level | of people who barely drink it at all."
+    params:
+      mug: {level: 0.3, at: 0, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE", at: 0}
+      moves:
+        - {to: 0.6, at: "lift"}
+      labels:
+        - {text: "caffeine: lifted", at: "lift", color: accent}
+        - {text: "only back to baseline", at: "barely", color: accent}
+      source: {label: "EXPERIMENT", text: "Rogers et al., 2010 · n = 379", at: "lift"}
+
+  - id: s07
+    template: lab_full_number
+    lines:
+      - "No extra boost. | Just a return to zero."
+    params:
+      value: 0
+      prefix: "+"
+      caption: "extra alertness"
+      sub: "regular drinkers vs. non-drinkers"
+      at: 0
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Researchers call this | withdrawal reversal: | the coffee mostly fixes a dip | that the coffee habit created."
+      - "If you like watching everyday beliefs go on trial, | subscribe. | There are more cases coming."
+    params:
+      center: {icon: brain, title: "Withdrawal reversal", at: "reversal"}
+      labels:
+        - {text: "night: caffeine wears off", at: "fixes"}
+        - {text: "morning: the dip", at: "dip"}
+        - {text: "coffee: back to normal", at: "habit"}
+      source: {label: "REVIEW", text: "James & Rogers, 2005 · Psychopharmacology", at: "reversal"}
+
+  - id: s09
+    template: lab_versus
+    lines:
+      - "But that's not the whole story."
+      - "Another study tested people | who almost never drink coffee, | and caffeine still made them faster | and more alert."
+    params:
+      left: {title: "DAILY DRINKERS", items: [{text: "mostly back to normal", at: "story"}]}
+      right: {title: "NON-DRINKERS", items: [{text: "faster and more alert", at: "faster"}]}
+      source: {label: "EXPERIMENT", text: "Haskell et al., 2005 · n = 48", at: "Another"}
+
+  - id: s10
+    template: lab_flow
+    lines:
+      - "And part of the kick | may come from belief."
+      - "People who drank decaf, | but were told it had caffeine, | still paid attention better."
+    params:
+      stations:
+        - {icon: question, title: "Belief", sub: "part of the kick?", at: "belief"}
+        - {icon: bell, title: "Decaf, told: caffeine", sub: "the expectation", at: "told"}
+        - {icon: target, title: "Better attention", sub: "anyway", at: "attention"}
+      source: {label: "EXPERIMENT", text: "Dawkins et al., 2011 · n = 88", at: "decaf"}
+
+  - id: s10b
+    template: lab_mug
+    lines:
+      - "So why does the myth feel so true?"
+      - "Because the dip and the fix | happen every single morning, | and you only ever notice the fix. | The relief feels exactly like a boost."
+    params:
+      mug: {level: 0.6, at: 0, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE", at: 0}
+      moves:
+        - {to: 0.3, at: "dip"}
+        - {to: 0.6, at: "fix#2"}
+      labels:
+        - {text: "every single morning", at: "morning", color: accent2}
+        - {text: "relief feels like a boost", at: "relief", color: accent}
+      keep: [mug]
+
+  - id: s11
+    template: lab_mug
+    lines:
+      - "So, | does coffee wake you up?"
+      - {text: "Mostly, | it wakes you up from a dip | it caused itself. | Verdict: | half-true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      mug: {from_prev: true, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE"}
+      moves:
+        - {to: 0.3, at: "dip"}
+        - {to: 0.6, at: "caused"}
+      labels:
+        - {text: "does it wake you up?", at: "wake", color: accent}
+        - {text: "a dip it caused itself", at: "caused", color: accent2}
+      verdict: {verdict: "HALF-TRUE", sub: "coffee mostly *undoes* withdrawal", at: "half-true"}
+
+  - id: s12
+    template: lab_mug
+    lines:
+      - "Your real baseline | is the one you'd have | without the habit."
+      - "So tell me: | how many cups does it take | before you feel like yourself?"
+    params:
+      mug: {level: 0.3, at: 0, x: 620}
+      baseline: {level: 0.6, label: "YOUR REAL BASELINE", at: "baseline"}
+      moves:
+        - {to: 0.6, at: "habit"}
+      labels:
+        - {text: "how many cups?", at: "cups", color: accent}
+    hold: 1.2

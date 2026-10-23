@@ -43,7 +43,7 @@ def run(a):
     print(f"Демо-проект: {dst}")
     if a.no_render:
         return 0
-    a.project, a.fast = str(dst), False
+    a.project, a.fast, a.out = str(dst), False, None  # all ждёт --out (B3); у демо один выход
     rc = run_all(a)
     if not (dst / "build" / "timeline.json").exists():
         return rc or 1

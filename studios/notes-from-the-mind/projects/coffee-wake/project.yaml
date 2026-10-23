@@ -1,0 +1,48 @@
+# Канал Notes From The Mind, Myth on Trial (короткий, ~2 мин — пробный ролик и материал для нарезки B4). Вердикт HALF-TRUE.
+schema_version: 1
+title: "Does Coffee Wake You Up? What the Research Says"
+topic: "Is it true that your morning coffee makes you more alert — or does it just undo overnight withdrawal?"
+audience: >-
+  Взрослые англоязычные зрители канала, пьют кофе каждое утро, без научной подготовки. Вынести: утренний «заряд»
+  у постоянных пьющих — в основном возврат к норме после ночной ломки (withdrawal reversal); у тех, кто пьёт редко,
+  эффект есть, но небольшой; часть бодрости — ожидание (плацебо). Не медицинский совет — про поведение и ощущения.
+language: en
+format: horizontal
+platform: null
+fps: 30
+target_duration: null     # ~2 минуты по речи (~300 слов)
+
+tts:
+  backend: elevenlabs     # голос канала; ключ и голос — только в .env
+  voice: auto             # ELEVENLABS_VOICE_ID
+  rate: 100               # числом (auto = повторный платный синтез)
+  rate_range: [95, 115]
+
+pauses:
+  start: 0.45
+  comma: 0.18
+  sentence: 0.40
+  scene: 0.55
+  end: 0.6
+
+style:
+  palette: lab
+  mood: night             # glow_cool #5B7CFF, accent2 #6D7CFF (индиго) — утро, усталость, режим
+  font: Inter Display
+
+music:
+  enabled: true
+  level_db: -14           # под голос ElevenLabs
+  duck: true
+
+sfx:
+  enabled: true
+
+subtitles:
+  enabled: true
+  max_lines: 1
+  size: 36
+
+loudness: -14
+
+chapters: [ch01]

@@ -1,0 +1,39 @@
+# Демо стиля 10–15 с (channel/STYLE.md §14) для coffee-wake: метафора «кружка-шкала бодрости» (уровень = alertness,
+# пунктир baseline = норма без кофеина), настроение night, новый элемент — шаблон lab_mug (projects/coffee-wake/templates/mug.py):
+# жидкость ниже нормы — accent-2 (ломка), выше — циан с паром. Мотив рубрики Myth on Trial — «дело №». Вердикт HALF-TRUE.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: lab_mug
+    voice: {style: 0.3}
+    lines:
+      - "You think coffee wakes you up."
+      - "But after a night without it, | you start below normal."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "№ 01", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      mug: {level: 0.6, at: 0, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE", at: "night"}
+      moves:
+        - {to: 0.88, at: "wakes"}
+        - {to: 0.28, at: "below"}
+      labels:
+        - {text: "boost?", at: "wakes", color: accent}
+        - {text: "overnight withdrawal", at: "below", color: accent2}
+      keep: [mug]
+  - id: s02
+    template: lab_mug
+    lines:
+      - "The first cup | mostly just brings you back."
+      - {text: "Verdict: | half-true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 1}
+      mug: {from_prev: true, x: 620}
+      baseline: {level: 0.6, label: "BASELINE · NO CAFFEINE"}
+      moves:
+        - {to: 0.6, at: "back"}
+      labels:
+        - {text: "back to normal", at: "back", color: accent}
+      source: {label: "EXPERIMENT", text: "Rogers et al., 2010 · n = 379", at: "cup"}
+      verdict: {verdict: "HALF-TRUE", sub: "coffee mostly *undoes* withdrawal", at: "half-true"}
+    hold: 0.8
