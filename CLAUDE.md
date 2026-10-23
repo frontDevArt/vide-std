@@ -16,7 +16,7 @@ python -m studio validate <проект>         # проверка сценар
 python -m studio voice    <проект>         # озвучка + тайминг (кэш)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
 python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера
-python -m studio assemble <проект> [--draft] # финальный MP4 + .srt/.vtt (--draft → build/final/<slug>.draft.mp4)
+python -m studio assemble <проект> [--draft] [--chapters] # финальный MP4 + .srt/.vtt (--draft → build/final/<slug>.draft.mp4; --chapters — ещё build/chapters/chNN.mp4)
 python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio frame    <проект> <сек>    # один кадр PNG
