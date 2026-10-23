@@ -43,6 +43,14 @@ SCHEMA = {
                                         "свои формат, вёрстка, рендер и QA (ROADMAP B3)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
     "cutdown": {"source": F((str,), doc="нарезка (ROADMAP B4): slug исходника — его настройки, сцены (from:) и озвучка")},
+    "package": {  # пакет к выходу (ROADMAP B5, studio/package.py) — вне ключа рендера
+        "title": F((str,), doc="название на площадке (иначе title)"),
+        "description": F((str,), doc="текст описания / подписи (иначе topic)"),
+        "sources": F((list,), doc="полные ссылки на источники; в описание идут те, что процитированы в сценах"),
+        "hashtags": F((list,), doc="хэштеги для подписи (TikTok, Reels, Shorts — до предела площадки)"),
+        "cover": F((dict,), doc="обложка: {at: секунды | chNN/sNN, text: ≤ 3 слов, verdict: auto | TRUE | … | none}"),
+        "by_output": F((dict,), doc="поверх для выхода: {tiktok: {title, description, hashtags, cover}}"),
+    },
     "tts": {
         "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake"),
         "voice": F((str, NONE), "auto"),

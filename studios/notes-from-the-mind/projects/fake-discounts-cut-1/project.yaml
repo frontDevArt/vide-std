@@ -7,3 +7,10 @@ platform: youtube-shorts
 format: vertical
 chapters:
 - ch01
+
+# Пакет к выходу (ROADMAP B5); источники — процитированные в сценах, полные ссылки — из package исходника
+package:
+  title: "You Know It's a Trick. It Still Works."
+  description: "52% of Americans say stores fake their discounts. Researchers tested what a fake 'was' price does to people who know it's a trick. Full breakdown on Notes From The Mind."
+  hashtags: [shorts, psychology, blackfriday]
+  cover: {text: "IT STILL WORKS"}

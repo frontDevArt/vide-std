@@ -13,7 +13,7 @@ from .config import deep_merge
 from .textutil import line_jobs
 
 # ключи project.yaml исходника, которые нарезка не наследует: у неё свои площадка, формат, главы и длительность
-OWN = ("title", "topic", "chapters", "deliverables", "platform", "format", "target_duration", "cutdown",
+OWN = ("title", "topic", "package", "chapters", "deliverables", "platform", "format", "target_duration", "cutdown",
        "schema_version")
 INHERITED_PARAMS = ("chrome",)  # params, которые шаблоны lab передают через state: копим к первой сцене-ссылке
 REF = re.compile(r"^(?:(?P<ch>[\w-]+)/)?(?P<sid>[\w-]+)$")

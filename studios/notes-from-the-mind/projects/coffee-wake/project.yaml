@@ -46,3 +46,17 @@ subtitles:
 loudness: -14
 
 chapters: [ch01]
+
+# Пакет к выходу (ROADMAP B5): `python -m studio package coffee-wake` → output/coffee-wake/
+package:
+  description: >-
+    Does your morning coffee actually wake you up — or does it just undo the withdrawal from last night? We look at
+    what the research found on habitual drinkers, rare drinkers and the placebo boost. Verdict: HALF-TRUE.
+    Not medical advice.
+  cover: {text: "WAKE UP?"}
+  sources:
+    - "Rogers, P. J., et al. (2010). Association of the anxiogenic and alerting effects of caffeine with ADORA2A and ADORA1 polymorphisms and habitual level of caffeine consumption. Neuropsychopharmacology, 35, 1973–1983."
+    - "Juliano, L. M., & Griffiths, R. R. (2004). A critical review of caffeine withdrawal. Psychopharmacology, 176, 1–29."
+    - "James, J. E., & Rogers, P. J. (2005). Effects of caffeine on performance and mood: withdrawal reversal is the most plausible explanation. Psychopharmacology, 182, 1–8."
+    - "Haskell, C. F., Kennedy, D. O., Wesnes, K. A., & Scholey, A. B. (2005). Cognitive and mood improvements of caffeine in habitual consumers and habitual non-consumers of caffeine. Psychopharmacology, 179, 813–825."
+    - "Dawkins, L., Shahzad, F.-Z., Ahmed, S. S., & Edmonds, C. J. (2011). Expectation of having consumed caffeine can improve performance and mood. Appetite, 57, 597–600."

@@ -60,6 +60,16 @@ voice: {tone: warm, upbeat}
 `logo`, `intro`/`outro` (шаблон `logo_sting` — ROADMAP C2), `cta` (`cta_end` — C4), `shape` (токены шаблонов `lab_*`
 остаются своими — STYLE), `voice.tone` (подсказка для текста и голоса; голоса студии — A3).
 
+## Обложка (ROADMAP B5)
+`brand/cover.yaml` рядом с `brand.yaml` — шаблон обложки для `python -m studio package` (не входит в кит и ключ
+рендера). Ключи (все необязательны, умолчание — `studio/package.py: COVER`; размеры — доли меньшей стороны обложки):
+```yaml
+text: {font: head, weight: extrabold, size: 0.16, color: text, upper: true, max_words: 3}  # заголовок cover.text
+verdict: {size: 0.17, pos: bottom}   # плашка вердикта: bottom — над заголовком, top — у верхнего поля
+shade: 0.6                           # затемнение снизу (градиент цвета bg), 0 — без него
+```
+Кадр, текст и вердикт ролика — `package.cover` в `project.yaml`; `max_words` — ⚠️, если текст длиннее.
+
 ## Свой стиль по референсу
 Для новой студии весь путь ведёт мастер `/new-studio` (ROADMAP A4): `python -m studio new-studio` кладёт заготовку
 кита (`studios/_template/brand/brand.yaml`) и проект демо `projects/<id>-style/`; дальше — шаги ниже.

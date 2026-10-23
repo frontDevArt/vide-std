@@ -55,39 +55,62 @@ class Platform:
     cover: tuple | None = None   # обложка (Ш, В) px; None — кадр из ролика
     source: str = ""
     note: str = ""
+    # пакет к выходу (ROADMAP B5, studio/package.py): пределы текста, главы, хэштеги, отметка ИИ-контента
+    title_max: int | None = None   # символов в названии; None — названия нет (подпись) или не проверяем
+    text_max: int | None = None    # символов в описании / подписи
+    chapters: bool = False         # главы таймкодами в описании
+    tags_max: int = 0              # хэштегов в подписи; 0 — не ставим
+    cover_mb: float | None = None  # предел файла обложки, МБ
+    ai: str = ""                   # отметка «синтетический / ИИ-контент» при загрузке: где и когда
+    ai_voice: bool = False         # реалистичный синтетический голос сам по себе требует этой отметки
 
 
 ASPECT = {"vertical": "9:16", "horizontal": "16:9", "square": "1:1", "portrait": "4:5"}
 
 _VERT_UI = Safe(top=0.08, bottom=0.20, left=0.05, right=0.05)  # TikTok / Shorts: вкладки сверху, подпись и меню снизу
 _ADS = ("horizontal", "vertical", "square")
+# Отметка ИИ-контента (сверено 2026-10-23): YouTube — support.google.com/youtube/answer/14328491, TikTok — правила
+# сообщества (реалистичный ИИ-контент — переключатель «AI-generated content»), Meta — help.instagram.com/761121959519495
+_AI_YT = ("YouTube Studio → «Altered or synthetic content»: «Yes», если реалистичный кадр или голос можно принять "
+          "за настоящего человека или событие (голос, подражающий реальному человеку, — да). Рисованная анимация "
+          "и обычный синтетический голос диктора отметки не требуют. Источник: support.google.com/youtube/answer/14328491")
+_AI_TT = ("При загрузке: «More options» → «AI-generated content» — включить для реалистичного ИИ-контента "
+          "(в т. ч. реалистичный синтетический голос). Неотмеченный реалистичный ИИ-контент TikTok может удалить. "
+          "Источник: правила сообщества TikTok, раздел «Edited media and AI-generated content»")
+_AI_META = ("При публикации: «Advanced settings» → «Add AI label» (AI info) — обязательно для фотореалистичного видео "
+            "и реалистично звучащего ИИ-аудио (пример Meta: Reels с реалистичным ИИ-закадром). "
+            "Источник: help.instagram.com/761121959519495")
 _ADS_SRC = ("Google Ads Help, форматы видеорекламы YouTube (bumper ≤ 6 c, non-skippable ≤ 15–30 c); "
             "https://ads.tiktok.com/help/article/tiktok-reservation-in-feed-ads-reach-frequency (5–60 c, ≥ 2500 кбит/с)")
 
 PLATFORMS: dict[str, Platform] = {p.id: p for p in (
     Platform("youtube", "YouTube", ("horizontal",), None, None, safe=Safe(0.04, 0.04, 0.04, 0.04),
              burn_subs=False, cover=(1280, 720), source=YT_ENCODING,
+             title_max=100, text_max=5000, chapters=True, cover_mb=2, ai=_AI_YT,
              note="H.264 High, AAC-LC 48 кГц, 8 Мбит/с для 1080p SDR (12 — для 48–60 fps); "
                   "субтитры — файлом .srt/.vtt; громкость нормируется к ≈ −14 LUFS (только вниз). "
                   "Ролики длиннее 15 мин — только с подтверждённым аккаунтом."),
     Platform("youtube-shorts", "YouTube Shorts", ("vertical", "square"), None, 180, safe=_VERT_UI,
              ui=(UI("колонка кнопок справа", (0.86, 0.45, 1.0, 0.85)),),
+             title_max=100, text_max=5000, tags_max=3, ai=_AI_YT,
              source="https://support.google.com/youtube/answer/15424877",
              note="Short — квадрат или вертикаль до 3 мин (с 15.10.2024). Пикселей интерфейса YouTube не публикует — "
                   "зона: оценка (вкладки сверху, название и канал снизу, кнопки справа)."),
     Platform("tiktok", "TikTok", ("vertical",), None, 600, safe=_VERT_UI,
              ui=(UI("колонка кнопок справа", (0.86, 0.35, 1.0, 0.80)),),
+             text_max=2200, tags_max=5, ai=_AI_TT, ai_voice=True,
              source="https://ads.tiktok.com/help/article/tiktok-reservation-topview",
              note="1080×1920; в приложении — до 10 мин (загрузка до 60 мин есть не у всех аккаунтов). "
                   "Пикселей интерфейса TikTok не публикует (шаблоны и Ad Preview Tool) — зона: оценка "
                   "(≈ 120–200 px сверху, 250–440 px снизу, кнопки справа)."),
     Platform("instagram-reels", "Instagram Reels", ("vertical",), None, 180,
-             safe=Safe(top=0.14, bottom=0.35, left=0.06, right=0.06),
+             safe=Safe(top=0.14, bottom=0.35, left=0.06, right=0.06), text_max=2200, tags_max=5, ai=_AI_META, ai_voice=True,
              source="https://www.facebook.com/business/ads-guide (Reels: поля 14 % / 35 % / 6 %)",
              note="Reels до 3 мин (с 20.01.2025). Зона — рекомендация Meta для 9:16: верх 14 %, низ 35 %, бока 6 % "
                   "(кнопки и подпись — в нижних 35 %). Обложка в сетке профиля режется до 3:4."),
     Platform("instagram-feed", "Instagram, лента 4:5", ("portrait", "square"), 3, 3600,
              safe=Safe(top=0.04, bottom=0.075, left=0.09, right=0.09), burn_subs=True,
+             text_max=2200, tags_max=5, ai=_AI_META, ai_voice=True,
              source="https://www.facebook.com/business/ads-guide (лента: 4:5 1080×1350, ≈ 100 px снизу и по бокам)",
              note="Основной кадр — 4:5 1080×1350, 1:1 тоже принимается."),
     Platform("square", "Квадрат 1:1 (лента, мессенджеры)", ("square",), None, None,

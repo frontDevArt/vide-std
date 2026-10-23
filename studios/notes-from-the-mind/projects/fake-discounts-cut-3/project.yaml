@@ -7,3 +7,10 @@ platform: youtube-shorts
 format: vertical
 chapters:
 - ch02
+
+# Пакет к выходу (ROADMAP B5); источники — процитированные в сценах, полные ссылки — из package исходника
+package:
+  title: "Not One Black Friday Deal Was the Lowest Price"
+  description: "Which? tracked Black Friday prices for a year: 83% were the same or cheaper at other times. Do crossed-out prices work even when they're fake? Verdict inside."
+  hashtags: [shorts, psychology, blackfriday]
+  cover: {text: "83% NOT DEALS"}

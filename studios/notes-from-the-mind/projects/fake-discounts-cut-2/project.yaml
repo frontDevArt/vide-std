@@ -7,3 +7,10 @@ platform: youtube-shorts
 format: vertical
 chapters:
 - ch01
+
+# Пакет к выходу (ROADMAP B5); источники — процитированные в сценах, полные ссылки — из package исходника
+package:
+  title: "A Rigged Wheel Changed People's Answers"
+  description: "In 1974, Tversky and Kahneman spun a wheel of fortune that could only land on 10 or 65 — and the number moved people's guesses. That's anchoring. Full video on Notes From The Mind."
+  hashtags: [shorts, psychology, blackfriday]
+  cover: {text: "RIGGED WHEEL"}

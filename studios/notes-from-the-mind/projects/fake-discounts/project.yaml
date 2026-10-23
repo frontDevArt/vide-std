@@ -46,3 +46,26 @@ subtitles:
 loudness: -14
 
 chapters: [ch01, ch02, ch03, ch04]
+
+# Пакет к выходу (ROADMAP B5): `python -m studio package fake-discounts` → output/fake-discounts/<выход>.*
+package:
+  description: >-
+    That red line through the "was" price? You know it's a trick — and it still works on you. We look at what
+    researchers found: lab experiments, a meta-analysis of 20 papers, real store sales data and a year of Black
+    Friday price tracking. Verdict: TRUE. Before you shop, ask one question: would I pay this if nobody had ever
+    shown me the old price?
+  hashtags: [psychology, blackfriday, anchoring, shopping, money]
+  cover: {text: "WAS $199", at: "ch01/s01"}   # бриф: ценник с зачёркнутой $199 и якорем + плашка TRUE
+  sources:
+    - "Tversky, A., & Kahneman, D. (1974). Judgment under uncertainty: Heuristics and biases. Science."
+    - "Northcraft, G. B., & Neale, M. A. (1987). Experts, amateurs, and real estate. Organizational Behavior and Human Decision Processes. https://ideas.repec.org/a/eee/jobhdp/v39y1987i1p84-97.html"
+    - "Urbany, J. E., Bearden, W. O., & Weilbaker, D. C. (1988). The effect of plausible and exaggerated reference prices on consumer perceptions and price search. Journal of Consumer Research."
+    - "Krishna, A., Briesch, R., Lehmann, D. R., & Yuan, H. (2002). A meta-analysis of the impact of price presentation on perceived savings. Journal of Retailing. https://scholar.smu.edu/business_marketing_research/23"
+    - "Ngwe, D. (2018). Fake discounts drive real revenues in retail. HBS working paper. https://www.library.hbs.edu/working-knowledge/bargain-hunters-beware-a-store-s-original-price-might-not-be-after-all"
+    - "Krishnan, B. C., Dutta, S., & Jha, S. (2013). Effectiveness of exaggerated advertised reference prices. Journal of Retailing."
+    - "Wolk, A., & Spann, M. (2008). Journal of Interactive Marketing. https://ideas.repec.org/a/eee/joinma/v22y2008i4p2-18.html"
+    - "Staelin, R., Urbany, J. E., & Ngwe, D. (2023). Competition and the regulation of fictitious pricing. Journal of Marketing. https://doi.org/10.1177/00222429231164640"
+    - "Pronin, E., Lin, D. Y., & Ross, L. (2002). The bias blind spot. Personality and Social Psychology Bulletin."
+    - "Mussweiler, T., Strack, F., & Pfeiffer, T. (2000). Overcoming the inevitable anchoring effect. Personality and Social Psychology Bulletin."
+    - "Which? (2025). Black Friday price tracking. https://www.which.co.uk/policy-and-insight/article/dont-believe-the-hype-most-black-friday-deals-the-same-price-or-cheaper-at-other-times-of-the-year-which-finds-a3TbD5x5KADs"
+    - "YouGov. Deceptive deals or real savings? https://yougov.com/articles/49460-deceptive-deals-or-real-savings-51-of-consumers-say-brands-regularly-float-fake-discounts"

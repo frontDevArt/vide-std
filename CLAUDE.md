@@ -21,6 +21,7 @@ python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 # deliverables: [youtube, tiktok] в project.yaml — выходы: voice/stills/render/assemble/qa/all по всем или --out <выход>;
 #   финал — output/<slug>/<выход>.mp4 в корне студии, озвучка общая (build/tts/)
 python -m studio cutdown  <проект> --to youtube-shorts [--count 3] [--list] [--pick ch02/s05-s08]  # нарезка → <slug>-cut-N/
+python -m studio package  <проект> [--out <выход>]  # пакет к выходу: обложка, описание (главы, источники, хэштеги), чек-лист → output/<slug>/
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio platforms [<id>]          # профили площадок: кадр, длительность, безопасная зона, громкость
 python -m studio frame    <проект> <сек>    # один кадр PNG
@@ -45,7 +46,8 @@ python -m studio new-studio <id> --name "…" --kind brand|youtube|client --lang
 - Не править сгенерированное в `build/` руками: менять входы (`script/*.yaml`, `project.yaml`, шаблоны)
   и перезапускать команду. Кэши сами определят, что пересчитать.
 - Всё, что видно через склейку сцен, — через `state` (см. `docs/SCENE_SPEC.md`), а не локальной анимацией.
-- Перед сдачей: `qa` — все ✅, открыты `qa/subs_check.png` и `qa/final_frames.png`.
+- Перед сдачей: `qa` — все ✅, открыты `qa/subs_check.png` и `qa/final_frames.png`. Для публикации — `package`:
+  открыть обложку `output/<slug>/<выход>.cover.jpg`, пройти `<выход>.checklist.md`.
 - Политику сетевого прокси не обходить; 403 — не ретраить, сообщить.
 
 ## Текст для озвучки
