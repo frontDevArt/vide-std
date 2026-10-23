@@ -29,7 +29,7 @@ def add(sp):
     q.add_argument("--lang", default="en", help="языки роликов через запятую, первый — по умолчанию: en,ru")
     q.add_argument("--platforms", help="площадки через запятую; без флага — youtube: youtube,youtube-shorts, "
                                        "иначе tiktok,instagram-reels")
-    q.add_argument("--format", choices=["vertical", "horizontal", "square"],
+    q.add_argument("--format", choices=["vertical", "horizontal", "square", "portrait"],
                    help="формат по умолчанию; без флага — youtube: horizontal, иначе vertical")
     q.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake"],
                    help="голос студии; без флага — первый доступный (как у new)")

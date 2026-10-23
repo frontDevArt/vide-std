@@ -6,7 +6,8 @@
 
 Цифры сверены по документации площадок 2026-10-23 (ссылки — `source` у профиля). Где площадка пикселей не публикует
 (интерфейс TikTok и Shorts), зона — оценка по шаблонам площадки и сторонним разборам, это сказано в `note`.
-Модуль не в `render.code_hash`: профили не влияют на картинку, правка не сбрасывает кэш рендера.
+Картину профиль меняет только полями сетки вёрстки (`layout_zone`, ROADMAP B2) — они в ключе сцены, поэтому модуль
+вне хэша кода рендера: правка профиля пересчитывает только сцены, чьи поля изменились.
 """
 from __future__ import annotations
 
@@ -38,7 +39,7 @@ class UI:
 class Platform:
     id: str
     name: str
-    formats: tuple            # форматы проекта (project.FORMATS); первый — основной; portrait = 4:5 (вёрстка — B2)
+    formats: tuple            # форматы проекта (project.FORMATS); первый — основной; portrait = 4:5
     min_dur: float | None     # с; None — без нижнего предела
     max_dur: float | None     # с; None — без предела для студии
     safe: Safe = Safe()
@@ -57,7 +58,6 @@ class Platform:
 
 
 ASPECT = {"vertical": "9:16", "horizontal": "16:9", "square": "1:1", "portrait": "4:5"}
-SIZE = {"portrait": (1080, 1350)}  # форматы, которых ещё нет в project.FORMATS (B2)
 
 _VERT_UI = Safe(top=0.08, bottom=0.20, left=0.05, right=0.05)  # TikTok / Shorts: вкладки сверху, подпись и меню снизу
 _ADS = ("horizontal", "vertical", "square")
@@ -89,7 +89,7 @@ PLATFORMS: dict[str, Platform] = {p.id: p for p in (
     Platform("instagram-feed", "Instagram, лента 4:5", ("portrait", "square"), 3, 3600,
              safe=Safe(top=0.04, bottom=0.075, left=0.09, right=0.09), burn_subs=True,
              source="https://www.facebook.com/business/ads-guide (лента: 4:5 1080×1350, ≈ 100 px снизу и по бокам)",
-             note="Основной кадр — 4:5 1080×1350 (вёрстка 4:5 — ROADMAP B2), 1:1 тоже принимается."),
+             note="Основной кадр — 4:5 1080×1350, 1:1 тоже принимается."),
     Platform("square", "Квадрат 1:1 (лента, мессенджеры)", ("square",), None, None,
              safe=Safe(0.05, 0.05, 0.05, 0.05), source=YT_ENCODING,
              note="Общий профиль квадрата: поля 5 %, громкость −14 LUFS."),
@@ -119,9 +119,25 @@ def of(proj) -> Platform | None:
     return PLATFORMS.get(pid) if pid else None
 
 
+# площадка, по зоне которой верстается проект без `platform:` (ROADMAP B2): 9:16 — почти всегда TikTok/Shorts/Reels
+LAYOUT = {"horizontal": "youtube", "vertical": "tiktok", "portrait": "instagram-feed", "square": "square"}
+
+
+def layout_zone(cfg: dict) -> dict:
+    """Поля сетки вёрстки шаблонов {top, bottom, left, right} — доли стороны (`Template.safe`, ROADMAP B2).
+    Площадка проекта, без неё — площадка формата из LAYOUT; не меньше `qa.safe_margin`. Интерфейс площадки
+    (колонка кнопок справа) входит в боковые поля, и они симметричны: вёрстка по центру не заезжает под кнопки.
+    Результат — в ключе сцены (render._prepare), поэтому модуль вне хэша кода рендера."""
+    base = float((cfg.get("qa") or {}).get("safe_margin", 0.04))
+    p = PLATFORMS.get(cfg.get("platform") or "") or PLATFORMS[LAYOUT.get(cfg.get("format"), "youtube")]
+    side = max([p.safe.left, p.safe.right] + [1 - u.box[0] for u in p.ui])
+    return {"top": max(base, p.safe.top), "bottom": max(base, p.safe.bottom),
+            "left": max(base, side), "right": max(base, side)}
+
+
 def size(fmt: str) -> tuple | None:
     from .project import FORMATS
-    return FORMATS.get(fmt) or SIZE.get(fmt)
+    return FORMATS.get(fmt)
 
 
 def _dur(p: Platform) -> str:
@@ -143,13 +159,12 @@ def _zone(p: Platform) -> str:
 
 def table() -> list[list[str]]:
     """Строки таблицы `platforms`: первая — заголовок."""
-    from .project import FORMATS
     rows = [["площадка", "кадр", "fps", "длительность", "поля в/н/л/п", "LUFS", "субтитры", "видео", "обложка"]]
     for p in PLATFORMS.values():
         frames = []
         for f in p.formats:
             w, h = size(f)
-            frames.append(f"{ASPECT[f]} {w}×{h}" + ("" if f in FORMATS else " (B2)"))
+            frames.append(f"{ASPECT[f]} {w}×{h}")
         rows.append([p.id, ", ".join(frames), "/".join(map(str, p.fps)), _dur(p), _zone(p), f"{p.lufs:g}",
                      "вшитые" if p.burn_subs else "файлом", f"{p.vcodec} ~{p.kbps // 1000} Мбит/с"
                      + (f", ≥ {p.min_kbps}" if p.min_kbps else ""),

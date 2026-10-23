@@ -2,8 +2,9 @@
 и субтитров, рамка непрозрачных пикселей сравнивается с полями кадра (`qa.safe_margin`, доля стороны, по умолчанию 4 %);
 у проекта с `platform:` — с безопасной зоной площадки и её интерфейсом (studio/platforms.py, ROADMAP B1).
 
-Кадры — те же, что у `stills`: начало сцены, середины битов, конец. Пока только ⚠️: вертикаль `lab_*` не свёрстана
-(channel/STYLE.md §12), после ROADMAP B2 станет ❌. Модуль не в `render.code_hash` — правка проверки не сбрасывает кэш рендера.
+Кадры — те же, что у `stills`: начало сцены, середины битов, конец. С ROADMAP B2 шаблоны верстаются в сетке
+безопасной зоны (`Template.safe`), поэтому выход за поля — ❌ (до B2 был ⚠️). Модуль не в `render.code_hash` — правка
+проверки не сбрасывает кэш рендера.
 """
 from __future__ import annotations
 
@@ -105,12 +106,12 @@ def _label(proj) -> str:
 def report(proj: Project, chapter=None, log=print) -> list[dict]:
     issues = scan(proj, chapter)
     for i in issues:
-        log("  ⚠️  " + message(i))
+        log("  ❌ " + message(i))
     return issues
 
 
 def qa_check(proj: Project, add):
-    """Строка отчёта qa: add(статус, имя, подробности). WARN на итог не влияет."""
+    """Строка отчёта qa: add(статус PASS | FAIL, имя, подробности); с ROADMAP B2 нарушение — FAIL (до B2 — WARN)."""
     issues = scan(proj)
     det = "; ".join(message(i) for i in issues[:4]) + (f"; ещё {len(issues) - 4}" if len(issues) > 4 else "")
-    add("WARN" if issues else "PASS", "Контент в безопасной зоне", det or _label(proj))
+    add("FAIL" if issues else "PASS", "Контент в безопасной зоне", det or _label(proj))

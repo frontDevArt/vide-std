@@ -17,5 +17,5 @@ def run(a):
     times = [float(x) for x in a.times.split(",")] if a.times else None
     stills(proj, a.chapter, times)
     from ..safezone import report
-    report(proj, a.chapter)  # вёрстка: контент в полях кадра (P1.10, пока только ⚠️)
+    report(proj, a.chapter)  # вёрстка: контент в полях кадра (P1.10; с ROADMAP B2 — ❌)
     return 0

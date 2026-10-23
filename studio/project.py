@@ -18,6 +18,7 @@ FORMATS = {
     "vertical": (1080, 1920),
     "horizontal": (1920, 1080),
     "square": (1080, 1080),
+    "portrait": (1080, 1350),  # 4:5 — лента Instagram (ROADMAP B2)
 }
 
 

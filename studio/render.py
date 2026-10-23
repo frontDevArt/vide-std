@@ -24,6 +24,7 @@ from PIL import Image
 from . import gfx as G
 from . import subs as S
 from . import packs as TP
+from . import platforms as PL
 from .codehash import code_hash, scene_code_hash  # noqa: F401  — code_hash: прежнее имя
 from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
@@ -77,7 +78,8 @@ def _prepare(proj: Project, draft=False):
     if draft:
         W, H = W // 4 * 2, H // 4 * 2
     preset = DRAFT_PRESET if draft else proj.cfg["render"]["preset"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset}
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset,
+           "safe": PL.layout_zone(proj.cfg), "subs_top": S.band_top(proj)}  # сетка вёрстки: Template.safe/area (B2)
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
@@ -112,7 +114,7 @@ def _prepare(proj: Project, draft=False):
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
-                                proj.cfg["render"]["crf"], preset, W, H] + ([extra] if extra else [])
+                                proj.cfg["render"]["crf"], preset, W, H, ctx["safe"], ctx["subs_top"]] + ([extra] if extra else [])
                                + ([s["glow"]] if use_glow else []))
     return tl, ctx
 

@@ -132,9 +132,9 @@ def run(proj: Project, log=print, fast=False):
     else:
         _check_subs(proj, chk, subs, lines)
 
-    # --- вёрстка: контент сцены в полях кадра (P1.10)
+    # --- вёрстка: контент сцены в полях кадра (P1.10; с ROADMAP B2 — ❌)
     from .safezone import qa_check
-    qa_check(proj, warn)
+    qa_check(proj, lambda st, name, det: chk(st == "PASS", name, det))
 
     # --- листы кадров из ГОТОВОГО файла (заодно доказывает воспроизведение)
     tmp = proj.qa_dir / "_g.png"

@@ -223,6 +223,8 @@ class Cards(PhoneTemplate):
         n = len(self.spr)
         if self.vert:
             row_y = self.H * 0.44 - self.H * 0.30 - 95 * self.u  # над телефоном
+            if self.mini and self.H < self.W * 1.5:  # 4:5 и 1:1: телефон ниже ростом — ряд-история в рамке (B2)
+                row_y = max(row_y, self.safe.y0 + self.mini[0].height / 2)
         else:
             row_y = self.fy - 330 * self.u
         ex = self.io(t, 0, 0.35, enter=False)
@@ -267,7 +269,7 @@ class Questions(PhoneTemplate):
         fb = int(self.p.get("first_beat", 1))
         self.qt, self.qs = [], []
         colors = ["cyan", "magenta", "amber", "lime"]
-        qw = int((780 if self.vert else 700) * self.u)
+        qw = min(int((780 if self.vert else 700) * self.u), int(self.safe.w))  # не под кнопки справа (B2)
         qh = int(170 * self.u)
         for i, q in enumerate(qs):
             t0 = self.bt(fb + i, None) if fb + i < len(self.beats) else lerp(0.8, self.D - 1, i / max(1, len(qs)))

@@ -11,7 +11,7 @@
 
 ## Команды
 ```
-python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--platform tiktok] [--duration 30] [--tts edge]
+python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square|portrait] [--platform tiktok] [--duration 30] [--tts edge]
 python -m studio validate <проект>         # проверка сценария
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры

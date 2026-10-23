@@ -64,7 +64,7 @@ def test_command_table(capsys):
     out = capsys.readouterr().out
     for pid in platforms.PLATFORMS:
         assert f"\n{pid} " in out
-    assert "9:16 1080×1920" in out and "4:5 1080×1350 (B2)" in out and "≤ 3 мин" in out
+    assert "9:16 1080×1920" in out and "4:5 1080×1350" in out and "≤ 3 мин" in out
 
 
 def test_command_detail(capsys):
@@ -183,14 +183,23 @@ def test_zone_of_platform(vertical):
     finally:
         vertical.cfg.pop("platform")
     assert need == {"left": 0.05, "top": 0.08, "right": 0.05, "bottom": 0.2} and ui[0].name == "колонка кнопок справа"
-    base = {(i["chapter"], i["id"]) for i in safezone.scan(vertical)}
-    assert base < {(i["chapter"], i["id"]) for i in issues}  # зона площадки строже полей 4 %
-    under = [i for i in issues if i["ui"]]
-    assert under, "широкий контент вертикали должен заходить под кнопки справа"
-    msg = safezone.message(under[0])
-    assert "под интерфейсом площадки — колонка кнопок справа" in msg
-    low = next(i for i in issues if "снизу" in i["bad"])
-    assert "снизу" in safezone.message(low) and "из 20 %" in safezone.message(low)
+    assert safezone.scan(vertical) == []  # поля 4 % — чисто
+    # зона площадки строже: в 9:16 под вкладки сверху заходят только телефонные шаблоны, lab свёрстан в ней (B2)
+    assert {(i["id"], i["template"]) for i in issues} == {("s03", "phone_feed"), ("s04", "cards")}
+    assert all(i["bad"] == ["сверху"] and not i["ui"] for i in issues)
+    assert "сверху" in safezone.message(issues[0]) and "из 8 %" in safezone.message(issues[0])
+
+
+def test_ui_hit_message():
+    from studio.platforms import UI
+    col = UI("колонка кнопок справа", (0.86, 0.35, 1.0, 0.80))
+    assert safezone._hits((900, 800, 1000, 900), col, 1080, 1920)      # правый край 1000 > 0,86 × 1080
+    assert not safezone._hits((100, 800, 900, 900), col, 1080, 1920)   # левее колонки
+    assert not safezone._hits((900, 100, 1000, 300), col, 1080, 1920)  # выше колонки
+    i = {"chapter": "ch01", "id": "s01", "template": "x", "margins": {"left": 0.1, "top": 0.1, "right": 0.02, "bottom": 0.5},
+         "bad": ["справа"], "ui": [col.name], "need": {"left": 0.05, "top": 0.08, "right": 0.05, "bottom": 0.2}}
+    m = safezone.message(i)
+    assert "справа 2 % из 5 %" in m and "под интерфейсом площадки — колонка кнопок справа" in m
 
 
 def test_qa_check_label(vertical):
@@ -201,7 +210,8 @@ def test_qa_check_label(vertical):
     finally:
         vertical.cfg.pop("platform")
     (st, name, det), = res
-    assert st == "WARN" and name == "Контент в безопасной зоне"  # до B2 — только ⚠️
+    assert name == "Контент в безопасной зоне" and det.startswith("ch02/s03 phone_feed")
+    assert st == "FAIL"  # с B2 — ❌: телефон в 9:16 заходит под вкладки Shorts сверху (lab свёрстан в зоне)
 
 
 def test_subs_check_band_follows_style(monkeypatch):
@@ -232,7 +242,7 @@ def test_new_with_platform(base):
     c = _cfg(base / "projects" / "yt" / "project.yaml")
     assert (c["platform"], c["format"]) == ("youtube", "horizontal")  # формат — по площадке
     assert cli.main(["new", "x", "--slug", "feed", "--platform", "instagram-feed", "--tts", "fake"]) == 0
-    assert _cfg(base / "projects" / "feed" / "project.yaml")["format"] == "square"  # 4:5 — после B2
+    assert _cfg(base / "projects" / "feed" / "project.yaml")["format"] == "portrait"  # 4:5 (ROADMAP B2)
     assert cli.main(["new", "x", "--slug", "plain", "--tts", "fake"]) == 0
     assert _cfg(base / "projects" / "plain" / "project.yaml")["platform"] is None
     with pytest.raises(SystemExit, match="формат horizontal не подходит"):

@@ -322,7 +322,7 @@ Windows: в окружении `PYTHONUTF8=1`, иначе вывод с кири
 |---|---|---|
 | `title`, `topic`, `audience` | — | название, тема, для кого и что зритель вынесет (`TODO` = фаза 1 не готова) |
 | `language` | `ru` | язык озвучки и текстов; задаёт голос по умолчанию, темп `wpm`, проверку «чужого алфавита» |
-| `format` | `vertical` | `vertical` 1080×1920 · `horizontal` 1920×1080 · `square` 1080×1080 |
+| `format` | `vertical` | `vertical` 1080×1920 · `horizontal` 1920×1080 · `square` 1080×1080 · `portrait` 1080×1350 (4:5) |
 | `fps` | 30 | должен делить 48000 (24/25/30/60) |
 | `target_duration` | `null` | точная длительность в секундах (Shorts) или `null` — по речи |
 | `tts.backend` / `voice` / `rate` | `rhvoice` / `auto` / 105 | голос; `voice: auto` — по языку, у ElevenLabs — `ELEVENLABS_VOICE_ID` из `.env`; `rate` — 100 = норма |
@@ -411,7 +411,7 @@ verdict), `commerce` (price_tag, number). Полное имя `пакет.имя
 | нет `id` у сцены или повтор | ❌ |
 | неизвестный шаблон | ❌ с подсказкой ближайших имён |
 | неизвестный параметр шаблона / не тот тип значения | ⚠️ |
-| шаблон не свёрстан под `format` проекта (например, `lab` в вертикали) | ⚠️ |
+| шаблон не свёрстан под `format` проекта (например, `commerce` в вертикали) | ⚠️ |
 | сцена без текста и без `min_duration` | ❌ |
 | `voice:` — неизвестные ключи, вне диапазона 0–1, `speed` вне 0,7–1,2 или быстрее `rate_range` | ❌ |
 | `voice:` у не-ElevenLabs | ⚠️ (игнорируется) |
@@ -509,7 +509,7 @@ ffmpeg: срезать тишину с обоих концов (−45 dB), фе�
    читаемость, совпадает ли картинка со словами, стыки.
 5. **Безопасная зона:** для тех же моментов шаблон рисуется на прозрачный слой отдельно от фона и субтитров; рамка
    непрозрачных пикселей сравнивается с полями кадра (`qa.safe_margin`, 4 %) → ⚠️ «контент у края» по сценам.
-   Пока только ⚠️ (вертикаль `lab` не свёрстана — это ROADMAP B2).
+   С ROADMAP B2 — ❌: шаблоны верстаются в той же зоне.
 
 Один кадр в полном размере: `python -m studio frame <проект> <сек>` → `qa/frame_<сек>.png`.
 `status` считает фазу пройденной, если лист новее `timeline.json` (а посмотрел ли его человек — на совести Claude).
@@ -610,7 +610,7 @@ ffmpeg: срезать тишину с обоих концов (−45 dB), фе�
 | Субтитры | ≤ `max_lines` строк и влезают по ширине | ширина ≤ 70 % (гориз.) / 86 % (верт.) |
 | | не накладываются; не мелькают (< 0,55 с) | коротких ≤ 10 % |
 | | у каждой фразы субтитр в момент начала | — |
-| Вёрстка | контент в безопасной зоне | пока ⚠️, не ❌ |
+| Вёрстка | контент в безопасной зоне | ❌ (с ROADMAP B2) |
 
 Статусы: ✅ PASS, ❌ FAIL, ⏭️ SKIP (неприменимо: нет речи или субтитры выключены — на итог не влияет), ⚠️ WARN.
 
@@ -795,7 +795,7 @@ python -m studio clean --older-than 30d [--keep-final]          # все про�
 
 ```
 python -m studio doctor                                   # окружение, голоса, остаток ElevenLabs
-python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--duration 30] [--lang ru|en] [--tts elevenlabs|edge|rhvoice|piper|fake] [--studio id]
+python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square|portrait] [--duration 30] [--lang ru|en] [--tts elevenlabs|edge|rhvoice|piper|fake] [--studio id]
 python -m studio demo     <проект> [--no-render] [--yes]  # демо стиля 10–15 с → projects/<slug>-demo/
 python -m studio templates [--md]                         # шаблоны и параметры
 python -m studio validate <проект>                        # проверка сценария

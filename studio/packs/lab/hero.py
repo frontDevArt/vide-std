@@ -12,6 +12,10 @@ from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, glass, put, rich, ring_pad, tile, txt
 
 
+HERO_TOP = 250  # высокий кадр: чернила цифры — на столько ниже верха тела (место под карточку утверждения)
+HERO_H = 380    # высокий кадр: высота блока цифры с подписями — дальше идут карточки
+
+
 # ===================================================================== hero number (shared)
 class HeroMixin:
     """Огромная цифра (Unbounded 300 px) + подпись; счётчик; «Миф → Реальность» с зачёркиванием цветом MYTH.
@@ -46,6 +50,14 @@ class HeroMixin:
             ev.append((self.h_strike, "swish"))
         return ev
 
+    def hero_xy(self, h):
+        """Где начинаются чернила цифры. 16:9 — (x, y) из params в сетке 1920 (верх блока, чернила на 34 px ниже);
+        высокий кадр — одно место у всех шаблонов (под слотом карточки сверху), чтобы цифра переезжала склейку."""
+        z = self.z
+        if self.wide:
+            return h.get("x", 120) * z, h.get("y", 470) * z + 34 * z
+        return self.area.x0, self.top + HERO_TOP * z
+
     def _num(self, v, color, z):
         s = f"{int(round(v))}" if isinstance(v, (int, float)) else str(v)
         return num_sprite(s, color, z, 300)
@@ -78,7 +90,7 @@ class HeroMixin:
             return
         z = self.z
         # (x, y) из params — верх блока как в демо (top: 470); чернила цифры начинаются на 34 px ниже
-        x, y = h.get("x", 120) * z, h.get("y", 470) * z + 34 * z
+        x, y = self.hero_xy(h)
         if self.prev_hero:
             ph = self.prev_hero
             m = M.ease_in_out(M.prog(t, self.h_t - 0.1, 0.55))
@@ -135,7 +147,7 @@ def strike_bar(w, h, z):
 # ===================================================================== templates §5
 
 
-@template("hero_stack", aliases=("lab_hero_stack",), formats=("horizontal",),
+@template("hero_stack", aliases=("lab_hero_stack",),
           doc="lab · Hero + Stack: слева огромная цифра (счётчик, «миф → реальность»), справа стопка 3–4 карточек, "
               "линии с бегущими точками от цифры к карточкам; опц. карточка утверждения сверху-слева.",
           params={"claim": P({"label": "VIRAL CLAIM", "text": "“It takes *21 days* to build a habit.”", "meta": "", "at": "w:says", "qmark": True},
@@ -169,10 +181,13 @@ class LabHeroStack(HeroMixin, LabTemplate):
     def setup_body(self):
         z = self.z
         c = self.p.get("claim")
+        self.claim_y = self.top  # высокий кадр: карточка утверждения — первой под шапкой
         if c:
             w = int((780 + 72) * z)  # как в демо: 780 — ширина текста, плюс поля 36 + 36
+            if not self.wide:  # высокий кадр: во всю рамку, справа место под вылет «?»
+                w = int(self.area.w - 50 * z)
             lab = txt(c.get("label", "VIRAL CLAIM"), 20 * z, "medium", "dim", "mono", 0.08)
-            body = rich(c.get("text", ""), 46 * z, 780 * z)
+            body = rich(c.get("text", ""), 46 * z, w - 72 * z)
             meta = txt(c["meta"], 19 * z, "medium", "dim", "mono") if c.get("meta") else None
             h = int(30 * z + lab.height + 12 * z + body.height + (14 * z + meta.height if meta else 0) + 30 * z)
             card = glass(w, h, int(18 * z)).copy()
@@ -192,7 +207,7 @@ class LabHeroStack(HeroMixin, LabTemplate):
             self.qmark = qs
         self.card_spr = []
         for it in self.cards:
-            w, h = int(724 * z), int(120 * z)
+            w, h = int(724 * z) if self.wide else int(self.area.w), int(120 * z)
             card = glass(w, h, int(18 * z)).copy()
             tl = tile(it.get("icon", "book"), int(72 * z))
             card.alpha_composite(tl, (int(26 * z), (h - tl.height) // 2))
@@ -218,6 +233,11 @@ class LabHeroStack(HeroMixin, LabTemplate):
     def _ys(self):
         z = self.z
         n = len(self.cards)
+        if not self.wide:  # высокий кадр: карточки под цифрой (или под утверждением), шаг ужимается до низа рамки
+            y0 = self.hero_xy(self.hero)[1] + HERO_H * z if self.hero else self.claim_y + (
+                self.claim_spr.height + 40 * z if self.p.get("claim") else 0)
+            step = min(148 * z, (self.area.y1 - y0 - 120 * z) / max(1, n - 1)) if n > 1 else 0
+            return [y0 + i * step for i in range(n)]
         top = 330 if n <= 3 else 260
         return [(top + i * 148) * z for i in range(n)]
 
@@ -227,13 +247,14 @@ class LabHeroStack(HeroMixin, LabTemplate):
         foc = {}
         for (a, b) in self.fl:
             foc[a] = M.focus(t, a, b)
+        cx0, cy0 = (96 * z, 184 * z) if self.wide else (self.area.x0, self.claim_y)
         if self.p.get("claim"):
             br, act = foc.get(self.c_t, (1, 0))
-            self.card(img, t, self.claim_spr, 96 * z, 184 * z, self.c_t, act, br * vd, name="claim", ph=0.4, T=T, ring=self.claim_ring)
+            self.card(img, t, self.claim_spr, cx0, cy0, self.c_t, act, br * vd, name="claim", ph=0.4, T=T, ring=self.claim_ring)
             if self.q_t is not None:
                 k = M.spring(M.prog(t, self.q_t, 0.6))
                 a = min(1, k * 1.5) * (1 - self.gone(t, "claim")) * br * vd
-                put(img, self.qmark, 96 * z + self.claim_spr.width - 26 * z + 38 * z, 184 * z - 26 * z + 38 * z, a,
+                put(img, self.qmark, cx0 + self.claim_spr.width - 26 * z + 38 * z, cy0 - 26 * z + 38 * z, a,
                     M.lerp(1.6, 1, k), rot=M.lerp(20, 0, k), anchor="c")
         if self.hero:
             br, act = foc.get(self.h_t, (1, 0))
@@ -241,12 +262,13 @@ class LabHeroStack(HeroMixin, LabTemplate):
         ys = self._ys()
         d = ImageDraw.Draw(img, "RGBA")
         hx, hy = 700 * z, 600 * z
+        kx = 1100 * z if self.wide else self.area.x0
         for i, (it, (spr, ring), y) in enumerate(zip(self.cards, self.card_spr, ys)):
             t0 = self.k_t[i]
             br, act = foc.get(t0, (1, 0))
-            if self.p.get("lines", True) and self.hero:
+            if self.p.get("lines", True) and self.hero and self.wide:  # в высоком кадре карточки прямо под цифрой
                 self._line(img, d, t, (hx, hy), (1100 * z, y + 60 * z), t0 - 0.25, act, self.gone(t, f"card{i}") or self.gone(t, "cards"))
-            self.card(img, t, spr, 1100 * z, y, t0, act, br * vd, "right", name="cards", ph=i, T=T, ring=ring)
+            self.card(img, t, spr, kx, y, t0, act, br * vd, "right", name="cards", ph=i, T=T, ring=ring)
 
     def _line(self, img, d, t, p0, p1, start, act, xo):
         """Кривая от источника к цели (ease-in-out, 22 кадра), узел на конце, бегущие точки."""

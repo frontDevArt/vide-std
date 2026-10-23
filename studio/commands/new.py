@@ -12,7 +12,7 @@ from .. import workspace
 def add(sp):
     q = sp.add_parser("new", help="создать проект из шаблона")
     q.add_argument("topic"); q.add_argument("--slug"); q.add_argument("--format", default=None,
-                                                                      choices=["vertical", "horizontal", "square"],
+                                                                      choices=["vertical", "horizontal", "square", "portrait"],
                                                                       help="без флага — из studio.yaml, иначе vertical")
     q.add_argument("--platform", help="площадка выхода (python -m studio platforms); формат без --format — по ней")
     q.add_argument("--duration", type=float, default=None, help="точная длительность, c (иначе — по речи)")
@@ -64,16 +64,14 @@ def _create(a, ws):
     pf = getattr(a, "platform", None)
     if pf:
         from ..platforms import get
-        from ..project import FORMATS
         try:
             p = get(pf)
         except KeyError as e:
             raise SystemExit(f"--platform: {e.args[0]}")
-        ok = [f for f in p.formats if f in FORMATS]  # 4:5 — после ROADMAP B2
         if a.format and a.format not in p.formats:
             raise SystemExit(f"--platform {pf}: формат {a.format} не подходит, нужен {' или '.join(p.formats)}")
-        if fmt not in ok:
-            fmt = ok[0]
+        if fmt not in p.formats:
+            fmt = p.formats[0]
     from .. import voices
     vl = voices.layer(ws, lang)  # голос студии для языка (ROADMAP A3): бэкенд и темп — оттуда
     backend = a.tts or vl.get("backend") or default_backend(lang)

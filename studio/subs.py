@@ -14,6 +14,22 @@ def font_size(proj):
     return int(s * TIKTOK_SCALE) if kit.get("subs") == "tiktok" else s  # перенос и QA — тем размером, что рисуется
 
 
+def band_top(proj) -> float | None:
+    """Верх полосы субтитров (доля высоты кадра) при max_lines строк; None — субтитры выключены. Шаблоны верстают
+    тело выше неё (`Template.area`, ROADMAP B2); место — как в render.draw_subs."""
+    sb = proj.cfg["subtitles"]
+    if not sb.get("enabled", True):
+        return None
+    W, H = proj.size
+    kit = (proj.cfg.get("style") or {}).get("kit") or {}
+    if kit.get("subs") == "tiktok":
+        center = 0.66 if H >= W else 0.80
+    else:
+        center = 0.835 if H >= W else 0.885
+    half = font_size(proj) * (int(sb.get("max_lines", 2)) * 1.2 + 0.8) / 2
+    return round(center - half / H, 4)
+
+
 def max_width(proj):
     W, H = proj.size
     return int(W * (0.86 if W < H else 0.70))

@@ -11,9 +11,9 @@ from ... import motion as M
 from ..registry import P, template
 from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, person_icon, put, ring_pad, study_card, txt
-from .hero import HeroMixin
+from .hero import HERO_H, HeroMixin
 
-@template("crowd", aliases=("lab_crowd",), formats=("horizontal",),
+@template("crowd", aliases=("lab_crowd",),
           doc="lab · Crowd: толпа из N иконок = реальная выборка, подсветка отдельных людей с ярлыками; "
               "опц. карточка исследования, шкала-диапазон и цифра слева (может морфить цифру прошлой сцены).",
           params={"hero": P({"value": 66, "from_prev": True, "caption": "median days", "sub": "", "color": "accent", "at": "66", "strike_at": "w:took"},
@@ -49,7 +49,8 @@ class LabCrowd(HeroMixin, LabTemplate):
     def setup_body(self):
         z = self.z
         st = self.p.get("study")
-        self.study = study_card(st.get("authors", ""), st.get("where", ""), int(st.get("evidence", 3)), z) if st else None
+        colw = 724 if self.wide else int(self.area.w / z)  # ширина колонки справа; в высоком кадре — вся рамка
+        self.study = study_card(st.get("authors", ""), st.get("where", ""), int(st.get("evidence", 3)), z, colw) if st else None
         self.study_ring = ring_pad(self.study.width, self.study.height, int(18 * z)) if st else None
         cr = self.p.get("crowd")
         if cr:
@@ -60,7 +61,7 @@ class LabCrowd(HeroMixin, LabTemplate):
                 n = int(math.ceil(n / math.ceil(n / 400)))
             cols = int(cr.get("cols", 16 if n <= 128 else 24))
             rows = int(math.ceil(n / cols))
-            area_w = 724 * z
+            area_w = colw * z
             area_h = (300 if not self.p.get("range") else 300) * z
             cw = area_w / cols
             ch = min(50 * z, area_h / rows)
@@ -84,7 +85,7 @@ class LabCrowd(HeroMixin, LabTemplate):
             self.rl = txt(rg.get("min_label", str(rg.get("min"))), 19 * z, "medium", "dim", "mono")
             self.rr = txt(rg.get("max_label", str(rg.get("max"))), 19 * z, "medium", "dim", "mono")
             self.rm = txt(rg.get("mark_label", str(rg.get("mark"))), 19 * z, "medium", "accent", "mono")
-            w = int(724 * z)
+            w = int(colw * z)
             grad = np.zeros((max(2, int(4 * z)), w, 4), np.uint8)
             c1, c2 = np.array(self.style.pal["accent"]), np.array(self.style.pal["accent2"])
             for x in range(w):
@@ -92,18 +93,31 @@ class LabCrowd(HeroMixin, LabTemplate):
             grad[:, :, 3] = 255
             self.track = Image.fromarray(grad, "RGBA")
 
+    def _layout(self):
+        """Левый верх карточки исследования, толпы и шкалы. 16:9 — колонка справа (x = 1100); высокий кадр —
+        стопка: исследование в слоте над цифрой, толпа и шкала под ней."""
+        z = self.z
+        if self.wide:
+            return (1100 * z, 184 * z), (1100 * z, 420 * z), (1100 * z, 752 * z)
+        x = self.area.x0
+        y = (self.hero_xy(self.hero)[1] + HERO_H * z) if self.hero else self.top + (
+            self.study.height + 50 * z if self.study is not None else 0)
+        cr_h = (self.cells[-1][1] + self.ph) if self.p.get("crowd") and self.cells else 0
+        return (x, self.top), (x, y + 30 * z), (x, y + 30 * z + cr_h + 50 * z)
+
     def draw_body(self, img, t, T):
         z = self.z
         vd = self.vdim(t)
         foc = {a: M.focus(t, a, b) for a, b in self.fl}
+        (sx, sy), (x0c, y0c), (x0r, y0r) = self._layout()
         if self.hero:
             self.draw_hero(img, t, T, vd * (M.lerp(1, 0.55 / 0.32, M.ease_in_out(M.prog(t, (self.v_t or 1e9) - 0.15, 0.35))) if self.v_t else 1),
                            foc.get(self.h_t, (1, 0))[1] if self.fl else 1)
         if self.study is not None:
             br, act = foc.get(self.s_t, (1, 0))
-            self.card(img, t, self.study, 1100 * z, 184 * z, self.s_t, act, br * vd, "right", name="study", ph=1.7, T=T, ring=self.study_ring)
+            self.card(img, t, self.study, sx, sy, self.s_t, act, br * vd, "right", name="study", ph=1.7, T=T, ring=self.study_ring)
         if self.p.get("crowd"):
-            x0, y0 = 1100 * z, 420 * z
+            x0, y0 = x0c, y0c
             xo = self.gone(t, "crowd")
             for i, (cx, cy, dl) in enumerate(self.cells):
                 k = M.ease_out_expo(M.prog(t, self.cr_t + dl, 0.3))
@@ -134,7 +148,7 @@ class LabCrowd(HeroMixin, LabTemplate):
             if k > 0:
                 xo = self.gone(t, "range")
                 a = M.lerp(0.7, 1, act) * vd * (1 - xo)
-                x0, y0 = 1100 * z, 752 * z
+                x0, y0 = x0r, y0r
                 tw = int(self.track.width * k)
                 if tw > 1:
                     put(img, self.track.crop((0, 0, tw, self.track.height)), x0, y0 + 30 * z, a)
@@ -152,7 +166,7 @@ class LabCrowd(HeroMixin, LabTemplate):
                     put(img, self.rm, mx - self.rm.width / 2, y0 - 30 * z, M.ease_out_expo(M.prog(t, self.r_t + 0.5, 0.3)) * a)
 
 
-@template("verdict", aliases=("lab_verdict",), formats=("horizontal",),
+@template("verdict", aliases=("lab_verdict",),
           doc="lab · Вердикт отдельной сценой: штамп TRUE/HALF-TRUE/MYTH/NO EVIDENCE падает пружиной, вспышка цвета "
               "вердикта, подпись; перенесённая цифра (keep: [hero]) видна приглушённой. Разрыв ритма.",
           params={"verdict": P({"verdict": "MYTH", "sub": "21 days → median *66*", "at": "w:verdict"},
@@ -170,4 +184,5 @@ class LabVerdict(HeroMixin, LabTemplate):
         if self.carry:
             z = self.z
             n = self._num(self.carry["value"], self.carry.get("color", "text"), z)
-            self._draw_num(img, n, self.carry.get("x", 120) * z, (self.carry.get("y", 470) + 34) * z + M.bob(T, 2) * z, 0.55)
+            x, y = (self.carry.get("x", 120) * z, (self.carry.get("y", 470) + 34) * z) if self.wide else self.hero_xy(self.carry)
+            self._draw_num(img, n, x, y + M.bob(T, 2) * z, 0.55)

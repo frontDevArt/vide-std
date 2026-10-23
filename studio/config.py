@@ -30,7 +30,7 @@ SCHEMA = {
     "audience": F((str,), doc="для кого ролик"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
-    "format": F((str,), "vertical", "vertical | horizontal | square (project.FORMATS)"),
+    "format": F((str,), "vertical", "vertical | horizontal | square | portrait (4:5) (project.FORMATS)"),
     "platform": F((str, NONE), doc="площадка выхода: youtube | youtube-shorts | tiktok | … (studio/platforms.py)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
     "tts": {

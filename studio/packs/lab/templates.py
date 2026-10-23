@@ -11,7 +11,7 @@ from ..registry import AT, P, template
 from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, glass, line_icon, put, ring_pad, tile, txt
 
-@template("full_number", aliases=("lab_full_number",), formats=("horizontal",),
+@template("full_number", aliases=("lab_full_number",),
           doc="lab · Full Number: одна цифра на весь кадр + подпись; опц. «миф → реальность» (myth: зачёркнутое "
               "мифическое значение, счётчик доматывает до реального). Разрыв ритма, шок-факт.",
           params={"value": P(66, "реальное значение"), "from": P(0, "с чего начинается счёт"),
@@ -53,7 +53,7 @@ class LabFullNumber(LabTemplate):
         p = self.p
         vd = self.vdim(t)
         my = p.get("myth")
-        cx, cy = self.W / 2, self.H * 0.44
+        cx, cy = (self.W / 2, self.H * 0.44) if self.wide else (self.area.cx, self.area.y0 + self.area.h * 0.4)
         k = M.ease_out_expo(M.prog(t, self.show_t, M.fr(M.F_APPEAR)))
         if k <= 0:
             return
@@ -83,7 +83,7 @@ class LabFullNumber(LabTemplate):
             put(img, self.sub, cx, y + 56 * z, sk * a, anchor="c")
 
 
-@template("versus", aliases=("lab_versus",), formats=("horizontal",),
+@template("versus", aliases=("lab_versus",),
           doc="lab · Versus: две колонки «Думают / Нашли», посередине разделитель; пункты — карточки по `at`. "
               "Для проверки мифа.",
           params={"left": P({"title": "THEY SAY", "items": [{"text": "21 days", "at": 0}]}, "колонка «думают» {title, items[{text, at}]}"),
@@ -120,7 +120,7 @@ class LabVersus(LabTemplate):
 
     def _item(self, s, c):
         z = self.z
-        w = int(760 * z)
+        w = int(760 * z) if self.wide else int(self.area.w)
         tx = G.text_sprite(s, int(34 * z), "bold", "text", family="head", align="left", maxw=int(w - 80 * z))
         h = int(tx.height + 52 * z)
         card = glass(w, h, int(18 * z)).copy()
@@ -130,6 +130,8 @@ class LabVersus(LabTemplate):
         return card, ring_pad(w, h, int(18 * z), c)
 
     def draw_body(self, img, t, T):
+        if not self.wide:
+            return self._draw_tall(img, t, T)
         z = self.z
         vd = self.vdim(t)
         foc = {a: M.focus(t, a, b) for a, b in self.fl}
@@ -152,8 +154,37 @@ class LabVersus(LabTemplate):
             vs = txt("VS", 22 * z, "extrabold", "dim", "num")
             put(img, vs, x, 180 * z, dk * vd, anchor="c")
 
+    def _draw_tall(self, img, t, T):
+        """Высокий кадр: колонки друг под другом — «думают» сверху, разделитель «VS», «нашли» снизу."""
+        z = self.z
+        vd = self.vdim(t)
+        foc = {a: M.focus(t, a, b) for a, b in self.fl}
+        x, y = self.area.x0, self.top
+        for side in (0, 1):
+            if side == 1:  # разделитель с «VS» посередине
+                dk = M.line_progress(t, 0.2, 27) * (1 - self.gone(t, "versus"))
+                if dk > 0:
+                    d = ImageDraw.Draw(img, "RGBA")
+                    cy, half = y + 30 * z, self.area.w / 2 * dk
+                    vs = txt("VS", 22 * z, "extrabold", "dim", "num")
+                    gap = vs.width / 2 + 18 * z
+                    for a, b in ((self.area.cx - half, self.area.cx - gap), (self.area.cx + gap, self.area.cx + half)):
+                        if b > a:
+                            d.line((a, cy, b, cy), fill=(255, 255, 255, int(40 * vd)), width=max(1, int(2 * z)))
+                    put(img, vs, self.area.cx, cy, dk * vd, anchor="c")
+                y += 80 * z
+            k = M.appear(t, 0.3 + 0.12 * side, None)[0] * (1 - self.gone(t, "versus"))
+            put(img, self.heads[side], x, y + M.bob(T, side) * z, k * vd)
+            y += self.heads[side].height + 24 * z
+            times = self.lt if side == 0 else self.rt
+            for (spr, ring), t0 in zip(self.items[side], times):
+                br, act = foc.get(t0, (1, 0))
+                self.card(img, t, spr, x, y, t0, act, br * vd, "bottom" if side == 0 else "right", name="versus",
+                          ph=side + y / 300, T=T, ring=ring)
+                y += spr.height + 22 * z
 
-@template("flow", aliases=("lab_flow",), formats=("horizontal",),
+
+@template("flow", aliases=("lab_flow",),
           doc="lab · Flow: 3 станции слева направо, соединены линиями с бегущими точками; процесс, «как это работает».",
           params={"stations": P([{"icon": "alarm", "title": "Cue", "sub": "same time, same place", "at": 0}],
                                 "станции {icon, title, sub, at}"), **LabTemplate.COMMON},
@@ -168,6 +199,8 @@ class LabFlow(LabTemplate):
         return [(x, "pop") for x in self.tt]
 
     def setup_body(self):
+        if not self.wide:
+            return self._setup_tall()
         z = self.z
         n = max(1, len(self.st))
         gap = 120 * z
@@ -188,7 +221,58 @@ class LabFlow(LabTemplate):
             self.spr.append((card, ring_pad(w, h, int(18 * z))))
         self.gap = gap
 
+    def _setup_tall(self):
+        """Высокий кадр: станции — карточки во всю ширину рамки (плитка слева, текст справа), сверху вниз."""
+        z = self.z
+        w = int(self.area.w)
+        self.spr = []
+        for s in self.st:
+            tl = tile(s.get("icon", "check"), int(72 * z))
+            tw = int(w - 28 * z - tl.width - 24 * z - 24 * z)
+            t1 = G.text_sprite(s.get("title", ""), int(36 * z), "extrabold", "text", family="head", align="left", maxw=tw)
+            t2 = G.text_sprite(s["sub"], int(20 * z), "medium", "dim", family="mono", align="left", maxw=tw) if s.get("sub") else None
+            th = t1.height + (8 * z + t2.height if t2 else 0)
+            h = int(max(tl.height, th) + 56 * z)
+            card = glass(w, h, int(18 * z)).copy()
+            card.alpha_composite(tl, (int(28 * z), (h - tl.height) // 2))
+            x, y = int(28 * z + tl.width + 24 * z), int((h - th) / 2)
+            card.alpha_composite(t1, (x, y))
+            if t2:
+                card.alpha_composite(t2, (x, int(y + t1.height + 8 * z)))
+            self.spr.append((card, ring_pad(w, h, int(18 * z))))
+        self.gap = 90 * z
+
+    def _draw_tall(self, img, t, T):
+        z = self.z
+        vd = self.vdim(t)
+        foc = {a: M.focus(t, a, b) for a, b in self.fl}
+        d = ImageDraw.Draw(img, "RGBA")
+        total = sum(s.height for s, _ in self.spr) + self.gap * (len(self.spr) - 1)
+        y = max(self.top, self.top + (self.area.y1 - self.top - total) / 2 - 60 * z)
+        lx = self.area.x0 + 28 * z + 36 * z  # линия — по оси плиток
+        prev = None
+        for i, ((spr, ring), t0) in enumerate(zip(self.spr, self.tt)):
+            br, act = foc.get(t0, (1, 0))
+            if prev is not None:
+                xo = self.gone(t, "flow")
+                k = M.line_progress(t, t0 - 0.5)
+                if k > 0 and xo < 1:
+                    a = (1 - xo) * vd
+                    y0, y1 = prev, y
+                    d.line((lx, y0, lx, y0 + (y1 - y0) * k), fill=C("accent", int(200 * a)), width=max(1, int(2.5 * z)))
+                    if k >= 1:
+                        d.ellipse((lx - 7 * z, y1 - 7 * z, lx + 7 * z, y1 + 7 * z), fill=C("bg"),
+                                  outline=C("accent", int(255 * a)), width=int(3 * z))
+                        for u, al in M.running_dot(t, t0 - 0.5 + M.fr(M.F_LINE)):
+                            py = y0 + (y1 - y0) * u
+                            d.ellipse((lx - 6 * z, py - 6 * z, lx + 6 * z, py + 6 * z), fill=C("accent", int(255 * al * a)))
+            self.card(img, t, spr, self.area.x0, y, t0, act, br * vd, "bottom", name="flow", ph=i, T=T, ring=ring)
+            prev = y + spr.height
+            y += spr.height + self.gap
+
     def draw_body(self, img, t, T):
+        if not self.wide:
+            return self._draw_tall(img, t, T)
         z = self.z
         vd = self.vdim(t)
         foc = {a: M.focus(t, a, b) for a, b in self.fl}
@@ -216,7 +300,7 @@ class LabFlow(LabTemplate):
             x += spr.width + self.gap
 
 
-@template("diagram", aliases=("lab_diagram",), formats=("horizontal",),
+@template("diagram", aliases=("lab_diagram",),
           doc="lab · Center Diagram: одна схема по центру (узел с иконкой и подписью), ярлыки вокруг, линии от центра; "
               "эффект, механизм.",
           params={"center": P({"icon": "flask", "title": "Habit loop", "at": 0}, "узел по центру {icon, title, at}"),
@@ -258,11 +342,15 @@ class LabDiagram(LabTemplate):
         vd = self.vdim(t)
         foc = {a: M.focus(t, a, b) for a, b in self.fl}
         cx, cy = self.W / 2, self.H * 0.47
+        rx, ry = 520 * z, 300 * z
+        if not self.wide:  # высокий кадр: эллипс ярлыков вытянут вниз, по ширине — до полей рамки
+            mw = max((s.width for s, _ in self.lab_spr), default=0)
+            cx, cy = self.area.cx, (self.top + self.area.y1) / 2 - 40 * z
+            rx, ry = max(190 * z, (self.area.w - mw) / 2), 380 * z
         n = max(1, len(self.lb))
         d = ImageDraw.Draw(img, "RGBA")
         for i, ((spr, ring), t0) in enumerate(zip(self.lab_spr, self.lt)):
             ang = -math.pi / 2 + (i + 0.5) * math.tau / n if n > 2 else (math.pi if i == 0 else 0)
-            rx, ry = 520 * z, 300 * z
             lx, ly = cx + rx * math.cos(ang), cy + ry * math.sin(ang)
             k = M.line_progress(t, t0 - 0.35)
             xo = self.gone(t, "diagram")
@@ -279,7 +367,7 @@ class LabDiagram(LabTemplate):
                   ph=0.3, T=T, ring=self.node_ring)
 
 
-@template("chapter", aliases=("lab_chapter",), formats=("horizontal",),
+@template("chapter", aliases=("lab_chapter",),
           doc="lab · Карточка главы: «световой веер» 6 кадров → «01» в контуре + черта + заголовок капсом + подзаголовок "
               "моно + прогресс точками «chapter 1 of 8». Держать ≥ 2,5 с (min_duration). Между главами.",
           params={"number": P(1, "номер главы", int), "total": P(8, "всего глав", int), "title": P("Wake up", "заголовок"),
@@ -300,12 +388,14 @@ class LabChapter(LabTemplate):
         ImageDraw.Draw(num).text((int(4 * z), 0), s, font=f, fill=(0, 0, 0, 0), stroke_width=int(4 * z), stroke_fill=C("accent"))
         self.num = G.glowify(num, "accent", 24 * z, 0.5)
         self.title = G.text_sprite(str(p.get("title", "")).upper(), int(64 * z), "extrabold", "text", family="head",
-                                   align="left", maxw=int(900 * z))
+                                   align="left" if self.wide else "center", maxw=int(900 * z if self.wide else self.area.w))
         self.subt = txt(p["subtitle"], 24 * z, "medium", "dim", "mono") if p.get("subtitle") else None
         self.prog = txt(f"chapter {n} of {int(p.get('total', 8))}", 20 * z, "medium", "dim", "mono", 0.04)
         self.n, self.total = n, int(p.get("total", 8))
 
     def draw_body(self, img, t, T):
+        if not self.wide:
+            return self._draw_tall(img, t, T)
         z = self.z
         # световой веер 6 кадров
         fk = M.prog(t, 0.0, M.fr(6) * 2)
@@ -346,3 +436,46 @@ class LabChapter(LabTemplate):
                 r = (6 if i == self.n - 1 else 4.5) * z
                 d.ellipse((x0 + i * 26 * z - r, y - r, x0 + i * 26 * z + r, y + r), fill=c)
             put(img, self.prog, self.W / 2, y + 34 * z, k4, anchor="c")
+
+    def _draw_tall(self, img, t, T):
+        """Высокий кадр: столбик по центру — «01», горизонтальная черта, заголовок, подзаголовок; точки — внизу рамки."""
+        z = self.z
+        fk = M.prog(t, 0.0, M.fr(6) * 2)
+        if fk < 1:  # световой веер сверху вниз
+            fan = Image.new("RGBA", img.size, (0, 0, 0, 0))
+            d = ImageDraw.Draw(fan, "RGBA")
+            cx, cy = self.W / 2, -100 * z
+            a = math.sin(fk * math.pi)
+            for i in range(9):
+                ang = math.pi / 2 + (-0.5 + i / 8) * 1.1 + fk * 0.6
+                d.polygon([(cx, cy), (cx + 2600 * z * math.cos(ang - 0.04), cy + 2600 * z * math.sin(ang - 0.04)),
+                           (cx + 2600 * z * math.cos(ang + 0.04), cy + 2600 * z * math.sin(ang + 0.04))],
+                          fill=C("accent", int(34 * a)))
+            img.alpha_composite(fan.filter(ImageFilter.GaussianBlur(28 * z)))
+        xo = self.gone(t, "chapter")
+        cx = self.area.cx
+        y = self.area.y0 + self.area.h * 0.42 - self.num.height
+        k1 = M.ease_out_expo(M.prog(t, 0.15, M.fr(M.F_APPEAR)))
+        put(img, self.num, cx - self.num.width / 2, y + (1 - k1) * 24 * z + M.bob(T, 1) * z, k1 * (1 - xo),
+            0.96 + 0.04 * k1, (1 - k1) * 8)
+        by = y + self.num.height + 30 * z
+        lk = M.line_progress(t, 0.3, 18)
+        d = ImageDraw.Draw(img, "RGBA")
+        if lk > 0:
+            w = 200 * z * lk
+            d.line((cx - w / 2, by, cx + w / 2, by), fill=C("accent", int(255 * (1 - xo))), width=max(1, int(3 * z)))
+        ty = by + 44 * z
+        k2 = M.ease_out_expo(M.prog(t, 0.45, M.fr(M.F_APPEAR)))
+        put(img, self.title, cx - self.title.width / 2, ty + (1 - k2) * 24 * z, k2 * (1 - xo))
+        if self.subt is not None:
+            k3 = M.ease_out_expo(M.prog(t, 0.6, M.fr(M.F_APPEAR)))
+            put(img, self.subt, cx - self.subt.width / 2, ty + self.title.height + 20 * z + (1 - k3) * 24 * z, k3 * (1 - xo))
+        k4 = M.ease_out_expo(M.prog(t, 0.8, M.fr(M.F_APPEAR))) * (1 - xo)
+        if k4 > 0:
+            y = self.area.y1 - 80 * z
+            x0 = cx - (self.total * 26 * z) / 2
+            for i in range(self.total):
+                c = C("accent", int(255 * k4)) if i < self.n else (255, 255, 255, int(50 * k4))
+                r = (6 if i == self.n - 1 else 4.5) * z
+                d.ellipse((x0 + i * 26 * z - r, y - r, x0 + i * 26 * z + r, y + r), fill=c)
+            put(img, self.prog, cx, y + 34 * z, k4, anchor="c")
