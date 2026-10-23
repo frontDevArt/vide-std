@@ -184,10 +184,7 @@ def test_zone_of_platform(vertical):
         vertical.cfg.pop("platform")
     assert need == {"left": 0.05, "top": 0.08, "right": 0.05, "bottom": 0.2} and ui[0].name == "колонка кнопок справа"
     assert safezone.scan(vertical) == []  # поля 4 % — чисто
-    # зона площадки строже: в 9:16 под вкладки сверху заходят только телефонные шаблоны, lab свёрстан в ней (B2)
-    assert {(i["id"], i["template"]) for i in issues} == {("s03", "phone_feed"), ("s04", "cards")}
-    assert all(i["bad"] == ["сверху"] and not i["ui"] for i in issues)
-    assert "сверху" in safezone.message(issues[0]) and "из 8 %" in safezone.message(issues[0])
+    assert issues == []  # зона площадки строже, но lab (B2) и телефонные шаблоны (B2.1) свёрстаны в ней
 
 
 def test_ui_hit_message():
@@ -210,8 +207,16 @@ def test_qa_check_label(vertical):
     finally:
         vertical.cfg.pop("platform")
     (st, name, det), = res
-    assert name == "Контент в безопасной зоне" and det.startswith("ch02/s03 phone_feed")
-    assert st == "FAIL"  # с B2 — ❌: телефон в 9:16 заходит под вкладки Shorts сверху (lab свёрстан в зоне)
+    assert (st, name) == ("PASS", "Контент в безопасной зоне")  # с B2.1 и телефон в зоне Shorts
+    assert det == "зона youtube-shorts: поля в/н/л/п 8/20/5/5 % + интерфейс"
+    vertical.cfg["platform"], vertical.cfg["qa"]["safe_margin"] = "youtube-shorts", 0.3
+    try:
+        res.clear()
+        safezone.qa_check(vertical, lambda st, name, det: res.append((st, name, det)))
+    finally:
+        vertical.cfg.pop("platform"); vertical.cfg["qa"]["safe_margin"] = 0.04
+    (st, name, det), = res
+    assert st == "FAIL" and det.startswith("ch")  # нарушение — ❌ с перечнем сцен
 
 
 def test_subs_check_band_follows_style(monkeypatch):

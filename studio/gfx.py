@@ -526,10 +526,17 @@ def _icon(name, size, color, glow, style):
 class Phone:
     """Геометрия и корпус смартфона; одинаковы во всех сценах -> склейки незаметны."""
 
-    def __init__(self, W, H, style=None):
+    GLOW_H, GLOW_W = 1.08, 0.55  # видимый корпус со свечением: высота и ширина в долях высоты экрана sh
+
+    def __init__(self, W, H, style=None, box=None, top=0.0):
+        """box — рамка (x0, y0, x1, y1) высокого кадра (ROADMAP B2.1): корпус со свечением вписан в неё ниже полосы
+        высотой top (счётчик, ряд-история; её центр — strip_cy), стопка «полоса + телефон» по центру рамки."""
         self.W, self.H = W, H
         style = _st(style)
-        if H >= W:
+        if box is not None:
+            bw_, bh_ = box[2] - box[0], box[3] - box[1]
+            self.sh = int(min(H * 0.60, (bh_ - top) / self.GLOW_H, bw_ / self.GLOW_W))
+        elif H >= W:
             self.sh = int(H * 0.60)
         else:
             self.sh = int(H * 0.74)
@@ -537,6 +544,11 @@ class Phone:
         self.r = int(self.sw * 0.12)
         self.bez = max(10, int(self.sw * 0.035))
         self.cx, self.cy = W / 2, H * (0.44 if H >= W else 0.45)
+        self.strip_cy = None
+        if box is not None:
+            body = self.sh * self.GLOW_H
+            y0 = box[1] + (bh_ - top - body) / 2
+            self.cx, self.cy, self.strip_cy = (box[0] + box[2]) / 2, y0 + top + body / 2, y0 + top / 2
         bw, bh = self.sw + 2 * self.bez, self.sh + 2 * self.bez
         body = rrect((bw, bh), self.r + self.bez, (10, 9, 20, 255), outline=style.col("violet", 255), width=3)
         ring = Image.new("L", (bw, bh), 0)

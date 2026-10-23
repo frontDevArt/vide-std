@@ -10,7 +10,7 @@ from ... import gfx as G
 from ...gfx import blit, blitc, clamp, col, eio, eo, eob, lerp, prog
 from ..base import plural
 from ..registry import P, template
-from .feed import PhoneTemplate, _impulse_speed, _swipes
+from .feed import PhoneTemplate, _impulse_speed, _swipes, phone_ctx
 
 
 # ============================================================== phone_lock
@@ -163,7 +163,7 @@ class PhoneFeed(PhoneTemplate):
             a = self.io(t, 0.3, 0.3, enter=True, exit=self.last)
             num = G.text_sprite(f"{n}", int(64 * self.u), "black", "cyan", glow=int(12 * self.u), glow_color="cyan")
             top = ph.cy - ph.sh / 2 - ph.bez
-            y = top - 70 * self.u if self.vert else top + 40 * self.u
+            y = ph.strip_cy if self.vert else top + 40 * self.u  # высокий кадр: полоса над телефоном в рамке (B2.1)
             x = ph.cx if self.vert else ph.cx + ph.sw * 0.75
             lbl = G.text_sprite(plural(n, self.forms), int(30 * self.u), "semibold", "dim")
             gap = 14 * self.u
@@ -189,6 +189,8 @@ class Cards(PhoneTemplate):
     def setup(self):
         if self.p.get("backdrop", "phone") == "phone":
             super().setup()
+        elif self.vert:  # без телефона на фоне ряд-история всё равно в полосе над ним
+            self.phone, _ = phone_ctx(self.ctx, self.area)
         cards = self.p.get("cards") or []
         fb = int(self.p.get("first_beat", 0))
         self.times = []
@@ -221,10 +223,11 @@ class Cards(PhoneTemplate):
             scr.alpha_composite(dim)
             self.phone.draw(img, scr)
         n = len(self.spr)
-        if self.vert:
-            row_y = self.H * 0.44 - self.H * 0.30 - 95 * self.u  # над телефоном
-            if self.mini and self.H < self.W * 1.5:  # 4:5 и 1:1: телефон ниже ростом — ряд-история в рамке (B2)
-                row_y = max(row_y, self.safe.y0 + self.mini[0].height / 2)
+        step = 190 * self.u
+        if self.vert:  # полоса над телефоном в рамке (B2.1); ряд не шире рамки
+            row_y = self.phone.strip_cy
+            if n > 1:
+                step = min(step, (self.area.w - self.mini[0].width) / (n - 1))
         else:
             row_y = self.fy - 330 * self.u
         ex = self.io(t, 0, 0.35, enter=False)
@@ -242,7 +245,7 @@ class Cards(PhoneTemplate):
                 y = lerp(self.fy + 120 * self.u, self.fy, eo(k)) + lerp(0, -220 * self.u, eio(out))
                 blitc(img, self.spr[i], x, y, min(1, k * 2) * (1 - out) * ex, sc * lerp(0.92, 1, ex), rot)
             if out > 0:  # мини-иконка в ряд истории
-                slot_x = self.fx + (i - (n - 1) / 2) * 190 * self.u
+                slot_x = self.fx + (i - (n - 1) / 2) * step
                 blitc(img, self.mini[i], slot_x, row_y, eo(out) * ex, lerp(0.5, 1, eob(out)))
         if self.last:
             pass
@@ -355,8 +358,9 @@ class PhoneClose(PhoneTemplate):
         self.app_icon.alpha_composite(ai, (self.app_icon.width // 2 - ai.width // 2, self.app_icon.height // 2 - ai.height // 2))
         self.target = self.slots[9]
         self.final = G.text_sprite(self.p.get("final_text", ""), int(96 * self.u), "black", "text", accent="cyan",
-                                   glow=int(26 * self.u), glow_color="violet", maxw=int(self.W * 0.82))
-        self.sub = (G.text_sprite(self.p["final_sub"], int(40 * self.u), "medium", "dim", maxw=int(self.W * 0.8))
+                                   glow=int(26 * self.u), glow_color="violet", maxw=int(min(self.W * 0.82, self.area.w)))
+        self.sub = (G.text_sprite(self.p["final_sub"], int(40 * self.u), "medium", "dim",
+                                  maxw=int(min(self.W * 0.8, self.area.w)))
                     if self.p.get("final_sub") else None)
 
     def draw(self, img, t, T):

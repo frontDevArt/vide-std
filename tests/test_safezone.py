@@ -93,3 +93,21 @@ def test_scene_key_follows_zone(tmp_path):
 def test_lab_follows_platform_zone(tmp_path, fmt, plat):
     proj = _voiced(make_gallery(tmp_path / fmt, fmt), platform=plat)
     assert [i for i in safezone.scan(proj, chapter="ch01")] == []  # lab свёрстан в зоне площадки, вкл. Reels (35 % снизу)
+
+
+# --- телефонные шаблоны (B2.1) -----------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("fmt,plat", [("vertical", "tiktok"), ("vertical", "youtube-shorts"),
+                                      ("vertical", "instagram-reels"), ("portrait", "instagram-feed"),
+                                      ("square", None)])
+def test_phone_follows_platform_zone(tmp_path, fmt, plat):
+    proj = _voiced(make_gallery(tmp_path / fmt, fmt), **({"platform": plat} if plat else {}))
+    assert safezone.scan(proj, chapter="ch02") == []  # lock, feed, cards, questions, close — в зоне площадки
+    tl, ctx = render.prepare(proj)
+    s = next(s for s in tl["scenes"] if s["template"] == "phone_feed")
+    tpl = render.make_template(ctx, s)
+    tpl.setup()
+    ph, a = tpl.phone, tpl.area
+    half_h, half_w = ph.sh * ph.GLOW_H / 2, ph.sh * ph.GLOW_W / 2
+    assert a.y0 <= ph.strip_cy < ph.cy - half_h and ph.cy + half_h <= a.y1 + 1  # полоса над телефоном, корпус в рамке
+    assert a.x0 <= ph.cx - half_w and ph.cx + half_w <= a.x1

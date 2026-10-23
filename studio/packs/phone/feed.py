@@ -101,14 +101,19 @@ class FeedStrip:
 _PHONES = {}
 
 
-def phone_ctx(ctx):
-    """Один телефон и одна лента на процесс (дорогие спрайты строятся один раз)."""
+STRIP = 200  # полоса над телефоном в высоком кадре (счётчик, ряд-история), пиксели при min(W, H) = 1080
+
+
+def phone_ctx(ctx, area=None):
+    """Один телефон и одна лента на процесс (дорогие спрайты строятся один раз). В высоком кадре телефон вписан
+    в рамку шаблона `area` (Template.area, ROADMAP B2.1) — она общая у всех сцен проекта, склейки незаметны."""
     from ...lang import profile
     title = profile(ctx.get("language"))["ui"]["feed"]
     style = ctx.get("style") or SM.active()
-    key = (ctx["W"], ctx["H"], title, style)
+    box = (area.x0, area.y0, area.x1, area.y1) if area is not None and ctx["H"] >= ctx["W"] else None
+    key = (ctx["W"], ctx["H"], title, style, box)
     if key not in _PHONES:
-        ph = G.Phone(ctx["W"], ctx["H"], style=style)
+        ph = G.Phone(ctx["W"], ctx["H"], style=style, box=box, top=STRIP * min(ctx["W"], ctx["H"]) / 1080)
         if ctx["H"] < ctx["W"]:
             ph.cx = ctx["W"] * 0.30
         _PHONES[key] = (ph, FeedStrip(ph, title=title, style=style))
@@ -119,7 +124,9 @@ class PhoneTemplate(Template):
     uses_phone = True
 
     def setup(self):
-        self.phone, self.feedstrip = phone_ctx(self.ctx)
+        self.phone, self.feedstrip = phone_ctx(self.ctx, self.area)
+        if self.vert:  # карточки и вопросы — вокруг телефона в рамке
+            self.fy = self.phone.cy
         n = self.s["n_frames"]
         off = self.state.get("feed_offset", 0.0)
         self.offs, self.spd = [], []
