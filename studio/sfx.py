@@ -77,17 +77,19 @@ def make(name):
 _CACHE = {}
 
 
-def track(n_samples, events, voice_rms):
-    """events: [(t_глобальное, имя)] -> моно дорожка. voice_rms — средний RMS речи (линейно)."""
+def track(n_samples, events, voice_rms, start=0):
+    """events: [(t_глобальное, имя)] -> моно дорожка из n_samples сэмплов с сэмпла start (кусок ролика, P4.4).
+    voice_rms — средний RMS речи (линейно)."""
     out = np.zeros(n_samples, np.float32)
     for t, name in events:
         if name not in _CACHE:
             _CACHE[name] = make(name)
+        a = int(round(t * SR)) - start
+        if a >= n_samples or a + len(_CACHE[name]) <= 0:
+            continue
         y = _CACHE[name] * voice_rms * 10 ** (LEVEL.get(name, -30) / 20)
-        a = int(round(t * SR))
         if a < 0:
             y, a = y[-a:], 0
         b = min(n_samples, a + len(y))
-        if b > a:
-            out[a:b] += y[: b - a]
+        out[a:b] += y[: b - a]
     return out

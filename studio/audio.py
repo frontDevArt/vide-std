@@ -1,6 +1,7 @@
 """Звук: дорожка голоса по таймлайну (сэмпл-точно), процедурная музыкальная подложка, микс.
 
-- Голос кладётся в позицию «кадр начала сцены + t0 строки» -> рассинхрона с видео нет.
+- Голос кладётся в позицию «кадр начала сцены + t0 строки» -> рассинхрона с видео нет. Дорожка голоса со звуками
+  собирается кусками по BLOCK сэмплов и пишется в WAV сразу int16 — весь ролик в RAM не держится (P4.4).
 - Музыка: одна бесшовная петля, растягивается на весь ролик (на стыках глав музыка не рвётся).
 - Подложка приглушается под голосом (sidechain), итог нормализуется по громкости (LUFS),
   сверху лимитер. Уровни проверяет qa.
@@ -14,32 +15,65 @@ import json
 import math
 import re
 import subprocess
+import wave
 from pathlib import Path
 
 import numpy as np
 
-from . import tts as T
+from . import sfx as FX, tts as T
 from .project import Project
 from .timing import load_timeline
 
 SR = T.SR
 
 
-def voice_track(proj: Project, tl, out: Path) -> str:
-    n = int(round(tl["total_frames"] * SR / tl["fps"]))
-    x = np.zeros(n, np.float32)
+BLOCK = SR * 30  # дорожка голоса собирается кусками по 30 с: весь ролик в RAM не держится (P4.4)
+
+
+def _voice_lines(proj: Project, tl):
+    """Строки озвучки [(сэмпл начала, путь WAV, длина)] в порядке таймлайна."""
     cache = proj.bdir("tts")
+    lines = []
     for s in tl["scenes"]:
         base = s["start_frame"] * SR // tl["fps"]
         for L in s["lines"]:
-            y = T.read_wav(cache / L["wav"])
-            a = base + int(round(L["t0"] * SR))
-            b = min(n, a + len(y))
-            x[a:b] += y[: b - a]
-    if proj.cfg.get("sfx", {}).get("enabled", True):
-        x += sfx_track(proj, tl, n, x)
+            p = cache / L["wav"]
+            with wave.open(str(p), "rb") as w:
+                lines.append((base + int(round(L["t0"] * SR)), p, w.getnframes()))
+    return lines
+
+
+def _voice_block(lines, a0, a1, wavs):
+    """Голос на сэмплах [a0, a1) — float32; wavs — прочитанные строки, что ещё понадобятся следующим кускам."""
+    x = np.zeros(a1 - a0, np.float32)
+    for i, (a, p, ln) in enumerate(lines):
+        lo, hi = max(a, a0), min(a + ln, a1)
+        if lo >= hi:
+            continue
+        if i not in wavs:
+            wavs[i] = T.read_wav(p)
+        x[lo - a0:hi - a0] += wavs[i][lo - a:hi - a]
+    for i in [i for i in wavs if lines[i][0] + lines[i][2] <= a1]:
+        del wavs[i]
+    return x
+
+
+def voice_track(proj: Project, tl, out: Path) -> str:
+    """Голос + звуки появления -> out/voice.wav (int16), кусками по BLOCK сэмплов."""
+    n = int(round(tl["total_frames"] * SR / tl["fps"]))
+    lines = _voice_lines(proj, tl)
+    ev = sfx_events(proj, tl) if proj.cfg.get("sfx", {}).get("enabled", True) else []
+    gain = sfx_gain(proj, lines, n) if ev else 0.0
     out = out / "voice.wav"
-    T.write_wav(out, x)
+    wavs = {}
+    with wave.open(str(out), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
+        for a0 in range(0, n, BLOCK):
+            a1 = min(n, a0 + BLOCK)
+            x = _voice_block(lines, a0, a1, wavs)
+            if ev:
+                x += FX.track(a1 - a0, ev, gain, start=a0)
+            w.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
     return str(out)
 
 
@@ -57,16 +91,16 @@ def sfx_events(proj: Project, tl):
     return sorted(ev)
 
 
-def sfx_track(proj: Project, tl, n, voice):
-    """Звуки появления на −28…−32 dB относительно голоса (STYLE §10). Своя громкость: sfx.level_db (сдвиг)."""
-    from . import sfx as FX
-    ev = sfx_events(proj, tl)
-    if not ev:
-        return np.zeros(n, np.float32)
-    act = voice[np.abs(voice) > 1e-3]
-    rms = float(np.sqrt(np.mean(act ** 2))) if len(act) else 0.05
-    gain = 10 ** (float(proj.cfg.get("sfx", {}).get("level_db", 0)) / 20)
-    return FX.track(n, ev, rms * gain)
+def sfx_gain(proj: Project, lines, n):
+    """Звуки появления на −28…−32 dB относительно голоса (STYLE §10): средний RMS речи — проходом по кускам.
+    Своя громкость: sfx.level_db (сдвиг)."""
+    ss, k, wavs = 0.0, 0, {}
+    for a0 in range(0, n, BLOCK):
+        x = _voice_block(lines, a0, min(n, a0 + BLOCK), wavs)
+        act = x[np.abs(x) > 1e-3].astype(np.float64)
+        ss, k = ss + float(np.sum(act ** 2)), k + len(act)
+    rms = math.sqrt(ss / k) if k else 0.05
+    return rms * 10 ** (float(proj.cfg.get("sfx", {}).get("level_db", 0)) / 20)
 
 
 def music_loop(path, seconds=32.0, seed=5):
@@ -104,7 +138,6 @@ def music_loop(path, seconds=32.0, seed=5):
     out /= np.abs(out).max() + 1e-9
     out *= 10 ** (-6 / 20)
     pcm = (np.clip(out, -1, 1) * 32767).astype(np.int16)
-    import wave
     with wave.open(str(path), "wb") as wf:
         wf.setnchannels(2); wf.setsampwidth(2); wf.setframerate(SR)
         wf.writeframes(pcm.tobytes())
