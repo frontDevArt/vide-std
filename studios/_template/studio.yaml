@@ -4,7 +4,7 @@
 name: __NAME__
 kind: __KIND__             # youtube | brand | client
 languages: __LANGS__
-platforms: __PLATFORMS__   # площадки (профили — ROADMAP B1)
+platforms: __PLATFORMS__   # площадки: профили — python -m studio platforms (studio/platforms.py)
 
 # Настройки проекта по умолчанию: умолчания движка → defaults → project.yaml (project.yaml главнее).
 # Схема — как у project.yaml (studio/config.py). Голос и модель входят в ключ кэша TTS — менять осознанно.

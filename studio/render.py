@@ -24,6 +24,7 @@ from PIL import Image
 from . import gfx as G
 from . import subs as S
 from . import packs as TP
+from . import platforms as PL
 from .codehash import code_hash, scene_code_hash  # noqa: F401  — code_hash: прежнее имя
 from .project import Project, stable_hash, STUDIO_ROOT, VERSION
 from .timing import load_timeline
@@ -77,7 +78,9 @@ def _prepare(proj: Project, draft=False):
     if draft:
         W, H = W // 4 * 2, H // 4 * 2
     preset = DRAFT_PRESET if draft else proj.cfg["render"]["preset"]
-    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset}
+    ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset,
+           "safe": PL.layout_zone(proj.cfg), "subs_top": S.band_top(proj),  # сетка вёрстки: Template.safe/area (B2)
+           "subs_bottom": S.bottom_limit(proj)}  # субтитры над нижним полем зоны площадки (B3)
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
@@ -112,7 +115,8 @@ def _prepare(proj: Project, draft=False):
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
-                                proj.cfg["render"]["crf"], preset, W, H] + ([extra] if extra else [])
+                                proj.cfg["render"]["crf"], preset, W, H, ctx["safe"], ctx["subs_top"]] + ([extra] if extra else [])
+                               + ([ctx["subs_bottom"]] if ctx["subs_bottom"] is not None else [])
                                + ([s["glow"]] if use_glow else []))
     return tl, ctx
 
@@ -222,19 +226,20 @@ def _tiktok_sprite(lines, n_on, size, style):
     return box
 
 
-def draw_subs(img, scene, t, proj_sub_size, W, H, style=None):
+def draw_subs(img, scene, t, proj_sub_size, W, H, style=None, bottom=None):
+    """bottom — низ субтитров не ниже этой доли H (зона площадки, subs.bottom_limit); None — место по формату."""
     style = style or G.SM.active()
     if style.subs in ("karaoke", "tiktok") and scene.get("words"):
-        return _draw_karaoke(img, scene, t, proj_sub_size, W, H, style)
+        return _draw_karaoke(img, scene, t, proj_sub_size, W, H, style, bottom)
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
             a = min(G.prog(t, c["t0"] - 0.02, c["t0"] + 0.08), 1 - G.prog(t, c["t1"] - 0.08, c["t1"]))
             spr = _sub_sprite(tuple(c["lines"]), proj_sub_size, W, style)
-            y = H * (0.835 if H >= W else 0.885)
+            y = S.place(H * (0.835 if H >= W else 0.885), spr.height, H, bottom)
             G.blitc(img, spr, W / 2, y, max(0.0, a), 0.985 + 0.015 * G.eo(G.prog(t, c["t0"], c["t0"] + 0.12)))
 
 
-def _draw_karaoke(img, scene, t, size, W, H, style):
+def _draw_karaoke(img, scene, t, size, W, H, style, bottom=None):
     words = scene["words"]
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
@@ -247,11 +252,11 @@ def _draw_karaoke(img, scene, t, size, W, H, style):
             z = min(W, H) / 1080
             if style.subs == "tiktok":  # крупно и выше интерфейса площадки (правая колонка и низ у TikTok/Reels)
                 spr = _tiktok_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
-                G.blitc(img, spr, W / 2, H * (0.66 if H >= W else 0.80), max(0.0, a))
+                G.blitc(img, spr, W / 2, S.place(H * (0.66 if H >= W else 0.80), spr.height, H, bottom), max(0.0, a))
                 continue
             spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
             cy = H * 0.835 if H >= W else H - 24 * z - spr.height / 2  # горизонталь: низ плашки в 24 px от края (демо)
-            G.blitc(img, spr, W / 2, cy, max(0.0, a))
+            G.blitc(img, spr, W / 2, S.place(cy, spr.height, H, bottom), max(0.0, a))
 
 
 def make_template(ctx, scene):
@@ -275,7 +280,7 @@ def frame(ctx, tpl, scene, f, sub_size):
         composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
-    draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style)
+    draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style, ctx.get("subs_bottom"))
     return img
 
 

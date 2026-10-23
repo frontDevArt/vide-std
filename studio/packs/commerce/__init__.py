@@ -4,7 +4,8 @@
 - tag.py — миксин `PriceTag` (бирка на верёвочке, качание, зачёркивание, груз); receipt.py — миксин `Receipt` (чек);
 - templates.py — шаблоны `commerce.price_tag` и `commerce.number`.
 
-Построен на lab (LabTemplate, фирменные цвета), поэтому шаблоны — `formats: horizontal`, как lab.*.
+Построен на lab (LabTemplate, фирменные цвета); как lab.*, свёрстан во всех форматах: в высоком кадре бирка висит
+у центра рамки шаблона, чек — в нижней трети (ROADMAP B3).
 """
 from . import elements, tag, receipt, templates  # noqa: F401
 from .receipt import Receipt  # noqa: F401

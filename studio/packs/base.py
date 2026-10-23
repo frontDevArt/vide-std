@@ -4,6 +4,21 @@ from __future__ import annotations
 from .. import style as SM
 from ..gfx import eio, eo, lerp, prog
 
+class Box:
+    """Рамка в пикселях кадра: x0, y0, x1, y1 и производные w, h, cx, cy."""
+
+    def __init__(self, x0, y0, x1, y1):
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
+        self.w, self.h = x1 - x0, y1 - y0
+        self.cx, self.cy = (x0 + x1) / 2, (y0 + y1) / 2
+
+    def __repr__(self):
+        return f"Box({self.x0:g}, {self.y0:g}, {self.x1:g}, {self.y1:g})"
+
+
+SAFE = {"top": 0.04, "bottom": 0.04, "left": 0.04, "right": 0.04}  # ctx без "safe" (тесты, старые вызовы)
+
+
 class Template:
     uses_phone = False
 
@@ -14,6 +29,14 @@ class Template:
         self.W, self.H = ctx["W"], ctx["H"]
         self.u = min(self.W, self.H) / 1080
         self.vert = self.H >= self.W
+        # сетка безопасной зоны (ROADMAP B2): поля площадки проекта или формата, интерфейс площадки — в боковых полях
+        # с запасом 1 % на покачивание и сглаживание; self.area — то же без полосы субтитров (тело шаблона)
+        sf, e = ctx.get("safe") or SAFE, 0.01 * min(self.W, self.H)
+        self.safe = Box(sf["left"] * self.W + e, sf["top"] * self.H + e,
+                        self.W * (1 - sf["right"]) - e, self.H * (1 - sf["bottom"]) - e)
+        st = ctx.get("subs_top")
+        self.area = Box(self.safe.x0, self.safe.y0, self.safe.x1,
+                        min(self.safe.y1, st * self.H - 2 * e) if st else self.safe.y1)
         self.D = scene["dur"]
         self.fps = ctx["fps"]
         self.beats = scene["beats"]

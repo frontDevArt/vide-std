@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-FORMATS = ("vertical", "horizontal", "square")
+FORMATS = ("vertical", "horizontal", "square", "portrait")
 PROJECT = "project"
 
 
@@ -140,7 +140,7 @@ REGISTRY = Registry()
 
 def template(name, doc="", params=None, beats="", formats=FORMATS, aliases=()):
     """Регистрирует шаблон: `name` — имя внутри пакета, `aliases` — старые плоские имена, `formats` — форматы кадра,
-    под которые шаблон свёрстан (vertical/horizontal/square)."""
+    под которые шаблон свёрстан (vertical/horizontal/square/portrait)."""
     def deco(cls):
         ns = namespace_of(cls.__module__)
         full = f"{ns}.{name}"

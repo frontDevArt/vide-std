@@ -1,7 +1,7 @@
 """assemble — сборка финального MP4 и субтитров."""
 from __future__ import annotations
 
-from . import project_parser
+from . import add_out, each_out, project_parser
 from ..project import load, resolve_project
 
 
@@ -10,10 +10,11 @@ def add(sp):
     q.add_argument("--allow-stale", action="store_true")
     q.add_argument("--draft", action="store_true", help="из чернового рендера → build/final/<slug>.draft.mp4")
     q.add_argument("--chapters", action="store_true", help="ещё и файлы глав build/chapters/chNN.mp4")
+    add_out(q)
 
 
 def run(a):
     from ..assemble import assemble
-    assemble(load(resolve_project(a.project)), allow_stale=a.allow_stale, draft=a.draft,
-             chapters=a.chapters)
+    for proj in each_out(load(resolve_project(a.project)), a.out):
+        assemble(proj, allow_stale=a.allow_stale, draft=a.draft, chapters=a.chapters)
     return 0

@@ -37,7 +37,8 @@ def test_packs_by_module():
 
 def test_formats_and_typed_params():
     for full, cls in REGISTRY.templates().items():
-        assert cls.FORMATS == (("horizontal",) if full.startswith(("lab.", "commerce.")) else ("vertical", "horizontal", "square"))
+        # lab свёрстан и в высоких кадрах (ROADMAP B2), commerce — с B3
+        assert cls.FORMATS == ("vertical", "horizontal", "square", "portrait")
         assert cls.PARAMS and all(isinstance(p, Param) for p in cls.PARAMS.values())
     assert REGISTRY["lab_full_number"].PARAMS["at"].check("w:median") is None
     assert REGISTRY["counter"].PARAMS["to"].check("сто") == "ожидается число, а не str"
@@ -110,7 +111,7 @@ def test_fake_discounts_templates():
         REGISTRY.drop_namespace("project")
 
 
-def test_validate_types_formats_and_names(tmp_path, capsys):
+def test_validate_types_formats_and_names(tmp_path, capsys, monkeypatch):
     root = make_gallery(tmp_path / "g", "vertical")
     f = root / "script" / "ch01.yaml"
     s = f.read_text(encoding="utf-8")
@@ -118,7 +119,11 @@ def test_validate_types_formats_and_names(tmp_path, capsys):
     f.write_text(s, encoding="utf-8")
     assert cli.main(["validate", str(root)]) == 0
     out = capsys.readouterr().out
-    assert "format: vertical — шаблоны свёрстаны под другой формат: lab.chapter (horizontal)" in out
+    assert "шаблоны свёрстаны под другой формат" not in out  # lab в 9:16 свёрстан (ROADMAP B2)
+    f.write_text(s.replace("template: lab_full_number", "template: commerce.number", 1), encoding="utf-8")
+    monkeypatch.setattr(REGISTRY["commerce.number"], "FORMATS", ("horizontal",))  # явный отказ (до B3 был у commerce)
+    assert cli.main(["validate", str(root)]) == 0
+    assert "format: vertical — шаблоны свёрстаны под другой формат: commerce.number (horizontal)" in capsys.readouterr().out
     f.write_text(s.replace("template: lab.chapter", "template: lab_chaptr", 1), encoding="utf-8")
     assert cli.main(["validate", str(root)]) == 1
     assert "нет шаблона 'lab_chaptr' — может, lab_chapter" in capsys.readouterr().out

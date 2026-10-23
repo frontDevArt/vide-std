@@ -16,6 +16,9 @@ from .elements import (C, SS, VERDICTS, _down, _minutes, _ss_canvas, clock_face,
 from .triggers import SECONDS, _norm, word_time
 
 
+TALL_W, TALL_H = 760, 1300  # рамка, под которую высокая раскладка рассчитана при z = 1
+
+
 # ===================================================================== base template
 class LabTemplate(Template):
     """База шаблонов lab: триггеры по словам, шапка (рубрика + шаги / часы), фокус, уход, вердикт,
@@ -29,7 +32,14 @@ class LabTemplate(Template):
 
     def __init__(self, ctx, scene, state):
         super().__init__(ctx, scene, state)
-        self.z = self.W / 1920 if self.W >= self.H else self.W / 1080
+        # 16:9 — сетка 1920×1080 (STYLE); высокие кадры (9:16, 4:5, 1:1) — своя раскладка в рамке self.area:
+        # z = 1 ≈ зона TikTok в 9:16 (760×1300 px), в 4:5 и 1:1 всё мельче, чтобы стопка влезла по высоте (ROADMAP B2)
+        self.wide = self.W > self.H
+        if self.wide:
+            self.z = self.W / 1920
+        else:
+            self.z = round(min(self.area.w / TALL_W, self.area.h / TALL_H), 3)
+        self.top = self.area.y0 + 150 * self.z  # верх тела под шапкой в высоком кадре
         self.words = scene.get("words") or []
         self._planned = False
 
@@ -234,7 +244,8 @@ class LabTemplate(Template):
         self.draw_body(img, t, T)
         z = self.z
         if self.src is not None:
-            put(img, self.src, 96 * z, self.H - 160 * z + M.bob(T, 0.2) * z,
+            sx, sy = (96 * z, self.H - 160 * z) if self.wide else (self.area.x0, self.area.y1 - self.src.height - 8 * z)
+            put(img, self.src, sx, sy + M.bob(T, 0.2) * z,
                 M.appear(t, self.src_t, self.exit_t if "source" not in self.keep and not self.last else None)[0] * self.vdim(t))
         self.draw_verdict(img, t, T)
         self.draw_neuron(img, t, T)
@@ -248,7 +259,8 @@ class LabTemplate(Template):
         same = prev.get("rubric") == ch.get("rubric") and prev.get("number") == ch.get("number")
         if self.pill is not None:
             k = 1.0 if same else M.ease_out_expo(M.prog(t, 0.2, M.fr(M.F_APPEAR)))
-            put(img, self.pill, 96 * z, 96 * z + (1 - k) * 24 * z + M.bob(T, 1) * z, k)
+            px, py = (96 * z, 96 * z) if self.wide else (self.area.x0, self.area.y0)
+            put(img, self.pill, px, py + (1 - k) * 24 * z + M.bob(T, 1) * z, k)
         clock = ch.get("clock")
         if clock:
             self.draw_clock(img, t, T, clock)
@@ -268,6 +280,8 @@ class LabTemplate(Template):
             widths = [on.width + 20 * z for _, _, on in items]
             x0 = x - sum(widths) - 28 * z * (len(items) - 1)
             y = 112 * z + M.bob(T, 2) * z
+            if not self.wide:  # высокий кадр: шаги второй строкой под рубрикой, от левого поля
+                x0, y = self.area.x0 + 10 * z, self.area.y0 + 80 * z + M.bob(T, 2) * z
             for (i, off, on), w in zip(items, widths):
                 f_cur = M.ease_in_out(M.prog(t, 0.0, M.fr(M.F_FOCUS)))
                 lit = (1 - f_cur) * (i == pstep) + f_cur * (i == cur)
@@ -293,7 +307,10 @@ class LabTemplate(Template):
         m0 = _minutes(self.state.get("lab_clock")) if self.state.get("lab_clock") else m1
         k = M.ease_in_out(M.prog(t, 0.3, 1.2))
         mins = M.lerp(m0, m1, k) if m0 is not None and m1 is not None else 0
-        cx, cy = self.W - 96 * z - face.width / 2, 96 * z + face.height / 2 + M.bob(T, 3) * z
+        if self.wide:
+            cx, cy = self.W - 96 * z - face.width / 2, 96 * z + face.height / 2 + M.bob(T, 3) * z
+        else:
+            cx, cy = self.area.x1 - face.width / 2, self.area.y0 + face.height / 2 + M.bob(T, 3) * z
         put(img, face, cx, cy, 1.0, anchor="c")
         d = ImageDraw.Draw(img, "RGBA")
         for ang, ln, wd in ((mins / 720 * math.tau, 0.24, 4), ((mins % 60) / 60 * math.tau, 0.34, 3)):
@@ -309,6 +326,8 @@ class LabTemplate(Template):
             return
         z = self.z
         f = M.prog(t, self.v_t - 0.05, 0.7)
+        if not self.wide:
+            return self._draw_verdict_tall(img, t, f)
         put(img, self.flash, self.W / 2, self.H * 0.44, math.sin(f * math.pi) * 0.9, anchor="c")
         k = M.spring(M.prog(t, self.v_t, M.fr(M.F_STAMP) + 0.25))
         a = min(1.0, k * 2)
@@ -320,6 +339,23 @@ class LabTemplate(Template):
             put(img, self.v_sub, self.W / 2, self.H * 0.42 + box_h / 2 + 22 * z + self.v_sub.height / 2 + (1 - sk) * 16 * z,
                 sk, anchor="c")
 
+    def _draw_verdict_tall(self, img, t, f):
+        """Высокий кадр: штамп с поворотом и подпись — в ширину рамки self.area; влёт мягче (1,15→1, не 1,4),
+        иначе на влёте штамп шире кадра."""
+        z = self.z
+        pad = int(40 * z * 2.5)  # отступ свечения вокруг штампа
+        bw, bh = self.stamp.width - 2 * pad, self.stamp.height - 2 * pad
+        rw = bw * math.cos(math.radians(8)) + bh * math.sin(math.radians(8))
+        fit = min(1.0, self.area.w * 0.94 / rw, self.area.w / self.v_sub.width if self.v_sub is not None else 1.0)
+        cx, cy = self.area.cx, self.area.y0 + self.area.h * 0.42
+        put(img, self.flash, cx, cy + self.area.h * 0.02, math.sin(f * math.pi) * 0.9, fit, anchor="c")
+        k = M.spring(M.prog(t, self.v_t, M.fr(M.F_STAMP) + 0.25))
+        put(img, self.stamp, cx, cy, min(1.0, k * 2), M.lerp(1.15, 1.0, k) * fit, rot=M.lerp(14, 8, k), anchor="c")
+        if self.v_sub is not None:
+            sk = M.ease_out_expo(M.prog(t, self.v_t + 0.45, M.fr(M.F_APPEAR)))
+            put(img, self.v_sub, cx, cy + (bh / 2 + 22 * z + self.v_sub.height / 2) * fit + (1 - sk) * 16 * z,
+                sk, fit, anchor="c")
+
     def draw_neuron(self, img, t, T):
         if self.n_t is None or t < self.n_t:
             return
@@ -330,7 +366,11 @@ class LabTemplate(Template):
         sur = M.ease_out_expo(M.prog(t, self.n_t + 0.1, 0.3)) * (1 - M.ease_in_out(M.prog(t, self.n_t + 1.4, 0.4)))
         blink = self.n_t + 1.0 < t < self.n_t + 1.12
         spr = neuron_sprite(mood if sur > 0.5 or mood == "facepalm" else "neutral", blink, z)
-        x, y = n.get("x", 830), n.get("y", 700)
         nod = math.sin(M.prog(t, self.n_t + 0.4, 0.8) * math.tau * 2) * 8 * z if mood == "nod" else 0
-        put(img, spr, x * z + 85 * z, y * z + 85 * z + M.bob(T, 4) * k * z + nod, min(1.0, k * 1.6) * (1 - self.gone(t, "neuron")),
+        if self.wide:
+            x, y = n.get("x", 830), n.get("y", 700)
+            nx, ny = x * z + 85 * z, y * z + 85 * z
+        else:  # высокий кадр: справа под штампом (x, y из params — координаты сетки 16:9)
+            nx, ny = self.area.x1 - 95 * z, self.area.y0 + self.area.h * 0.66
+        put(img, spr, nx, ny + M.bob(T, 4) * k * z + nod, min(1.0, k * 1.6) * (1 - self.gone(t, "neuron")),
             M.lerp(0.4, 1, k), rot=math.sin(T * 2.2) * 3 * k, anchor="c")

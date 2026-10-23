@@ -1,13 +1,14 @@
 """voice — озвучка + тайминги (timeline.json)."""
 from __future__ import annotations
 
-from . import project_parser
+from . import add_out, project_parser
 from ..project import load, resolve_project
 
 
 def add(sp):
     q = project_parser(sp, "voice", "озвучка + тайминги")
     q.add_argument("--yes", action="store_true", help="подтвердить платный синтез (elevenlabs)")
+    add_out(q)
 
 
 def elevenlabs_guard(proj, yes):
@@ -31,12 +32,16 @@ def elevenlabs_guard(proj, yes):
 
 def run(a):
     from ..timing import layout
-    proj = load(resolve_project(a.project))
-    if proj.cfg["tts"]["backend"] == "elevenlabs" and not elevenlabs_guard(proj, getattr(a, "yes", False)):
+    base = load(resolve_project(a.project))
+    if base.cfg["tts"]["backend"] == "elevenlabs" and not elevenlabs_guard(base, getattr(a, "yes", False)):
         return 3
-    tl = layout(proj)
-    print(f"Темп {tl['rate']:.0f}, длительность {tl['duration']:.2f} c, {len(tl['scenes'])} сцен, "
-          f"{tl['wpm_speech']} слов/мин в речи")
+    # выходы (ROADMAP B3): синтез один — build/tts/, раскладка (субтитры по ширине кадра) — у каждого своя
+    outs = base.targets(getattr(a, "out", None))
+    tls = [layout(proj) for proj in outs]
+    for proj, tl in zip(outs, tls):
+        print(f"{'[' + proj.out + '] ' if proj.out else ''}Темп {tl['rate']:.0f}, длительность {tl['duration']:.2f} c, "
+              f"{len(tl['scenes'])} сцен, {tl['wpm_speech']} слов/мин в речи")
+    proj, tl = outs[0], tls[0]  # замер голоса, сцены и триггеры одинаковы у всех выходов
     from ..calibration import calibrate
     for w in calibrate(proj, tl):
         print("  ⚠️ ", w)

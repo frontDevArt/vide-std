@@ -10,6 +10,13 @@ import difflib
 from dataclasses import dataclass
 
 SCHEMA_VERSION = 1
+
+FORMATS = {  # формат кадра → (Ш, В); прежнее место — project.FORMATS (оставлено именем)
+    "vertical": (1080, 1920),
+    "horizontal": (1920, 1080),
+    "square": (1080, 1080),
+    "portrait": (1080, 1350),  # 4:5 — лента Instagram (ROADMAP B2)
+}
 _MISSING = object()
 NUM = (int, float)
 NONE = type(None)
@@ -30,7 +37,10 @@ SCHEMA = {
     "audience": F((str,), doc="для кого ролик"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
-    "format": F((str,), "vertical", "vertical | horizontal | square (project.FORMATS)"),
+    "format": F((str,), "vertical", "vertical | horizontal | square | portrait (4:5) (project.FORMATS)"),
+    "platform": F((str, NONE), doc="площадка выхода: youtube | youtube-shorts | tiktok | … (studio/platforms.py)"),
+    "deliverables": F((list, NONE), doc="выходы — площадки (studio/platforms.py): один сценарий и озвучка, у каждого "
+                                        "свои формат, вёрстка, рендер и QA (ROADMAP B3)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
     "tts": {
         "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake"),

@@ -40,20 +40,37 @@ def _size(p: Path) -> int:
 
 
 def _tts_used(proj: Project):
-    """Имена файлов TTS из таймлайна (wav + words.json) или None, если таймлайна нет — тогда TTS не трогаем."""
-    tl = proj.build / "timeline.json"
-    if not tl.exists():
-        return None
+    """Имена файлов TTS из таймлайна (wav + words.json) или None, если таймлайна нет — тогда TTS не трогаем.
+    У проекта с выходами (ROADMAP B3) — из таймлайнов всех выходов; нет хоть одного — None."""
     used = set()
-    for s in json.loads(tl.read_text(encoding="utf-8")).get("scenes", []):
-        for L in s.get("lines", []):
-            stem = Path(L["wav"]).stem
-            used |= {f"{stem}.wav", f"{stem}.words.json"}
+    for o in proj.targets():
+        tl = o.build / "timeline.json"
+        if not tl.exists():
+            return None
+        for s in json.loads(tl.read_text(encoding="utf-8")).get("scenes", []):
+            for L in s.get("lines", []):
+                stem = Path(L["wav"]).stem
+                used |= {f"{stem}.wav", f"{stem}.words.json"}
     return used
 
 
 def targets(proj: Project, keep_final=False):
     """[(группа, путь)] — что удалить."""
+    out = []
+    for o in proj.targets():  # выходы (ROADMAP B3): build/<выход>/, финалы — output/<slug>/<выход>.*
+        out += _build_targets(o, keep_final)
+        fin = o.output_dir()
+        if o.out and not keep_final and fin.exists():
+            out += [("финал", p) for p in sorted(fin.glob(f"{o.out}.*"))]
+    b = proj.root / "build"
+    used = _tts_used(proj)
+    if used is not None and proj.cfg["tts"]["backend"] not in PAID and (b / "tts").exists():
+        out += [("TTS вне таймлайна", p) for p in sorted((b / "tts").iterdir()) if p.is_file() and p.name not in used]
+    out += [("логи build/", p) for p in sorted(b.glob("*.log"))]  # до studio/log.py логи лежали здесь
+    return out
+
+
+def _build_targets(proj: Project, keep_final):
     b = proj.build
     out = [("сцены", b / d) for d in ("render", "render-draft") if (b / d).exists()]
     if (b / "chapters").exists():
@@ -64,10 +81,6 @@ def targets(proj: Project, keep_final=False):
     for p in sorted((b / "final").glob("*")) if (b / "final").exists() else []:
         if not keep_final or p.name.endswith(".draft.mp4"):
             out.append(("финал", p))
-    used = _tts_used(proj)
-    if used is not None and proj.cfg["tts"]["backend"] not in PAID and (b / "tts").exists():
-        out += [("TTS вне таймлайна", p) for p in sorted((b / "tts").iterdir()) if p.is_file() and p.name not in used]
-    out += [("логи build/", p) for p in sorted(b.glob("*.log"))]  # до studio/log.py логи лежали здесь
     return out
 
 

@@ -14,7 +14,7 @@ TOLERANCE = 0.10  # расхождение с таблицей, после ко�
 
 
 def _path(proj: Project):
-    return proj.build / "voice_calibration.json"
+    return proj.root / "build" / "voice_calibration.json"  # голос общий для всех выходов (ROADMAP B3)
 
 
 def _key(proj: Project) -> dict:
@@ -27,7 +27,7 @@ def calibrate(proj: Project, tl: dict) -> list[str]:
     measured = tl["wpm_speech"]
     table = profile(proj.cfg.get("language"))["wpm"]
     data = {**_key(proj), "wpm": measured, "table_wpm": table, "rate": tl.get("rate"), "words": tl.get("words")}
-    proj.build.mkdir(parents=True, exist_ok=True)
+    _path(proj).parent.mkdir(parents=True, exist_ok=True)
     _path(proj).write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
     voices.save_measurement(proj.ws, data["language"], data["backend"], data["voice"], measured,
                             tl.get("rate"), tl.get("words"), proj.slug)

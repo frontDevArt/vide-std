@@ -46,7 +46,7 @@ def pin_fonts():
 
 
 def make_gallery(dst: Path, fmt: str = "horizontal") -> Path:
-    """Копия фикстуры gallery (P0.2) в dst с нужным форматом: vertical | horizontal | square."""
+    """Копия фикстуры gallery (P0.2) в dst с нужным форматом: vertical | horizontal | square | portrait."""
     shutil.copytree(FIXTURE, dst)
     p = dst / "project.yaml"
     p.write_text(p.read_text(encoding="utf-8").replace("format: horizontal", f"format: {fmt}"), encoding="utf-8")

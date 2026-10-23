@@ -32,7 +32,15 @@ def check(proj) -> Report:
         load_project_templates(proj.root)
     except TemplateNameError as e:
         errs.append(f"templates/: {e}")
-    off_format = {}  # шаблон → сцены, когда шаблон не свёрстан под format проекта
+    outs, bad_outs = [], []  # выходы (ROADMAP B3): форматы и пределы площадок — по каждому
+    for o in proj.cfg.get("deliverables") or []:
+        try:
+            outs.append(proj.output(o))
+        except SystemExit as e:
+            bad_outs.append(str(e))
+    errs += bad_outs
+    fmts = list(dict.fromkeys(o.cfg["format"] for o in outs)) or [proj.cfg["format"]]
+    off_format = {}  # шаблон → сцены, когда шаблон не свёрстан под format проекта (или формат одного из выходов)
     ids = set()
     words = 0
     accents = []  # где переопределён голос: правило канала — 1–2 на ролик (крючок, вердикт)
@@ -50,7 +58,7 @@ def check(proj) -> Report:
             else:
                 cls = REGISTRY[tp]
                 warns += params(cls, tp, s.get("params"), f"{ch}/{sid}")
-                if proj.cfg["format"] not in cls.FORMATS:
+                if any(f not in cls.FORMATS for f in fmts):
                     off_format.setdefault(cls, []).append(f"{ch}/{sid}")
             lines = s.get("lines") or []
             if not lines and not s.get("min_duration"):
@@ -77,7 +85,8 @@ def check(proj) -> Report:
                     warns.append(f"{ch}/{sid}: длинный бит без '|' — субтитры порежутся по словам")
     if off_format:
         where = [w for ws in off_format.values() for w in ws]
-        warns.append(f"format: {proj.cfg['format']} — шаблоны свёрстаны под другой формат: "
+        miss = [f for f in fmts if any(f not in c.FORMATS for c in off_format)]
+        warns.append(f"format: {'/'.join(miss)} — шаблоны свёрстаны под другой формат: "
                      + ", ".join(f"{c.NAME} ({'/'.join(c.FORMATS)})" for c in off_format)
                      + f"; сцен {len(where)}: {', '.join(where[:4])}{' …' if len(where) > 4 else ''}")
     from .voices import max_accents
@@ -86,13 +95,18 @@ def check(proj) -> Report:
         warns.append(f"голос переопределён {len(accents)} раз ({', '.join(accents)}) — правило студии: не больше "
                      f"{most} акцентов на ролик (крючок, вердикт), спокойный рассказчик — часть тона")
     style(proj, errs, warns)
-    triggers(proj, errs, warns)
+    triggers(outs[0] if outs else proj, errs, warns)
     from .calibration import wpm
     pace, pace_src = wpm(proj)
     est = words / pace * 60
     tgt = proj.cfg.get("target_duration")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
+    from .platforms import plan_issues
+    for o in outs or [proj]:  # площадка: формат и предел длительности (ROADMAP B1), у выходов — каждая (B3)
+        pe, pw = plan_issues(o, est)
+        errs += pe
+        warns += pw
     return Report(errs, warns, len(ids), words, est, pace, pace_src)
 
 

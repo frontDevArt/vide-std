@@ -134,7 +134,7 @@ class Counter(Template):
 class Outro(Template):
     def setup(self):
         self.txt = G.text_sprite(self.p.get("text", ""), int(96 * self.u), "black", "text", accent="cyan",
-                                 glow=int(26 * self.u), glow_color="violet", maxw=int(self.W * 0.82))
+                                 glow=int(26 * self.u), glow_color="violet", maxw=int(min(self.W * 0.82, self.safe.w)))
         self.sub = G.text_sprite(self.p["sub"], int(40 * self.u), "medium", "dim") if self.p.get("sub") else None
         self.t0 = max(0.0, self.bt(0, 0.2) - 0.2)
 
