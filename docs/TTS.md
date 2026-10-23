@@ -39,9 +39,11 @@
 Латиницу и аббревиатуры `validate` подсвечивает.
 
 ## ElevenLabs (голос канала Notes From The Mind)
-1. `.env` в корне студии (он в `.gitignore`, образец — `.env.example`):
+1. `.env` студии — `studios/<id>/.env`, запасной — корневой `.env` (оба в `.gitignore`, образец — `.env.example`):
    `ELEVENLABS_API_KEY=…`, `ELEVENLABS_VOICE_ID=…` (ID голоса из elevenlabs.io → Voices), опц. `ELEVENLABS_MODEL_ID`.
-2. `project.yaml`: `tts: {backend: elevenlabs, voice: auto, rate: 100}` — `voice: auto` берёт `ELEVENLABS_VOICE_ID`.
+   У каждого клиента свой ключ и голос — см. «Голос на студию» ниже.
+2. `project.yaml`: `tts: {backend: elevenlabs, voice: auto, rate: 100}` — `voice: auto` берёт `ELEVENLABS_VOICE_ID` студии
+   (или голос из `voices:` в `studio.yaml`).
    Темп — **только числом** (подбор `auto` синтезировал бы текст несколько раз — это деньги). `rate/100` → `voice_settings.speed`,
    ограничено 0,7–1,2. Необязательно: `model`, `stability`, `similarity_boost`, `style`, `use_speaker_boost`, `context` — входят в ключ кэша.
 3. `python -m studio voice <проект>` сначала печатает, сколько символов уйдёт в синтез (кэш не считается), и **не синтезирует**
@@ -49,6 +51,29 @@
    `doctor` пишет имя голоса, тариф и остаток символов; ключа нет — ⬜, ключ неверный/голоса нет — ❌. Ключ не печатается.
 4. Эндпоинт `POST /v1/text-to-speech/{voice_id}/with-timestamps` → mp3 + времена символов → слова
    (`build/tts/<hash>.words.json`). 401/403/429 — понятная ошибка без ретраев.
+
+### Голос на студию (ROADMAP A3)
+- **Секреты** (`studio/workspace.py: secret`): свой `studios/<id>/.env` → окружение процесса → корневой `.env`. У студии
+  `default` — окружение → корневой `.env`, как раньше. Студия передаётся в синтез явно (`proj.ws`), поэтому в одном
+  процессе проекты двух клиентов идут каждый со своим ключом. Ключ не попадает ни в cfg, ни в лог, ни в ключ кэша;
+  `studios` и `doctor` пишут только, откуда он взят («свой .env» / «окружение» / «корневой .env»).
+- **Голоса по языкам** — `voices:` в `studio.yaml`, схема как у `tts` в project.yaml:
+  ```yaml
+  voices:
+    en: {backend: elevenlabs, voice: env:ELEVENLABS_VOICE_ID, rate: 100}
+    ru: {backend: piper, voice: ru_RU-ruslan-medium}
+  ```
+  Цепочка: умолчания → `defaults:` студии → `voices[язык проекта]` → project.yaml. `voice: auto` и `rate: auto` в
+  project.yaml голос и темп студии не перебивают (заготовка пишет их всегда); свой `voice`/`rate` проекта — главнее;
+  другой `backend` в проекте — голос студии не применяется целиком. `env:ИМЯ` — значение из `.env` студии.
+  `new --studio <id>` берёт бэкенд из `voices` языка, так что проекты двух студий с одинаковым `project.yaml`
+  звучат разными голосами.
+- **Кэш не смешивается:** ID голоса — в ключе кэша (`build/tts/<hash>.wav`), а `build/` у каждого проекта свой.
+  Ключ API в ключ кэша не входит: тот же голос и текст — тот же звук.
+- **Рабочий темп:** `voice` пишет замер слов/мин ещё и в `studios/<id>/voices.yaml` (язык, бэкенд, хэш ID голоса —
+  сам ID в git не попадает). `validate`/`status` нового проекта студии считают по замеру с первого запуска:
+  проект → студия → таблица языка. fake и студия `default` (без `studio.yaml`) замеры на студию не пишут.
+- **Политика акцентов:** `max_accents: 2` в `studio.yaml` — сколько `voice:` сцен/строк на ролик без ⚠️ в `validate`.
 
 ### Сквозная интонация: `previous_text` / `next_text`
 Каждая строка синтезируется отдельно, но в запрос уходят тексты соседних строк **в пределах главы** (через границы
@@ -72,7 +97,7 @@
       - {text: "This one is false.", voice: {style: 0.4, stability: 0.35, speed: 0.95}}   # поверх сцены
 ```
 Ниже `stability` и выше `style` — живее и эмоциональнее, но нестабильнее. **Правило канала: 1–2 акцента на ролик**
-(крючок в начале, вердикт); спокойный рассказчик — часть тона (`channel/POSITIONING.md` §14). Больше двух — `validate` ⚠️.
+(крючок в начале, вердикт); спокойный рассказчик — часть тона (`studios/notes-from-the-mind/channel/POSITIONING.md` §14). Больше двух — `validate` ⚠️.
 
 ### `eleven_v3` и теги эмоций — только эксперимент
 Теги `[whispers]`, `[sighs]`, `[excited]`, `[pause]` понимает только `eleven_v3`. Риски: ниже стабильность, тембр

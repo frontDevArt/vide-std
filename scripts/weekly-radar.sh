@@ -3,7 +3,7 @@
 # Запускает /topic-radar в Claude CLI в фоновом (headless) режиме и пишет лог.
 #
 # Ручной запуск:   bash scripts/weekly-radar.sh            (или с фокусом: bash scripts/weekly-radar.sh money)
-# По расписанию:   Windows — scripts/weekly-radar.ps1 (Планировщик заданий), macOS/Linux — cron, см. channel/README.md
+# По расписанию:   Windows — scripts/weekly-radar.ps1 (Планировщик заданий), macOS/Linux — cron, см. studios/notes-from-the-mind/channel/README.md
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ CLAUDE_BIN="${CLAUDE_BIN:-$(command -v claude || true)}"
 [ -z "$CLAUDE_BIN" ] && { echo "Не найден claude: задайте CLAUDE_BIN=/полный/путь/к/claude" >&2; exit 1; }
 
 FOCUS="${1:-}"
-mkdir -p research/radar logs
+mkdir -p studios/notes-from-the-mind/research/radar logs
 LOG="logs/radar-$(date +%Y-%m-%d).log"
 
 # Разрешаем ровно то, что нужно радару: поиск, чтение страниц и работу с файлами проекта.
@@ -26,4 +26,4 @@ LOG="logs/radar-$(date +%Y-%m-%d).log"
   --allowedTools "WebSearch,WebFetch,Read,Write,Edit,Glob,Grep,Bash(date:*),Bash(mkdir:*)" \
   </dev/null >"$LOG" 2>&1
 
-echo "Радар готов. Отчёт: research/radar/  ·  Лог: $LOG"
+echo "Радар готов. Отчёт: studios/notes-from-the-mind/research/radar/  ·  Лог: $LOG"

@@ -20,15 +20,17 @@
 | `cli.py` | разбор аргументов `python -m studio …`; сами команды — `commands/<команда>.py` (`add(sp)` — аргументы, `run(a)` — код возврата, тяжёлые импорты внутри `run`); новая команда = модуль + имя в `commands.NAMES` |
 | `validate.py` | проверка сценария: `check(proj)` → `Report` (ошибки, предупреждения, слова, оценка речи); печатает команда |
 | `project.py` | загрузка `project.yaml` + глав, пути внутри проекта (`build/`, `qa/`) |
-| `workspace.py` | где данные студии: `projects/`, `channel/`, `briefs/`, `research/`, `logs/`, `.env`, `tools/`; `current()` — по умолчанию корень студии, `use()` — другая папка (точка входа мультистудии, ROADMAP A1); `load_env` — секреты из `.env` рабочей области. Остальной код пути данных сам не склеивает |
+| `workspace.py` | где данные студии (workspace): `projects/`, `channel/`, `briefs/`, `research/`, `logs/`, `.env`, `tools/`; студии (ROADMAP A1) — `default` (корень) и `studios/<id>/` с `studio.yaml`: `studio(id)`, `studios()`, `find(slug)`, `owner(проект)`; `current()` — текущая (`--studio`), `use()` — другая; `load_env` — `.env` студии, запасной — корневой; `secret(имя, ws)` — секрет студии без общего os.environ (свой `.env` → окружение → корневой, ROADMAP A3). Остальной код пути данных сам не склеивает |
+| `voices.py` | голос студии (ROADMAP A3): `voices:` по языкам из `studio.yaml` — слой tts между `defaults` и project.yaml, `env:ИМЯ`; `max_accents`; замеры темпа голоса на студию — `studios/<id>/voices.yaml` |
 | `textutil.py` | текст строки: сегменты `\|`, текст для TTS и для экрана, вес слогов для оценки длительности, ёмкость субтитров |
 | `lang.py` | профиль языка (`language`): голоса по умолчанию, фраза проверки TTS, ориентир темпа (`wpm`), «чужой алфавит» для validate |
 | `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |
 | `tts.py` | бэкенды TTS, кэш, обрезка тишины, поиск пауз |
 | `timing.py` | раскладка: строки → биты → сцены → кадры; подбор темпа под точную длительность |
-| `calibration.py` | замер слов/мин голоса после `voice` → `build/voice_calibration.json`; темп для `validate`/`status` |
+| `calibration.py` | замер слов/мин голоса после `voice` → `build/voice_calibration.json` и `voices.yaml` студии; темп для `validate`/`status`: проект → студия → язык |
 | `subs.py` | нарезка субтитров по битам, перенос ≤ N строк по реальной ширине шрифта, SRT/VTT |
-| `style.py` | `Style` — палитра, настроение, шрифты по ролям, фон, камера, режим субтитров; строится из `project.yaml → style`, неизменяемый; `use()`/`active()` — стиль для хелперов gfx без `style=` |
+| `style.py` | `Style` — палитра, настроение, шрифты по ролям, фон, камера, режим субтитров; строится из `project.yaml → style` (с китом — из `style.kit`), неизменяемый; `use()`/`active()` — стиль для хелперов gfx без `style=` |
+| `brand.py` | бренд-кит студии `brand/brand.yaml` (ROADMAP A2, [`BRAND.md`](BRAND.md)): проверка, `resolve` — `style.brand` → `cfg["style"]["kit"]` в `project.load` |
 | `anim.py` | прогресс и кривые для всех пакетов: `span(t, a, b)` — отрезок, `ramp(t, start, dur)` — длительность; кубические `eo`/`eio`/`eob`/`ei`, CSS-кривые STYLE §6 (`ease_out_expo`, `ease_in_out`, `ease_in`), `spring` |
 | `gfx.py` | шрифты, easing (из `anim`, `prog` = `span`), спрайты со свечением, фон, иконки, телефон (`style=` у хелперов, стиль — в ключе кэшей) |
 | `packs/` | пакеты шаблонов сцен: `registry.py` (реестр с пространствами имён `core.title`, `lab.flow`, `project.<имя>`; старые плоские имена — алиасы; коллизия → ошибка; `Param` — тип, умолчание, описание; `formats`), `base.py` (`Template`), `core/` (title, statement, bullets, counter, outro), `phone/` (телефон с лентой + 5 шаблонов первого ролика), `lab/` (пресет канала: `background` — фон и камера (`composite_camera` — affine только по плиткам с контентом, P3.1), `elements` — примитивы и фирменные элементы, `triggers` — `at`, `check` — проверка `at` для validate/voice, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны), `commerce/` (на основе lab: `elements` — бирка, чек, цепь, `thousands`; миксины `PriceTag` и `Receipt`; шаблоны `price_tag`, `number`); `reference.py` — справочник шаблонов в Markdown из метаданных (`templates --md`, блок в `SCENE_SPEC.md`, P5.3); `load_project_templates` — шаблоны проекта в пространство `project` |
@@ -45,6 +47,26 @@
 | `qa.py` | автопроверки + листы кадров из готового файла |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
 | `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4) |
+
+## Студии (ROADMAP A1)
+Студия (workspace) — канал, бренд или клиент. Раскладку папок знает только `workspace.py`:
+```
+./                       студия default: projects/ (старые проекты), logs/, .env, tools/ (голоса — общие)
+studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, channel/, briefs/, research/, projects/, .env (свой ключ и голос, запасной — корневой), voices.yaml (замеры темпа)
+```
+- `python -m studio --studio <id> <команда>` делает студию текущей на время команды (`workspace.use`); `new --studio <id>`
+  — то же для нового проекта. Без флага текущая — `default`, а slug, которого в ней нет, ищется во всех студиях
+  (`workspace.find`); один и тот же slug в двух студиях — ошибка с просьбой указать `--studio`.
+- Настройки проекта: `config.DEFAULTS` → `defaults:` из `studio.yaml` студии-владельца (`workspace.owner` — по пути
+  проекта) → `project.yaml`. `defaults` проверяются той же схемой, что и `project.yaml`. Заготовка `new` — своя
+  `projects/_template` студии, иначе общая из корня; `language`/`format` без флагов — из `defaults` студии.
+- Ключи кэша TTS и рендера от пути проекта не зависят (хэш кода — по содержимому файлов), поэтому перенос проекта
+  в студию вместе с `build/` ничего не пересчитывает. `python -m studio studios` — список студий и их проектов.
+- Новая студия (ROADMAP A4): `python -m studio new-studio <id> --name … --kind … --lang … --platforms …` копирует
+  заготовку `studios/_template/` (не студия: `_`-папки `studios()` пропускает) — `studio.yaml` с голосами по языкам,
+  `brand/brand.yaml`, `CLAUDE.md`, для `youtube` — `channel/POSITIONING.md` — и создаёт проект демо стиля
+  `projects/<id>-style/` (сценарий `demo/ch01.yaml` на языке студии, шаблоны `core.*` — все форматы). Мастер
+  Claude — `/new-studio`: анкета из описания, кит по референсу (BRAND.md), демо 10–15 с на утверждение.
 
 ## Почему склейки не видны («как будто сделано за один заход»)
 1. **Единое время.** Сцена знает своё глобальное начало (кадр). Фон — функция глобального времени,
@@ -81,7 +103,7 @@
 и перерендерятся (`status` это покажет). Поэтому: правки текста — до рендера поздних глав.
 
 ## Замеры
-Машина: i7-13700 (8 P + 8 E ядер, 24 потока), 32 ГБ, Windows 11, Python 3.14. Эталон — `projects/fake-discounts`
+Машина: i7-13700 (8 P + 8 E ядер, 24 потока), 32 ГБ, Windows 11, Python 3.14. Эталон — `studios/notes-from-the-mind/projects/fake-discounts`
 (1920×1080, 46 сцен, 12 569 кадров = 6:59). Все разделы и способ снять заново (`tools/bench.py`) —
 [`history/BENCH.md`](history/BENCH.md).
 

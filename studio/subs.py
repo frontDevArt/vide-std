@@ -3,11 +3,15 @@ from __future__ import annotations
 
 from . import gfx
 
+TIKTOK_SCALE = 1.6  # крупные субтитры бренд-кита (subs: tiktok) относительно обычных
+
 
 def font_size(proj):
     W, H = proj.size
     s = proj.cfg["subtitles"].get("size")
-    return int(s) if s else int(round(min(W, H) * 0.052))
+    s = int(s) if s else int(round(min(W, H) * 0.052))
+    kit = (proj.cfg.get("style") or {}).get("kit") or {}
+    return int(s * TIKTOK_SCALE) if kit.get("subs") == "tiktok" else s  # перенос и QA — тем размером, что рисуется
 
 
 def max_width(proj):

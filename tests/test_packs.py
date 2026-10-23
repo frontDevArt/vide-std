@@ -101,7 +101,7 @@ def test_lab_patch_reaches_package():
 
 
 def test_fake_discounts_templates():
-    load_project_templates(ROOT / "projects" / "fake-discounts")
+    load_project_templates(ROOT / "studios" / "notes-from-the-mind" / "projects" / "fake-discounts")
     try:
         assert REGISTRY.canonical("fd_number") == "project.fd_number"
         assert REGISTRY.canonical("lab_anchor") == "project.lab_anchor"

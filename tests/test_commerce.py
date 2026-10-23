@@ -7,6 +7,8 @@ from studio.packs.commerce import CommerceNumber, PriceTag, Receipt
 from studio.packs.commerce.elements import rot, thousands
 from studio.packs.lab import elements
 
+FAKE_DISCOUNTS = ROOT / "studios" / "notes-from-the-mind" / "projects" / "fake-discounts"  # ROADMAP A1
+
 CTX = {"W": 960, "H": 540, "fps": 30, "language": "en"}
 TAG = {"was": "$199", "now": "$99", "x": 480, "y": 160, "scale": 0.8, "at": 0, "strike_at": 1.0, "now_at": 1.6}
 RECEIPT = {"title": "MONEY BRAIN · RECEIPT", "lines": [{"text": "ANCHOR|$1", "at": 0.5}, {"text": "TOTAL", "at": 2.0}],
@@ -65,7 +67,7 @@ def test_price_tag_draws_and_carries_state():
 
 
 def test_lab_anchor_is_price_tag_with_project_state_keys():
-    load_project_templates(ROOT / "projects" / "fake-discounts")
+    load_project_templates(FAKE_DISCOUNTS)
     try:
         anchor = REGISTRY["lab_anchor"]
         assert issubclass(anchor, PriceTag) and issubclass(anchor, Receipt)
@@ -85,5 +87,5 @@ def test_icons_moved_to_lab():
     # иконки fake-discounts теперь в lab: money.py больше не подменяет studio.lab._li
     for name in ("wheel", "house", "timer", "anchor", "receipt"):
         assert elements.line_icon(name, 40).getchannel("A").getbbox()
-    src = (ROOT / "projects" / "fake-discounts" / "templates" / "money.py").read_text(encoding="utf-8")
+    src = (FAKE_DISCOUNTS / "templates" / "money.py").read_text(encoding="utf-8")
     assert "_li" not in src

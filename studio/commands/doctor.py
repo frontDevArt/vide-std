@@ -63,11 +63,15 @@ def run(a):
             except Exception as e:
                 print(f"  ⬜ TTS [{code}] {be}: {str(e)[:110]}")
     import os
-    if not os.environ.get("ELEVENLABS_API_KEY", "").strip():  # .env уже прочитан при импорте tts
-        print("  ⬜ TTS ElevenLabs: ключа нет (ELEVENLABS_API_KEY в .env) — не проверяем")
+    from .. import workspace
+    ws = workspace.current()  # --studio <id>: ключ и голос этой студии (ROADMAP A3)
+    src = workspace.secret_source("ELEVENLABS_API_KEY", ws)
+    if src == "нет":
+        print("  ⬜ TTS ElevenLabs: ключа нет (ELEVENLABS_API_KEY в .env студии или корневом) — не проверяем")
     else:
-        try:  # платный голос канала: проверяем бесплатно, без синтеза; ключ не печатается
-            line(True, "TTS ElevenLabs —", tts.el_check() + " (бесплатная проверка, без синтеза)")
+        try:  # платный голос студии: проверяем бесплатно, без синтеза; ключ не печатается
+            line(True, f"TTS ElevenLabs [{ws.id}, ключ: {src}] —",
+                 tts.el_check(ws=ws) + " (бесплатная проверка, без синтеза)")
         except Exception as e:
             line(False, "TTS ElevenLabs:", str(e)[:200])
     from ..render import default_workers

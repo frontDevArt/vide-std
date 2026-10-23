@@ -7,11 +7,11 @@ import importlib
 
 # порядок = порядок в `python -m studio --help`
 NAMES = ("doctor", "new", "validate", "voice", "stills", "render", "assemble", "qa", "all", "status", "templates",
-         "frame", "demo", "selftest", "clean")
+         "frame", "demo", "selftest", "clean", "studios", "new-studio")
 
 
 def module(name):
-    return importlib.import_module(f".{name}", __name__)
+    return importlib.import_module(f".{name.replace('-', '_')}", __name__)
 
 
 def project_parser(sp, name, help):

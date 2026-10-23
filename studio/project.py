@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
-from . import workspace
+from . import brand, voices, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
 
@@ -56,28 +56,51 @@ class Project:
     def slug(self) -> str:
         return self.root.name
 
+    @property
+    def ws(self) -> "workspace.Workspace":
+        """Студия проекта: её `.env` (ключ и голос), `voices.yaml` (замеры темпа), правила."""
+        return workspace.owner(self.root)
+
     def final_path(self) -> Path:
         return self.bdir("final") / f"{self.slug}.mp4"
 
 
 def load(root) -> Project:
     root = Path(root).resolve()
-    if (root / "project.yaml").exists() is False and workspace.current().project(root.name).exists():
-        root = workspace.current().project(root.name)
+    if not (root / "project.yaml").exists():
+        try:
+            root = resolve_project(root.name)  # slug: текущая студия, без --studio — все студии
+        except SystemExit:
+            pass  # пусть open ниже скажет, какого файла нет
     with open(root / "project.yaml", encoding="utf-8") as f:
         user = yaml.safe_load(f) or {}
     for w in check(user):  # опечатка в ключе не должна молча игнорироваться (studio/config.py)
         print(f"⚠️  project.yaml: {w}")
-    cfg = deep_merge(DEFAULTS, migrate(user))
+    ws = workspace.owner(root)  # студия проекта (ROADMAP A1): её defaults и .env
+    studio_defaults = ws.config.get("defaults") or {}
+    for w in check(studio_defaults):
+        print(f"⚠️  {ws.root.name}/studio.yaml, defaults: {w}")
+    user, studio_defaults = migrate(user), migrate(studio_defaults)
+    # голос студии для языка проекта (ROADMAP A3): DEFAULTS → defaults → voices[язык] → project.yaml
+    lang = user.get("language") or studio_defaults.get("language") or DEFAULTS["language"]
+    vl, ut = voices.merge_user(voices.layer(ws, lang), user.get("tts"))
+    if "tts" in user:
+        user["tts"] = ut
+    cfg = deep_merge(DEFAULTS, deep_merge(studio_defaults, deep_merge({"tts": vl} if vl else {}, user)))
+    cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
-    if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):
-        workspace.load_env()  # голос канала — ELEVENLABS_VOICE_ID в .env (ID голоса — не секрет, ключ — секрет)
-        cfg["tts"]["voice"] = os.environ.get("ELEVENLABS_VOICE_ID", "")
-    if cfg["tts"]["backend"] == "elevenlabs" and not cfg["tts"].get("model"):
-        workspace.load_env()  # модель канала — ELEVENLABS_MODEL_ID в .env; входит в ключ кэша (tts.cache_key)
-        if os.environ.get("ELEVENLABS_MODEL_ID", "").strip():
-            cfg["tts"]["model"] = os.environ["ELEVENLABS_MODEL_ID"].strip()
+    tc = cfg["tts"]
+    for k in ("voice", "model"):  # env:ИМЯ — из .env студии (свой голос клиента)
+        if k in tc:
+            tc[k] = voices.resolve_env(tc[k], ws)
+    if tc["backend"] == "elevenlabs" and tc.get("voice") in (None, "auto", "env"):
+        # голос студии — ELEVENLABS_VOICE_ID: свой .env студии, иначе корневой (ID голоса — не секрет, ключ — секрет)
+        tc["voice"] = workspace.secret("ELEVENLABS_VOICE_ID", ws)
+    if tc["backend"] == "elevenlabs" and not tc.get("model"):
+        # модель студии — ELEVENLABS_MODEL_ID; входит в ключ кэша (tts.cache_key)
+        if workspace.secret("ELEVENLABS_MODEL_ID", ws):
+            tc["model"] = workspace.secret("ELEVENLABS_MODEL_ID", ws)
     if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
         cfg["tts"]["voice"] = "fake"  # голос не нужен; не берём из LANGS, чтобы doctor не считал fake «синтезом»
     if cfg["tts"].get("voice") in (None, "auto"):
@@ -98,6 +121,7 @@ def load(root) -> Project:
 
 def resolve_project(arg: str | None) -> Path:
     """Аргумент может быть путём или slug из projects/ рабочей области (studio/workspace.py).
+    Slug не в текущей студии и она `default` (нет `--studio`) — ищем во всех студиях.
     Без аргумента — текущий каталог."""
     if not arg:
         cwd = Path(os.getcwd())
@@ -107,7 +131,15 @@ def resolve_project(arg: str | None) -> Path:
     p = Path(arg)
     if (p / "project.yaml").exists():
         return p.resolve()
-    q = workspace.current().project(arg)
+    ws = workspace.current()
+    q = ws.project(arg)
     if (q / "project.yaml").exists():
         return q
+    if ws.id == workspace.DEFAULT and ws.root.resolve() == workspace.ROOT.resolve():
+        found = workspace.find(arg)
+        if len(found) == 1:
+            return found[0]
+        if found:
+            ids = ", ".join(workspace.owner(f).id for f in found)
+            raise SystemExit(f"Проект {arg} есть в нескольких студиях ({ids}): python -m studio --studio <id> …")
     raise SystemExit(f"Проект не найден: {arg}")

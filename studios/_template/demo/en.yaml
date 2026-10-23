@@ -1,0 +1,18 @@
+# Демо стиля студии 10–15 с (/new-studio): `python -m studio demo __ID__-style` → projects/__ID__-style-demo/.
+# Заготовка: переписать под нишу/продукт студии — крючок, одна цифра или факт, CTA. Шаблоны core.* — во всех форматах.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: title
+    lines: ["__NAME__. | A quick look at our style."]
+    min_duration: 3
+    params: {kicker: "__NAME__", title: "Style demo"}
+  - id: s02
+    template: counter
+    lines: ["One number | tells the whole story."]
+    params: {from: 0, to: 87, suffix: "%", label: "of viewers remember the colour", at_beat: 1, color: accent}
+  - id: s03
+    template: outro
+    lines: ["That is the look. | Simple, bright and on brand."]
+    params: {text: "Simple, bright, *on brand*", sub: "__NAME__"}

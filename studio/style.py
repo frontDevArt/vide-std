@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import functools
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -88,34 +89,52 @@ def mood_colors(mood=None, overrides=None, base=None):
 
 @dataclass(frozen=True)
 class Style:
-    """Сравнение и хэш — по входам (палитра, настроение, overrides, семейство шрифта); остальное выводится."""
+    """Сравнение и хэш — по входам (палитра, настроение, overrides, семейство шрифта, кит); остальное выводится."""
     palette: str = "neon"
     mood: str | None = None
     overrides: tuple = ()          # ((ключ, "#hex"), ...) отсортировано
     font: str = DEFAULT_FONT       # семейство для fc-match, когда у пресета нет своих файлов
+    kit: str = ""                  # бренд-кит (studio/brand.py) — JSON; пусто — встроенные PALETTES/STYLES
 
     @classmethod
     def from_cfg(cls, style: dict | None) -> "Style":
-        """project.yaml → style: palette, mood, overrides, font."""
+        """project.yaml → style: palette, mood, overrides, font; kit — развёрнутый бренд-кит (brand.resolve)."""
         style = style or {}
-        return cls(style.get("palette", "neon"), style.get("mood"),
-                   tuple(sorted((style.get("overrides") or {}).items())), style.get("font") or DEFAULT_FONT)
+        kit = style.get("kit")
+        return cls(kit["base"] if kit else style.get("palette", "neon"), style.get("mood"),
+                   tuple(sorted((style.get("overrides") or {}).items())), style.get("font") or DEFAULT_FONT,
+                   json.dumps(kit, sort_keys=True, ensure_ascii=False) if kit else "")
 
     def __post_init__(self):
         self.pal  # неверное настроение/overrides — ошибка сразу, как раньше в apply_style
 
     def __reduce__(self):  # в воркеры рендера — только входы; производные пересчитаются
-        return (Style, (self.palette, self.mood, self.overrides, self.font))
+        return (Style, (self.palette, self.mood, self.overrides, self.font, self.kit))
+
+    @functools.cached_property
+    def brand(self):
+        """Бренд-кит (только чтение) или None."""
+        return MappingProxyType(json.loads(self.kit)) if self.kit else None
 
     @functools.cached_property
     def pal(self):
         """Палитра с цветами настроения (только чтение)."""
-        p = dict(PALETTES.get(self.palette, PALETTES["neon"]))
+        if self.brand:
+            p = {k: tuple(v) for k, v in self.brand["colors"].items()}
+        else:
+            p = dict(PALETTES.get(self.palette, PALETTES["neon"]))
         p.update(mood_colors(self.mood, dict(self.overrides), base=p))
         return MappingProxyType(p)
 
     @functools.cached_property
     def preset(self):
+        """Фон, камера, субтитры, шрифты по ролям: из кита, иначе встроенный пресет палитры (STYLES)."""
+        if self.brand:
+            b = self.brand
+            root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            fonts = {r: os.path.normpath(os.path.join(root, p)) for r, p in b["fonts"].items()}
+            return MappingProxyType({"background": b["background"]["type"], "camera": b["camera"],
+                                     "subs": b["subs"], "fonts": fonts})
         return MappingProxyType(STYLES.get(self.palette, {}))
 
     @property
@@ -132,12 +151,17 @@ class Style:
 
     @property
     def fonts(self):
-        """Файлы шрифтов по ролям (head | num | mono), пути от assets/. Пусто — системное семейство `font`."""
+        """Файлы шрифтов по ролям (head | num | mono), пути от assets/ (кита — абсолютные). Пусто — системное семейство `font`."""
         return self.preset.get("fonts") or {}
 
     @property
+    def shape(self):
+        """Радиус и толщина линий бренда (дизайн-пиксели 1920×1080): {radius, line}; пусто — токены шаблонов."""
+        return dict(self.brand["shape"]) if self.brand else {}
+
+    @property
     def key(self):
-        return (self.palette, self.mood, self.overrides, self.font)
+        return (self.palette, self.mood, self.overrides, self.font, self.kit)
 
     def col(self, c, a=255):
         """'cyan' | (r,g,b) | '#rrggbb' -> (r,g,b,a); неизвестное имя — accent."""

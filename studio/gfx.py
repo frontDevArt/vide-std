@@ -355,6 +355,35 @@ class Background:
         return img
 
 
+class SolidBackground:
+    """Сплошной фон бренд-кита (`background: solid`): цвет bg, без пятен."""
+
+    def __init__(self, W, H, style=None):
+        pal = _st(style).pal
+        self.base = Image.new("RGBA", (W, H), tuple(pal.get("bg", pal["bg_top"])) + (255,))
+
+    def frame(self, T, energy=1.0):
+        return self.base.copy()
+
+
+class PhotoBackground:
+    """Фото-подложка бренд-кита (`background: {type: image, file, dim}`): кадрирование по центру «cover»,
+    затемнение к цвету bg на долю dim — текст поверх читается."""
+
+    def __init__(self, W, H, file, dim=0.45, style=None):
+        pal = _st(style).pal
+        src = Image.open(file).convert("RGB")
+        k = max(W / src.width, H / src.height)
+        src = src.resize((max(W, round(src.width * k)), max(H, round(src.height * k))), Image.LANCZOS)
+        x, y = (src.width - W) // 2, (src.height - H) // 2
+        src = src.crop((x, y, x + W, y + H))
+        tint = Image.new("RGB", (W, H), tuple(pal.get("bg", pal["bg_top"])))
+        self.base = Image.blend(src, tint, float(dim)).convert("RGBA")
+
+    def frame(self, T, energy=1.0):
+        return self.base.copy()
+
+
 # ------------------------------------------------------------------ icons
 def _ic_clock(d, s, c, w):
     d.ellipse((w, w, s - w, s - w), outline=c, width=w)

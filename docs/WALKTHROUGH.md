@@ -79,8 +79,8 @@
 
 | Команда | Что делает | Где описана |
 |---|---|---|
-| `/topic-radar [фокус]` | ищет 10 тем недели с источниками и вердиктом → `research/radar/<ГГГГ-Wнн>.md` | `.claude/commands/topic-radar.md` |
-| `/topic-to-brief N` | тема N из радара → полный бриф `briefs/<имя>.md` | `.claude/commands/topic-to-brief.md` |
+| `/topic-radar [фокус]` | ищет 10 тем недели с источниками и вердиктом → `studios/notes-from-the-mind/research/radar/<ГГГГ-Wнн>.md` | `.claude/commands/topic-radar.md` |
+| `/topic-to-brief N` | тема N из радара → полный бриф `studios/notes-from-the-mind/briefs/<имя>.md` | `.claude/commands/topic-to-brief.md` |
 | `/new-video <тема или бриф>` | бриф → план → (короткий ролик) сразу MP4; длинный — первая глава | `.claude/commands/new-video.md` |
 | `/next [slug]` | один следующий законченный шаг проекта (следующая глава / рендер / сборка) | `.claude/commands/next.md` |
 | `/chapter <slug> chNN [что]` | написать или переписать одну главу до отрендеренной | `.claude/commands/chapter.md` |
@@ -102,7 +102,7 @@ video-studio/
 │  ├─ commands/<команда>.py  по модулю на команду (doctor, new, validate, voice, stills, render, assemble, qa, all,
 │  │                         status, templates, frame, demo, selftest, clean)
 │  ├─ config.py              схема project.yaml: ключи, типы, умолчания, миграция версий
-│  ├─ project.py, workspace.py   загрузка проекта; где лежат данные (projects/, channel/, .env, logs/)
+│  ├─ project.py, workspace.py   загрузка проекта; где лежат данные и студии (studios/, projects/, .env, logs/)
 │  ├─ tts.py                 голоса и кэш озвучки
 │  ├─ timing.py              раскладка по времени → timeline.json
 │  ├─ calibration.py         замер реального темпа голоса
@@ -115,11 +115,14 @@ video-studio/
 │  ├─ status.py, clean.py, log.py, selftest.py
 │  ├─ style.py, gfx.py, anim.py, motion.py    стиль, рисование, кривые, тайминги движения
 │  └─ packs/                 ШАБЛОНЫ СЦЕН: core/ (title, statement…), phone/, lab/ (стиль канала), commerce/
-├─ projects/                 РОЛИКИ: по папке на ролик; _template/ — заготовка для `new`
-├─ channel/                  канал Notes From The Mind: POSITIONING.md (закон тем), STYLE.md (визуал),
-│                            style-demo.html (эталон движения), topics-log.md, visuals-log.md, README.md
-├─ briefs/                   брифы роликов; _TEMPLATE.md — шаблон из 11 разделов
-├─ research/radar/           отчёты радара по неделям
+├─ projects/                 РОЛИКИ студии default; _template/ — заготовка для `new` (общая для всех студий)
+├─ studios/<id>/             СТУДИИ (ROADMAP A1): studio.yaml, CLAUDE.md, свои channel/ briefs/ research/ projects/
+│  └─ notes-from-the-mind/   канал Notes From The Mind:
+│     ├─ channel/            POSITIONING.md (закон тем), STYLE.md (визуал), style-demo.html (эталон движения),
+│     │                      topics-log.md, visuals-log.md, README.md
+│     ├─ briefs/             брифы роликов; _TEMPLATE.md — шаблон из 11 разделов
+│     ├─ research/radar/     отчёты радара по неделям
+│     └─ projects/           ролики канала (fake-discounts — живой эталон)
 ├─ scripts/                  weekly-radar.ps1 / .sh — автозапуск радара
 ├─ docs/                     PHASES, ARCHITECTURE, SCENE_SPEC, TTS, LESSONS, AUDIT, REFACTOR_PLAN, ROADMAP, history/
 ├─ tests/                    ~40 файлов pytest, fixtures/gallery (все шаблоны), golden/ (эталоны)
@@ -170,7 +173,7 @@ projects/<slug>/
 
 ```mermaid
 flowchart LR
-  R["/topic-radar<br/>research/radar/*.md"] --> B["/topic-to-brief N<br/>briefs/*.md"]
+  R["/topic-radar<br/>studios/notes-from-the-mind/research/radar/*.md"] --> B["/topic-to-brief N<br/>studios/notes-from-the-mind/briefs/*.md"]
   B --> NV["/new-video brief"]
   NV --> P1["Ф1 project.yaml<br/>+ демо стиля"]
   P1 --> P2["Ф2 outline.md"]
@@ -210,8 +213,8 @@ flowchart LR
 ### А.1. Радар тем — `/topic-radar [фокус]`
 Запуск вручную в Claude или автоматически по расписанию (А.4).
 
-1. **Читает закон канала:** `channel/POSITIONING.md` (линза, территория, стоп-лист, фильтр, рубрики, микс, календарь,
-   формулы названий) и `channel/topics-log.md` (что уже было — не повторять; `rejected` — никогда; `mentioned` —
+1. **Читает закон канала:** `studios/notes-from-the-mind/channel/POSITIONING.md` (линза, территория, стоп-лист, фильтр, рубрики, микс, календарь,
+   формулы названий) и `studios/notes-from-the-mind/channel/topics-log.md` (что уже было — не повторять; `rejected` — никогда; `mentioned` —
    можно как `DEEP-DIVE`, не больше двух).
 2. **Собирает ≥ 30 кандидатов** в интернете по пяти потокам: A — вирусные «факты» (Reddit, тренды), B — свежая наука
    за 14 дней (PsyPost, EurekAlert…), C — провалы репликаций (Retraction Watch, Many Labs), D — спрос (Google Trends,
@@ -223,15 +226,15 @@ flowchart LR
    своевременность, визуальность без лица, Shorts-потенциал) — максимум 60.
 6. **Собирает 10 тем** с жёстким миксом: ~7 вечнозелёных + ~3 горячих, минимум 2 Myth on Trial, 1 Money Brain,
    1 Fresh Study, 1 календарная.
-7. **Пишет отчёт** `research/radar/<ГГГГ>-W<нн>.md` (по-русски; названия, хуки, вопросы — по-английски). Файл недели
+7. **Пишет отчёт** `studios/notes-from-the-mind/research/radar/<ГГГГ>-W<нн>.md` (по-русски; названия, хуки, вопросы — по-английски). Файл недели
    уже есть — суффикс `-2`, не перезаписывает.
-8. **Дописывает 10 строк** в `channel/topics-log.md` со статусом `radar`.
+8. **Дописывает 10 строк** в `studios/notes-from-the-mind/channel/topics-log.md` со статусом `radar`.
 9. В чате: путь, тема недели, сводка, «Следующий шаг: /topic-to-brief N».
 
 Сухой режим `/topic-radar dry` — 3 темы, файл `…-dry.md`: проверка путей без полного поиска.
 
 ### А.2. Бриф — `/topic-to-brief N [путь к радару]`
-1. Читает POSITIONING, `briefs/_TEMPLATE.md`, радар (по умолчанию самый свежий), находит тему N.
+1. Читает POSITIONING, `studios/notes-from-the-mind/briefs/_TEMPLATE.md`, радар (по умолчанию самый свежий), находит тему N.
 2. **Досбор фактов:** 6–12 фактов и ≥ 3 источника (Everyday Brain — 40–80 фактов). Каждая цифра сверяется;
    не подтвердилась — убрать или пометить `(?) уточнить`. Если цифра брифа расходится с первоисточником — берётся
    первоисточник.
@@ -241,10 +244,10 @@ flowchart LR
    шаблоны композиции по частям, визуальная идея: метафора, настроение, новые элементы, открывающая сцена); голос
    (ElevenLabs); структура; содержание с источниками; произношение; начало и конец; призывы (подписка на 35–50 %,
    вопрос для комментариев); названия, превью, источники для описания.
-5. Сохраняет `briefs/<имя>.md`, в `topics-log.md` статус `radar` → `brief`.
-6. В чате: «Запуск: /new-video briefs/<имя>.md».
+5. Сохраняет `studios/notes-from-the-mind/briefs/<имя>.md`, в `topics-log.md` статус `radar` → `brief`.
+6. В чате: «Запуск: /new-video studios/notes-from-the-mind/briefs/<имя>.md».
 
-### А.3. Запуск ролика — `/new-video briefs/<имя>.md`
+### А.3. Запуск ролика — `/new-video studios/notes-from-the-mind/briefs/<имя>.md`
 Дальше — фазы 0–8 (разделы 7–15).
 
 ### А.4. Автозапуск радара (Планировщик заданий Windows)
@@ -254,14 +257,14 @@ flowchart LR
        └─ bash scripts/weekly-radar.sh                 PYTHONUTF8=1, ищет claude
             └─ claude -p "/topic-radar <фокус>"        без человека; разрешены только WebSearch, WebFetch,
                                                        Read, Write, Edit, Glob, Grep, date, mkdir
-                 ├─ research/radar/<ГГГГ-Wнн>.md
+                 ├─ studios/notes-from-the-mind/research/radar/<ГГГГ-Wнн>.md
                  └─ logs/radar-<ГГГГ-ММ-ДД>.log
 ```
 Регистрация задачи — команды в шапке `scripts/weekly-radar.ps1`.
 
 ### А.5. После публикации
-Статус темы в `channel/topics-log.md` → `published` (или `rejected`); визуальная идея ролика — строка в
-`channel/visuals-log.md` (чтобы следующий ролик не повторял метафору и настроение).
+Статус темы в `studios/notes-from-the-mind/channel/topics-log.md` → `published` (или `rejected`); визуальная идея ролика — строка в
+`studios/notes-from-the-mind/channel/visuals-log.md` (чтобы следующий ролик не повторял метафору и настроение).
 
 ---
 
@@ -302,10 +305,11 @@ Windows: в окружении `PYTHONUTF8=1`, иначе вывод с кири
 
 ## 8. Фаза 1. Бриф → `project.yaml` (+ демо стиля)
 
-### 8.1. Что делает `python -m studio new "<тема>" [--slug x] [--format …] [--duration N] [--lang ru|en] [--tts …]`
+### 8.1. Что делает `python -m studio new "<тема>" [--slug x] [--format …] [--duration N] [--lang ru|en] [--tts …] [--studio id]`
 1. **Выбирает голос**, если `--tts` не задан: `elevenlabs` — только если есть ключ в `.env`, язык `en` и это
-   рабочая область канала (есть `channel/POSITIONING.md`); иначе `edge`, если установлен; иначе `rhvoice`, если
+   студия канала (есть `channel/POSITIONING.md`, т. е. `new --studio notes-from-the-mind`); иначе `edge`, если установлен; иначе `rhvoice`, если
    собран; иначе записывает `rhvoice` с ⚠️ «поставьте голос». *Для русского ролика на ElevenLabs — `--tts elevenlabs` явно.*
+   Без `--lang`/`--format` — из `defaults:` в `studio.yaml` студии, иначе `ru`/`vertical`.
 2. **Slug**: из `--slug` или транслитом темы (кириллица → латиница, всё лишнее → `-`, до 40 символов).
    Папка уже есть — отказ.
 3. **Копирует `projects/_template/`** целиком (project.yaml, outline.md-заготовка, script/, templates/, demo/).
@@ -346,7 +350,7 @@ Windows: в окружении `PYTHONUTF8=1`, иначе вывод с кири
 3. Без `--no-render` прогоняет `all`: validate → voice → render → assemble → qa.
 4. Проверяет длительность 10–15 с; иначе ⚠️ «поправьте текст».
 5. MP4 показывается пользователю — **стоп до утверждения**. После «да» — раздел «Визуальная идея — утверждено» в
-   `outline.md` и строка в `channel/visuals-log.md` со статусом `approved`.
+   `outline.md` и строка в `studios/notes-from-the-mind/channel/visuals-log.md` со статусом `approved`.
 
 ---
 
@@ -790,7 +794,7 @@ python -m studio clean --older-than 30d [--keep-final]          # все про�
 
 ```
 python -m studio doctor                                   # окружение, голоса, остаток ElevenLabs
-python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--duration 30] [--lang ru|en] [--tts elevenlabs|edge|rhvoice|piper|fake]
+python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square] [--duration 30] [--lang ru|en] [--tts elevenlabs|edge|rhvoice|piper|fake] [--studio id]
 python -m studio demo     <проект> [--no-render] [--yes]  # демо стиля 10–15 с → projects/<slug>-demo/
 python -m studio templates [--md]                         # шаблоны и параметры
 python -m studio validate <проект>                        # проверка сценария
@@ -804,8 +808,11 @@ python -m studio all      <проект> [--yes] [--fast] [--workers N]   # vali
 python -m studio status   <проект>
 python -m studio clean    <проект> [--keep-final] [--older-than 30d] [--dry-run]
 python -m studio selftest [--full] [--keep] [--workers N]
+python -m studio studios                                  # студии и их проекты
+python -m studio --studio <id> <команда> …                # команда в студии studios/<id>/
 ```
-`<проект>` — slug из `projects/` или путь; без аргумента — текущая папка, если в ней есть `project.yaml`.
+`<проект>` — slug или путь; slug ищется в текущей студии, без `--studio` — во всех студиях; без аргумента — текущая
+папка, если в ней есть `project.yaml`.
 
 ---
 

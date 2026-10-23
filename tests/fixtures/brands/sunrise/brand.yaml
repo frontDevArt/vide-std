@@ -1,0 +1,27 @@
+# Тестовый бренд-кит (ROADMAP A2): тот же сценарий, что у Notes From The Mind, — явно другой стиль.
+# Тёплая «закатная» палитра, градиент без сетки lab, без камеры, крупные TikTok-субтитры, шрифты по ролям наоборот.
+name: Sunrise Coffee
+base: lab
+palette:
+  bg: "#2A1220"
+  bg_bot: "#4A1C1C"          # ключ палитры главнее роли: низ градиента
+  surface: "#3A1A2A"
+  text: "#FFF4E6"
+  dim: "#C9A48F"
+  accent: "#FF8A3D"
+  accent2: "#FFD166"
+  good: "#7BD389"
+  warn: "#FFD166"
+  bad: "#FF5964"
+  neutral: "#C9A48F"
+  ink: "#3A1A2A"
+fonts:
+  head: {file: Unbounded-VF.ttf, license: OFL-1.1}
+  num: {file: Manrope-VF.ttf, license: OFL-1.1}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1}
+background: gradient
+camera: false
+subs: tiktok
+shape: {radius: 28, line: 3}
+cta: {text: Order now}
+voice: {tone: warm, upbeat}
