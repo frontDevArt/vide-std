@@ -42,6 +42,7 @@ SCHEMA = {
     "deliverables": F((list, NONE), doc="выходы — площадки (studio/platforms.py): один сценарий и озвучка, у каждого "
                                         "свои формат, вёрстка, рендер и QA (ROADMAP B3)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
+    "cutdown": {"source": F((str,), doc="нарезка (ROADMAP B4): slug исходника — его настройки, сцены (from:) и озвучка")},
     "tts": {
         "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake"),
         "voice": F((str, NONE), "auto"),
@@ -80,7 +81,8 @@ def _defaults(schema: dict) -> dict:
     out = {}
     for k, f in schema.items():
         if isinstance(f, dict):
-            out[k] = _defaults(f)
+            if _defaults(f):  # раздел без значений по умолчанию (cutdown) в cfg не попадает
+                out[k] = _defaults(f)
         elif f.default is not _MISSING and k != "schema_version":
             out[k] = f.default
     return out

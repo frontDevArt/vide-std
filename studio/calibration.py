@@ -29,8 +29,9 @@ def calibrate(proj: Project, tl: dict) -> list[str]:
     data = {**_key(proj), "wpm": measured, "table_wpm": table, "rate": tl.get("rate"), "words": tl.get("words")}
     _path(proj).parent.mkdir(parents=True, exist_ok=True)
     _path(proj).write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
-    voices.save_measurement(proj.ws, data["language"], data["backend"], data["voice"], measured,
-                            tl.get("rate"), tl.get("words"), proj.slug)
+    if not proj.src:  # нарезка (ROADMAP B4) — отрывок ролика: замер голоса студии остаётся за исходником
+        voices.save_measurement(proj.ws, data["language"], data["backend"], data["voice"], measured,
+                                tl.get("rate"), tl.get("words"), proj.slug)
     diff = measured / table - 1
     if abs(diff) <= TOLERANCE:
         return []

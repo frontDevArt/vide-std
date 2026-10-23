@@ -1,0 +1,9 @@
+# Нарезка (ROADMAP B4) из fake-discounts: ch01/s06-s08, ≈ 28 c. Сцены — ссылки на исходник,
+# настройки (голос, стиль, музыка) — из его project.yaml, озвучка — его кэш build/tts/.
+title: Why Fake Discounts Work on You (It's Not What You Think) — cut 2
+cutdown:
+  source: fake-discounts
+platform: youtube-shorts
+format: vertical
+chapters:
+- ch01

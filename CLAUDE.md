@@ -20,6 +20,7 @@ python -m studio assemble <проект> [--draft] [--chapters] # финальн
 python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 # deliverables: [youtube, tiktok] в project.yaml — выходы: voice/stills/render/assemble/qa/all по всем или --out <выход>;
 #   финал — output/<slug>/<выход>.mp4 в корне студии, озвучка общая (build/tts/)
+python -m studio cutdown  <проект> --to youtube-shorts [--count 3] [--list] [--pick ch02/s05-s08]  # нарезка → <slug>-cut-N/
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio platforms [<id>]          # профили площадок: кадр, длительность, безопасная зона, громкость
 python -m studio frame    <проект> <сек>    # один кадр PNG

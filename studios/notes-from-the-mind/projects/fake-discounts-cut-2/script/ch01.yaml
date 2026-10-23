@@ -1,0 +1,17 @@
+# ch01/s06-s08 из fake-discounts. `from:` — сцена исходника; свои ключи рядом с from — поверх неё.
+chapter: ch01
+scenes:
+  # Крючок (необязательно, Claude): одна строка, которая цепляет без контекста ролика. Новая строка — новый синтез
+  # (у elevenlabs — платно, `voice` покажет символы). Раскомментируйте и поставьте первой сценой:
+  # - id: hook
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"
+  - from: s06   # In nineteen seventy-four, Tversky and Kahneman spun a rigged
+  - from: s07   # People who saw ten guessed twenty-five percent.
+  - from: s08   # That's anchoring. The first number you see becomes a weight,
+  # CTA в конце (необязательно, Claude): «полная версия — на канале» и т. п. Раскомментируйте:
+  # - id: cta
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"

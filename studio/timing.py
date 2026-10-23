@@ -18,7 +18,8 @@ import re
 
 from . import tts as T
 from .project import Project, stable_hash
-from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count, line_text, line_voice
+from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count
+from .textutil import line_jobs  # прежнее место line_jobs — studio/textutil.py (нарезка, ROADMAP B4)
 from . import subs as S
 
 
@@ -84,21 +85,6 @@ def _line_words(segs, bounds, dur, wav):
                 for k in range(n):
                     est[i1 + k][1:] = [round(t0 + (t1 - t0) * k / n, 3), round(t0 + (t1 - t0) * (k + 1) / n, 3)]
     return est
-
-
-def line_jobs(scenes):
-    """Задания синтеза по сценам одной главы: [[(raw, text, prev, next, voice)]].
-    prev/next — соседние строки в пределах главы (через границы сцен): ElevenLabs держит по ним интонацию.
-    Граница главы контекст рвёт, чтобы правка ch02 не пересинтезировала (платно) уже готовую ch01.
-    voice = scene.voice, поверх — voice строки."""
-    flat = [(si, l) for si, sc in enumerate(scenes) for l in sc.get("lines") or []]
-    texts = [tts_text(line_text(l)) for _, l in flat]
-    out = [[] for _ in scenes]
-    for i, (si, l) in enumerate(flat):
-        v = dict(scenes[si].get("voice") or {}, **line_voice(l))
-        out[si].append((line_text(l), texts[i], texts[i - 1] if i else None,
-                        texts[i + 1] if i + 1 < len(texts) else None, v))
-    return out
 
 
 def voice_scene(proj: Project, jobs, rate: float, cache):

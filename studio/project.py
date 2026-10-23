@@ -2,7 +2,10 @@
 
 Выходы (ROADMAP B3): `deliverables: [youtube, tiktok]` в project.yaml — один сценарий и одна озвучка (`build/tts/`),
 а формат, раскладка субтитров, `timeline.json`, рендер и QA — у каждого выхода свои (`Project.output`: `build/<выход>/`,
-`qa/<выход>/`, финал — `output/<slug>/<выход>.mp4` в корне студии). Без `deliverables` — один выход в `build/`, как раньше."""
+`qa/<выход>/`, финал — `output/<slug>/<выход>.mp4` в корне студии). Без `deliverables` — один выход в `build/`, как раньше.
+
+Нарезка (ROADMAP B4, studio/cutdown.py; загрузка — studio/cutrefs.py): `cutdown: {source: <slug>}` — настройки
+исходника под своими, сцены `from: chNN/sNN` — ссылки на сцены исходника, озвучка — кэш исходника (`Project.src`)."""
 from __future__ import annotations
 
 import copy
@@ -32,6 +35,7 @@ class Project:
     cfg: dict
     chapters: list = field(default_factory=list)  # [(chapter_id, data)]
     out: str | None = None  # выход (площадка из deliverables, ROADMAP B3); None — проект без выходов
+    src: Path | None = None  # исходник нарезки (ROADMAP B4): его build/tts/ — кэш озвучки нарезки
 
     # ---- paths
     @property
@@ -49,8 +53,8 @@ class Project:
         p.mkdir(parents=True, exist_ok=True); return p
 
     def bdir(self, *parts) -> Path:
-        # озвучка общая для всех выходов: build/tts/, а не build/<выход>/tts/
-        base = self.root / "build" if parts[:1] == ("tts",) else self.build
+        # озвучка общая для всех выходов: build/tts/, а не build/<выход>/tts/; у нарезки — build/tts/ исходника
+        base = (self.src or self.root) / "build" if parts[:1] == ("tts",) else self.build
         p = base.joinpath(*parts); p.mkdir(parents=True, exist_ok=True); return p
 
     # ---- выходы (ROADMAP B3)
@@ -72,7 +76,7 @@ class Project:
         cfg["platform"] = oid
         if cfg["format"] not in p.formats:
             cfg["format"] = p.formats[0]
-        return Project(self.root, cfg, self.chapters, oid)
+        return Project(self.root, cfg, self.chapters, oid, self.src)
 
     def targets(self, out: str | None = None) -> list["Project"]:
         """Что собирает команда: `--out <выход>` — этот выход; без флага — все выходы, без deliverables — сам проект."""
@@ -131,6 +135,12 @@ def load(root) -> Project:
     for w in check(studio_defaults):
         print(f"⚠️  {ws.root.name}/studio.yaml, defaults: {w}")
     user, studio_defaults = migrate(user), migrate(studio_defaults)
+    src = src_user = None
+    if isinstance(user.get("cutdown"), dict) and user["cutdown"].get("source"):  # нарезка (ROADMAP B4)
+        from . import cutrefs
+        src = cutrefs.source_root(root, str(user["cutdown"]["source"]), resolve_project)
+        src_user = migrate(cutrefs.read_yaml(src / "project.yaml"))
+        user = cutrefs.inherit(src_user, user)
     # голос студии для языка проекта (ROADMAP A3): DEFAULTS → defaults → voices[язык] → project.yaml
     lang = user.get("language") or studio_defaults.get("language") or DEFAULTS["language"]
     vl, ut = voices.merge_user(voices.layer(ws, lang), user.get("tts"))
@@ -160,12 +170,15 @@ def load(root) -> Project:
             raise SystemExit(f"Нет голоса по умолчанию для языка '{cfg['language']}' и бэкенда "
                              f"{cfg['tts']['backend']}: укажите tts.voice в project.yaml")
         cfg["tts"]["voice"] = v
-    proj = Project(root, cfg)
+    proj = Project(root, cfg, src=src)
     for ch in cfg.get("chapters") or []:
         p = root / "script" / f"{ch}.yaml"
         if p.exists():
             with open(p, encoding="utf-8") as f:
                 proj.chapters.append((ch, yaml.safe_load(f) or {}))
+    if src:
+        from . import cutrefs
+        proj.chapters = cutrefs.resolve(proj.chapters, cutrefs.source_chapters(src, src_user), src.name)
     return proj
 
 

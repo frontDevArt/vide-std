@@ -1,0 +1,18 @@
+# ch02/s13-s15,s17 из fake-discounts. `from:` — сцена исходника; свои ключи рядом с from — поверх неё.
+chapter: ch02
+scenes:
+  # Крючок (необязательно, Claude): одна строка, которая цепляет без контекста ролика. Новая строка — новый синтез
+  # (у elevenlabs — платно, `voice` покажет символы). Раскомментируйте и поставьте первой сценой:
+  # - id: hook
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"
+  - from: s13   # So what about Black Friday itself?
+  - from: s14   # Eighty-three percent were the same price or cheaper at least
+  - from: s15   # And on Black Friday itself, not one deal was the lowest pric
+  - from: s17   # So, does a crossed-out price work, even when it's fake?
+  # CTA в конце (необязательно, Claude): «полная версия — на канале» и т. п. Раскомментируйте:
+  # - id: cta
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"

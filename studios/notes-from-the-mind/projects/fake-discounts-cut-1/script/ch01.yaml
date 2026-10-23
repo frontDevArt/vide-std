@@ -1,0 +1,18 @@
+# ch01/s01-s04 из fake-discounts. `from:` — сцена исходника; свои ключи рядом с from — поверх неё.
+chapter: ch01
+scenes:
+  # Крючок (необязательно, Claude): одна строка, которая цепляет без контекста ролика. Новая строка — новый синтез
+  # (у elevenlabs — платно, `voice` покажет символы). Раскомментируйте и поставьте первой сценой:
+  # - id: hook
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"
+  - from: s01   # That line through the old price? You know it's a trick.
+  - from: s02   # In the United States, fifty-two percent of consumers say bra
+  - from: s03   # So we feel immune. We spot the trick, so it can't work on us
+  - from: s04   # And the answer is uncomfortable. It still works.
+  # CTA в конце (необязательно, Claude): «полная версия — на канале» и т. п. Раскомментируйте:
+  # - id: cta
+  #   template: lab_hero_stack
+  #   lines:
+  #     - "…"

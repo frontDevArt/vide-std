@@ -62,3 +62,21 @@ def ends_with_comma(s: str) -> bool:
 
 def word_count(text: str) -> int:
     return len(re.findall(r"[\w\-]+", display_text(text)))
+
+
+def line_jobs(scenes):
+    """Задания синтеза по сценам одной главы: [[(raw, text, prev, next, voice)]].
+    prev/next — соседние строки в пределах главы (через границы сцен): ElevenLabs держит по ним интонацию.
+    Граница главы контекст рвёт, чтобы правка ch02 не пересинтезировала (платно) уже готовую ch01.
+    voice = scene.voice, поверх — voice строки. Сцена нарезки (ROADMAP B4) несёт `_ctx` — [[prev, next]] строк из
+    исходника: ключ кэша озвучки тот же, что у исходника."""
+    flat = [(si, li, l) for si, sc in enumerate(scenes) for li, l in enumerate(sc.get("lines") or [])]
+    texts = [tts_text(line_text(l)) for _, _, l in flat]
+    out = [[] for _ in scenes]
+    for i, (si, li, l) in enumerate(flat):
+        v = dict(scenes[si].get("voice") or {}, **line_voice(l))
+        ctx = scenes[si].get("_ctx")
+        prev, nxt = ctx[li] if ctx and li < len(ctx) else (texts[i - 1] if i else None,
+                                                            texts[i + 1] if i + 1 < len(texts) else None)
+        out[si].append((line_text(l), texts[i], prev, nxt, v))
+    return out
