@@ -14,6 +14,26 @@ def font_size(proj):
     return int(s * TIKTOK_SCALE) if kit.get("subs") == "tiktok" else s  # перенос и QA — тем размером, что рисуется
 
 
+def _zone(proj) -> dict | None:
+    """Поля зоны площадки проекта (`platform:` или выход deliverables, ROADMAP B3); None — площадки нет."""
+    if not proj.cfg.get("platform"):
+        return None
+    from .platforms import layout_zone
+    return layout_zone(proj.cfg)
+
+
+def bottom_limit(proj) -> float | None:
+    """Ниже этой доли высоты субтитры не опускаются: над нижним полем зоны площадки (подпись и кнопки Reels — в нижних
+    35 %, ROADMAP B3). Без площадки — None: место субтитров зависит только от формата, как до B3."""
+    z = _zone(proj)
+    return round(1 - z["bottom"], 4) if z else None
+
+
+def place(cy, h, H, bottom=None) -> float:
+    """Центр плашки высотой h px: место по формату cy, но низ не ниже bottom (доля H)."""
+    return min(cy, bottom * H - h / 2) if bottom is not None else cy
+
+
 def band_top(proj) -> float | None:
     """Верх полосы субтитров (доля высоты кадра) при max_lines строк; None — субтитры выключены. Шаблоны верстают
     тело выше неё (`Template.area`, ROADMAP B2); место — как в render.draw_subs."""
@@ -27,12 +47,18 @@ def band_top(proj) -> float | None:
     else:
         center = 0.835 if H >= W else 0.885
     half = font_size(proj) * (int(sb.get("max_lines", 2)) * 1.2 + 0.8) / 2
+    center = place(center * H, 2 * half, H, bottom_limit(proj)) / H
     return round(center - half / H, 4)
 
 
 def max_width(proj):
+    """Ширина строки субтитров; у площадки — не шире её зоны (колонка кнопок TikTok/Shorts справа, ROADMAP B3)."""
     W, H = proj.size
-    return int(W * (0.86 if W < H else 0.70))
+    w = 0.86 if W < H else 0.70
+    z = _zone(proj)
+    if z:
+        w = min(w, 1 - z["left"] - z["right"])
+    return int(W * w)
 
 
 def wrap(text, font, maxw, max_lines=2):
@@ -129,11 +155,11 @@ def write_srt(proj, tl):
     for s in tl["scenes"]:
         for c in s["subs"]:
             items.append((s["start"] + c["t0"], s["start"] + c["t1"], "\n".join(c["lines"])))
-    d = proj.bdir("final")
-    with open(d / f"{proj.slug}.srt", "w", encoding="utf-8", newline="\n") as f:  # LF на любой ОС (golden)
+    fin = proj.final_path()  # рядом с финалом: build/final/<slug>.srt, у выхода — output/<slug>/<выход>.srt
+    with open(fin.with_suffix(".srt"), "w", encoding="utf-8", newline="\n") as f:  # LF на любой ОС (golden)
         for i, (a, b, t) in enumerate(items, 1):
             f.write(f"{i}\n{_ts(a)} --> {_ts(b)}\n{t}\n\n")
-    with open(d / f"{proj.slug}.vtt", "w", encoding="utf-8", newline="\n") as f:
+    with open(fin.with_suffix(".vtt"), "w", encoding="utf-8", newline="\n") as f:
         f.write("WEBVTT\n\n")
         for a, b, t in items:
             f.write(f"{_ts(a, '.')} --> {_ts(b, '.')}\n{t}\n\n")

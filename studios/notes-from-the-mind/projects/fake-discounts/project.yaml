@@ -8,6 +8,7 @@ audience: >-
   и вопрос «купил бы я это за эту цену без зачёркнутой цифры».
 language: en
 format: horizontal
+deliverables: [youtube, tiktok]   # ROADMAP B3: 16:9 для канала и 9:16 из того же сценария и озвучки
 fps: 30
 target_duration: null     # 9 минут по речи (~1400 слов)
 

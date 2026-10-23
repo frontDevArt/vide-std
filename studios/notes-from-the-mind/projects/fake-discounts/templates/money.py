@@ -6,7 +6,9 @@
 один шаблон даёт и открывающую сцену (бирка + якорь), и сквозной «прибор» (шкала, якорь тянет стрелку).
 Через склейку (SCENE_SPEC: только state): бирка — положение, масштаб, якорь, «просадка» и импульсы качания
 в глобальном времени (`fd_tag`); строки чека и его видимость (`fd_receipt`).
-Координаты — дизайн-пиксели 1920×1080, масштаб self.z.
+Координаты — дизайн-пиксели 1920×1080, масштаб self.z. Высокий кадр (9:16, 4:5, 1:1; ROADMAP B3) — своя раскладка
+в рамке `self.area`: бирка сверху у центра (commerce.PriceTag), под ней ярлыки столбиком, шкала — во всю ширину рамки
+на 60 % её высоты, чек — в нижней трети справа (commerce.Receipt); x0/x1/y шкалы из параметров там не действуют.
 """
 from __future__ import annotations
 
@@ -23,6 +25,7 @@ from studio.packs.commerce.elements import chain, rot
 from studio.templates import template
 
 CHAIN = 64                              # цепь бирка → якорь
+TALL_GAUGE = 0.6                        # высокий кадр: шкала на этой доле высоты рамки
 ANCHOR_INK = 214                        # низ «лап» якоря от верха спрайта (без отступа свечения)
 
 
@@ -146,6 +149,12 @@ class LabAnchor(PriceTag, Receipt, LabTemplate):
             self.n_pill = _down(img, w, h)
             self.n_pill.alpha_composite(t, (int(18 * z), int((h - t.height) / 2)))
 
+    def tag_bottom_rest(self):
+        """Низ бирки в покое (высокий кадр: ярлыки — под ним)."""
+        from studio.packs.commerce.elements import HOLE_Y, TAG_H
+        s = float(self.tg.get("scale", 1.0))
+        return self.tag_xy(0, float(self.tg.get("y", 200)))[1] + (TAG_H - HOLE_Y) * s * self.z
+
     def anchor_scale(self):
         tg = self.tg
         return float(tg.get("scale", 1.0)) if tg else float((self.p.get("anchor") or {}).get("scale", 0.75))
@@ -175,12 +184,21 @@ class LabAnchor(PriceTag, Receipt, LabTemplate):
         off = self.anc.height / 2 - (self.anc_pad + 6 * z)
         return ring[0] + rot(0, off, ang)[0], ring[1] + rot(0, off, ang)[1]
 
+    def gauge_geo(self):
+        """(x0, x1, y) шкалы в пикселях кадра: из параметров в 16:9, во всю ширину рамки — в высоком кадре."""
+        g, z = self.g, self.z
+        if self.wide:
+            return g.get("x0", 200) * z, g.get("x1", 1340) * z, g.get("y", 800) * z
+        a = self.area
+        return a.x0 + 30 * z, a.x1 - 30 * z, a.y0 + a.h * TALL_GAUGE
+
     def land_point(self):
         g = self.g
         z = self.z
-        x = M.lerp(g.get("x0", 200), g.get("x1", 1340), float(g.get("land", 0.9))) * z
+        x0, x1, y = self.gauge_geo()
+        x = M.lerp(x0, x1, float(g.get("land", 0.9)))
         za = z * self.anchor_scale()
-        ring_y = g.get("y", 800) * z - (ANCHOR_INK - 6) * za
+        ring_y = y - (ANCHOR_INK - 6) * za
         return x, ring_y
 
     def draw_anchor(self, img, d, t, T, vd, hang):
@@ -221,15 +239,15 @@ class LabAnchor(PriceTag, Receipt, LabTemplate):
         # пыль удара
         if 0 < v < 0.5:
             r = (30 + 160 * v) * z
-            gy = self.g.get("y", 800) * z
+            gy = self.gauge_geo()[2]
             al = int(120 * (1 - v / 0.5) * vd)
             d.ellipse((x - r, gy - r * 0.18, x + r, gy + r * 0.18), outline=C("accent2", al), width=max(1, int(2 * z)))
 
     def _ring_at(self, t):
         """Где было кольцо якоря в момент t (для старта полёта); без бирки — падает сверху из-за кадра."""
-        if not self.tg:
+        if not self.tg:  # без бирки якорь падает с верха безопасной зоны (не из-за кадра — ROADMAP B3)
             self._phi_rel = 0.0
-            return self.land_point()[0] - 120 * self.z, -260 * self.z
+            return self.land_point()[0] - 120 * self.z, self.safe.y0 + 40 * self.z
         T = self.T0 + t
         bx, by = self.tag_bottom(t, T)
         phi = self.swing(T - 0.14) * 1.2
@@ -240,7 +258,7 @@ class LabAnchor(PriceTag, Receipt, LabTemplate):
     def draw_gauge(self, img, d, t, T, vd):
         z = self.z
         g = self.g
-        x0, x1, y = g.get("x0", 200) * z, g.get("x1", 1340) * z, g.get("y", 800) * z
+        x0, x1, y = self.gauge_geo()
         xo = self.gone(t, "gauge")
         a = (1 - xo) * vd
         k = M.line_progress(t, self.t_g, 24)
@@ -290,17 +308,28 @@ class LabAnchor(PriceTag, Receipt, LabTemplate):
             return
         cx = hang["c"][0] if hang else self.W / 2
         cy = hang["c"][1] if hang else self.H * 0.45
+        if not self.wide:  # высокий кадр: столбиком под биркой, слева и справа по очереди, у краёв рамки
+            ar = self.area
+            y0 = (self.tag_bottom_rest() + 50 * z) if self.tg else ar.y0 + ar.h * 0.22
         for i, (spr, t0) in enumerate(zip(self.lb_spr, self.t_lb)):
             side = -1 if i % 2 == 0 else 1
-            lx = cx + side * (330 * z) - (spr.width if side < 0 else 0)
-            ly = (360 + 150 * (i // 2) + 70 * (i % 2)) * z
+            if self.wide:
+                lx = cx + side * (330 * z) - (spr.width if side < 0 else 0)
+                ly = (360 + 150 * (i // 2) + 70 * (i % 2)) * z
+            else:
+                lx = ar.x0 if side < 0 else ar.x1 - spr.width
+                ly = y0 + 74 * z * i
             k = M.line_progress(t, t0 - 0.2, 14)
             xo = self.gone(t, "labels")
             if k > 0:
-                ex = cx + side * 140 * z
-                sx = lx + (spr.width if side < 0 else 0)
-                yy = ly + spr.height / 2
-                d.line((sx, yy, sx + (ex - sx) * k, yy + (cy - 40 * z - yy) * k), fill=C("accent2", int(130 * vd * (1 - xo))), width=max(1, int(2 * z)))
+                if self.wide:
+                    ex, ey = cx + side * 140 * z, cy - 40 * z
+                    sx = lx + (spr.width if side < 0 else 0)
+                    yy = ly + spr.height / 2
+                else:  # от верха ярлыка к низу бирки
+                    ex, ey = cx + side * 50 * z, (hang["b"][1] if hang else cy)
+                    sx, yy = lx + spr.width / 2, ly
+                d.line((sx, yy, sx + (ex - sx) * k, yy + (ey - yy) * k), fill=C("accent2", int(130 * vd * (1 - xo))), width=max(1, int(2 * z)))
             self.card(img, t, spr, lx, ly, t0, 0.0, vd, "bottom", name="labels", ph=i, T=T)
 
 

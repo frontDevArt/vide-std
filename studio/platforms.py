@@ -136,7 +136,7 @@ def layout_zone(cfg: dict) -> dict:
 
 
 def size(fmt: str) -> tuple | None:
-    from .project import FORMATS
+    from .config import FORMATS
     return FORMATS.get(fmt)
 
 

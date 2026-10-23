@@ -82,9 +82,13 @@ def pace(proj: Project):
 
 def report(proj: Project, log=print):
     ph = phases(proj)
-    words, wpm, src = pace(proj)
+    outs = proj.targets()
+    if proj.outputs:  # выходы (ROADMAP B3): бриф, план, сценарий — общие; озвучка … QA — у каждого выхода свои
+        ph = ph[:3] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[3:]]
+    words, wpm, src = pace(outs[0])
     log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')}")
-    log(f"Формат {proj.cfg['format']} {proj.size[0]}×{proj.size[1]}, {proj.fps} fps; "
+    frames = ", ".join(f"{o.out or o.cfg['format']} {o.size[0]}×{o.size[1]}" for o in outs)
+    log(f"{'Выходы' if proj.outputs else 'Формат'} {frames}, {proj.fps} fps; "
         f"цель {proj.cfg.get('target_duration') or 'по речи'}; слов в сценарии: {words} "
         f"(~{words / wpm:.1f} мин речи при {wpm:g} слов/мин, {src})")
     nxt = None
@@ -92,5 +96,8 @@ def report(proj: Project, log=print):
         log(f"  {'✅' if ok else '⬜'} {name}: {det}")
         if not ok and nxt is None:
             nxt = name
-    log("Следующий шаг: " + (NEXT[nxt] if nxt else "всё готово 🎬"))
+    step = NEXT[nxt.split(" [")[0]] if nxt else "всё готово 🎬"
+    if nxt and " [" in nxt:
+        step += f" Выход: --out {nxt.split(' [')[1].rstrip(']')}."
+    log("Следующий шаг: " + step)
     return ph

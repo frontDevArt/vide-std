@@ -43,8 +43,13 @@ def sheet(imgs, labels, cols, out):
 def subs_top(proj, W, H):
     """Верх полосы субтитров для листа subs_check — доля высоты (render.draw_subs: TikTok-субтитры стоят выше)."""
     if G.SM.active().subs == "tiktok":
-        return 0.52 if H >= W else 0.66
-    return 0.70 if H >= W else 0.76
+        y = 0.52 if H >= W else 0.66
+    else:
+        y = 0.70 if H >= W else 0.76
+    if proj is None or S.bottom_limit(proj) is None:
+        return y
+    bt = S.band_top(proj)  # у площадки субтитры поднимаются над нижним полем её зоны (ROADMAP B3) — лист за ними
+    return min(y, bt - 0.08) if bt is not None else y
 
 
 def run(proj: Project, log=print, fast=False):

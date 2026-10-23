@@ -11,8 +11,8 @@ from .receipt import RECEIPT_DEFAULTS, Receipt
 from .tag import TAG_DEFAULTS, PriceTag
 
 
-@template("price_tag", formats=("horizontal",),
-          doc="Ценник-бирка на верёвочке: падает сверху и качается, старая цена зачёркивается accent-2, новая "
+@template("price_tag",
+          doc="Ценник-бирка на верёвочке: падает от гвоздика у верха зоны и качается, старая цена зачёркивается accent-2, новая "
               "выпрыгивает пружиной; опц. чек из принтера справа (строки по триггерам, отрыв крупным планом). "
               "Бирка и чек переходят через склейку (tag.from_prev / keep: [tag, receipt]).",
           params={"tag": P(dict(TAG_DEFAULTS), "бирка {was, now, x, y, scale, at, strike_at, now_at, from_prev, "
@@ -48,7 +48,7 @@ class PriceTagScene(PriceTag, Receipt, LabTemplate):
         self.draw_receipt(img, t, T, vd)
 
 
-@template("number", formats=("horizontal",),
+@template("number",
           doc="lab · Full Number для цен и сумм: числа ≥ 1000 с запятыми ($14,550). Единица — prefix/suffix "
               "(0,77 $ → value 77 + suffix ¢).",
           params=dict(LabFullNumber.PARAMS),
@@ -56,3 +56,6 @@ class PriceTagScene(PriceTag, Receipt, LabTemplate):
 class CommerceNumber(LabFullNumber):
     def _spr(self, s, color):
         return super()._spr(thousands(s), color)
+
+    def _str(self, v):
+        return thousands(super()._str(v))

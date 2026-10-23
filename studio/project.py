@@ -1,6 +1,11 @@
-"""Загрузка проекта ролика: project.yaml + script/*.yaml, пути build/qa."""
+"""Загрузка проекта ролика: project.yaml + script/*.yaml, пути build/qa.
+
+Выходы (ROADMAP B3): `deliverables: [youtube, tiktok]` в project.yaml — один сценарий и одна озвучка (`build/tts/`),
+а формат, раскладка субтитров, `timeline.json`, рендер и QA — у каждого выхода свои (`Project.output`: `build/<выход>/`,
+`qa/<выход>/`, финал — `output/<slug>/<выход>.mp4` в корне студии). Без `deliverables` — один выход в `build/`, как раньше."""
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -9,17 +14,11 @@ from pathlib import Path
 
 import yaml
 
-from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
+from .config import DEFAULTS, FORMATS, deep_merge, migrate, check  # DEFAULTS, deep_merge, FORMATS — старые имена
 from . import brand, voices, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
 
-FORMATS = {
-    "vertical": (1080, 1920),
-    "horizontal": (1920, 1080),
-    "square": (1080, 1080),
-    "portrait": (1080, 1350),  # 4:5 — лента Instagram (ROADMAP B2)
-}
 
 
 def stable_hash(obj, n=12) -> str:
@@ -32,18 +31,56 @@ class Project:
     root: Path
     cfg: dict
     chapters: list = field(default_factory=list)  # [(chapter_id, data)]
+    out: str | None = None  # выход (площадка из deliverables, ROADMAP B3); None — проект без выходов
 
     # ---- paths
     @property
     def build(self) -> Path:
-        p = self.root / "build"; p.mkdir(exist_ok=True); return p
+        p = self.root / "build"
+        if self.out:
+            p = p / self.out
+        p.mkdir(parents=True, exist_ok=True); return p
 
     @property
     def qa_dir(self) -> Path:
-        p = self.root / "qa"; p.mkdir(exist_ok=True); return p
+        p = self.root / "qa"
+        if self.out:
+            p = p / self.out
+        p.mkdir(parents=True, exist_ok=True); return p
 
     def bdir(self, *parts) -> Path:
-        p = self.build.joinpath(*parts); p.mkdir(parents=True, exist_ok=True); return p
+        # озвучка общая для всех выходов: build/tts/, а не build/<выход>/tts/
+        base = self.root / "build" if parts[:1] == ("tts",) else self.build
+        p = base.joinpath(*parts); p.mkdir(parents=True, exist_ok=True); return p
+
+    # ---- выходы (ROADMAP B3)
+    @property
+    def outputs(self) -> list[str]:
+        """Площадки из `deliverables` (у выхода — пусто: выход не делится дальше)."""
+        d = self.cfg.get("deliverables") or []
+        return [] if self.out else [d] if isinstance(d, str) else list(d)
+
+    def output(self, oid: str) -> "Project":
+        """Выход `oid`: тот же сценарий и озвучка, площадка — `oid`, формат — проекта, если площадка его принимает,
+        иначе основной формат площадки; свои build/<oid>/ и qa/<oid>/."""
+        from .platforms import get
+        try:
+            p = get(oid)
+        except KeyError as e:
+            raise SystemExit(f"deliverables: {e.args[0]}")
+        cfg = copy.deepcopy(self.cfg)
+        cfg["platform"] = oid
+        if cfg["format"] not in p.formats:
+            cfg["format"] = p.formats[0]
+        return Project(self.root, cfg, self.chapters, oid)
+
+    def targets(self, out: str | None = None) -> list["Project"]:
+        """Что собирает команда: `--out <выход>` — этот выход; без флага — все выходы, без deliverables — сам проект."""
+        if out:
+            if out not in self.outputs:
+                raise SystemExit(f"Выхода {out} нет в deliverables проекта: {', '.join(self.outputs) or 'их нет'}")
+            return [self.output(out)]
+        return [self.output(o) for o in self.outputs] or [self]
 
     @property
     def size(self):
@@ -62,7 +99,19 @@ class Project:
         """Студия проекта: её `.env` (ключ и голос), `voices.yaml` (замеры темпа), правила."""
         return workspace.owner(self.root)
 
+    def output_dir(self) -> Path:
+        """Папка выходов проекта: output/<slug>/ в корне студии; проект вне projects/ студии (тесты, чужая папка) —
+        output/<slug>/ внутри самого проекта."""
+        ws = self.ws
+        base = ws.root if ws.projects.resolve() == self.root.parent.resolve() else self.root
+        return base / "output" / self.slug
+
     def final_path(self) -> Path:
+        """Финал: build/final/<slug>.mp4, у выхода — output/<slug>/<выход>.mp4 в корне студии (рядом .srt/.vtt)."""
+        if self.out:
+            d = self.output_dir()
+            d.mkdir(parents=True, exist_ok=True)
+            return d / f"{self.out}.mp4"
         return self.bdir("final") / f"{self.slug}.mp4"
 
 

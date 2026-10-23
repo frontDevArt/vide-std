@@ -20,3 +20,17 @@ def project_parser(sp, name, help):
     q = sp.add_parser(name, help=help)
     q.add_argument("project", nargs="?")
     return q
+
+
+def add_out(q):
+    """`--out <выход>` — один выход из deliverables проекта (ROADMAP B3); без флага — все выходы."""
+    q.add_argument("--out", metavar="ВЫХОД", help="один выход из deliverables (площадка); без флага — все")
+
+
+def each_out(proj, out):
+    """Выходы для команды с заголовком «== выход … ==», когда их несколько."""
+    outs = proj.targets(out)
+    for o in outs:
+        if len(outs) > 1:
+            print(f"== выход {o.out}: {o.cfg['format']} {o.size[0]}×{o.size[1]} ==")
+        yield o

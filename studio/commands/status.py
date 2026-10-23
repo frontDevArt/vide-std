@@ -8,7 +8,7 @@ LOG = False  # только чтение — лог в projects/<slug>/logs/ н�
 
 
 def add(sp):
-    project_parser(sp, "status", "фазы и следующий шаг")
+    project_parser(sp, "status", "фазы и следующий шаг")  # выходы deliverables — фазы 4–8 по каждому (B3)
 
 
 def run(a):

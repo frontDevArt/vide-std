@@ -42,6 +42,16 @@ class LabFullNumber(LabTemplate):
         p = self.p
         self.cap = txt(str(p.get("caption", "")).upper(), 44 * z, "extrabold", "text", "head", 0.08) if p.get("caption") else None
         self.sub = txt(p["sub"], 22 * z, "medium", "dim", "mono") if p.get("sub") else None
+        self.fit = 1.0
+        if not self.wide:  # высокий кадр: самое длинное значение — не шире рамки ($14,550 в 9:16, ROADMAP B3)
+            vals = [p.get("value", 0), p.get("from", 0)] + ([p["myth"].get("value", 0)] if p.get("myth") else [])
+            ink = max(G.text_sprite(self._str(v), int(320 * z), "extrabold", "accent", family="num").width
+                      for v in vals)
+            self.fit = min(1.0, self.area.w / ink)
+
+    def _str(self, v):
+        """Строка числа, как её рисует _spr (наследник может переписать — разделители тысяч)."""
+        return f"{self.p.get('prefix', '')}{int(round(float(v)))}{self.p.get('suffix', '')}"
 
     def _spr(self, s, color):
         z = self.z
@@ -67,17 +77,19 @@ class LabFullNumber(LabTemplate):
             col = p.get("color", "accent")
         s = f"{p.get('prefix', '')}{int(round(v))}{p.get('suffix', '')}"
         spr = self._spr(s, col)
-        put(img, spr, cx, cy + (1 - k) * 24 * z + M.bob(T, 1) * z, a, (0.96 + 0.04 * k) * (1 + 0.02 * M.pulse(T) - 0.02), (1 - k) * 8, anchor="c")
+        f = self.fit
+        put(img, spr, cx, cy + (1 - k) * 24 * z + M.bob(T, 1) * z, a, (0.96 + 0.04 * k) * (1 + 0.02 * M.pulse(T) - 0.02) * f, (1 - k) * 8, anchor="c")
         if my and self.m_strike is not None:
             sk = M.ease_in_out(M.prog(t, self.m_strike, M.fr(M.F_FOCUS))) * (1 - M.prog(t, self.c_at, M.fr(4)))
-            bw = int(spr.width * 0.7 * sk)
+            bw = int(spr.width * f * 0.7 * sk)
             if bw > 2:
                 bar = G.glowify(G.rrect((bw, int(16 * z)), int(8 * z), C("myth")), "myth", 14 * z, 0.6)
-                put(img, bar, cx - spr.width * 0.35, cy - 8 * z, a)
-        y = cy + spr.height * 0.42
+                put(img, bar, cx - spr.width * f * 0.35, cy - 8 * z, a)
+        y = cy + spr.height * f * 0.42
         if self.cap is not None:
             ck = M.ease_out_expo(M.prog(t, self.c_at + 0.25, M.fr(M.F_APPEAR)))
-            put(img, self.cap, cx, y + (1 - ck) * 16 * z, ck * a, anchor="c")
+            cf = 1.0 if self.wide else min(1.0, self.area.w / self.cap.width)  # высокий кадр: подпись не шире рамки
+            put(img, self.cap, cx, y + (1 - ck) * 16 * z, ck * a, cf, anchor="c")
         if self.sub is not None:
             sk = M.ease_out_expo(M.prog(t, self.c_at + 0.45, M.fr(M.F_APPEAR)))
             put(img, self.sub, cx, y + 56 * z, sk * a, anchor="c")

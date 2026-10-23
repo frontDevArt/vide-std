@@ -34,7 +34,7 @@ def render(name, params, times=(0.3, 1.2, 2.2, 3.5), state=None):
 def test_registered():
     for name in ("commerce.price_tag", "commerce.number"):
         cls = REGISTRY[name]
-        assert cls.NAMESPACE == "commerce" and cls.FORMATS == ("horizontal",)
+        assert cls.NAMESPACE == "commerce" and set(cls.FORMATS) == {"horizontal", "vertical", "square", "portrait"}  # B3
     assert set(REGISTRY["commerce.number"].PARAMS) == set(REGISTRY["lab.full_number"].PARAMS)
 
 

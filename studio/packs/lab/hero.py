@@ -60,6 +60,10 @@ class HeroMixin:
 
     def _num(self, v, color, z):
         s = f"{int(round(v))}" if isinstance(v, (int, float)) else str(v)
+        if not self.wide:  # высокий кадр: цифра не шире рамки («900» в 9:16 зоны TikTok, ROADMAP B3)
+            w = num_sprite(s, color, z, 300)[2]
+            if w > self.area.w:
+                z = z * self.area.w / w
         return num_sprite(s, color, z, 300)
 
     def _cap(self, cap, sub, z):

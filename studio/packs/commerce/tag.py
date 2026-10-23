@@ -1,6 +1,9 @@
 """Пакет commerce: ценник-бирка на верёвочке — миксин для шаблонов lab (`PriceTag`).
 
-Бирка падает сверху, качается (импульсы в глобальном времени), старая цена зачёркивается, новая выпрыгивает пружиной.
+Бирка висит на гвоздике у верха безопасной зоны (верёвка не уходит за кадр — ROADMAP B3): падает от гвоздика на всю
+длину верёвки, качается (импульсы в глобальном времени), старая цена зачёркивается, новая выпрыгивает пружиной.
+Координаты бирки (`x`, `y`) — в сетке 1920×1080; в высоком кадре (9:16, 4:5, 1:1) бирка висит у центра рамки шаблона
+(`self.area`), смещение `x` ужато (`TALL_DX`), верёвка длиннее на шапку (`TALL_ROPE`).
 К бирке можно подвесить груз (`t_attach` → «просадка» верёвки, `t_rel` — груз отцеплен): так в fake-discounts висит
 якорь. Через склейку — только state (`TAG_STATE`): положение, масштаб, груз, просадка, импульсы качания.
 """
@@ -14,6 +17,10 @@ from ... import gfx as G
 from ... import motion as M
 from ..lab.elements import C, put
 from .elements import HOLE_Y, TAG_H, rot, tag_parts
+
+TALL_DX = 0.35    # высокий кадр: доля смещения x бирки от центра (сетка 1920 шире рамки вдвое с лишним)
+TALL_ROPE = 160   # высокий кадр: верёвка длиннее на столько дизайн-px — бирка ниже шапки, ближе к центру
+NAIL = 7          # радиус гвоздика, дизайн-px
 
 TAG_DEFAULTS = {"was": "$199", "now": "$99", "x": 960, "y": 200, "scale": 1.0, "at": 0,
                 "strike_at": None, "now_at": None, "from_prev": False}
@@ -86,6 +93,17 @@ class PriceTag:
         self._tag_done = None
 
     # ------------------------------------------------------------------ geometry
+    def tag_xy(self, x, y):
+        """Дизайн-координаты бирки (x гвоздика, y — глубина люверса, сетка 1920×1080) → пиксели кадра."""
+        z = self.z
+        if self.wide:
+            return x * z, y * z
+        return self.area.cx + (x - 960) * z * TALL_DX, self.area.y0 + (y + TALL_ROPE) * z
+
+    def pivot_y(self):
+        """Высота гвоздика: верх безопасной зоны (16:9) или рамки шаблона (высокий кадр)."""
+        return self.safe.y0 if self.wide else self.area.y0
+
     def swing(self, T):
         a = 1.3 * math.sin(T * math.tau / 5.2)
         for T0, A in self.imps:
@@ -95,7 +113,8 @@ class PriceTag:
         return a
 
     def tag_pose(self, t):
-        """-> (pivot x, длина верёвки, масштаб) с морфингом от прошлой сцены и «просадкой» под грузом."""
+        """-> (x гвоздика, глубина люверса в покое, масштаб) в пикселях кадра — с морфингом от прошлой сцены,
+        «просадкой» под грузом и падением от гвоздика в начале."""
         z = self.z
         tg = self.tg
         x1, y1, s1 = float(tg.get("x", 960)), float(tg.get("y", 200)), float(tg.get("scale", 1.0))
@@ -113,19 +132,20 @@ class PriceTag:
                 sink = 18 * s * M.spring(M.prog(t, self.t_attach + 0.18, 0.6))
         if self.t_rel is not None:
             sink *= 1 - M.spring(M.prog(t, self.t_rel, 0.6))
-        # падение сверху в начале
+        px, gy = self.tag_xy(x, y + sink)
+        # падение от гвоздика: верх бирки у гвоздика → вся длина верёвки
         if not self.tprev:
             k = M.spring(M.prog(t, self.t_drop, 0.75))
-            y = M.lerp(-TAG_H * s - 60, y, k) if k < 1 else y
-        return x * z, (y + sink) * z, s
+            gy = M.lerp(self.pivot_y() + HOLE_Y * s * z, gy, k) if k < 1 else gy
+        return px, gy, s
 
     def tag_bottom(self, t, T):
         """Точка низа бирки (куда цепляется груз) в момент t сцены, T — глобальное время."""
-        px, ls, s = self.tag_pose(t)
+        px, gy, s = self.tag_pose(t)
         th = self.swing(T)
         z = self.z
-        py = -40 * z
-        hx, hy = px + rot(0, ls + 40 * z, th)[0], py + rot(0, ls + 40 * z, th)[1]
+        py = self.pivot_y()
+        hx, hy = px + rot(0, gy - py, th)[0], py + rot(0, gy - py, th)[1]
         return hx + rot(0, (TAG_H - HOLE_Y - 4) * s * z, th)[0], hy + rot(0, (TAG_H - HOLE_Y - 4) * s * z, th)[1]
 
     # ------------------------------------------------------------------ draw
@@ -166,16 +186,20 @@ class PriceTag:
     def draw_tag(self, img, d, t, T, vd):
         """Бирка на верёвке. -> {b: низ бирки, th: угол, s: масштаб, c: центр, a: альфа} или None (не видна)."""
         z = self.z
-        px, ls, s = self.tag_pose(t)
+        px, gy, s = self.tag_pose(t)
         th = self.swing(T)
         xo = self.gone(t, "tag")
         foc = self.tag_focus(t)
         a = (1 - xo) * vd * foc
+        if not self.tprev:
+            a *= M.prog(t, self.t_drop, 0.12)  # бирка проявляется у гвоздика
         if a <= 0.004:
             return None
-        py = -40 * z
-        hx, hy = (px + rot(0, ls + 40 * z, th)[0], py + rot(0, ls + 40 * z, th)[1])
+        py = self.pivot_y()
+        hx, hy = (px + rot(0, gy - py, th)[0], py + rot(0, gy - py, th)[1])
         d.line((px, py, hx, hy), fill=C("dim", int(200 * a)), width=max(1, int(2.5 * z)))
+        r = NAIL * z
+        d.ellipse((px - r, py - r, px + r, py + r), fill=C("dim", int(230 * a)))
         sc = s / self.s_spr
         timg = self.tag_image(t)
         off = (TAG_H / 2 - HOLE_Y) * s * z
