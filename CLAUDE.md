@@ -21,6 +21,7 @@ python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio frame    <проект> <сек>    # один кадр PNG
 python -m studio selftest [--full]          # регресс студии офлайн (~1,5 мин) — после правок движка
+python -m studio clean    <проект> [--keep-final] [--older-than 30d] [--dry-run]  # чистка build/ с отчётом
 ```
 `<проект>` — slug из `projects/` или путь.
 

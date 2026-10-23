@@ -49,6 +49,8 @@ ARGV = [
     (["frame", "p", "1.5", "--out", "x.png"], {"t": 1.5, "out": "x.png"}),
     (["demo", "p", "--no-render", "--workers", "1", "--yes"], {"no_render": True, "workers": 1, "yes": True}),
     (["selftest", "--full", "--keep", "--workers", "4"], {"full": True, "keep": True, "workers": 4}),
+    (["clean", "p", "--keep-final", "--older-than", "30d", "--dry-run"],
+     {"project": "p", "keep_final": True, "older_than": "30d", "dry_run": True}),
 ]
 
 
