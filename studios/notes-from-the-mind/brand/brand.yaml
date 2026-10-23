@@ -1,0 +1,27 @@
+# Бренд-кит Notes From The Mind (ROADMAP A2) — пресет `lab` (channel/STYLE.md, §2) в виде данных.
+# Формат — docs/BRAND.md. Проекты студии включают его через studio.yaml → defaults → style.brand: brand.
+# Цвета вердиктов (good/warn/bad/neutral) — только для вердиктов.
+name: Notes From The Mind
+base: lab                  # шаблоны lab_*; недостающие ключи палитры — из встроенной палитры lab
+palette:
+  bg: "#0A0D14"            # фон кадра
+  surface: "#111726"       # карточки, панели
+  text: "#EEF2F8"
+  dim: "#8B95A7"
+  accent: "#3DD6F5"        # бренд-циан
+  accent2: "#9B8CFF"       # второй акцент; настроение (style.mood) меняет его на ролик
+  good: "#34D399"          # TRUE
+  warn: "#FBBF24"          # HALF-TRUE
+  bad: "#F2545B"           # MYTH
+  neutral: "#8B95A7"       # NO EVIDENCE
+  ink: "#141C2E"
+fonts:                     # файлы — brand/fonts/ или общие assets/fonts/
+  head: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
+  num: {file: Unbounded-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-unbounded.txt)}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
+background: lab            # сетка, зерно, подсветки glow_cool/glow_warm (studio/packs/lab/background.py)
+camera: true               # дрейф камеры у шаблонов lab_*
+subs: karaoke              # слова загораются по мере произнесения
+shape: {line: 2}           # иконки — линия 2 px (STYLE.md, иконки); радиусы — токены шаблонов lab_*
+voice:
+  tone: ровная интонация, акценты только на крючке и вердикте (channel/POSITIONING.md)

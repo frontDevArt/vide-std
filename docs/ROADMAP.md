@@ -87,7 +87,7 @@ studio.yaml → project.yaml`, `defaults` проверяются схемой. �
 `projects/fake-discounts/` — перенести их руками в `studios/notes-from-the-mind/projects/fake-discounts/` (кэш TTS
 ElevenLabs и рендера, ~825 МБ; иначе — повторный платный синтез).
 
-### [ ] A2. Бренд-кит (обобщение пресета `lab`)
+### [x] A2. Бренд-кит (обобщение пресета `lab`)
 **Зачем.** `lab` зашит в код (`gfx.STYLES`, `lab.py`). Для каждого бренда нужен свой стиль без программирования.
 **Сделать.**
 - `studios/<id>/brand/brand.yaml`: палитра (роли: фон, текст, акценты, «хорошо/плохо»), шрифты по ролям (файлы
@@ -100,6 +100,27 @@ ElevenLabs и рендера, ~825 МБ; иначе — повторный пл�
 
 **Готово, если:** один и тот же сценарий собирается в стилях двух студий, листы `stills` явно разные, а на `fake-discounts`
 стиль `lab` из бренд-кита даёт кадры пиксель в пиксель как раньше.
+
+*Сделано:* `studio/brand.py` — чтение и проверка `brand/brand.yaml` (формат и порядок «свой стиль по референсу» —
+[`BRAND.md`](BRAND.md)): палитра ролями (`bg`, `surface`, `text`, `dim`, `accent`, `accent2`, `good`/`warn`/`bad`/`neutral`,
+`ink` → ключи палитры движка; прямой ключ главнее роли), `base` — встроенная палитра-основа, шрифты по ролям с
+обязательной `license` (файл в `brand/`, `brand/fonts/` или `assets/fonts/`), логотип light/dark, `shape`, фон
+`lab | gradient | solid | image` (фото «cover» с затемнением), камера, субтитры `karaoke | plate | tiktok`, интро/аутро,
+CTA, музыка, тон голоса; ошибки — списком при загрузке проекта. `style.brand` (схема, обычно `brand` в
+`studio.yaml → defaults`) → `project.load` разворачивает кит в `cfg["style"]["kit"]` (пути от корня репозитория — ключ
+кэша рендера переносим и меняется при правке кита). `Style` получил поле `kit`: палитра, фон, камера, субтитры, шрифты —
+из кита; `style.brand`, `style.shape` — шаблонам. Рендер: `SolidBackground`, `PhotoBackground` (gfx), субтитры `tiktok`
+(×1,6, обводка, звучащее слово — `accent`; перенос и QA тем же размером, `subs.font_size`), музыка бренда —
+`music.file` по умолчанию. Логотип, стинг, CTA и `shape` хранятся и проверяются, рисовать их — шаблонам C2/C4.
+Notes From The Mind: `studios/notes-from-the-mind/brand/brand.yaml` — `lab` данными, `defaults.style.brand: brand`.
+Проверено: кит NFTM ≡ `palette: lab` — палитра (с настроением и без), фон, камера, субтитры, шрифты; кадры фикстуры
+gallery (все шаблоны) байт в байт; листы `stills` fake-discounts ch01–ch04 (с `timeline.json` боевой копии) с китом и
+с `palette: lab` — разница 0, против `tests/reference/fake-discounts/` — макс. 2/255, как в A1. Тот же сценарий в
+тестовом ките `tests/fixtures/brands/sunrise/` (тёплый градиент, без камеры, TikTok-субтитры, шрифты наоборот) —
+средняя разница кадров с NFTM > 15/255, листы `stills` 16:9 и 9:16 посмотрены глазами: явно другой стиль.
+`tests/test_brand.py` — 25 тестов (кит ≡ lab, пиксели, другой кит, TikTok-субтитры, фоны solid/image, 13 ошибок кита,
+поиск шрифтов и ассетов, цепочка студия → проект и `brand: null`, музыка, правка кита меняет ключ, pickle, validate);
+`pytest` и `selftest` ✅, golden не менялся. Кэш рендера проектов устарел (код рисования и `style.kit`), синтез — нет.
 
 ### [ ] A3. Голос, языки и секреты на студию
 **Сделать.** `studios/<id>/.env` (свой ключ и голос ElevenLabs у каждого клиента; корневой `.env` — запасной); в `studio.yaml` —

@@ -86,12 +86,14 @@ class BigQuote(Template):
 переданного кадра (не заливает его целиком): `safezone` рисует шаблон на прозрачный слой и по непрозрачным пикселям
 проверяет поля кадра — сплошная заливка выглядела бы как «контент до края».
 Цвета и пресет — из `self.style` (`studio/style.py`): `self.style.pal["accent"]`, `self.style.col("dim", 120)`,
-`self.style.background`/`camera`/`subs`. Хелперы gfx (`text_sprite`, `icon`, `panel`, `radial`, `glowify`, `font`, `col`)
+`self.style.background`/`camera`/`subs`, бренд-кит — `self.style.brand` (логотип, CTA…) и `self.style.shape`
+(радиус, толщина линий), формат — [`BRAND.md`](BRAND.md). Хелперы gfx (`text_sprite`, `icon`, `panel`, `radial`, `glowify`, `font`, `col`)
 принимают `style=`; без него берут стиль ролика (рендер делает его активным). `G.PAL`/`G.STYLE` — только для старых
 шаблонов: это снимок, запись в них ничего не меняет.
 
 ## Шаблоны канала: пресет `lab` (Notes From The Mind)
-Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `studios/notes-from-the-mind/channel/STYLE.md`, эталон движения —
+Включаются `style.palette: lab` в `project.yaml` или бренд-китом студии (`style.brand: brand` в `studio.yaml → defaults`,
+кит `studios/notes-from-the-mind/brand/brand.yaml` — тот же `lab` данными, кадры пиксель в пиксель). Правила стиля — `studios/notes-from-the-mind/channel/STYLE.md`, эталон движения —
 `studios/notes-from-the-mind/channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
 Код: пакет `studio/packs/lab/` (`background` — фон и камера, `elements` — примитивы и фирменные элементы,
 `triggers` — `at`, `check` — их проверка, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны; полные имена `lab.flow` и т. п.), `studio/motion.py` (тайминги в кадрах @30), `studio/anim.py` (кривые), `studio/sfx.py` (звуки).

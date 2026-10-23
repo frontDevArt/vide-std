@@ -138,6 +138,12 @@ def _bg(W, H, style=None):
         if style.background == "lab":
             from .packs.lab.background import LabBackground
             _BG[key] = LabBackground(W, H, style=style)
+        elif style.background == "solid":
+            _BG[key] = G.SolidBackground(W, H, style=style)
+        elif style.background == "image":
+            from .brand import path
+            b = style.brand["background"]
+            _BG[key] = G.PhotoBackground(W, H, path(b["file"]), b.get("dim", 0.45), style=style)
         else:
             _BG[key] = G.Background(W, H, style=style)
     return _BG[key]
@@ -188,9 +194,37 @@ def _karaoke_sprite(lines, n_on, size, style):
     return box
 
 
+def _tiktok_sprite(lines, n_on, size, style):
+    """Крупные TikTok-субтитры (бренд-кит, subs: tiktok): без плашки, жирный текст с обводкой, слово,
+    которое звучит, — акцентом."""
+    key = ("tik", tuple(lines), n_on, size, style)
+    if key in _BG:
+        return _BG[key]
+    f = G.font(size, "bold", style=style)  # тот же вес, что у переноса строк (subs.chunks_for_scene)
+    sw = max(2, int(size * 0.09))
+    lh = int(size * 1.18)
+    sp = f.getlength(" ")
+    widths = [sum(f.getlength(w) for w in l.split()) + sp * (len(l.split()) - 1) for l in lines]
+    pw, ph = int(max(widths) + 4 * sw), lh * len(lines) + 4 * sw
+    box = Image.new("RGBA", (pw, ph), (0, 0, 0, 0))
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(box)
+    i = 0
+    for li, l in enumerate(lines):
+        x = (pw - widths[li]) / 2
+        y = 2 * sw + li * lh
+        for w in l.split():
+            c = style.col("accent") if i == n_on - 1 else style.col("text")
+            d.text((x, y), w, font=f, fill=c, stroke_width=sw, stroke_fill=(0, 0, 0, 235))
+            x += f.getlength(w) + sp
+            i += 1
+    _BG[key] = box
+    return box
+
+
 def draw_subs(img, scene, t, proj_sub_size, W, H, style=None):
     style = style or G.SM.active()
-    if style.subs == "karaoke" and scene.get("words"):
+    if style.subs in ("karaoke", "tiktok") and scene.get("words"):
         return _draw_karaoke(img, scene, t, proj_sub_size, W, H, style)
     for c in scene.get("subs") or []:
         if c["t0"] - 0.02 <= t < c["t1"]:
@@ -210,8 +244,12 @@ def _draw_karaoke(img, scene, t, size, W, H, style):
             n_on = sum(1 for w in inside if w["t0"] <= t)
             if len(inside) != n_all:  # таймкоды не совпали с нарезкой — равномерно по времени фрагмента
                 n_on = int(n_all * G.prog(t, c["t0"], c["t1"] - 0.3) + 0.999)
-            spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
             z = min(W, H) / 1080
+            if style.subs == "tiktok":  # крупно и выше интерфейса площадки (правая колонка и низ у TikTok/Reels)
+                spr = _tiktok_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
+                G.blitc(img, spr, W / 2, H * (0.66 if H >= W else 0.80), max(0.0, a))
+                continue
+            spr = _karaoke_sprite(tuple(c["lines"]), min(n_all, n_on), size, style)
             cy = H * 0.835 if H >= W else H - 24 * z - spr.height / 2  # горизонталь: низ плашки в 24 px от края (демо)
             G.blitc(img, spr, W / 2, cy, max(0.0, a))
 

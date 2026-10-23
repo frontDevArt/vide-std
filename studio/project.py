@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 from .config import DEFAULTS, deep_merge, migrate, check  # DEFAULTS, deep_merge — старые имена
-from . import workspace
+from . import brand, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
 
@@ -76,6 +76,7 @@ def load(root) -> Project:
     for w in check(studio_defaults):
         print(f"⚠️  {ws.root.name}/studio.yaml, defaults: {w}")
     cfg = deep_merge(DEFAULTS, deep_merge(migrate(studio_defaults), migrate(user)))
+    cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
     if cfg["tts"]["backend"] == "elevenlabs" and cfg["tts"].get("voice") in (None, "auto", "env"):

@@ -137,13 +137,15 @@ def style(proj, errs, warns):
     """style.mood / style.overrides / glow глав (channel/STYLE.md §14): accent2 не спорит с вердиктами и бренд-цианом."""
     from . import gfx as G
     st = proj.cfg["style"]
-    pal = G.PALETTES.get(st.get("palette", "neon"), G.PALETTES["neon"])
+    kit = st.get("kit")
+    pal = ({k: tuple(v) for k, v in kit["colors"].items()} if kit
+           else G.PALETTES.get(st.get("palette", "neon"), G.PALETTES["neon"]))
     try:
         mc = G.mood_colors(st.get("mood"), st.get("overrides"), base=pal)
     except ValueError as e:
         errs.append(f"style: {e}")
         return
-    if (st.get("mood") or st.get("overrides")) and st.get("palette") != "lab":
+    if (st.get("mood") or st.get("overrides")) and st.get("palette") != "lab" and not kit:
         warns.append("style.mood/overrides рассчитаны на palette: lab")
     near = lambda a, b: sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5 < 48
     for k in ("true", "half", "myth", "noev", "accent"):

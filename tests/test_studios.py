@@ -142,8 +142,11 @@ def test_repo_fake_discounts_moved():
 
 
 def test_repo_nftm_defaults_do_not_change_fake_discounts():
-    """defaults студии ⊆ project.yaml fake-discounts с теми же значениями: ключи кэша TTS и рендера прежние."""
+    """defaults студии ⊆ project.yaml fake-discounts с теми же значениями: ключ кэша TTS прежний. Исключение —
+    бренд-кит (A2, style.brand): тот же lab данными, кадры те же, ключ рендера — новый (правило 6)."""
+    import copy
     from studio.config import deep_merge
-    d = workspace.owner(NFTM / "projects" / "fake-discounts").config["defaults"]
+    d = copy.deepcopy(workspace.owner(NFTM / "projects" / "fake-discounts").config["defaults"])
+    assert d["style"].pop("brand") == "brand"
     user = yaml.safe_load((NFTM / "projects" / "fake-discounts" / "project.yaml").read_text(encoding="utf-8"))
     assert deep_merge(d, user) == deep_merge({}, user)

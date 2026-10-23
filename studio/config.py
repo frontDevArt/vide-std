@@ -47,7 +47,8 @@ SCHEMA = {
         "end": F(NUM, 0.6), "max_extra_gap": F(NUM, 0.45),
     },
     "style": {
-        "palette": F((str,), "neon", "neon | calm | lab (style.PALETTES)"),
+        "palette": F((str,), "neon", "neon | calm | lab (style.PALETTES); при brand — база кита"),
+        "brand": F((str, NONE), doc="бренд-кит: папка с brand.yaml от корня студии (обычно brand), docs/BRAND.md"),
         "font": F((str,), "Inter Display"),
         "mood": F((str, NONE), doc="только lab: lab | night | ember | deep | orchid"),
         "overrides": F((dict, NONE), doc="HEX поверх настроения: glow_cool, glow_warm, accent2"),
