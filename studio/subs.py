@@ -139,8 +139,11 @@ def chunks_for_scene(proj, scene):
         end = min(nxt, b + 0.35)
         if nxt - b < 0.3:
             end = nxt  # короткий зазор — держим до следующего, чтобы не мигало
+        end = max(end, a + 0.3)
+        if k + 1 < len(raw):  # минимум 0,3 с не заходит на следующий субтитр (короткий хвост длинного бита)
+            end = min(end, max(0.0, raw[k + 1][1] - lead))
         out.append({"lines": wrap(txt, f, maxw, ml), "t0": round(max(0.0, a - lead), 3),
-                    "t1": round(max(end, a + 0.3), 3)})
+                    "t1": round(end, 3)})
     return out
 
 

@@ -102,3 +102,13 @@ def test_srt_timestamp():
     assert subs._ts(0) == "00:00:00,000"
     assert subs._ts(3725.0464) == "01:02:05,046"
     assert subs._ts(1.9995, ".") == "00:00:02.000"  # округление, а не отбрасывание
+
+
+def test_chunks_split_tail_does_not_overlap_next(proj):
+    # fake-discounts, 9:16: длинный бит режется, хвост «Friday» ~0,1 с — минимум 0,3 с не должен заходить на следующий
+    proj.cfg["subtitles"]["max_lines"] = 1
+    long = "What's the one deal you bought on Black Friday"  # 46 символов > 43: хвост — одно слово
+    sc = {"beats": [_beat(0, long, 1.0, 2.0), _beat(0, "that you later saw cheaper?", 2.0, 3.5)], "dur": 4.0}
+    c = subs.chunks_for_scene(proj, sc)
+    assert len(c) == 3
+    assert all(a["t1"] <= b["t0"] + 1e-9 for a, b in zip(c, c[1:])), c

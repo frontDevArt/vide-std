@@ -4,8 +4,8 @@ measured:
 - language: en
   backend: elevenlabs
   voice: f81e9560557a
-  wpm: 180.0
+  wpm: 182.3
   rate: 100.0
-  words: 278
-  project: coffee-wake
-  date: '2026-10-23'
+  words: 1148
+  project: fake-discounts
+  date: '2026-10-24'

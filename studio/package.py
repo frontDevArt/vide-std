@@ -320,9 +320,12 @@ def build(proj: Project, log=print) -> tuple[list[str], list[str]]:
     if chs:
         text += "\n\nChapters:\n" + "\n".join(f"{tc(t)} {n}" for t, n in chs) if proj.cfg["language"] == "en" \
             else "\n\nГлавы:\n" + "\n".join(f"{tc(t)} {n}" for t, n in chs)
-    if srcs:
-        text += ("\n\nSources:\n" if proj.cfg["language"] == "en" else "\n\nИсточники:\n") \
-            + "\n".join(f"- {s}" for s in srcs)
+    head_src = "Sources:" if proj.cfg["language"] == "en" else "Источники:"
+    if srcs and p.title_max:
+        text += f"\n\n{head_src}\n" + "\n".join(f"- {s}" for s in srcs)
+    elif srcs:  # подпись (TikTok, Instagram — 2200 символов): короткие цитаты сцен одной строкой
+        short = [c[0] for c in citations(proj)] or srcs
+        text += f"\n\n{head_src} " + "; ".join(short)
     if tags:
         text += "\n\n" + " ".join(tags)
     text = text.strip()

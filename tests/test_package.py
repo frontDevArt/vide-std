@@ -135,6 +135,7 @@ def test_package_files(built):
     assert "Главы не добавлены" in yt  # одна глава
     tt = (out / "tiktok.description.md").read_text(encoding="utf-8")
     assert "#psychology #habits" in tt and "## Подпись" in tt
+    assert "Sources: Lally et al., 2010; YouGov, 2024; Gardner, 2012" in tt and REFS[0] not in tt  # подпись: коротко
     ck = (out / "tiktok.checklist.md").read_text(encoding="utf-8")
     assert "AI-generated content" in ck and "Субтитры вшиты" in ck and "QA: не запускался" in ck
     ck = (out / "youtube.checklist.md").read_text(encoding="utf-8")
