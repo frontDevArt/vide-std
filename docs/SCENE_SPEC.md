@@ -91,8 +91,8 @@ class BigQuote(Template):
 шаблонов: это снимок, запись в них ничего не меняет.
 
 ## Шаблоны канала: пресет `lab` (Notes From The Mind)
-Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `channel/STYLE.md`, эталон движения —
-`channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
+Включаются `style.palette: lab` в `project.yaml`. Правила стиля — `studios/notes-from-the-mind/channel/STYLE.md`, эталон движения —
+`studios/notes-from-the-mind/channel/style-demo.html`, тестовый проект — `projects/style-test`, галерея всех шаблонов — `projects/lab-gallery`.
 Код: пакет `studio/packs/lab/` (`background` — фон и камера, `elements` — примитивы и фирменные элементы,
 `triggers` — `at`, `check` — их проверка, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны; полные имена `lab.flow` и т. п.), `studio/motion.py` (тайминги в кадрах @30), `studio/anim.py` (кривые), `studio/sfx.py` (звуки).
 
@@ -116,7 +116,7 @@ class BigQuote(Template):
 `validate`, пока `timeline.json` актуален (B8); при рендере — запасное время (стаггер) и ⚠️ в логе. Проверяются ключи
 `at` и `*_at` на любой глубине `params` (`hero.strike_at`, `crowd.highlight[0].at`).
 
-**Цветовое настроение** (`channel/STYLE.md` §14) — на весь ролик, в `project.yaml`:
+**Цветовое настроение** (`studios/notes-from-the-mind/channel/STYLE.md` §14) — на весь ролик, в `project.yaml`:
 ```yaml
 style:
   palette: lab

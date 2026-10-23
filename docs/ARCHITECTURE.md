@@ -20,7 +20,7 @@
 | `cli.py` | разбор аргументов `python -m studio …`; сами команды — `commands/<команда>.py` (`add(sp)` — аргументы, `run(a)` — код возврата, тяжёлые импорты внутри `run`); новая команда = модуль + имя в `commands.NAMES` |
 | `validate.py` | проверка сценария: `check(proj)` → `Report` (ошибки, предупреждения, слова, оценка речи); печатает команда |
 | `project.py` | загрузка `project.yaml` + глав, пути внутри проекта (`build/`, `qa/`) |
-| `workspace.py` | где данные студии: `projects/`, `channel/`, `briefs/`, `research/`, `logs/`, `.env`, `tools/`; `current()` — по умолчанию корень студии, `use()` — другая папка (точка входа мультистудии, ROADMAP A1); `load_env` — секреты из `.env` рабочей области. Остальной код пути данных сам не склеивает |
+| `workspace.py` | где данные студии (workspace): `projects/`, `channel/`, `briefs/`, `research/`, `logs/`, `.env`, `tools/`; студии (ROADMAP A1) — `default` (корень) и `studios/<id>/` с `studio.yaml`: `studio(id)`, `studios()`, `find(slug)`, `owner(проект)`; `current()` — текущая (`--studio`), `use()` — другая; `load_env` — `.env` студии, запасной — корневой. Остальной код пути данных сам не склеивает |
 | `textutil.py` | текст строки: сегменты `\|`, текст для TTS и для экрана, вес слогов для оценки длительности, ёмкость субтитров |
 | `lang.py` | профиль языка (`language`): голоса по умолчанию, фраза проверки TTS, ориентир темпа (`wpm`), «чужой алфавит» для validate |
 | `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |
@@ -45,6 +45,21 @@
 | `qa.py` | автопроверки + листы кадров из готового файла |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
 | `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4) |
+
+## Студии (ROADMAP A1)
+Студия (workspace) — канал, бренд или клиент. Раскладку папок знает только `workspace.py`:
+```
+./                       студия default: projects/ (старые проекты), logs/, .env, tools/ (голоса — общие)
+studios/<id>/            studio.yaml, CLAUDE.md, channel/, briefs/, research/, projects/, .env (свой ключ, запасной — корневой)
+```
+- `python -m studio --studio <id> <команда>` делает студию текущей на время команды (`workspace.use`); `new --studio <id>`
+  — то же для нового проекта. Без флага текущая — `default`, а slug, которого в ней нет, ищется во всех студиях
+  (`workspace.find`); один и тот же slug в двух студиях — ошибка с просьбой указать `--studio`.
+- Настройки проекта: `config.DEFAULTS` → `defaults:` из `studio.yaml` студии-владельца (`workspace.owner` — по пути
+  проекта) → `project.yaml`. `defaults` проверяются той же схемой, что и `project.yaml`. Заготовка `new` — своя
+  `projects/_template` студии, иначе общая из корня; `language`/`format` без флагов — из `defaults` студии.
+- Ключи кэша TTS и рендера от пути проекта не зависят (хэш кода — по содержимому файлов), поэтому перенос проекта
+  в студию вместе с `build/` ничего не пересчитывает. `python -m studio studios` — список студий и их проектов.
 
 ## Почему склейки не видны («как будто сделано за один заход»)
 1. **Единое время.** Сцена знает своё глобальное начало (кадр). Фон — функция глобального времени,
@@ -81,7 +96,7 @@
 и перерендерятся (`status` это покажет). Поэтому: правки текста — до рендера поздних глав.
 
 ## Замеры
-Машина: i7-13700 (8 P + 8 E ядер, 24 потока), 32 ГБ, Windows 11, Python 3.14. Эталон — `projects/fake-discounts`
+Машина: i7-13700 (8 P + 8 E ядер, 24 потока), 32 ГБ, Windows 11, Python 3.14. Эталон — `studios/notes-from-the-mind/projects/fake-discounts`
 (1920×1080, 46 сцен, 12 569 кадров = 6:59). Все разделы и способ снять заново (`tools/bench.py`) —
 [`history/BENCH.md`](history/BENCH.md).
 

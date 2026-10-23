@@ -1,6 +1,7 @@
-"""new — создать проект из шаблона projects/_template."""
+"""new — создать проект из шаблона projects/_template (в студии `--studio`, иначе в текущей)."""
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import shutil
@@ -10,10 +11,14 @@ from .. import workspace
 
 def add(sp):
     q = sp.add_parser("new", help="создать проект из шаблона")
-    q.add_argument("topic"); q.add_argument("--slug"); q.add_argument("--format", default="vertical",
-                                                                      choices=["vertical", "horizontal", "square"])
+    q.add_argument("topic"); q.add_argument("--slug"); q.add_argument("--format", default=None,
+                                                                      choices=["vertical", "horizontal", "square"],
+                                                                      help="без флага — из studio.yaml, иначе vertical")
     q.add_argument("--duration", type=float, default=None, help="точная длительность, c (иначе — по речи)")
-    q.add_argument("--lang", default="ru", help="язык ролика: ru | en | ... (studio/lang.py)")
+    q.add_argument("--lang", default=None, help="язык ролика: ru | en | ... (studio/lang.py); "
+                                                "без флага — из studio.yaml, иначе ru")
+    # то же, что `python -m studio --studio <id> new`; SUPPRESS — не затирать глобальный флаг
+    q.add_argument("--studio", default=argparse.SUPPRESS, metavar="ID", help="студия проекта (studios/<id>/)")
     q.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake"],
                    help="голос; без флага — первый доступный: elevenlabs (канал + ключ) → edge → rhvoice")
 
@@ -47,22 +52,32 @@ def default_backend(lang):
 
 
 def run(a):
-    backend = a.tts or default_backend(a.lang)
+    sid = getattr(a, "studio", None)
+    ws = workspace.studio(sid) if sid else workspace.current()
+    with workspace.use(ws):
+        return _create(a, ws)
+
+
+def _create(a, ws):
+    d = ws.config.get("defaults") or {}
+    lang = a.lang or d.get("language") or "ru"
+    fmt = a.format or d.get("format") or "vertical"
+    backend = a.tts or default_backend(lang)
     if not backend:
         backend = "rhvoice"
         print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"
               "   поставьте голос (python -m studio doctor, bash tools/setup_rhvoice.sh) или укажите --tts")
     slug = a.slug or slugify(a.topic)
-    ws = workspace.current()
     dst = ws.project(slug)
     if dst.exists():
         raise SystemExit(f"Уже есть: {dst}")
+    dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ws.template, dst)
     y = (dst / "project.yaml").read_text(encoding="utf-8")
     # JSON-строка — валидный YAML при любых кавычках и `: `/`#` в теме; комментарии заготовки сохраняются
     y = y.replace("topic: TODO", f"topic: {json.dumps(a.topic, ensure_ascii=False)}")
-    y = y.replace("language: ru", f"language: {a.lang}")
-    y = y.replace("format: vertical", f"format: {a.format}")
+    y = y.replace("language: ru", f"language: {lang}")
+    y = y.replace("format: vertical", f"format: {fmt}")
     y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
     # явно в project.yaml, а не «по умолчанию»: бэкенд входит в ключ кэша TTS и не должен зависеть от машины
     y = y.replace("  backend: rhvoice ", f"  backend: {backend} ", 1)

@@ -42,7 +42,7 @@
 
 ## Этап A — Мультистудия
 
-### [ ] A1. Студии как папки (`studios/<id>/`)
+### [x] A1. Студии как папки (`studios/<id>/`)
 **Зачем.** Сейчас канал размазан по корню (`channel/`, `briefs/`, `research/`, `projects/`), второму каналу или бренду некуда лечь.
 **Сделать.**
 - Структура:
@@ -63,6 +63,29 @@
 
 **Готово, если:** `fake-discounts` после переноса проходит `status` и `stills` без изменений, `/topic-radar` пишет в папку
 своей студии, а `python -m studio studios` показывает 2 студии.
+
+*Сделано:* `studio/workspace.py` — студии: `studio(id)` (`default` = корень, иначе `studios/<id>/` со `studio.yaml`;
+`tools/` общий), `studios()`, `projects(ws)`, `find(slug)`, `owner(путь проекта)`, свойства `config` (studio.yaml) и
+`name`; заготовка — своя `projects/_template` студии или общая; `load_env` студии с запасным корневым `.env`. CLI:
+глобальный `--studio <id>` (студия текущая на время команды), `new --studio <id>` (язык/формат без флагов — из
+`defaults` студии), команда `studios` (список, тип, языки, проекты, замечания к `studio.yaml`). `resolve_project`/`load`:
+slug — в текущей студии, без `--studio` — во всех (два совпадения — ошибка). `project.load`: `DEFAULTS → defaults
+studio.yaml → project.yaml`, `defaults` проверяются схемой. Перенос одним коммитом `git mv`: `channel/`, `briefs/`,
+`research/`, `projects/fake-discounts` → `studios/notes-from-the-mind/`; `studio.yaml` (kind youtube, en, defaults:
+язык, формат, ElevenLabs, `lab`, громкость, субтитры — подмножество `project.yaml` fake-discounts), правила канала
+из корневого `CLAUDE.md` → `studios/notes-from-the-mind/CLAUDE.md` (в корне — раздел «Студии» со ссылкой). Пути в
+`/topic-radar`, `/topic-to-brief`, `/new-video` (проект канала — `new --studio notes-from-the-mind`), `weekly-radar.sh`
+и документах (START_HERE, README, WALKTHROUGH, PHASES, SCENE_SPEC, TTS, ARCHITECTURE) — на студию; внутри студии пути
+относительные (`channel/…`). `.gitignore` — `studios/*/projects/*/build|qa`. Проверено: `python -m studio studios` —
+2 студии (default, notes-from-the-mind); `status fake-discounts` по slug; cfg `fake-discounts` до и после переноса
+совпадает (JSON); `stills` ch01–ch04 (с `timeline.json` боевой копии) против `tests/reference/fake-discounts/` — макс.
+разница 2/255; `/topic-radar` пишет в `studios/notes-from-the-mind/research/radar/` — проверено по тексту команды и
+скрипта, сам радар не запускался (поиск в сети). `tests/test_studios.py` — 13 тестов (список, поиск slug, строгость
+`--studio`, неоднозначность, цепочка настроек, `.env` студии и корня, `new --studio`, флаг CLI, предупреждения,
+репозиторий: 2 студии, перенос, defaults не меняют fake-discounts); `pytest` и `selftest` ✅, golden не менялся.
+**При merge `stage-A` в основной checkout:** `build/`, `qa/`, `logs/` fake-discounts в git не лежат и останутся в
+`projects/fake-discounts/` — перенести их руками в `studios/notes-from-the-mind/projects/fake-discounts/` (кэш TTS
+ElevenLabs и рендера, ~825 МБ; иначе — повторный платный синтез).
 
 ### [ ] A2. Бренд-кит (обобщение пресета `lab`)
 **Зачем.** `lab` зашит в код (`gfx.STYLES`, `lab.py`). Для каждого бренда нужен свой стиль без программирования.

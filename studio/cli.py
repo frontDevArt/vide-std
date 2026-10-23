@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import sys
 
 from . import commands
@@ -19,16 +20,20 @@ def __getattr__(name):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="python -m studio")
+    p.add_argument("--studio", metavar="ID", help="студия (studios/<id>/; без флага — default и поиск проекта "
+                                                  "во всех студиях): python -m studio studios")
     sp = p.add_subparsers(dest="cmd", required=True)
     for name in commands.NAMES:
         commands.module(name).add(sp)
     a = p.parse_args(argv)
     mod = commands.module(a.cmd)
-    if not getattr(mod, "LOG", True):
-        return _run(mod, a)
-    from .log import session
-    with session(a.cmd, _log_root(a), sys.argv[1:] if argv is None else argv):
-        return _run(mod, a)
+    from . import workspace
+    with workspace.use(workspace.studio(a.studio)) if a.studio else contextlib.nullcontext():
+        if not getattr(mod, "LOG", True):
+            return _run(mod, a)
+        from .log import session
+        with session(a.cmd, _log_root(a), sys.argv[1:] if argv is None else argv):
+            return _run(mod, a)
 
 
 def _log_root(a):

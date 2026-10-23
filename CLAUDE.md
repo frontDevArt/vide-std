@@ -5,7 +5,7 @@
 по фазам из `docs/PHASES.md`.
 
 ## Старт любой сессии
-1. `python -m studio status <проект>` (или `ls projects/`, если проект не назван) — что готово, что дальше.
+1. `python -m studio status <проект>` (или `python -m studio studios`, если проект не назван) — что готово, что дальше.
 2. Прочитай `projects/<slug>/outline.md` — там сквозные решения, их не менять без пользователя.
 3. Если окружение новое: `python -m studio doctor`; нет TTS → `bash tools/setup_rhvoice.sh`.
 
@@ -24,8 +24,9 @@ python -m studio all      <проект> [--yes]  # voice → render → assembl
 python -m studio demo     <проект>          # демо стиля 10–15 с в projects/<slug>-demo/ (STYLE §14)
 python -m studio selftest [--full]          # регресс студии офлайн (~1,5 мин) — после правок движка
 python -m studio clean    <проект> [--keep-final] [--older-than 30d] [--dry-run]  # чистка build/ с отчётом
+python -m studio studios                   # студии и их проекты; --studio <id> перед командой — работать в студии
 ```
-`<проект>` — slug из `projects/` или путь.
+`<проект>` — slug или путь; slug без `--studio` ищется во всех студиях.
 
 ## Железные правила (каждое оплачено временем, см. docs/LESSONS.md)
 - **Нет рабочего синтеза речи — сказать пользователю и остановиться.** Не делать ролик только с субтитрами.
@@ -69,13 +70,11 @@ voice → render → assemble → qa → сравнение с `tests/golden/`, 
 Если встроенных не хватает — пиши `projects/<slug>/templates/<имя>.py` по контракту из
 `docs/SCENE_SPEC.md`. Если шаблон удачный и общий — перенеси в `studio/templates.py`.
 
-## Канал «Notes From The Mind»
-Студия делает ролики англоязычного YouTube-канала **Notes From The Mind** (психология: мифы под проверкой).
-- Ниша, стоп-лист, рубрики, вердикты, формулы названий — `channel/POSITIONING.md`. Это закон для выбора тем.
-- Визуал — пресет `lab` по `channel/STYLE.md` (эталон движения — `channel/style-demo.html`, шаблоны `lab_*`).
-- **Каждый факт и каждая цифра — с источником** `(Авторы, год)`; нет источника — нет факта. Источники — в описание ролика.
-- **Язык роликов канала — английский** (`language: en`). Общение с пользователем и служебные тексты — по-русски.
-- Голос — ElevenLabs (`tts.backend: elevenlabs`; ключ и голос только в `.env`, в чат и в git не выводить).
-- Недельный цикл: `/topic-radar` → `research/radar/<ГГГГ-Wнн>.md` → `/topic-to-brief N` → `briefs/<имя>.md` →
-  `/new-video briefs/<имя>.md` → в `channel/topics-log.md` статус `published`/`rejected`.
-- Автозапуск радара — `scripts/weekly-radar.ps1` (Планировщик заданий), лог в `logs/`.
+## Студии
+Студия (workspace) — канал, бренд или клиент: `studios/<id>/` со своими `studio.yaml` (тип, языки, площадки,
+`defaults:` для проектов), `CLAUDE.md` (правила студии — **прочитать перед работой с её проектами и темами**),
+`channel/`, `briefs/`, `research/`, `projects/`. Корень — студия `default` (старый `projects/`). Список —
+`python -m studio studios`; команда в студии — `python -m studio --studio <id> <команда>` (новый проект:
+`new … --studio <id>`). Настройки проекта: умолчания движка (`studio/config.py`) → `defaults:` из `studio.yaml` → `project.yaml`.
+- **Notes From The Mind** (англоязычный YouTube-канал, психология: мифы под проверкой) — `studios/notes-from-the-mind/`,
+  правила канала — `studios/notes-from-the-mind/CLAUDE.md`. Темы, брифы и ролики канала — только там.

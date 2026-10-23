@@ -6,8 +6,8 @@ argument-hint: "<тема> [длительность, формат, пожела
 
 Работай по CLAUDE.md и docs/PHASES.md.
 
-Если аргумент — путь к `.md` (обычно `briefs/<имя>.md`, шаблон `briefs/_TEMPLATE.md`), прочитай его
-целиком (и скриншоты из `briefs/<имя>/`) — это бриф. Пустые поля реши сам, решения запиши в outline.md.
+Если аргумент — путь к `.md` (обычно `studios/notes-from-the-mind/briefs/<имя>.md`, шаблон `studios/notes-from-the-mind/briefs/_TEMPLATE.md`), прочитай его
+целиком (и скриншоты из `studios/notes-from-the-mind/briefs/<имя>/`) — это бриф. Пустые поля реши сам, решения запиши в outline.md.
 Не переспрашивай то, что в брифе уже есть.
 
 1. `python -m studio doctor`. Если ни один TTS не работает — `bash tools/setup_rhvoice.sh` (в фоне, долго).
@@ -22,18 +22,20 @@ argument-hint: "<тема> [длительность, формат, пожела
    QA должен быть весь ✅) и отдай MP4 + .srt.
    Если длиннее — напиши сценарий ПЕРВОЙ главы, сделай voice + stills, запусти рендер главы в фоне,
    и скажи пользователю: «дальше — /next».
-5. Канал Notes From The Mind (бриф с `Пресет: lab`, обычно из `/topic-to-brief`): `language: en`, `style.palette: lab`,
+5. Канал Notes From The Mind (бриф с `Пресет: lab`, обычно из `/topic-to-brief`): проект — в студии канала,
+   `python -m studio new "<тема>" --studio notes-from-the-mind …` → `studios/notes-from-the-mind/projects/<slug>/`
+   (язык и голос по умолчанию — из её `studio.yaml`; правила — `studios/notes-from-the-mind/CLAUDE.md`). `language: en`, `style.palette: lab`,
    `loudness: -14`, `subtitles.size: 36`, голос — ElevenLabs (`tts.backend: elevenlabs`, `rate` числом; без ключа в `.env` —
    сказать пользователю и предложить edge `en-US-AndrewMultilingualNeural`). Раскадровка по `docs/SCENE_SPEC.md`, раздел
    «Шаблоны канала»: шаблон композиции `lab_*` на каждую сцену (из раздела 4 брифа), каждый элемент привязан к слову-триггеру
-   (`at: "66"`), разрыв ритма каждые 20–30 с, чек-лист `channel/STYLE.md` §13 — до `stills`. Каждая цифра — с источником
+   (`at: "66"`), разрыв ритма каждые 20–30 с, чек-лист `studios/notes-from-the-mind/channel/STYLE.md` §13 — до `stills`. Каждая цифра — с источником
    (`source` в сцене и список в описании).
-   **Демо стиля — до сценария** (`channel/STYLE.md` §14). Сразу после `project.yaml`, до outline-глав и сценария:
+   **Демо стиля — до сценария** (`studios/notes-from-the-mind/channel/STYLE.md` §14). Сразу после `project.yaml`, до outline-глав и сценария:
    отдельный проект `projects/<slug>-demo/` (тот же формат и стиль, 10–15 с, 2–3 сцены): главная метафора + цветовое
    настроение (`style.mood` в `project.yaml`) + новые элементы из §4 брифа + один вердикт, с настоящим голосом.
    Сценарий демо — `projects/<slug>/demo/ch01.yaml` (заготовку переписать), затем `python -m studio demo <slug> --no-render`
    → `stills <slug>-demo` (посмотреть PNG) → `python -m studio demo <slug>` (voice → render → assemble → qa). Отдать пользователю MP4 и **остановиться до утверждения**. Правки — по кругу на демо.
    После «да»: в `projects/<slug>/outline.md` раздел «Визуальная идея — утверждено» (метафора, настроение, новые элементы,
-   мотив рубрики, открывающая сцена, путь к демо), строка в `channel/visuals-log.md` со статусом `approved`. Дальше —
+   мотив рубрики, открывающая сцена, путь к демо), строка в `studios/notes-from-the-mind/channel/visuals-log.md` со статусом `approved`. Дальше —
    фазы как обычно; внутри ролика визуальная идея не меняется.
 6. В конце: одна строка — что готово, где файл, какая следующая команда.

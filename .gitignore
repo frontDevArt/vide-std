@@ -4,6 +4,10 @@ projects/*/qa/
 # `python -m studio demo <slug>` → projects/<slug>-demo/, регресс → projects/regress*/
 projects/*-demo/
 projects/regress*/
+# то же в студиях (ROADMAP A1): studios/<id>/projects/<slug>/
+studios/*/projects/*/build/
+studios/*/projects/*/qa/
+studios/*/projects/*-demo/
 logs/
 *.log
 output/

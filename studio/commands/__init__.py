@@ -7,7 +7,7 @@ import importlib
 
 # порядок = порядок в `python -m studio --help`
 NAMES = ("doctor", "new", "validate", "voice", "stills", "render", "assemble", "qa", "all", "status", "templates",
-         "frame", "demo", "selftest", "clean")
+         "frame", "demo", "selftest", "clean", "studios")
 
 
 def module(name):

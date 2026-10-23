@@ -4,7 +4,7 @@
 Студия превращает **тему** в **готовый MP4**: сценарий по главам → озвучка (язык — `language` в `project.yaml`) →
 анимация, нарисованная кодом → субтитры → музыка → автопроверка. Короткие ролики — за одну сессию Claude,
 длинные (до часа) — по главам, по одной главе за сессию. Сейчас студия делает ролики англоязычного канала
-**Notes From The Mind** (`channel/`, пресет `lab`, голос ElevenLabs) — правила канала в `CLAUDE.md`.
+**Notes From The Mind** (`studios/notes-from-the-mind/channel/`, пресет `lab`, голос ElevenLabs) — правила канала в `studios/notes-from-the-mind/CLAUDE.md`.
 
 ## 2. Запуск у себя
 ```bash
@@ -20,7 +20,7 @@ claude                                # открыть Claude Code в этой �
 ## 3. Команды в Claude CLI
 | Команда | Что делает |
 |---|---|
-| `/new-video <тема или briefs/<имя>.md>` | новый ролик: бриф → план → (короткий) сразу MP4 |
+| `/new-video <тема или studios/notes-from-the-mind/briefs/<имя>.md>` | новый ролик: бриф → план → (короткий) сразу MP4 |
 | `/next` | продолжить: следующая фаза или глава |
 | `/chapter <slug> chNN <что изменить>` | написать/переписать одну главу |
 | `/qa` | собрать, проверить, отдать |
@@ -47,15 +47,17 @@ docs/
   ROADMAP.md             развитие: мультистудия, площадки, типы роликов
   history/               SESSION_LOG.md — решения и цифры; BENCH.md — замеры скорости и диска; архив
   reference/             гайд Claude Motion и разбор, что из него берём
-channel/                 канал: позиционирование, стиль (STYLE.md, style-demo.html), журналы тем и визуала
-briefs/, research/       брифы роликов и недельные радары тем
 studio/                  движок (Python, ~7900 строк): команды — commands/, шаблоны сцен — packs/
 tests/                   pytest; fixtures/gallery — все шаблоны; golden/ — эталон selftest
 tools/                   setup_rhvoice.sh, bench.py (замеры)
 scripts/                 weekly-radar.ps1/.sh — автозапуск радара
 projects/
-  _template/             заготовка нового проекта
-  fake-discounts/        живой эталон (7 минут, 4 главы, lab)
+  _template/             заготовка нового проекта (общая для всех студий)
+studios/                 студии (ROADMAP A1): `python -m studio studios` — список
+  notes-from-the-mind/   канал: studio.yaml, CLAUDE.md (правила канала)
+    channel/             позиционирование, стиль (STYLE.md, style-demo.html), журналы тем и визуала
+    briefs/, research/   брифы роликов и недельные радары тем
+    projects/fake-discounts/  живой эталон (7 минут, 4 главы, lab)
 .claude/commands/        слэш-команды
 .github/workflows/ci.yml CI: ruff, pytest, selftest на Ubuntu и Windows
 ```
