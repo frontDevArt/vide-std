@@ -64,6 +64,12 @@ def run(a):
     name = a.name or sid
     langs = [x.strip() for x in a.lang.split(",") if x.strip()] or ["en"]
     platforms = [x.strip() for x in a.platforms.split(",") if x.strip()] if a.platforms else PLATFORMS[a.kind]
+    from ..platforms import get
+    for pid in platforms:  # профили площадок (ROADMAP B1): опечатка — до создания папки
+        try:
+            get(pid)
+        except KeyError as e:
+            raise SystemExit(f"--platforms: {e.args[0]}")
     fmt = a.format or ("horizontal" if a.kind == "youtube" else "vertical")
 
     shutil.copytree(TEMPLATE, dst, ignore=shutil.ignore_patterns(".gitkeep"))

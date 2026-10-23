@@ -18,6 +18,17 @@ def check(ws: workspace.Workspace) -> list[str]:
     if ws.id != workspace.DEFAULT and cfg.get("kind") not in workspace.KINDS:
         out.append(f"kind: {cfg.get('kind')!r} — нужно одно из {', '.join(workspace.KINDS)}")
     out += [f"defaults: {w}" for w in check_cfg(cfg.get("defaults") or {})]
+    from ..platforms import PLATFORMS, get
+    pl = cfg.get("platforms") or []
+    if not isinstance(pl, list):
+        out.append(f"platforms: {pl!r} — нужен список площадок (python -m studio platforms)")
+        pl = []
+    for pid in pl:
+        if pid not in PLATFORMS:
+            try:
+                get(pid)
+            except KeyError as e:
+                out.append(f"platforms: {e.args[0]}")
     from ..voices import check as check_voices
     return out + check_voices(ws)
 

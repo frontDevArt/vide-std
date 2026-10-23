@@ -5,6 +5,8 @@ topic: TODO
 audience: TODO            # для кого ролик, что зритель должен вынести
 language: ru              # язык озвучки и текста: ru | en | ... (studio/lang.py). Голос auto берётся отсюда
 format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square 1080×1080
+platform: null            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
+                          #   validate сверит формат и длительность, qa — файл по профилю площадки; null — без площадки
 fps: 30
 target_duration: null     # секунды, если длительность должна быть ТОЧНОЙ (Shorts/Reels); null — по речи
 

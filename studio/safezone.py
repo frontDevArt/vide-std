@@ -1,5 +1,6 @@
 """Проверка вёрстки «контент в безопасной зоне»: шаблон сцены рисуется на прозрачный слой отдельно от фона
-и субтитров, рамка непрозрачных пикселей сравнивается с полями кадра (`qa.safe_margin`, доля стороны, по умолчанию 4 %).
+и субтитров, рамка непрозрачных пикселей сравнивается с полями кадра (`qa.safe_margin`, доля стороны, по умолчанию 4 %);
+у проекта с `platform:` — с безопасной зоной площадки и её интерфейсом (studio/platforms.py, ROADMAP B1).
 
 Кадры — те же, что у `stills`: начало сцены, середины битов, конец. Пока только ⚠️: вертикаль `lab_*` не свёрстана
 (channel/STYLE.md §12), после ROADMAP B2 станет ❌. Модуль не в `render.code_hash` — правка проверки не сбрасывает кэш рендера.
@@ -29,11 +30,31 @@ def content_box(ctx, tpl, scene, t):
     return (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1) if len(xs) else None
 
 
+def zone(proj: Project) -> tuple[dict, tuple]:
+    """Поля по сторонам ({side: доля}) и прямоугольники интерфейса: `qa.safe_margin`, а у проекта с `platform:` —
+    не меньше полей площадки плюс её интерфейс (колонка кнопок справа у TikTok/Shorts; studio/platforms.py, ROADMAP B1)."""
+    from .platforms import of
+    base = float(proj.cfg.get("qa", {}).get("safe_margin", 0.04))
+    p = of(proj)
+    if not p:
+        return {side: base for side, _ in SIDES}, ()
+    return {side: max(base, getattr(p.safe, side)) for side, _ in SIDES}, p.ui
+
+
+def _hits(box, ui, W, H) -> bool:
+    x0, y0, x1, y1 = ui.box
+    return box[2] > x0 * W and box[0] < x1 * W and box[3] > y0 * H and box[1] < y1 * H
+
+
 def scan(proj: Project, chapter=None, margin=None) -> list[dict]:
-    """Сцены, где контент заходит в поля: {chapter, id, template, margins: {side: доля}, bad: [сторона по-русски]}."""
+    """Сцены, где контент заходит в поля или под интерфейс площадки:
+    {chapter, id, template, margins: {side: доля}, bad: [сторона по-русски], ui: [что перекрыто], need: {side: поле}}.
+    `margin` — одно поле на все стороны без интерфейса площадки (как до B1)."""
     from .render import make_template, prepare
     if margin is None:
-        margin = float(proj.cfg.get("qa", {}).get("safe_margin", 0.04))
+        need, uis = zone(proj)
+    else:
+        need, uis = {side: float(margin) for side, _ in SIDES}, ()
     tl, ctx = prepare(proj)
     W, H = ctx["W"], ctx["H"]
     out = []
@@ -47,28 +68,49 @@ def scan(proj: Project, chapter=None, margin=None) -> list[dict]:
             continue
         m = {"left": min(b[0] for b in boxes) / W, "top": min(b[1] for b in boxes) / H,
              "right": 1 - max(b[2] for b in boxes) / W, "bottom": 1 - max(b[3] for b in boxes) / H}
-        bad = [ru for side, ru in SIDES if m[side] < margin - 1e-9]
-        if bad:
-            out.append({"chapter": s["chapter"], "id": s["id"], "template": s["template"], "margins": m, "bad": bad})
+        bad = [ru for side, ru in SIDES if m[side] < need[side] - 1e-9]
+        ui = [u.name for u in uis if any(_hits(b, u, W, H) for b in boxes)]
+        if bad or ui:
+            out.append({"chapter": s["chapter"], "id": s["id"], "template": s["template"], "margins": m, "bad": bad,
+                        "ui": ui, "need": need})
     return out
 
 
-def message(issue, margin) -> str:
-    sides = ", ".join(f"{ru} {issue['margins'][side] * 100:.0f} %" for side, ru in SIDES if ru in issue["bad"])
-    return f"{issue['chapter']}/{issue['id']} {issue['template']}: контент у края — {sides} (поле {margin * 100:g} %)"
+def message(issue, margin=None) -> str:
+    """`margin` — одно поле для подписи (как до B1); без него — поле каждой стороны из issue["need"]."""
+    need = issue.get("need") or {}
+    uniform = margin is not None or len(set(need.values())) <= 1
+    m = margin if margin is not None else next(iter(need.values()), 0.04)
+    parts = []
+    if issue["bad"]:
+        sides = ", ".join(f"{ru} {issue['margins'][side] * 100:.0f} %"
+                          + ("" if uniform else f" из {need[side] * 100:g} %")
+                          for side, ru in SIDES if ru in issue["bad"])
+        parts.append(f"контент у края — {sides}" + (f" (поле {m * 100:g} %)" if uniform else ""))
+    if issue.get("ui"):
+        parts.append("под интерфейсом площадки — " + ", ".join(issue["ui"]))
+    return f"{issue['chapter']}/{issue['id']} {issue['template']}: " + "; ".join(parts)
+
+
+def _label(proj) -> str:
+    from .platforms import of
+    need, _ = zone(proj)
+    p = of(proj)
+    if p:
+        z = "/".join(f"{need[side] * 100:g}" for side in ("top", "bottom", "left", "right"))
+        return f"зона {p.id}: поля в/н/л/п {z} %" + (" + интерфейс" if p.ui else "")
+    return f"поле {need['top'] * 100:g} %"
 
 
 def report(proj: Project, chapter=None, log=print) -> list[dict]:
-    margin = float(proj.cfg.get("qa", {}).get("safe_margin", 0.04))
-    issues = scan(proj, chapter, margin)
+    issues = scan(proj, chapter)
     for i in issues:
-        log("  ⚠️  " + message(i, margin))
+        log("  ⚠️  " + message(i))
     return issues
 
 
 def qa_check(proj: Project, add):
     """Строка отчёта qa: add(статус, имя, подробности). WARN на итог не влияет."""
-    margin = float(proj.cfg.get("qa", {}).get("safe_margin", 0.04))
-    issues = scan(proj, margin=margin)
-    det = "; ".join(message(i, margin) for i in issues[:4]) + (f"; ещё {len(issues) - 4}" if len(issues) > 4 else "")
-    add("WARN" if issues else "PASS", "Контент в безопасной зоне", det or f"поле {margin * 100:g} %")
+    issues = scan(proj)
+    det = "; ".join(message(i) for i in issues[:4]) + (f"; ещё {len(issues) - 4}" if len(issues) > 4 else "")
+    add("WARN" if issues else "PASS", "Контент в безопасной зоне", det or _label(proj))

@@ -93,6 +93,10 @@ def check(proj) -> Report:
     tgt = proj.cfg.get("target_duration")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
+    from .platforms import plan_issues
+    pe, pw = plan_issues(proj, est)  # площадка: формат и предел длительности (ROADMAP B1)
+    errs += pe
+    warns += pw
     return Report(errs, warns, len(ids), words, est, pace, pace_src)
 
 

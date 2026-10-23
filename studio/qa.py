@@ -16,7 +16,7 @@ from .timing import load_timeline
 def probe(path):
     r = subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-show_entries",
                         "stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames,sample_rate,channels,duration"
-                        ":format=duration", "-of", "json", str(path)], capture_output=True, text=True,
+                        ":format=duration,size", "-of", "json", str(path)], capture_output=True, text=True,
                        stdin=subprocess.DEVNULL)
     return json.loads(r.stdout)
 
@@ -38,6 +38,13 @@ def sheet(imgs, labels, cols, out):
         sh.paste(im, ((i % cols) * (w + 4), (i // cols) * (h + 4)))
     sh.save(out)
     return out
+
+
+def subs_top(proj, W, H):
+    """Верх полосы субтитров для листа subs_check — доля высоты (render.draw_subs: TikTok-субтитры стоят выше)."""
+    if G.SM.active().subs == "tiktok":
+        return 0.52 if H >= W else 0.66
+    return 0.70 if H >= W else 0.76
 
 
 def run(proj: Project, log=print, fast=False):
@@ -96,6 +103,8 @@ def run(proj: Project, log=print, fast=False):
     I, pk = loudness(final)
     chk(I is not None and abs(I - float(proj.cfg.get("loudness", -16))) < 1.5 and pk < -0.5, "Громкость итога",
         f"{I:.1f} LUFS, пик {pk:.1f} dBFS" if I is not None else "тишина: нет ни речи, ни музыки")
+    from .platforms import checks as platform_checks  # выход по профилю площадки (ROADMAP B1)
+    platform_checks(proj, info, dur, I, pk, chk, warn)
     if lines:
         if (md / "levels.json").exists():  # P4.2: WAV микса не хранятся, громкости пишет assemble
             lv = json.loads((md / "levels.json").read_text(encoding="utf-8"))
@@ -129,7 +138,7 @@ def run(proj: Project, log=print, fast=False):
 
     # --- листы кадров из ГОТОВОГО файла (заодно доказывает воспроизведение)
     tmp = proj.qa_dir / "_g.png"
-    y0 = int(H * (0.70 if H >= W else 0.76))
+    y0 = int(H * subs_top(proj, W, H))
     (proj.qa_dir / "subs_check.png").unlink(missing_ok=True)  # от прошлого прогона с субтитрами
     if subs:
         crops, labels = [], []
