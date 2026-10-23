@@ -5,7 +5,7 @@
                                                             │            │
                                                      build/tts/*.wav     ├─► [stills] ─► qa/stills_*.png
                                                      (кэш по тексту)     ├─► [render] ─► build/render/chNN/sNN.mp4 (кэш по сцене)
-                                                                         └─► [assemble] ─► mix/mix.wav (+ chapters/*.mp4 по --chapters)
+                                                                         └─► [assemble] ─► mix/levels.json (+ chapters/*.mp4 по --chapters)
                                                                                                └─► final/<slug>.mp4 + .srt/.vtt
                                                                                                         └─► [qa] ─► qa/report.md
 ```
