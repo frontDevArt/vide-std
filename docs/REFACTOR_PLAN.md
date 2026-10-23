@@ -489,8 +489,17 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
 
 ## Этап 5 — Документы
 
-- [ ] **P5.1** Обновить `START_HERE.md`, `README.md`, `ARCHITECTURE.md`: карта модулей после этапа 2, замеры из `BENCH.md`,
+- [x] **P5.1** Обновить `START_HERE.md`, `README.md`, `ARCHITECTURE.md`: карта модулей после этапа 2, замеры из `BENCH.md`,
   убрать устаревшие таблицы «проверено / не проверено» и ссылки на старый ROADMAP.
+  *Сделано:* `START_HERE.md` переписан: без «облачной сессии» и таблицы «проверено / не проверено» (вместо неё —
+  где смотреть: `doctor`, `pytest` + `selftest`, CI, `BENCH.md`, `TTS.md`), установка через `requirements-dev.txt`
+  и `selftest`, голоса (elevenlabs/edge/piper/RHVoice), `PYTHONUTF8=1` на Windows, команды канала, карта с `channel/`,
+  `briefs/`, `tests/`, `commands/`, `packs/`, `fake-discounts` (движок ~7900 строк, было «~2700»), «Куда дальше» —
+  этот план и ROADMAP v2. `README.md`: язык из `language`, канал, `/roadmap` → план + ROADMAP, шрифты `assets/fonts/`.
+  `ARCHITECTURE.md`: порядок слоёв модулей, добавлены `textutil`, `lang`, `selftest`; ссылка на несуществующее демо
+  `minutka` заменена тестами стыка; раздел «Замеры» — до/после этапов 3–4 из `BENCH.md` и оценка часа (~23 мин);
+  список «следующие шаги после MVP» — ссылкой на ROADMAP (C, F2). Ссылок на `ROADMAP_v1` в трёх файлах нет (grep).
+  Код не менялся: `pytest` 380 ✅, `selftest` ✅ за 72 с (golden без изменений).
 - [ ] **P5.2** `CLAUDE.md`: ~~регресс → `selftest`~~ (сделано в P0.5); раздел «Развитие студии» → этот план и ROADMAP.
 - [ ] **P5.3** Раздел шаблонов в `SCENE_SPEC.md` генерировать из метаданных (`python -m studio templates --md`), чтобы
   документ не расходился с кодом.
