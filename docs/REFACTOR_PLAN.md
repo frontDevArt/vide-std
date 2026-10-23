@@ -418,7 +418,18 @@ B7 — `test_qa_skips`, B8 — `test_at_triggers`, B9 — `test_doctor_elevenlab
   Проверено: `tests/test_render_draft.py` (7: размеры и ключи в 3 форматах, кадр = уменьшенный чистовой по всем 18
   шаблонам фикстуры в 3 форматах, полный черновой рендер + `assemble --draft` вертикали — 540×960, все кадры, свой кэш,
   чистовой не тронут), флаги в `tests/test_cli_split.py`, `pytest` 360 ✅, `selftest` ✅ (golden без изменений).
-- [ ] **P3.5 `prepare()` один раз:** результат кэшировать в процессе / в `build/prepared.json` для `status`, `assemble`, `sfx`.
+- [x] **P3.5 `prepare()` один раз:** результат кэшировать в процессе / в `build/prepared.json` для `status`, `assemble`, `sfx`.
+  *Сделано:* в процессе — `render.prepare_once()` (`studio/render.py`): внутри scope `prepare` считается один раз на
+  ключ (проект, draft, `cfg`, главы, `mtime`+размер `timeline.json`) и отдаёт копию (`deepcopy` tl — 2 мс на 7 минут);
+  на попадании заново применяются стиль и шаблоны проекта (глобальные). `cli._run` оборачивает так каждую команду:
+  `assemble` (свой + `sfx_events`), `stills` (свой + поля `safezone`), `all` (render → assemble → qa) считают его один
+  раз. Вне scope — как было (тесты правят код через `monkeypatch` без смены `mtime`: всегда-включённый кэш с ключом по
+  датам файлов их бы обманул). `build/prepared.json` не делался: проверка его свежести — тот же хэш кода шаблонов, а это
+  85 % цены `prepare` (профиль: `scene_code_hash`; шаблоны — 10 %); `status` зовёт `prepare` один раз. Замер
+  `fake-discounts`: `prepare` 100–195 мс, из кэша — 6 мс; `assemble` экономит ~0,1–0,2 с, `all` — ~0,3–0,5 с. Проверено:
+  `tests/test_prepare_once.py` (7: вне scope считается каждый раз, в scope — один раз и то же, копии не протекают,
+  черновик отдельно, новые `cfg`/`timeline.json` — пересчёт, `sfx_events` берёт из кэша, команда CLI в scope),
+  `pytest` 367 ✅, `selftest` ✅ (golden без изменений).
 
 **Этап готов, если:** полный рендер `fake-discounts` на этой машине **быстрее минимум в 2 раза**, golden с допуском зелёный,
 листы `stills` визуально совпадают с эталонными.

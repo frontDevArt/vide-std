@@ -9,6 +9,8 @@
 """
 from __future__ import annotations
 
+import contextlib
+import copy
 import json
 import os
 import subprocess
@@ -28,11 +30,46 @@ from .timing import load_timeline
 
 
 DRAFT_PRESET = "ultrafast"
+_ONCE = None  # {ключ входов: (tl, ctx)} внутри prepare_once(), иначе None
+
+
+@contextlib.contextmanager
+def prepare_once():
+    """Внутри одной команды код не меняется: prepare() считается один раз на (проект, draft, входы) (P3.5).
+    Иначе assemble (+ sfx), stills (+ поля qa), all (render → assemble → qa) повторяют его — хэш кода шаблонов
+    там 85 % цены. CLI оборачивает так каждую команду; вне scope — каждый вызов заново (тесты правят код)."""
+    global _ONCE
+    outer = _ONCE
+    if outer is None:
+        _ONCE = {}
+    try:
+        yield
+    finally:
+        if outer is None:
+            _ONCE = None
 
 
 def prepare(proj: Project, draft=False):
     """Сцены в глобальном порядке + непрерывное состояние (позиция ленты) на входе каждой сцены.
-    draft — черновик: кадр вдвое меньше (стороны чётные — для yuv420p), сцены пишутся в build/render-draft/."""
+    draft — черновик: кадр вдвое меньше (стороны чётные — для yuv420p), сцены пишутся в build/render-draft/.
+    Внутри prepare_once() — из кэша (копия: вызывающий может её менять)."""
+    if _ONCE is None:
+        return _prepare(proj, draft)
+    tlp = proj.build / "timeline.json"
+    st = tlp.stat() if tlp.exists() else None
+    key = stable_hash([str(proj.root.resolve()), draft, proj.cfg, proj.chapters,
+                       st and (st.st_mtime_ns, st.st_size)])
+    if key not in _ONCE:
+        _ONCE[key] = _prepare(proj, draft)
+        return copy.deepcopy(_ONCE[key][0]), dict(_ONCE[key][1])
+    # стиль и шаблоны проекта — глобальные: между вызовами их мог сменить другой проект
+    style = G.apply_style(proj.cfg["style"])
+    TP.load_project_templates(proj.root)
+    tl, ctx = _ONCE[key]
+    return copy.deepcopy(tl), dict(ctx, style=style)
+
+
+def _prepare(proj: Project, draft=False):
     tl = load_timeline(proj)
     style = G.apply_style(proj.cfg["style"])
     TP.load_project_templates(proj.root)
