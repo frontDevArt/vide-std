@@ -9,9 +9,11 @@ def add(sp):
     q = project_parser(sp, "assemble", "сборка финала")
     q.add_argument("--allow-stale", action="store_true")
     q.add_argument("--draft", action="store_true", help="из чернового рендера → build/final/<slug>.draft.mp4")
+    q.add_argument("--chapters", action="store_true", help="ещё и файлы глав build/chapters/chNN.mp4")
 
 
 def run(a):
     from ..assemble import assemble
-    assemble(load(resolve_project(a.project)), allow_stale=a.allow_stale, draft=a.draft)
+    assemble(load(resolve_project(a.project)), allow_stale=a.allow_stale, draft=a.draft,
+             chapters=a.chapters)
     return 0

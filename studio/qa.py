@@ -97,9 +97,13 @@ def run(proj: Project, log=print, fast=False):
     chk(I is not None and abs(I - float(proj.cfg.get("loudness", -16))) < 1.5 and pk < -0.5, "Громкость итога",
         f"{I:.1f} LUFS, пик {pk:.1f} dBFS" if I is not None else "тишина: нет ни речи, ни музыки")
     if lines:
-        vI, _ = loudness(md / "voice.wav")
-        if (md / "music_ducked.wav").exists():
-            mI, _ = loudness(md / "music_ducked.wav")
+        if (md / "levels.json").exists():  # P4.2: WAV микса не хранятся, громкости пишет assemble
+            lv = json.loads((md / "levels.json").read_text(encoding="utf-8"))
+            vI, mI = lv["voice_lufs"], lv["music_lufs"]
+        else:  # сборка до P4.2: промежуточные WAV лежат в build/mix/
+            vI = loudness(md / "voice.wav")[0]
+            mI = loudness(md / "music_ducked.wav")[0] if (md / "music_ducked.wav").exists() else None
+        if mI is not None:
             chk(14 <= vI - mI <= 28, "Музыка значительно тише речи, но слышна",
                 f"голос {vI:.1f} LUFS, музыка {mI:.1f} LUFS (разница {vI - mI:.1f} LU, норма 14–28)")
         l0 = lines[0]
