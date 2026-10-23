@@ -1,0 +1,29 @@
+# Бренд-кит студии __NAME__ (ROADMAP A2). Формат и «свой стиль по референсу» — docs/BRAND.md.
+# Заготовка `new-studio`: цвета и шрифты заменить снятыми с референса (HEX — пипеткой по скриншоту, не на глаз),
+# затем демо стиля (`python -m studio demo __ID__-style`) и утверждение пользователем.
+name: __NAME__
+base: neon                 # встроенная палитра-основа: neon | calm | lab (недостающие ключи — отсюда)
+palette:                   # роль → #RRGGBB; good/warn/bad не должны совпадать с акцентами
+  bg: "#0B0F1A"            # фон
+  surface: "#151B2B"       # карточки, панели
+  text: "#F4F6FB"
+  dim: "#8C95A8"
+  accent: "#4CC9F0"        # главный цвет бренда
+  accent2: "#F72585"       # второй акцент
+  good: "#34D399"
+  warn: "#FBBF24"
+  bad: "#F2545B"
+  neutral: "#8C95A8"
+  ink: "#1C2438"
+fonts:                     # head | num | mono; файл — brand/fonts/ (с лицензией клиента) или общие assets/fonts/ (OFL)
+  head: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
+  num: {file: Unbounded-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-unbounded.txt)}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
+# logo: {light: logo-light.png, dark: logo-dark.png}   # light — для тёмного фона; файлы — в brand/
+background: gradient       # lab | gradient | solid | {type: image, file: photo.jpg, dim: 0.45}
+camera: false
+subs: __SUBS__             # karaoke | plate | tiktok (крупные, для вертикали)
+shape: {radius: 24, line: 2}
+# cta: {text: TODO, url: TODO}
+voice:
+  tone: TODO               # тон голоса и текста: например «тёплый, бодрый, на ты»

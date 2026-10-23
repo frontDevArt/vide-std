@@ -78,17 +78,19 @@ def studio(id: str | None = None, base=None) -> Workspace:
     if not id or id == DEFAULT:
         return Workspace.at(base)
     root = base / "studios" / id
-    if not (root / "studio.yaml").exists():
+    if id.startswith("_") or not (root / "studio.yaml").exists():
         known = ", ".join(w.id for w in studios(base))
         raise SystemExit(f"Студия не найдена: {id} (есть: {known}; новая — studios/<id>/studio.yaml)")
     return Workspace.at(root, id=id, tools=base / "tools")
 
 
 def studios(base=None) -> list[Workspace]:
-    """Все студии: `default` первой, затем `studios/<id>/` с `studio.yaml` по алфавиту."""
+    """Все студии: `default` первой, затем `studios/<id>/` с `studio.yaml` по алфавиту (`_template` — заготовка
+    `new-studio`, не студия)."""
     base = Path(base or ROOT)
     d = base / "studios"
-    ids = sorted(p.name for p in d.iterdir() if (p / "studio.yaml").exists()) if d.exists() else []
+    ids = sorted(p.name for p in d.iterdir()
+                 if not p.name.startswith("_") and (p / "studio.yaml").exists()) if d.exists() else []
     return [studio(None, base)] + [studio(i, base) for i in ids]
 
 

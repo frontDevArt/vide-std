@@ -1,0 +1,21 @@
+# Студия __NAME__ (ROADMAP A1, создана `python -m studio new-studio`, мастер — /new-studio).
+# Правила — CLAUDE.md рядом; бренд-кит — brand/brand.yaml (docs/BRAND.md).
+# Секреты (ключ и голос ElevenLabs) — только в .env студии: studios/__ID__/.env (корневой .env — запасной).
+name: __NAME__
+kind: __KIND__             # youtube | brand | client
+languages: __LANGS__
+platforms: __PLATFORMS__   # площадки (профили — ROADMAP B1)
+
+# Настройки проекта по умолчанию: умолчания движка → defaults → project.yaml (project.yaml главнее).
+# Схема — как у project.yaml (studio/config.py). Голос и модель входят в ключ кэша TTS — менять осознанно.
+defaults:
+  language: __LANG__
+  format: __FORMAT__
+  style:
+    brand: brand           # бренд-кит brand/brand.yaml (ROADMAP A2)
+
+# Голос студии по языку проекта: DEFAULTS → defaults → voices[язык] → project.yaml (ROADMAP A3, docs/TTS.md).
+# env:ИМЯ — значение из .env студии (в git и чат не попадает). rate — числом после первого ролика.
+voices:
+__VOICES__
+max_accents: 2             # переопределений голоса (voice: сцен/строк) на ролик без ⚠️

@@ -25,6 +25,7 @@ python -m studio demo     <проект>          # демо стиля 10–15 
 python -m studio selftest [--full]          # регресс студии офлайн (~1,5 мин) — после правок движка
 python -m studio clean    <проект> [--keep-final] [--older-than 30d] [--dry-run]  # чистка build/ с отчётом
 python -m studio studios                   # студии и их проекты; --studio <id> перед командой — работать в студии
+python -m studio new-studio <id> --name "…" --kind brand|youtube|client --lang en --platforms tiktok  # новая студия (мастер — /new-studio)
 ```
 `<проект>` — slug или путь; slug без `--studio` ищется во всех студиях.
 
@@ -73,7 +74,7 @@ voice → render → assemble → qa → сравнение с `tests/golden/`, 
 ## Студии
 Студия (workspace) — канал, бренд или клиент: `studios/<id>/` со своими `studio.yaml` (тип, языки, площадки,
 `defaults:` для проектов), `CLAUDE.md` (правила студии — **прочитать перед работой с её проектами и темами**),
-`channel/`, `briefs/`, `research/`, `projects/`. Корень — студия `default` (старый `projects/`). Список —
+`channel/`, `briefs/`, `research/`, `projects/`. Корень — студия `default` (старый `projects/`). Новая студия — `/new-studio` (анкета → `new-studio` → бренд-кит по референсу → утверждённое демо стиля). Список —
 `python -m studio studios`; команда в студии — `python -m studio --studio <id> <команда>` (новый проект:
 `new … --studio <id>`). Настройки проекта: умолчания движка (`studio/config.py`) → `defaults:` из `studio.yaml` → `project.yaml`.
 - **Notes From The Mind** (англоязычный YouTube-канал, психология: мифы под проверкой) — `studios/notes-from-the-mind/`,
