@@ -18,7 +18,8 @@ images:
 ```
 Здесь — схема, проверки validate, путь картинки в кэше (`path`), план работ со сметой (`plan`, `estimate`) и бэкенды
 (`generate`): `kie` (Kie AI: задача → опрос статуса), `fake` (процедурные PNG, офлайн — тесты и selftest), `none` (только
-готовые файлы). Команда `images` (смета, «да», бюджет, assets.yaml, rembg) — C5.4.
+готовые файлы), вырезание `rembg` (`tools/rembg-venv/`) и учёт в `assets.yaml` (`entries`, `register`). Команда —
+`python -m studio images` (`studio/commands/images.py`): смета, «да», бюджет, баланс Kie до и после.
 
 Ключ Kie — только `workspace.secret("KIE_API_KEY", ws)` (.env студии → окружение → корневой .env); в лог, чат,
 сообщения об ошибках и ключи кэша не попадает.
@@ -284,14 +285,15 @@ def generate(proj, job: Job, ws=None) -> dict:
     """Сделать одну работу бэкендом images.backend → {credits, files, task?}. Файл пишется целиком или никак."""
     st = settings(proj.cfg)
     b = st["backend"]
+    if job.local and b != "fake":  # rembg — локально при любом бэкенде, и у none: вырезает готовый файл
+        job.out.parent.mkdir(parents=True, exist_ok=True)
+        return rembg_cut(proj, job)
     if b == "none":
         raise ImagesUnavailable(f"images.backend: none — генерации нет; положите готовый файл {job.out.name} в "
                                 f"{job.out.parent.relative_to(proj.root).as_posix()}/ ({job.where})")
     fn = {"fake": _fake, "kie": _kie_job}.get(b)
     if fn is None:
         raise ImagesUnavailable(f"images.backend {b!r} — можно {', '.join(BACKENDS)}")
-    if job.local and b != "fake":
-        raise ImagesUnavailable(f"{job.model}: локальный шаг команды images (C5.4), а не бэкенда")
     job.out.parent.mkdir(parents=True, exist_ok=True)
     return fn(proj, job, st, ws or proj.ws)
 
@@ -560,3 +562,141 @@ def _kie_job(proj, job: Job, st: dict, ws) -> dict:
             meta["base"] = name
     _write_json(meta, job.out)
     return {"credits": r["credits"], "task": r["task"], "files": files}
+
+
+# ---------------------------------------------------------------- rembg (локально, tools/rembg-venv)
+REMBG_MODEL = "isnet-general-use"  # Apache-2.0; не bria-rmbg — некоммерческая (docs/IMAGES.md)
+REMBG_TIMEOUT = 600  # с: первый запуск качает модель (179 МБ)
+
+
+# Через Python API, а не CLI `rembg i`: в venv стоит rembg без зависимостей CLI (click и др.) — лишнего не ставим.
+_REMBG_CODE = ("import sys; from PIL import Image; from rembg import new_session, remove; "
+               "remove(Image.open(sys.argv[2]), session=new_session(sys.argv[1])).save(sys.argv[3], format='PNG')")
+
+
+def rembg_python() -> Path:
+    """python своего venv с rembg: в окружении студии rembg поднял бы Pillow (риск для golden)."""
+    venv = workspace.current().tools / "rembg-venv"  # tools/ общий для всех студий
+    for p in (venv / "Scripts" / "python.exe", venv / "bin" / "python"):
+        if p.exists():
+            return p
+    raise ImagesUnavailable(f"нет {venv.as_posix()}/ с rembg — поставить по docs/IMAGES.md "
+                            "(«Вырезание объекта: локально») с согласия пользователя или images.cutout: kie | none")
+
+
+def rembg_cut(proj, job: Job) -> dict:
+    """Вырезать объект картинки job.key → <ключ>.cut.png (RGBA), атомарно."""
+    import subprocess
+    src = path(proj, job.key)
+    if not src.exists():
+        raise ImagesUnavailable(f"{job.where}: нет картинки {src.name} для вырезания — сначала её генерация")
+    tmp = job.out.with_name(job.out.stem + ".part.png")
+    cmd = [str(rembg_python()), "-I", "-c", _REMBG_CODE, REMBG_MODEL, str(src), str(tmp)]
+    try:
+        r = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, errors="replace",
+                           timeout=REMBG_TIMEOUT, check=False)
+    except subprocess.TimeoutExpired:
+        raise ImagesUnavailable(f"rembg {src.name}: нет результата за {REMBG_TIMEOUT} с")
+    if r.returncode != 0 or not tmp.exists():
+        tmp.unlink(missing_ok=True)
+        raise ImagesUnavailable(f"rembg {src.name}: код {r.returncode}: {(r.stderr or r.stdout).strip()[-300:]}")
+    tmp.replace(job.out)
+    return {"credits": 0, "files": [job.out]}
+
+
+# ---------------------------------------------------------------- учёт в assets.yaml
+# Права на выход определяет поставщик модели, Kie своих ограничений не добавляет (ответ поддержки, docs/IMAGES.md).
+LICENSES = (("nano-banana", "Google Gemini API terms (через Kie AI)"),
+            ("google/", "Google Gemini API terms (через Kie AI)"),
+            ("flux-3/", "BFL FLUX Klein (через Kie AI) — условия не проверены"),
+            ("seedream/", "ByteDance Seedream (через Kie AI) — условия не проверены"),
+            ("recraft/", "Recraft (через Kie AI) — условия не проверены"))
+FAKE_SOURCE = "imagegen fake — процедурная заглушка студии"
+FAKE_LICENSE = "CC0 — нарисовано кодом студии (заглушка, не для публикации)"
+
+
+def license_of(model: str) -> str:
+    return next((v for k, v in LICENSES if model.startswith(k)), f"{model} (через Kie AI) — условия не проверены")
+
+
+def entries(proj, jobs: list[Job], spent: dict | None = None) -> list[dict]:
+    """Записи assets.yaml для готовых файлов работ: файл, источник, лицензия, промпт, модель, цена.
+    spent — {out: {credits, task}} фактическое за этот запуск; иначе цена — по смете плана. backend none — пусто:
+    файлы свои, источник и лицензию пишет пользователь."""
+    st = settings(proj.cfg)
+    b = st["backend"]
+    if b == "none":
+        return []
+    rel = (lambda p: p.relative_to(proj.root).as_posix())
+    img = {j.key: j for j in jobs if j.step == "image"}
+    out = []
+    for j in jobs:
+        if not j.out.exists():
+            continue
+        src_img = img.get(j.key)
+        lic0 = license_of(src_img.model) if src_img else ""
+        if b == "fake":
+            src, lic = f"{FAKE_SOURCE} ({j.step})", FAKE_LICENSE
+        elif j.step == "image":
+            src = f"Kie AI {j.model} {st['resolution']}" + (f", правка {j.base}.png" if j.base else "") + (
+                f", референс {st['reference']}" if st.get("reference") else "")
+            lic = license_of(j.model)
+        elif j.local:
+            src, lic = f"{j.key}.png → rembg {REMBG_MODEL}", f"{lic0}; вырезано rembg (Apache-2.0)"
+        else:
+            src, lic = f"{j.key}.png → Kie AI {j.model}", f"{lic0} + {license_of(j.model)}"
+        meta = {"by": "генерация", "prompt": prompt_text(j.req, st)}
+        if b == "kie" and not j.local:
+            got = (spent or {}).get(j.out) or {}
+            c = got.get("credits")
+            c = j.credits if c is None else c
+            meta.update({"model": j.model, "credits": c, "usd": round(float(c) / CREDITS_PER_USD, 4)})
+            if got.get("task"):
+                meta["task"] = got["task"]
+        if j.step == "layers":
+            lj = json.loads(j.out.read_text(encoding="utf-8"))
+            files = ([(lj["base"], "база — сцена без объектов")] if lj.get("base") else []) + [
+                (x["file"], f"слой «{x.get('name') or x['z']}»") for x in lj.get("layers") or []]
+            for i, (f, what) in enumerate(files):
+                e = {"file": rel(j.out.parent / f), "source": f"{src}, {what}", "license": lic, **meta}
+                if i:  # цена раскладки — одна на все её файлы, у первого
+                    for k in ("credits", "usd", "task"):
+                        e.pop(k, None)
+                out.append(e)
+        else:
+            out.append({"file": rel(j.out), "source": src, "license": lic, **meta})
+    return out
+
+
+def register(proj, items: list[dict]) -> int:
+    """Дописать в assets.yaml записи файлов, которых там ещё нет (ручные записи и комментарии не трогаем) → сколько
+    добавлено. Файл не дописывается как список — переписывается целиком через YAML."""
+    import yaml
+
+    from . import assets
+    reg, errs = assets.load(proj.root)
+    if errs:
+        raise ImagesUnavailable(f"{'; '.join(errs)} — поправьте {assets.FILE} вручную, затем повторите images")
+    new = [e for e in items if assets._key(e["file"]) not in reg]
+    if not new:
+        return 0
+    f = proj.root / assets.FILE
+    lines = "".join("  - " + yaml.safe_dump(e, default_flow_style=True, allow_unicode=True, width=10 ** 9,
+                                            sort_keys=False).strip() + "\n" for e in new)
+    old = f.read_text(encoding="utf-8") if f.exists() else ""
+    text = (old.rstrip("\n") + "\n" + lines) if old.strip() else (
+        "# Источник и лицензия всего, что видно и слышно в ролике (studio/assets.py); картинки дописывает "
+        "`python -m studio images`.\nassets:\n" + lines)
+    try:
+        got = (yaml.safe_load(text) or {}).get("assets")
+        ok = isinstance(got, list) and len(got) == len(reg) + len(new)
+    except yaml.YAMLError:
+        ok = False
+    if not ok:  # assets: не последний или в своей разметке — переписать целиком (комментарии потеряются)
+        raw = yaml.safe_load(old) or {}
+        raw["assets"] = list(raw.get("assets") or []) + new
+        text = yaml.safe_dump(raw, allow_unicode=True, sort_keys=False, width=10 ** 9)
+    tmp = f.with_name(f.name + ".part")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(f)
+    return len(new)

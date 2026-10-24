@@ -25,6 +25,7 @@
 | `textutil.py` | текст строки: сегменты `\|`, текст для TTS и для экрана, вес слогов для оценки длительности, ёмкость субтитров |
 | `lang.py` | профиль языка (`language`): голоса по умолчанию, фраза проверки TTS, ориентир темпа (`wpm`), «чужой алфавит» для validate |
 | `assets.py` | ассеты проекта (ROADMAP C2): `assets/` + `assets.yaml` (файл, источник, лицензия, кто дал); `refs` — медиа в `params` сцены, `issues` — validate, `qa_check` — строка QA, `fingerprint` — содержимое файлов в ключе сцены; у нарезки ищет и в папке исходника ([ниже](#медиа-слой-roadmap-c2)) |
+| `imagegen.py` | картинки сцен (ROADMAP C5, [`IMAGES.md`](IMAGES.md)): схема `images:` и запросы `image:`, ключ кэша `assets/images/<ключ>.png`, `plan`/`estimate` — работы и смета, `generate` — бэкенды `kie`/`fake`/`none` и локальный `rembg` (`tools/rembg-venv/`), `entries`/`register` — учёт в `assets.yaml`; команда — `commands/images.py` |
 | `media.py` | декодирование для шаблонов `media`: фото (кэш), `Video` — кадры видео потоком из ffmpeg нужного размера и fps (подряд — чтение, назад или далеко вперёд — перезапуск с `-ss`, за концом — стоп-кадр), `audio` — звук исходника (моно float32), `envelope` — громкость по кадрам |
 | `kinds.py` | типы роликов (ROADMAP C1): `kind` в `project.yaml` → голос, пределы длительности, поля `brief:`, проверки validate/status/qa ([ниже](#типы-роликов-roadmap-c1)) |
 | `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |

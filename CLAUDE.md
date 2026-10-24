@@ -14,6 +14,7 @@
 python -m studio new "<тема>" [--slug x] [--kind promo] [--format vertical|horizontal|square|portrait] [--platform tiktok] [--duration 30] [--tts edge]
 python -m studio kinds                     # типы роликов: explainer, short-hook, promo, music (без голоса), listicle…
 python -m studio validate <проект>         # проверка сценария
+python -m studio images   <проект> [--yes] # картинки сцен (images.enabled): смета → --yes — платная генерация (kie), кэш, assets.yaml
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
 python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера

@@ -108,7 +108,7 @@ image:
 (у `state_b` — ещё ключ первой картинки сцены). `validate`: `image:` при выключенных `images` — ❌ с подсказкой; нет
 `prompt`, чужая `role`, `state_b` первой, `variant` не целое ≥ 0 — ❌. `status` показывает фазу «3б Картинки», только
 если `images.enabled`. Текст и цифры в кадр — только кодом: модели коверкают буквы. Генерация — `python -m studio
-images` (C5.4), разворачивание в `params.layers` шаблона `media.image` — C5.5.
+images` (смета, `--yes` для платного, учёт в `assets.yaml` — [`IMAGES.md`](IMAGES.md)), разворачивание в `params.layers` шаблона `media.image` — C5.5.
 
 ## Шаблоны (встроенные)
 Шаблоны разложены по пакетам `studio/packs/`: `core` (title, statement, bullets, counter, outro), `phone` (cards,
