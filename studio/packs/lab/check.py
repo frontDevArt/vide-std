@@ -36,11 +36,12 @@ def _near(words, spec):
 
 def trigger_errors(scenes, registry):
     """Ненайденные триггеры `at` сцен timeline (B8): раньше — только print в процессе рендера.
-    Проверяются сцены шаблонов lab (LabTemplate); слова — по той же логике, что LabTemplate.at."""
+    Проверяются сцены шаблонов lab (LabTemplate) и шаблонов с `word_triggers` (kit, ROADMAP C4); слова — по той же
+    логике, что LabTemplate.at."""
     errs = []
     for s in scenes:
         cls = registry.get(s.get("template"))
-        if not (isinstance(cls, type) and issubclass(cls, LabTemplate)):
+        if not (isinstance(cls, type) and (issubclass(cls, LabTemplate) or getattr(cls, "word_triggers", False))):
             continue
         where, words, nb = f"{s.get('chapter')}/{s.get('id')}", s.get("words") or [], len(s.get("beats") or [])
         for path, spec in _triggers(s.get("params") or {}):

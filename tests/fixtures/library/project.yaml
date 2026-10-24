@@ -1,0 +1,20 @@
+# Фикстура библиотеки шаблонов (ROADMAP C4): по сцене на каждый шаблон, которого нет в gallery (kit, commerce,
+# media), — палитра lab (фон жмётся в golden вчетверо лучше neon), голос fake (офлайн). Формат здесь horizontal; остальные форматы тесты,
+# selftest и `python -m studio gallery` получают подменой format. Golden — tests/golden/library/<формат>/.
+# Новый шаблон — сцену сюда (или в gallery), иначе упадёт test_gallery.
+title: library fixture
+topic: library fixture
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+
+tts:
+  backend: fake
+  voice: auto
+  rate: 105
+
+style:
+  palette: lab
+
+chapters: [ch01, ch02]

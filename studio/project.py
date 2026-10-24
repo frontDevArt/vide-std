@@ -148,6 +148,8 @@ def load(root) -> Project:
         user["tts"] = ut
     cfg = deep_merge(DEFAULTS, deep_merge(studio_defaults, deep_merge({"tts": vl} if vl else {}, user)))
     cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
+    if cfg["subtitles"].get("style"):  # режим субтитров проекта поверх пресета и кита (ROADMAP C4) → Style.subs
+        cfg["style"] = dict(cfg["style"], subs=cfg["subtitles"]["style"])
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
     tc = cfg["tts"]

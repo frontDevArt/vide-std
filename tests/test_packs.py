@@ -19,7 +19,9 @@ OLD = {  # плоские имена до P2.4 → полное имя
 
 
 NEW = {"commerce.price_tag", "commerce.number",  # P2.9: новые шаблоны, старых имён у них нет
-       "media.image", "media.video", "media.screen", "media.clip", "media.logo_sting", "media.product_card"}  # C2
+       "media.image", "media.video", "media.screen", "media.clip", "media.logo_sting", "media.product_card",  # C2
+       *(f"kit.{n}" for n in ("chart", "timeline", "steps", "compare", "map", "quote", "testimonial", "lower_third",
+                              "cta_end", "chapter_bumper"))}  # C4: короткие имена — алиасы (test_library)
 
 
 def test_old_names_are_aliases():

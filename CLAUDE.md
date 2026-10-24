@@ -25,6 +25,7 @@ python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 python -m studio cutdown  <проект> --to youtube-shorts [--count 3] [--list] [--pick ch02/s05-s08]  # нарезка → <slug>-cut-N/
 python -m studio package  <проект> [--out <выход>]  # пакет к выходу: обложка, описание (главы, источники, хэштеги), чек-лист → output/<slug>/
 python -m studio templates                 # шаблоны сцен и их параметры
+python -m studio gallery [--formats vertical,horizontal]  # превью всех шаблонов во всех форматах → output/gallery/index.html
 python -m studio platforms [<id>]          # профили площадок: кадр, длительность, безопасная зона, громкость
 python -m studio frame    <проект> <сек>    # один кадр PNG
 python -m studio all      <проект> [--yes]  # voice → render → assemble → qa подряд (короткие ролики)

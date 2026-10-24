@@ -1,0 +1,8 @@
+# Источник и права файлов фикстуры: нарисовано кодом (tools/make_demo_assets.py library), CSV — выдуманные данные.
+assets:
+  - {file: assets/sales.csv, source: "tools/make_demo_assets.py, выдуманные данные", license: CC0, by: студия}
+  - {file: assets/avatar.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/lamp-front.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/logo.png, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/screen.mp4, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/podcast.mp4, source: "tools/make_demo_assets.py, синтетическая речь", license: CC0, by: студия}

@@ -53,8 +53,8 @@ KINDS = {k.id: k for k in (
     Kind("listicle", "топ-N: пункты по порядку", brief=("count",),
          hint="вступление, затем сцены пунктов с item: 1…N (по возрастанию или обратный отсчёт), brief.count = N"),
     Kind("data-story", "история в цифрах: графики из CSV", files=("data",),
-         needs="C4 (шаблон chart: столбики, линия, круг из данных)",
-         hint="brief.data — CSV в assets/; counter / number для отдельных чисел уже есть"),
+         hint="brief.data — CSV в assets/ (+ assets.yaml: источник данных); сцены chart (type: bar | line | pie, "
+              "data, x / y — столбцы, highlight, source), counter / commerce.number — отдельные числа"),
     Kind("tutorial", "туториал: запись экрана + выноски + зум", files=("recording",),
          hint="brief.recording — запись экрана в assets/; сцены media.screen с одним файлом: start — с какой "
               "секунды, zoom / callouts / clicks — по битам озвучки"),

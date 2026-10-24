@@ -1,9 +1,12 @@
 """Ассеты демо типов роликов (ROADMAP C2) — всё нарисовано кодом, детерминированно, лицензия своя (CC0).
 
     python tools/make_demo_assets.py            # перезаписать tests/fixtures/kinds/<тип>/assets/
+    python tools/make_demo_assets.py library data-story   # только эти наборы (ROADMAP C4)
 
 promo — 3 фото настольной лампы и логотип; slideshow — 4 пейзажа и вырезанный объект (параллакс); tutorial — запись
-экрана (форма, курсор, ввод, клик); clip — «подкаст» (два собеседника, звук — синтетическая речь, не голос человека).
+экрана (форма, курсор, ввод, клик); clip — «подкаст» (два собеседника, звук — синтетическая речь, не голос человека);
+data-story — CSV с выдуманными данными; library (фикстура галереи C4, tests/fixtures/library/) — портрет-аватар
+и CSV; фото, логотип, запись экрана и «подкаст» библиотеки — копии из демо promo, tutorial и clip.
 Файлы маленькие (JPG q82, видео crf 30): они лежат в git. Запускать только при намеренной смене демо.
 """
 from __future__ import annotations
@@ -218,7 +221,51 @@ def podcast(path, w=960, h=540, fps=30, secs=10.0):
     wav.unlink()
 
 
-def main():
+def portrait(path, s=480):
+    """Аватар: силуэт головы и плеч на градиенте (не человек)."""
+    img = gradient(s, s, (120, 170, 220), (60, 90, 150)).convert("RGBA")
+    d = ImageDraw.Draw(img)
+    d.ellipse((s * .3, s * .16, s * .7, s * .6), fill=(244, 214, 190))
+    d.ellipse((s * .27, s * .1, s * .73, s * .38), fill=(70, 50, 40))
+    d.ellipse((s * .12, s * .62, s * .88, s * 1.4), fill=(40, 60, 90))
+    soft(img, 1).convert("RGB").save(path, quality=86)
+
+
+CSV = {
+    # выдуманные данные для демо (не статистика): у CSV те же правила, что у фото, — запись в assets.yaml
+    "data-story/assets/screen-time.csv": "age,hours per day\n13-17,7.2\n18-24,6.4\n25-34,5.1\n35-44,4.3\n45-54,3.6\n55+,2.9\n",
+    "data-story/assets/by-year.csv": "year;hours\n2019;3.1\n2020;4.4\n2021;4.2\n2022;4.6\n2023;4.9\n2024;5.2\n",
+    "../library/assets/sales.csv": "month,sales\nJan,1240\nFeb,1380\nMar,1710\nApr,1650\nMay,2120\nJun,2480\n",
+}
+
+
+def library():
+    out = DEMOS.parent / "library" / "assets"
+    out.mkdir(parents=True, exist_ok=True)
+    portrait(out / "avatar.jpg")
+    for name in ("lamp-front.jpg", "logo.png"):
+        (out / name).write_bytes((DEMOS / "promo" / "assets" / name).read_bytes())
+    (out / "screen.mp4").write_bytes((DEMOS / "tutorial" / "assets" / "screen.mp4").read_bytes())
+    (out / "podcast.mp4").write_bytes((DEMOS / "clip" / "assets" / "podcast.mp4").read_bytes())
+
+
+def csvs(prefix):
+    for rel, text in CSV.items():
+        if rel.startswith(prefix):
+            f = DEMOS / rel
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text(text, encoding="utf-8", newline="\n")
+
+
+def main(only=()):
+    if only:
+        for name in only:
+            if name == "library":
+                library()
+                csvs("../library")
+            else:
+                csvs(name)
+        return
     out = DEMOS / "promo" / "assets"
     out.mkdir(parents=True, exist_ok=True)
     lamp(900, 1100, (250, 236, 220), (226, 204, 182)).save(out / "lamp-front.jpg", quality=82)
@@ -244,9 +291,12 @@ def main():
     out = DEMOS / "clip" / "assets"
     out.mkdir(parents=True, exist_ok=True)
     podcast(out / "podcast.mp4")
+    csvs("data-story")
+    library()
+    csvs("../library")
     for f in sorted(DEMOS.glob("*/assets/*")):
         print(f"{f.relative_to(ROOT)}: {f.stat().st_size // 1024} КБ")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

@@ -1,0 +1,22 @@
+scenes:
+  - id: s01
+    template: title
+    lines: ["How much time do we spend on screens?"]
+    params: {kicker: "Data story", title: "Screen *time*"}
+  - id: s02
+    template: chart
+    lines: ["Teenagers lead | with over seven hours a day."]
+    params: {type: bar, data: assets/screen-time.csv, title: "Hours a day by *age*", suffix: " h", highlight: "13-17",
+             at: "teenagers", source: "Demo data"}
+  - id: s03
+    template: chart
+    lines: ["And the average | keeps growing | every year."]
+    params: {type: line, data: assets/by-year.csv, title: "Average *hours*", suffix: " h", highlight: 5, at: "average"}
+  - id: s04
+    template: counter
+    lines: ["That is about | a third of waking life."]
+    params: {from: 0, to: 33, suffix: "%", label: "of waking hours", at_beat: 1, color: amber}
+  - id: s05
+    template: outro
+    lines: ["Count your own hours."]
+    params: {text: "Count your *own* hours"}

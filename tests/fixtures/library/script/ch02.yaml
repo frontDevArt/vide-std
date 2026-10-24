@@ -1,0 +1,60 @@
+# Глава 2: люди, промо и медиа — quote, testimonial, lower_third, price_tag и number (commerce), media.*, cta_end.
+chapter: ch02
+title: "people and promo"
+scenes:
+  - id: s01
+    template: quote
+    lines: ["As one researcher put it: | attention is the new currency."]
+    params: {text: "Attention is the new *currency*.", author: "Jane Doe", role: "researcher (demo)",
+             photo: assets/avatar.jpg, at: "attention"}
+  - id: s02
+    template: testimonial
+    lines: ["Customers love it: | five stars."]
+    params: {text: "The lamp changed my evenings. *Warm*, quiet and bright.", author: "Sam Lee", role: "Berlin",
+             source: "demo review", rating: 4.5, at: "customers"}
+  - id: s03
+    template: lower_third
+    lines: ["Meet the designer | of the lamp."]
+    params: {name: "Alex Moore", role: "Lead designer, Aurora", file: assets/lamp-front.jpg, at: "meet"}
+  - id: s04
+    template: media.logo_sting
+    lines: ["Aurora | lighting."]
+    params: {file: assets/logo.png, tagline: "Light for *evenings*", at: 0}
+  - id: s05
+    template: media.product_card
+    lines: ["The Aurora lamp | now forty-nine dollars."]
+    params: {file: assets/lamp-front.jpg, name: "Aurora desk lamp", was: "$79", price: "$49", badge: "-38%", at: "now"}
+  - id: s06
+    template: price_tag
+    lines: ["Was seventy-nine, | now forty-nine."]
+    params:
+      tag: {was: "$79", now: "$49", at: "was", strike_at: "now", now_at: "forty-nine"}
+  - id: s07
+    template: commerce.number
+    lines: ["Over twelve thousand | lamps sold."]
+    params: {value: 12480, caption: "lamps sold", at: "twelve"}
+  - id: s08
+    template: media.image
+    lines: ["Warm light | for long evenings."]
+    params: {file: assets/lamp-front.jpg, motion: kenburns, box: [0.1, 0.0, 0.9, 0.8], shape: round,
+             caption: "Warm *light*", caption_at: 1}
+  - id: s09
+    template: media.video
+    lines: ["Setup takes | a minute."]
+    params: {file: assets/screen.mp4, start: 1.0, box: [0.08, 0.0, 0.92, 0.78], shape: round, caption: "Setup in a *minute*"}
+  - id: s10
+    template: media.screen
+    lines: ["Open the app | and press create."]
+    params: {file: assets/screen.mp4, start: 4.0, title: "Aurora app",
+             callouts: [{at: 1, text: "Create", x: 0.31, y: 0.6}], clicks: [{at: 1, x: 0.31, y: 0.6}]}
+  - id: s11
+    template: media.clip
+    min_duration: 4
+    params: {file: assets/podcast.mp4, start: 1.0, speaker: "Alex Moore", role: "host",
+             captions: [{t: 0.2, text: "Light changes how we rest"}, {t: 2.2, text: "more than we think"}]}
+  - id: s12
+    template: cta_end
+    lines: ["Thanks for watching. | Subscribe for more."]
+    hold: 0.8
+    params: {title: "Thanks for *watching*", button: "Subscribe", done: "Subscribed", handle: "@aurora", logo: assets/logo.png,
+             next: 2, next_label: "Watch next", at: 0, click_at: "subscribe"}

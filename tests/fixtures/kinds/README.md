@@ -2,7 +2,8 @@
 
 По проекту на каждый готовый тип из `studio/kinds.py`: `python -m studio selftest --kinds` проводит каждый через
 validate → voice → render → assemble → qa (голос `fake` или `none`, офлайн); `tests/test_kinds.py` — validate и тайминг.
-Тип с `needs` (data-story — C4) получит демо вместе с недостающим слоем.
+Тип с `needs` получает демо вместе с недостающим слоем; после C4 таких нет: `data-story` — графики `chart` из CSV
+(`assets/*.csv`, выдуманные данные, `python tools/make_demo_assets.py data-story`).
 
 `music` (ROADMAP C3) — 20 с под ритм-трек кодом 112 уд/мин, `music.sync: beat`: склейки и пункты `bullets` в долю, QA
 «Склейки в долю трека» — по звуку готового файла, ±1 кадр.

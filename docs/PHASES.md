@@ -24,7 +24,7 @@ bash tools/setup_rhvoice.sh        # если doctor не нашёл ни одн
 (15–60 с, точная длительность, `brief.hook`), `promo` (`brief: {product, price, cta}`; фото продукта и логотип —
 `media.product_card`, `media.logo_sting`), `music` (без голоса, под трек; склейки в долю — `music.sync: beat`, ROADMAP C3), `listicle` (`brief.count`, сцены `item: 1…N`),
 `slideshow` (фото + подписи, без голоса, `media.image`), `tutorial` (запись экрана, `media.screen`), `clip` (кусок
-подкаста/интервью, речь — звук исходника, `media.clip`); `data-story` — ждёт графиков (C4). Тип задаёт голос, пределы длительности, обязательные поля `brief:` и проверки validate/QA; у типов с
+подкаста/интервью, речь — звук исходника, `media.clip`), `data-story` (графики `chart` из CSV в `assets/`, ROADMAP C4). Тип задаёт голос, пределы длительности, обязательные поля `brief:` и проверки validate/QA; у типов с
 файлами брифа (фото, CSV, запись экрана) в `status` есть фаза «1б Материалы»: файлы кладутся в `assets/`, а их
 источник и лицензия — в `assets.yaml` (`docs/SCENE_SPEC.md`, «Фото, видео, логотип»). Без голоса (`music`, `slideshow`) —
 `tts.backend: none`: сцены без `lines`, длительность — `min_duration`, правило «нет голоса — стоп» не действует.

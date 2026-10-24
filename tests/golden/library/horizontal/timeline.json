@@ -1,0 +1,2070 @@
+{
+ "src": "51202d65ab9a",
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
+ "rate": 105.0,
+ "voice": "fake",
+ "backend": "fake",
+ "total_frames": 2093,
+ "duration": 69.76666666666667,
+ "words": 122,
+ "wpm_speech": 135.5,
+ "wpm_overall": 104.9,
+ "scenes": [
+  {
+   "chapter": "ch01",
+   "id": "s01",
+   "template": "chapter_bumper",
+   "params": {
+    "number": 1,
+    "total": 2,
+    "kicker": "Chapter",
+    "title": "The *numbers*"
+   },
+   "lines": [
+    {
+     "text": "Part one: the numbers.",
+     "wav": "bd9a822a21e36bfe.wav",
+     "t0": 0.45,
+     "t1": 2.1
+    }
+   ],
+   "beats": [
+    {
+     "text": "Part one:",
+     "line": 0,
+     "t0": 0.45,
+     "t1": 1.11
+    },
+    {
+     "text": "the numbers.",
+     "line": 0,
+     "t0": 1.31,
+     "t1": 2.1
+    }
+   ],
+   "words": [
+    {
+     "w": "Part",
+     "line": 0,
+     "t0": 0.45,
+     "t1": 0.73
+    },
+    {
+     "w": "one:",
+     "line": 0,
+     "t0": 0.759,
+     "t1": 1.106
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 1.316,
+     "t1": 1.554
+    },
+    {
+     "w": "numbers.",
+     "line": 0,
+     "t0": 1.582,
+     "t1": 2.1
+    }
+   ],
+   "start": 0.0,
+   "dur": 2.3666666666666667,
+   "start_frame": 0,
+   "n_frames": 71,
+   "subs": [
+    {
+     "lines": [
+      "Part one:"
+     ],
+     "t0": 0.4,
+     "t1": 1.24
+    },
+    {
+     "lines": [
+      "the numbers."
+     ],
+     "t0": 1.26,
+     "t1": 2.317
+    }
+   ],
+   "hash": "01fbc28a0e69"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s02",
+   "template": "chart",
+   "params": {
+    "type": "bar",
+    "data": "assets/sales.csv",
+    "title": "Monthly *sales*",
+    "prefix": "$",
+    "highlight": "Jun",
+    "at": "grew",
+    "source": "Source: demo data"
+   },
+   "lines": [
+    {
+     "text": "Sales grew every month and peaked in June.",
+     "wav": "37628d2a4b52ad99.wav",
+     "t0": 0.2833,
+     "t1": 3.5553
+    }
+   ],
+   "beats": [
+    {
+     "text": "Sales grew every month",
+     "line": 0,
+     "t0": 0.2833,
+     "t1": 1.9533
+    },
+    {
+     "text": "and peaked in June.",
+     "line": 0,
+     "t0": 2.0533,
+     "t1": 3.5553
+    }
+   ],
+   "words": [
+    {
+     "w": "Sales",
+     "line": 0,
+     "t0": 0.2833,
+     "t1": 0.7163
+    },
+    {
+     "w": "grew",
+     "line": 0,
+     "t0": 0.7443,
+     "t1": 1.0253
+    },
+    {
+     "w": "every",
+     "line": 0,
+     "t0": 1.0533,
+     "t1": 1.5963
+    },
+    {
+     "w": "month",
+     "line": 0,
+     "t0": 1.6243,
+     "t1": 1.9473
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 2.0623,
+     "t1": 2.2993
+    },
+    {
+     "w": "peaked",
+     "line": 0,
+     "t0": 2.3283,
+     "t1": 2.9133
+    },
+    {
+     "w": "in",
+     "line": 0,
+     "t0": 2.9423,
+     "t1": 3.1373
+    },
+    {
+     "w": "June.",
+     "line": 0,
+     "t0": 3.1653,
+     "t1": 3.5553
+    }
+   ],
+   "start": 2.3666666666666667,
+   "dur": 3.8333333333333335,
+   "start_frame": 71,
+   "n_frames": 115,
+   "subs": [
+    {
+     "lines": [
+      "Sales grew every month"
+     ],
+     "t0": 0.233,
+     "t1": 1.983
+    },
+    {
+     "lines": [
+      "and peaked in June."
+     ],
+     "t0": 2.003,
+     "t1": 3.783
+    }
+   ],
+   "hash": "e661d246e61b"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s03",
+   "template": "chart",
+   "params": {
+    "type": "line",
+    "title": "Hours *online*",
+    "suffix": " h",
+    "values": [
+     {
+      "label": "2019",
+      "value": 3.1
+     },
+     {
+      "label": "2020",
+      "value": 4.4
+     },
+     {
+      "label": "2021",
+      "value": 4.2
+     },
+     {
+      "label": "2022",
+      "value": 4.6
+     },
+     {
+      "label": "2023",
+      "value": 4.9
+     },
+     {
+      "label": "2024",
+      "value": 5.2
+     }
+    ],
+    "highlight": 5,
+    "at": "climbed"
+   },
+   "lines": [
+    {
+     "text": "Time online climbed year after year.",
+     "wav": "9c13ab77b0ba26f8.wav",
+     "t0": 0.272,
+     "t1": 3.426
+    }
+   ],
+   "beats": [
+    {
+     "text": "Time online",
+     "line": 0,
+     "t0": 0.272,
+     "t1": 1.282
+    },
+    {
+     "text": "climbed year after year.",
+     "line": 0,
+     "t0": 1.382,
+     "t1": 3.426
+    }
+   ],
+   "words": [
+    {
+     "w": "Time",
+     "line": 0,
+     "t0": 0.272,
+     "t1": 0.662
+    },
+    {
+     "w": "online",
+     "line": 0,
+     "t0": 0.691,
+     "t1": 1.276
+    },
+    {
+     "w": "climbed",
+     "line": 0,
+     "t0": 1.39,
+     "t1": 1.908
+    },
+    {
+     "w": "year",
+     "line": 0,
+     "t0": 1.937,
+     "t1": 2.437
+    },
+    {
+     "w": "after",
+     "line": 0,
+     "t0": 2.465,
+     "t1": 2.898
+    },
+    {
+     "w": "year.",
+     "line": 0,
+     "t0": 2.926,
+     "t1": 3.426
+    }
+   ],
+   "start": 6.2,
+   "dur": 3.7,
+   "start_frame": 186,
+   "n_frames": 111,
+   "subs": [
+    {
+     "lines": [
+      "Time online"
+     ],
+     "t0": 0.222,
+     "t1": 1.312
+    },
+    {
+     "lines": [
+      "climbed year after year."
+     ],
+     "t0": 1.332,
+     "t1": 3.65
+    }
+   ],
+   "hash": "c9c4e858b16a"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s04",
+   "template": "chart",
+   "params": {
+    "type": "pie",
+    "title": "Where the *time* goes",
+    "values": [
+     {
+      "label": "Video",
+      "value": 46
+     },
+     {
+      "label": "Social",
+      "value": 28
+     },
+     {
+      "label": "Games",
+      "value": 16
+     },
+     {
+      "label": "Other",
+      "value": 10
+     }
+    ],
+    "highlight": "Video",
+    "at": "most"
+   },
+   "lines": [
+    {
+     "text": "Most of it goes to video.",
+     "wav": "1ee41aab359ba771.wav",
+     "t0": 0.276,
+     "t1": 2.303
+    }
+   ],
+   "beats": [
+    {
+     "text": "Most of it",
+     "line": 0,
+     "t0": 0.276,
+     "t1": 1.006
+    },
+    {
+     "text": "goes to video.",
+     "line": 0,
+     "t0": 1.116,
+     "t1": 2.303
+    }
+   ],
+   "words": [
+    {
+     "w": "Most",
+     "line": 0,
+     "t0": 0.276,
+     "t1": 0.556
+    },
+    {
+     "w": "of",
+     "line": 0,
+     "t0": 0.585,
+     "t1": 0.78
+    },
+    {
+     "w": "it",
+     "line": 0,
+     "t0": 0.809,
+     "t1": 1.004
+    },
+    {
+     "w": "goes",
+     "line": 0,
+     "t0": 1.118,
+     "t1": 1.508
+    },
+    {
+     "w": "to",
+     "line": 0,
+     "t0": 1.537,
+     "t1": 1.732
+    },
+    {
+     "w": "video.",
+     "line": 0,
+     "t0": 1.76,
+     "t1": 2.303
+    }
+   ],
+   "start": 9.9,
+   "dur": 2.566666666666667,
+   "start_frame": 297,
+   "n_frames": 77,
+   "subs": [
+    {
+     "lines": [
+      "Most of it"
+     ],
+     "t0": 0.226,
+     "t1": 1.046
+    },
+    {
+     "lines": [
+      "goes to video."
+     ],
+     "t0": 1.066,
+     "t1": 2.517
+    }
+   ],
+   "hash": "e480f24a2772"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s05",
+   "template": "timeline",
+   "params": {
+    "title": "A short *history*",
+    "events": [
+     {
+      "date": "2007",
+      "text": "first smartphone",
+      "at": "started"
+     },
+     {
+      "date": "2012",
+      "text": "feeds everywhere",
+      "at": "grew"
+     },
+     {
+      "date": "2020",
+      "text": "short video boom",
+      "at": "exploded"
+     },
+     {
+      "date": "2024",
+      "text": "today"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "It started in two thousand seven, grew in twenty twelve, and exploded in twenty twenty.",
+     "wav": "ceb5698fc402b69a.wav",
+     "t0": 0.2863,
+     "t1": 6.6633
+    }
+   ],
+   "beats": [
+    {
+     "text": "It started in two thousand seven,",
+     "line": 0,
+     "t0": 0.2863,
+     "t1": 2.6863
+    },
+    {
+     "text": "grew in twenty twelve,",
+     "line": 0,
+     "t0": 2.8263,
+     "t1": 4.3463
+    },
+    {
+     "text": "and exploded in twenty twenty.",
+     "line": 0,
+     "t0": 4.4863,
+     "t1": 6.6633
+    }
+   ],
+   "words": [
+    {
+     "w": "It",
+     "line": 0,
+     "t0": 0.2863,
+     "t1": 0.4813
+    },
+    {
+     "w": "started",
+     "line": 0,
+     "t0": 0.5103,
+     "t1": 1.0283
+    },
+    {
+     "w": "in",
+     "line": 0,
+     "t0": 1.0563,
+     "t1": 1.2513
+    },
+    {
+     "w": "two",
+     "line": 0,
+     "t0": 1.2803,
+     "t1": 1.5183
+    },
+    {
+     "w": "thousand",
+     "line": 0,
+     "t0": 1.5463,
+     "t1": 2.2173
+    },
+    {
+     "w": "seven,",
+     "line": 0,
+     "t0": 2.2453,
+     "t1": 2.6783
+    },
+    {
+     "w": "grew",
+     "line": 0,
+     "t0": 2.8303,
+     "t1": 3.1113
+    },
+    {
+     "w": "in",
+     "line": 0,
+     "t0": 3.1393,
+     "t1": 3.3343
+    },
+    {
+     "w": "twenty",
+     "line": 0,
+     "t0": 3.3633,
+     "t1": 3.8383
+    },
+    {
+     "w": "twelve,",
+     "line": 0,
+     "t0": 3.8673,
+     "t1": 4.3423
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 4.4953,
+     "t1": 4.7323
+    },
+    {
+     "w": "exploded",
+     "line": 0,
+     "t0": 4.7613,
+     "t1": 5.4313
+    },
+    {
+     "w": "in",
+     "line": 0,
+     "t0": 5.4603,
+     "t1": 5.6553
+    },
+    {
+     "w": "twenty",
+     "line": 0,
+     "t0": 5.6843,
+     "t1": 6.1593
+    },
+    {
+     "w": "twenty.",
+     "line": 0,
+     "t0": 6.1883,
+     "t1": 6.6633
+    }
+   ],
+   "start": 12.466666666666667,
+   "dur": 6.933333333333334,
+   "start_frame": 374,
+   "n_frames": 208,
+   "subs": [
+    {
+     "lines": [
+      "It started in two thousand seven,"
+     ],
+     "t0": 0.236,
+     "t1": 2.756
+    },
+    {
+     "lines": [
+      "grew in twenty twelve,"
+     ],
+     "t0": 2.776,
+     "t1": 4.416
+    },
+    {
+     "lines": [
+      "and exploded in twenty twenty."
+     ],
+     "t0": 4.436,
+     "t1": 6.883
+    }
+   ],
+   "hash": "9abcf6ddcb27"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s06",
+   "template": "steps",
+   "params": {
+    "title": "How to *reset*",
+    "first_beat": 1,
+    "steps": [
+     {
+      "title": "Notice",
+      "text": "the urge"
+     },
+     {
+      "title": "Pause",
+      "text": "ten seconds"
+     },
+     {
+      "title": "Choose",
+      "text": "on purpose"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Three steps: notice, pause, choose.",
+     "wav": "6b80570fc7d8b6c2.wav",
+     "t0": 0.28,
+     "t1": 3.291
+    }
+   ],
+   "beats": [
+    {
+     "text": "Three steps:",
+     "line": 0,
+     "t0": 0.28,
+     "t1": 1.07
+    },
+    {
+     "text": "notice,",
+     "line": 0,
+     "t0": 1.27,
+     "t1": 1.86
+    },
+    {
+     "text": "pause,",
+     "line": 0,
+     "t0": 2.01,
+     "t1": 2.56
+    },
+    {
+     "text": "choose.",
+     "line": 0,
+     "t0": 2.7,
+     "t1": 3.291
+    }
+   ],
+   "words": [
+    {
+     "w": "Three",
+     "line": 0,
+     "t0": 0.28,
+     "t1": 0.713
+    },
+    {
+     "w": "steps:",
+     "line": 0,
+     "t0": 0.741,
+     "t1": 1.064
+    },
+    {
+     "w": "notice,",
+     "line": 0,
+     "t0": 1.274,
+     "t1": 1.859
+    },
+    {
+     "w": "pause,",
+     "line": 0,
+     "t0": 2.011,
+     "t1": 2.554
+    },
+    {
+     "w": "choose.",
+     "line": 0,
+     "t0": 2.706,
+     "t1": 3.291
+    }
+   ],
+   "start": 19.4,
+   "dur": 3.566666666666667,
+   "start_frame": 582,
+   "n_frames": 107,
+   "subs": [
+    {
+     "lines": [
+      "Three steps:"
+     ],
+     "t0": 0.23,
+     "t1": 1.2
+    },
+    {
+     "lines": [
+      "notice,"
+     ],
+     "t0": 1.22,
+     "t1": 1.94
+    },
+    {
+     "lines": [
+      "pause,"
+     ],
+     "t0": 1.96,
+     "t1": 2.63
+    },
+    {
+     "lines": [
+      "choose."
+     ],
+     "t0": 2.65,
+     "t1": 3.517
+    }
+   ],
+   "hash": "4e484a44070e"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s07",
+   "template": "compare",
+   "params": {
+    "title": "Paper vs *phone*",
+    "left": {
+     "title": "Paper",
+     "color": "accent"
+    },
+    "right": {
+     "title": "Phone",
+     "color": "accent2"
+    },
+    "rows": [
+     {
+      "label": "focus",
+      "left": "high",
+      "right": "low",
+      "win": "left",
+      "at": "focus"
+     },
+     {
+      "label": "speed",
+      "left": "slow",
+      "right": "fast",
+      "win": "right",
+      "at": "speed"
+     },
+     {
+      "label": "cost",
+      "left": "$2",
+      "right": "$900",
+      "win": "left"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Paper or phone? Paper wins on focus, the phone wins on speed.",
+     "wav": "e9bcf03280af0ca3.wav",
+     "t0": 0.2743,
+     "t1": 4.9683
+    }
+   ],
+   "beats": [
+    {
+     "text": "Paper or phone?",
+     "line": 0,
+     "t0": 0.2743,
+     "t1": 1.3943
+    },
+    {
+     "text": "Paper wins on focus,",
+     "line": 0,
+     "t0": 1.6943,
+     "t1": 3.1243
+    },
+    {
+     "text": "the phone wins on speed.",
+     "line": 0,
+     "t0": 3.2743,
+     "t1": 4.9683
+    }
+   ],
+   "words": [
+    {
+     "w": "Paper",
+     "line": 0,
+     "t0": 0.2743,
+     "t1": 0.7073
+    },
+    {
+     "w": "or",
+     "line": 0,
+     "t0": 0.7353,
+     "t1": 0.9303
+    },
+    {
+     "w": "phone?",
+     "line": 0,
+     "t0": 0.9593,
+     "t1": 1.3923
+    },
+    {
+     "w": "Paper",
+     "line": 0,
+     "t0": 1.6963,
+     "t1": 2.1293
+    },
+    {
+     "w": "wins",
+     "line": 0,
+     "t0": 2.1583,
+     "t1": 2.4383
+    },
+    {
+     "w": "on",
+     "line": 0,
+     "t0": 2.4673,
+     "t1": 2.6623
+    },
+    {
+     "w": "focus,",
+     "line": 0,
+     "t0": 2.6903,
+     "t1": 3.1233
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 3.2763,
+     "t1": 3.5133
+    },
+    {
+     "w": "phone",
+     "line": 0,
+     "t0": 3.5423,
+     "t1": 3.9753
+    },
+    {
+     "w": "wins",
+     "line": 0,
+     "t0": 4.0033,
+     "t1": 4.2833
+    },
+    {
+     "w": "on",
+     "line": 0,
+     "t0": 4.3123,
+     "t1": 4.5073
+    },
+    {
+     "w": "speed.",
+     "line": 0,
+     "t0": 4.5363,
+     "t1": 4.9683
+    }
+   ],
+   "start": 22.966666666666665,
+   "dur": 5.233333333333333,
+   "start_frame": 689,
+   "n_frames": 157,
+   "subs": [
+    {
+     "lines": [
+      "Paper or phone?"
+     ],
+     "t0": 0.224,
+     "t1": 1.624
+    },
+    {
+     "lines": [
+      "Paper wins on focus,"
+     ],
+     "t0": 1.644,
+     "t1": 3.204
+    },
+    {
+     "lines": [
+      "the phone wins on speed."
+     ],
+     "t0": 3.224,
+     "t1": 5.183
+    }
+   ],
+   "hash": "2dd2a2dca912"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s08",
+   "template": "map",
+   "params": {
+    "title": "Where it *spread*",
+    "route": true,
+    "pins": [
+     {
+      "lat": 51.5,
+      "lon": -0.1,
+      "label": "London",
+      "at": "london"
+     },
+     {
+      "lat": 40.7,
+      "lon": -74.0,
+      "label": "New York",
+      "at": "york"
+     },
+     {
+      "lat": 35.7,
+      "lon": 139.7,
+      "label": "Tokyo",
+      "at": "tokyo"
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "From London to New York to Tokyo.",
+     "wav": "d3f35426b6881278.wav",
+     "t0": 0.285,
+     "t1": 2.944
+    }
+   ],
+   "beats": [
+    {
+     "text": "From London",
+     "line": 0,
+     "t0": 0.285,
+     "t1": 1.075
+    },
+    {
+     "text": "to New York",
+     "line": 0,
+     "t0": 1.175,
+     "t1": 2.065
+    },
+    {
+     "text": "to Tokyo.",
+     "line": 0,
+     "t0": 2.175,
+     "t1": 2.944
+    }
+   ],
+   "words": [
+    {
+     "w": "From",
+     "line": 0,
+     "t0": 0.285,
+     "t1": 0.565
+    },
+    {
+     "w": "London",
+     "line": 0,
+     "t0": 0.594,
+     "t1": 1.069
+    },
+    {
+     "w": "to",
+     "line": 0,
+     "t0": 1.184,
+     "t1": 1.379
+    },
+    {
+     "w": "New",
+     "line": 0,
+     "t0": 1.407,
+     "t1": 1.645
+    },
+    {
+     "w": "York",
+     "line": 0,
+     "t0": 1.674,
+     "t1": 2.064
+    },
+    {
+     "w": "to",
+     "line": 0,
+     "t0": 2.178,
+     "t1": 2.373
+    },
+    {
+     "w": "Tokyo.",
+     "line": 0,
+     "t0": 2.402,
+     "t1": 2.944
+    }
+   ],
+   "start": 28.2,
+   "dur": 3.2333333333333334,
+   "start_frame": 846,
+   "n_frames": 97,
+   "subs": [
+    {
+     "lines": [
+      "From London"
+     ],
+     "t0": 0.235,
+     "t1": 1.105
+    },
+    {
+     "lines": [
+      "to New York"
+     ],
+     "t0": 1.125,
+     "t1": 2.105
+    },
+    {
+     "lines": [
+      "to Tokyo."
+     ],
+     "t0": 2.125,
+     "t1": 3.183
+    }
+   ],
+   "hash": "e19915c929ed"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s01",
+   "template": "quote",
+   "params": {
+    "text": "Attention is the new *currency*.",
+    "author": "Jane Doe",
+    "role": "researcher (demo)",
+    "photo": "assets/avatar.jpg",
+    "at": "attention"
+   },
+   "lines": [
+    {
+     "text": "As one researcher put it: attention is the new currency.",
+     "wav": "ffd7894586123cd8.wav",
+     "t0": 0.2607,
+     "t1": 4.7037
+    }
+   ],
+   "beats": [
+    {
+     "text": "As one researcher put it:",
+     "line": 0,
+     "t0": 0.2607,
+     "t1": 2.2207
+    },
+    {
+     "text": "attention is the new currency.",
+     "line": 0,
+     "t0": 2.4207,
+     "t1": 4.7037
+    }
+   ],
+   "words": [
+    {
+     "w": "As",
+     "line": 0,
+     "t0": 0.2607,
+     "t1": 0.4557
+    },
+    {
+     "w": "one",
+     "line": 0,
+     "t0": 0.4847,
+     "t1": 0.8317
+    },
+    {
+     "w": "researcher",
+     "line": 0,
+     "t0": 0.8607,
+     "t1": 1.7257
+    },
+    {
+     "w": "put",
+     "line": 0,
+     "t0": 1.7547,
+     "t1": 1.9917
+    },
+    {
+     "w": "it:",
+     "line": 0,
+     "t0": 2.0207,
+     "t1": 2.2157
+    },
+    {
+     "w": "attention",
+     "line": 0,
+     "t0": 2.4257,
+     "t1": 3.2477
+    },
+    {
+     "w": "is",
+     "line": 0,
+     "t0": 3.2767,
+     "t1": 3.4717
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 3.5007,
+     "t1": 3.7377
+    },
+    {
+     "w": "new",
+     "line": 0,
+     "t0": 3.7667,
+     "t1": 4.0047
+    },
+    {
+     "w": "currency.",
+     "line": 0,
+     "t0": 4.0327,
+     "t1": 4.7037
+    }
+   ],
+   "start": 31.433333333333334,
+   "dur": 4.966666666666667,
+   "start_frame": 943,
+   "n_frames": 149,
+   "subs": [
+    {
+     "lines": [
+      "As one researcher put it:"
+     ],
+     "t0": 0.211,
+     "t1": 2.351
+    },
+    {
+     "lines": [
+      "attention is the new currency."
+     ],
+     "t0": 2.371,
+     "t1": 4.917
+    }
+   ],
+   "hash": "dee8818d5bbb"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s02",
+   "template": "testimonial",
+   "params": {
+    "text": "The lamp changed my evenings. *Warm*, quiet and bright.",
+    "author": "Sam Lee",
+    "role": "Berlin",
+    "source": "demo review",
+    "rating": 4.5,
+    "at": "customers"
+   },
+   "lines": [
+    {
+     "text": "Customers love it: five stars.",
+     "wav": "2bcbcb8b88d31e42.wav",
+     "t0": 0.287,
+     "t1": 2.594
+    }
+   ],
+   "beats": [
+    {
+     "text": "Customers love it:",
+     "line": 0,
+     "t0": 0.287,
+     "t1": 1.647
+    },
+    {
+     "text": "five stars.",
+     "line": 0,
+     "t0": 1.847,
+     "t1": 2.594
+    }
+   ],
+   "words": [
+    {
+     "w": "Customers",
+     "line": 0,
+     "t0": 0.287,
+     "t1": 1.0
+    },
+    {
+     "w": "love",
+     "line": 0,
+     "t0": 1.029,
+     "t1": 1.419
+    },
+    {
+     "w": "it:",
+     "line": 0,
+     "t0": 1.447,
+     "t1": 1.642
+    },
+    {
+     "w": "five",
+     "line": 0,
+     "t0": 1.852,
+     "t1": 2.242
+    },
+    {
+     "w": "stars.",
+     "line": 0,
+     "t0": 2.271,
+     "t1": 2.594
+    }
+   ],
+   "start": 36.4,
+   "dur": 2.8666666666666667,
+   "start_frame": 1092,
+   "n_frames": 86,
+   "subs": [
+    {
+     "lines": [
+      "Customers love it:"
+     ],
+     "t0": 0.237,
+     "t1": 1.777
+    },
+    {
+     "lines": [
+      "five stars."
+     ],
+     "t0": 1.797,
+     "t1": 2.817
+    }
+   ],
+   "hash": "a80e764aee55"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s03",
+   "template": "lower_third",
+   "params": {
+    "name": "Alex Moore",
+    "role": "Lead designer, Aurora",
+    "file": "assets/lamp-front.jpg",
+    "at": "meet"
+   },
+   "lines": [
+    {
+     "text": "Meet the designer of the lamp.",
+     "wav": "03382562b9d09280.wav",
+     "t0": 0.2773,
+     "t1": 2.5173
+    }
+   ],
+   "beats": [
+    {
+     "text": "Meet the designer",
+     "line": 0,
+     "t0": 0.2773,
+     "t1": 1.6373
+    },
+    {
+     "text": "of the lamp.",
+     "line": 0,
+     "t0": 1.7473,
+     "t1": 2.5173
+    }
+   ],
+   "words": [
+    {
+     "w": "Meet",
+     "line": 0,
+     "t0": 0.2773,
+     "t1": 0.6673
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 0.6963,
+     "t1": 0.9333
+    },
+    {
+     "w": "designer",
+     "line": 0,
+     "t0": 0.9623,
+     "t1": 1.6323
+    },
+    {
+     "w": "of",
+     "line": 0,
+     "t0": 1.7473,
+     "t1": 1.9423
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 1.9703,
+     "t1": 2.2083
+    },
+    {
+     "w": "lamp.",
+     "line": 0,
+     "t0": 2.2373,
+     "t1": 2.5173
+    }
+   ],
+   "start": 39.266666666666666,
+   "dur": 2.8,
+   "start_frame": 1178,
+   "n_frames": 84,
+   "subs": [
+    {
+     "lines": [
+      "Meet the designer"
+     ],
+     "t0": 0.227,
+     "t1": 1.677
+    },
+    {
+     "lines": [
+      "of the lamp."
+     ],
+     "t0": 1.697,
+     "t1": 2.75
+    }
+   ],
+   "hash": "49b5b69baf46"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s04",
+   "template": "media.logo_sting",
+   "params": {
+    "file": "assets/logo.png",
+    "tagline": "Light for *evenings*",
+    "at": 0
+   },
+   "lines": [
+    {
+     "text": "Aurora lighting.",
+     "wav": "094f8f805c42e747.wav",
+     "t0": 0.2673,
+     "t1": 1.6373
+    }
+   ],
+   "beats": [
+    {
+     "text": "Aurora",
+     "line": 0,
+     "t0": 0.2673,
+     "t1": 0.9673
+    },
+    {
+     "text": "lighting.",
+     "line": 0,
+     "t0": 1.0673,
+     "t1": 1.6373
+    }
+   ],
+   "words": [
+    {
+     "w": "Aurora",
+     "line": 0,
+     "t0": 0.2673,
+     "t1": 0.9623
+    },
+    {
+     "w": "lighting.",
+     "line": 0,
+     "t0": 1.0763,
+     "t1": 1.6373
+    }
+   ],
+   "start": 42.06666666666667,
+   "dur": 1.9,
+   "start_frame": 1262,
+   "n_frames": 57,
+   "subs": [
+    {
+     "lines": [
+      "Aurora"
+     ],
+     "t0": 0.217,
+     "t1": 0.997
+    },
+    {
+     "lines": [
+      "lighting."
+     ],
+     "t0": 1.017,
+     "t1": 1.85
+    }
+   ],
+   "hash": "37b562773e20"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s05",
+   "template": "media.product_card",
+   "params": {
+    "file": "assets/lamp-front.jpg",
+    "name": "Aurora desk lamp",
+    "was": "$79",
+    "price": "$49",
+    "badge": "-38%",
+    "at": "now"
+   },
+   "lines": [
+    {
+     "text": "The Aurora lamp now forty-nine dollars.",
+     "wav": "84f8cd2bc0778f8d.wav",
+     "t0": 0.2873,
+     "t1": 3.3073
+    }
+   ],
+   "beats": [
+    {
+     "text": "The Aurora lamp",
+     "line": 0,
+     "t0": 0.2873,
+     "t1": 1.5573
+    },
+    {
+     "text": "now forty-nine dollars.",
+     "line": 0,
+     "t0": 1.6673,
+     "t1": 3.3073
+    }
+   ],
+   "words": [
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 0.2873,
+     "t1": 0.5253
+    },
+    {
+     "w": "Aurora",
+     "line": 0,
+     "t0": 0.5533,
+     "t1": 1.2483
+    },
+    {
+     "w": "lamp",
+     "line": 0,
+     "t0": 1.2773,
+     "t1": 1.5573
+    },
+    {
+     "w": "now",
+     "line": 0,
+     "t0": 1.6713,
+     "t1": 1.9093
+    },
+    {
+     "w": "forty-nine",
+     "line": 0,
+     "t0": 1.9383,
+     "t1": 2.7603
+    },
+    {
+     "w": "dollars.",
+     "line": 0,
+     "t0": 2.7893,
+     "t1": 3.3073
+    }
+   ],
+   "start": 43.96666666666667,
+   "dur": 3.566666666666667,
+   "start_frame": 1319,
+   "n_frames": 107,
+   "subs": [
+    {
+     "lines": [
+      "The Aurora lamp"
+     ],
+     "t0": 0.237,
+     "t1": 1.597
+    },
+    {
+     "lines": [
+      "now forty-nine dollars."
+     ],
+     "t0": 1.617,
+     "t1": 3.517
+    }
+   ],
+   "hash": "6b0b410ae047"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s06",
+   "template": "price_tag",
+   "params": {
+    "tag": {
+     "was": "$79",
+     "now": "$49",
+     "at": "was",
+     "strike_at": "now",
+     "now_at": "forty-nine"
+    }
+   },
+   "lines": [
+    {
+     "text": "Was seventy-nine, now forty-nine.",
+     "wav": "e9f96a532a358494.wav",
+     "t0": 0.2907,
+     "t1": 2.8167
+    }
+   ],
+   "beats": [
+    {
+     "text": "Was seventy-nine,",
+     "line": 0,
+     "t0": 0.2907,
+     "t1": 1.5807
+    },
+    {
+     "text": "now forty-nine.",
+     "line": 0,
+     "t0": 1.7207,
+     "t1": 2.8167
+    }
+   ],
+   "words": [
+    {
+     "w": "Was",
+     "line": 0,
+     "t0": 0.2907,
+     "t1": 0.5287
+    },
+    {
+     "w": "seventy-nine,",
+     "line": 0,
+     "t0": 0.5567,
+     "t1": 1.5747
+    },
+    {
+     "w": "now",
+     "line": 0,
+     "t0": 1.7277,
+     "t1": 1.9647
+    },
+    {
+     "w": "forty-nine.",
+     "line": 0,
+     "t0": 1.9937,
+     "t1": 2.8167
+    }
+   ],
+   "start": 47.53333333333333,
+   "dur": 3.1,
+   "start_frame": 1426,
+   "n_frames": 93,
+   "subs": [
+    {
+     "lines": [
+      "Was seventy-nine,"
+     ],
+     "t0": 0.241,
+     "t1": 1.651
+    },
+    {
+     "lines": [
+      "now forty-nine."
+     ],
+     "t0": 1.671,
+     "t1": 3.05
+    }
+   ],
+   "hash": "f706cad9ec1d"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s07",
+   "template": "commerce.number",
+   "params": {
+    "value": 12480,
+    "caption": "lamps sold",
+    "at": "twelve"
+   },
+   "lines": [
+    {
+     "text": "Over twelve thousand lamps sold.",
+     "wav": "adc998e19ed6d732.wav",
+     "t0": 0.2667,
+     "t1": 2.6057
+    }
+   ],
+   "beats": [
+    {
+     "text": "Over twelve thousand",
+     "line": 0,
+     "t0": 0.2667,
+     "t1": 1.8667
+    },
+    {
+     "text": "lamps sold.",
+     "line": 0,
+     "t0": 1.9667,
+     "t1": 2.6057
+    }
+   ],
+   "words": [
+    {
+     "w": "Over",
+     "line": 0,
+     "t0": 0.2667,
+     "t1": 0.6567
+    },
+    {
+     "w": "twelve",
+     "line": 0,
+     "t0": 0.6857,
+     "t1": 1.1607
+    },
+    {
+     "w": "thousand",
+     "line": 0,
+     "t0": 1.1897,
+     "t1": 1.8597
+    },
+    {
+     "w": "lamps",
+     "line": 0,
+     "t0": 1.9737,
+     "t1": 2.2967
+    },
+    {
+     "w": "sold.",
+     "line": 0,
+     "t0": 2.3257,
+     "t1": 2.6057
+    }
+   ],
+   "start": 50.63333333333333,
+   "dur": 2.8666666666666667,
+   "start_frame": 1519,
+   "n_frames": 86,
+   "subs": [
+    {
+     "lines": [
+      "Over twelve thousand"
+     ],
+     "t0": 0.217,
+     "t1": 1.897
+    },
+    {
+     "lines": [
+      "lamps sold."
+     ],
+     "t0": 1.917,
+     "t1": 2.817
+    }
+   ],
+   "hash": "972fe8d66a50"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s08",
+   "template": "media.image",
+   "params": {
+    "file": "assets/lamp-front.jpg",
+    "motion": "kenburns",
+    "box": [
+     0.1,
+     0.0,
+     0.9,
+     0.8
+    ],
+    "shape": "round",
+    "caption": "Warm *light*",
+    "caption_at": 1
+   },
+   "lines": [
+    {
+     "text": "Warm light for long evenings.",
+     "wav": "7b282ab0c9707760.wav",
+     "t0": 0.289,
+     "t1": 2.281
+    }
+   ],
+   "beats": [
+    {
+     "text": "Warm light",
+     "line": 0,
+     "t0": 0.289,
+     "t1": 0.929
+    },
+    {
+     "text": "for long evenings.",
+     "line": 0,
+     "t0": 1.029,
+     "t1": 2.281
+    }
+   ],
+   "words": [
+    {
+     "w": "Warm",
+     "line": 0,
+     "t0": 0.289,
+     "t1": 0.569
+    },
+    {
+     "w": "light",
+     "line": 0,
+     "t0": 0.598,
+     "t1": 0.921
+    },
+    {
+     "w": "for",
+     "line": 0,
+     "t0": 1.035,
+     "t1": 1.273
+    },
+    {
+     "w": "long",
+     "line": 0,
+     "t0": 1.302,
+     "t1": 1.582
+    },
+    {
+     "w": "evenings.",
+     "line": 0,
+     "t0": 1.61,
+     "t1": 2.281
+    }
+   ],
+   "start": 53.5,
+   "dur": 2.566666666666667,
+   "start_frame": 1605,
+   "n_frames": 77,
+   "subs": [
+    {
+     "lines": [
+      "Warm light"
+     ],
+     "t0": 0.239,
+     "t1": 0.959
+    },
+    {
+     "lines": [
+      "for long evenings."
+     ],
+     "t0": 0.979,
+     "t1": 2.517
+    }
+   ],
+   "hash": "701229e27066"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s09",
+   "template": "media.video",
+   "params": {
+    "file": "assets/screen.mp4",
+    "start": 1.0,
+    "box": [
+     0.08,
+     0.0,
+     0.92,
+     0.78
+    ],
+    "shape": "round",
+    "caption": "Setup in a *minute*"
+   },
+   "lines": [
+    {
+     "text": "Setup takes a minute.",
+     "wav": "a5e65e86c41bb0e2.wav",
+     "t0": 0.2643,
+     "t1": 2.0383
+    }
+   ],
+   "beats": [
+    {
+     "text": "Setup takes",
+     "line": 0,
+     "t0": 0.2643,
+     "t1": 1.1643
+    },
+    {
+     "text": "a minute.",
+     "line": 0,
+     "t0": 1.2643,
+     "t1": 2.0383
+    }
+   ],
+   "words": [
+    {
+     "w": "Setup",
+     "line": 0,
+     "t0": 0.2643,
+     "t1": 0.6973
+    },
+    {
+     "w": "takes",
+     "line": 0,
+     "t0": 0.7253,
+     "t1": 1.1583
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 1.2723,
+     "t1": 1.4253
+    },
+    {
+     "w": "minute.",
+     "line": 0,
+     "t0": 1.4533,
+     "t1": 2.0383
+    }
+   ],
+   "start": 56.06666666666667,
+   "dur": 2.3,
+   "start_frame": 1682,
+   "n_frames": 69,
+   "subs": [
+    {
+     "lines": [
+      "Setup takes"
+     ],
+     "t0": 0.214,
+     "t1": 1.194
+    },
+    {
+     "lines": [
+      "a minute."
+     ],
+     "t0": 1.214,
+     "t1": 2.25
+    }
+   ],
+   "hash": "12cf42c5cf44"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s10",
+   "template": "media.screen",
+   "params": {
+    "file": "assets/screen.mp4",
+    "start": 4.0,
+    "title": "Aurora app",
+    "callouts": [
+     {
+      "at": 1,
+      "text": "Create",
+      "x": 0.31,
+      "y": 0.6
+     }
+    ],
+    "clicks": [
+     {
+      "at": 1,
+      "x": 0.31,
+      "y": 0.6
+     }
+    ]
+   },
+   "lines": [
+    {
+     "text": "Open the app and press create.",
+     "wav": "874032cc107f3196.wav",
+     "t0": 0.2883,
+     "t1": 2.5283
+    }
+   ],
+   "beats": [
+    {
+     "text": "Open the app",
+     "line": 0,
+     "t0": 0.2883,
+     "t1": 1.2183
+    },
+    {
+     "text": "and press create.",
+     "line": 0,
+     "t0": 1.3183,
+     "t1": 2.5283
+    }
+   ],
+   "words": [
+    {
+     "w": "Open",
+     "line": 0,
+     "t0": 0.2883,
+     "t1": 0.6783
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 0.7073,
+     "t1": 0.9443
+    },
+    {
+     "w": "app",
+     "line": 0,
+     "t0": 0.9733,
+     "t1": 1.2113
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 1.3253,
+     "t1": 1.5633
+    },
+    {
+     "w": "press",
+     "line": 0,
+     "t0": 1.5913,
+     "t1": 1.9143
+    },
+    {
+     "w": "create.",
+     "line": 0,
+     "t0": 1.9433,
+     "t1": 2.5283
+    }
+   ],
+   "start": 58.36666666666667,
+   "dur": 2.8,
+   "start_frame": 1751,
+   "n_frames": 84,
+   "subs": [
+    {
+     "lines": [
+      "Open the app"
+     ],
+     "t0": 0.238,
+     "t1": 1.248
+    },
+    {
+     "lines": [
+      "and press create."
+     ],
+     "t0": 1.268,
+     "t1": 2.75
+    }
+   ],
+   "hash": "f9fe7e5da54b"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s11",
+   "template": "media.clip",
+   "params": {
+    "file": "assets/podcast.mp4",
+    "start": 1.0,
+    "speaker": "Alex Moore",
+    "role": "host",
+    "captions": [
+     {
+      "t": 0.2,
+      "text": "Light changes how we rest"
+     },
+     {
+      "t": 2.2,
+      "text": "more than we think"
+     }
+    ]
+   },
+   "lines": [],
+   "beats": [],
+   "words": [],
+   "start": 61.166666666666664,
+   "dur": 4.0,
+   "start_frame": 1835,
+   "n_frames": 120,
+   "subs": [],
+   "hash": "61695d004480"
+  },
+  {
+   "chapter": "ch02",
+   "id": "s12",
+   "template": "cta_end",
+   "params": {
+    "title": "Thanks for *watching*",
+    "button": "Subscribe",
+    "done": "Subscribed",
+    "handle": "@aurora",
+    "logo": "assets/logo.png",
+    "next": 2,
+    "next_label": "Watch next",
+    "at": 0,
+    "click_at": "subscribe"
+   },
+   "lines": [
+    {
+     "text": "Thanks for watching. Subscribe for more.",
+     "wav": "43f63c136f33a80b.wav",
+     "t0": 0.2783,
+     "t1": 3.2023
+    }
+   ],
+   "beats": [
+    {
+     "text": "Thanks for watching.",
+     "line": 0,
+     "t0": 0.2783,
+     "t1": 1.5083
+    },
+    {
+     "text": "Subscribe for more.",
+     "line": 0,
+     "t0": 1.7983,
+     "t1": 3.2023
+    }
+   ],
+   "words": [
+    {
+     "w": "Thanks",
+     "line": 0,
+     "t0": 0.2783,
+     "t1": 0.6443
+    },
+    {
+     "w": "for",
+     "line": 0,
+     "t0": 0.6723,
+     "t1": 0.9103
+    },
+    {
+     "w": "watching.",
+     "line": 0,
+     "t0": 0.9393,
+     "t1": 1.4993
+    },
+    {
+     "w": "Subscribe",
+     "line": 0,
+     "t0": 1.8043,
+     "t1": 2.5173
+    },
+    {
+     "w": "for",
+     "line": 0,
+     "t0": 2.5463,
+     "t1": 2.7843
+    },
+    {
+     "w": "more.",
+     "line": 0,
+     "t0": 2.8123,
+     "t1": 3.2023
+    }
+   ],
+   "start": 65.16666666666667,
+   "dur": 4.6,
+   "start_frame": 1955,
+   "n_frames": 138,
+   "subs": [
+    {
+     "lines": [
+      "Thanks for watching."
+     ],
+     "t0": 0.228,
+     "t1": 1.728
+    },
+    {
+     "lines": [
+      "Subscribe for more."
+     ],
+     "t0": 1.748,
+     "t1": 3.552
+    }
+   ],
+   "hash": "6f8bea32eb88"
+  }
+ ]
+}

@@ -77,7 +77,7 @@ studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, c
 тот же). Тип — запись `Kind`: голос (`voice=False` — `tts.backend: none`, `tts.synth` такой строки не синтезирует),
 пределы длительности и нужна ли точная, обязательные поля `brief:` и файлы брифа, музыка как содержание, звук исходника
 как речь (`source_audio`, clip), `needs` — недостающий слой движка (тип принимается, validate ⚠️, демо — в той задаче;
-после C2 — только `data-story`, ждёт `chart` из C4). Проверки: `kinds.issues` — в `validate`,
+после C4 не осталось ни у одного типа: `data-story` строится на `chart`). Проверки: `kinds.issues` — в `validate`,
 `kinds.brief_missing`/`missing_files` — фазы «1 Бриф» и «1б Материалы» в `status`, `kinds.qa` — строки QA. Демо по типу —
 `tests/fixtures/kinds/<тип>/`: `tests/test_kinds.py` — validate и тайминг, `selftest --kinds` — до QA PASS (каждый выход
 из `deliverables`: promo — 9:16 и 1:1).
@@ -97,7 +97,26 @@ studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, c
 приглушает музыку под ним, итог нормализуется по LUFS; так `clip` звучит речью исходника без синтеза (`tts.backend: none`,
 QA «Звук исходника звучит»). `render --alpha mov|webm` (`render.export_alpha`) — кадры шаблонов на прозрачном без фона и
 субтитров одним проходом в ProRes 4444 (`yuva444p10le`) или VP9 (`yuva420p`), `build/final/<slug>.alpha.<fmt>`.
-Галерея и golden шаблонов `media` — ROADMAP C4; сейчас их кадры и вёрстку во всех форматах проверяет `tests/test_media.py`.
+CSV графиков (`kit.chart`, ROADMAP C4) — тоже ассеты (`assets.DATA_EXT`): у источника данных те же правила, что у фото.
+
+## Библиотека шаблонов и галерея (ROADMAP C4)
+Пакет `packs/kit/` — общие шаблоны для любой палитры и формата: `chart` (столбики, линия, круг из CSV или `values`),
+`timeline`, `steps`, `compare`, `map` (заглушка: сетка-проекция и булавки), `quote`, `testimonial`, `lower_third`,
+`cta_end`, `chapter_bumper`; у `commerce.price_tag` появился алиас `price_tag`. База `KitTemplate`: триггер `at` (бит |
+секунды | слово, как у media и lab; `word_triggers = True` — слова проверяет `lab/check.trigger_errors` в validate и
+voice), `item_at` (элемент списка: `at` → бит `first_beat + i` → равномерно), `place` (блок «заголовок + содержимое» по
+центру `self.area`), кегль `fs` (×1,18 в широком кадре, ×1,15 в высоком 9:16 и 4:5). Полупрозрачные фигуры — только
+через `kit.base.Ink`: `ImageDraw` на RGBA-кадре не смешивает цвет, а записывает альфу в пиксели, и в итоговом RGB
+полупрозрачное стало бы сплошным (так была залита полоса `chapter_bumper` в первом прогоне). Фикстура
+`tests/fixtures/library/` — по сцене на каждый шаблон, которого нет в `gallery` (kit, commerce, media), палитра lab;
+golden — `tests/golden/library/<формат>/` (timeline и по 2 кадра на сцену, плюс кадры с TikTok-субтитрами), у сцен с
+видео-ассетом допуск шире (`selftest.VIDEO_TEMPLATES`: декодер ffmpeg разных версий). `test_gallery` требует, чтобы
+две фикстуры вместе покрывали весь реестр. `python -m studio gallery` (`studio/gallery.py`) снимает обе фикстуры в
+каждом формате воркерами (по 5 кадров на сцену) и режимы субтитров, страница — `output/gallery/index.html` (поиск,
+фильтр форматов, проигрывание кадров при наведении, параметры из метаданных шаблона).
+Режим субтитров проекта — `subtitles.style: plate | karaoke | tiktok`: `project.load` кладёт его в `style.subs`,
+`Style.subs_mode` перекрывает пресет и бренд-кит (`Style.subs`), `subs.mode()` — размер и место полосы; без ключа cfg и
+ключ рендера прежние.
 
 ## Площадки (ROADMAP B1)
 `studio/platforms.py` — профили выходов: `youtube`, `youtube-shorts`, `tiktok`, `instagram-reels`, `instagram-feed` (4:5),

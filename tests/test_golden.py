@@ -1,4 +1,5 @@
-"""P0.4: golden фикстуры gallery — timeline.json и .srt байт в байт, кадры PNG с допуском.
+"""P0.4: golden фикстуры gallery — timeline.json и .srt байт в байт, кадры PNG с допуском. ROADMAP C4: то же для
+фикстуры library (шаблоны kit, commerce, media; кадры с TikTok-субтитрами) — tests/golden/library/<формат>/.
 
 Golden меняется только флагом: pytest tests/test_golden.py --update-golden — и в коммите объясняется почему
 (REFACTOR_PLAN, правило 3: на рефакторинге golden не меняется вообще).
@@ -12,7 +13,8 @@ import pytest
 
 from conftest import ROOT, make_gallery
 from studio import project, timing
-from studio.selftest import DIFF, GOLDEN, MAX_DIFF, MEAN_DIFF, compare_frames, frame_diff as _diff, golden_frames as _frames
+from studio.selftest import (DIFF, GOLDEN, LIB_GOLDEN, MAX_DIFF, MEAN_DIFF, compare_frames, frame_diff as _diff,
+                             golden_frames as _frames, loose_frames, make_library, subs_frames)
 
 
 @pytest.fixture
@@ -55,8 +57,10 @@ def test_srt(voiced, update):
 
 def test_frames(voiced, update):
     fmt = voiced.cfg["format"]
-    gdir, ddir = GOLDEN / fmt / "frames", DIFF / fmt
-    frames = _frames(voiced)
+    _check_frames(_frames(voiced), GOLDEN / fmt / "frames", DIFF / fmt, update, fmt)
+
+
+def _check_frames(frames, gdir, ddir, update, what, loose=()):
     shutil.rmtree(ddir, ignore_errors=True)
     if update:
         gdir.mkdir(parents=True, exist_ok=True)
@@ -67,9 +71,33 @@ def test_frames(voiced, update):
         for n in changed:
             frames[n].save(gdir / n, optimize=True)
         if changed or stale:
-            pytest.skip(f"golden {fmt}/frames обновлён: {len(changed)} кадров, удалено {len(stale)}")
+            pytest.skip(f"golden {what}/frames обновлён: {len(changed)} кадров, удалено {len(stale)}")
         return
-    bad, _ = compare_frames(frames, gdir, ddir)
+    bad, _ = compare_frames(frames, gdir, ddir, loose=loose)
     assert not bad, (
-        f"кадры {fmt} разошлись с golden (допуск: макс ≤ {MAX_DIFF}, средняя ≤ {MEAN_DIFF}); "
+        f"кадры {what} разошлись с golden (допуск: макс ≤ {MAX_DIFF}, средняя ≤ {MEAN_DIFF}); "
         f"факт и карта разницы — {ddir.relative_to(ROOT)}\n  " + "\n  ".join(bad))
+
+
+# ------------------------------------------------------------------ library (ROADMAP C4)
+@pytest.fixture(scope="module", params=["horizontal", "vertical"])
+def library(request, tmp_path_factory):
+    work = tmp_path_factory.mktemp("lib-" + request.param)
+    proj = project.load(make_library(work / "library", request.param))
+    tl = timing.layout(proj, log=lambda *_: None)
+    return proj, tl, work
+
+
+def test_library_timeline(library, update):
+    proj, _, _ = library
+    _check_bytes(LIB_GOLDEN / proj.cfg["format"] / "timeline.json", (proj.build / "timeline.json").read_bytes(), update)
+
+
+def test_library_frames(library, update):
+    """Каждый шаблон kit/commerce/media — по 2 кадра на сцену, плюс TikTok-субтитры (subtitles.style)."""
+    proj, tl, work = library
+    fmt = proj.cfg["format"]
+    frames = _frames(proj)
+    frames.update(subs_frames(work, fmt))
+    _check_frames(frames, LIB_GOLDEN / fmt / "frames", DIFF / "library" / fmt, update, f"library/{fmt}",
+                  loose_frames(tl))

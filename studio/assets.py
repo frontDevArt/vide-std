@@ -9,7 +9,7 @@ assets:
     by: Aurora Lighting
 ```
 Сцены ссылаются на файлы путём от папки проекта (`params: {file: assets/lamp-front.jpg}`); ссылка — любая строка
-в `params` с расширением медиа (`refs`). validate: файла нет — ❌, файл не в `assets.yaml` или без лицензии — ⚠️;
+в `params` с расширением медиа или данных (CSV графиков, ROADMAP C4) (`refs`). validate: файла нет — ❌, файл не в `assets.yaml` или без лицензии — ⚠️;
 qa: всё, что звучит и видно, есть в `assets.yaml` с лицензией и источником — иначе ❌ (не сдаём чужое без прав).
 Содержимое файла входит в ключ кэша рендера сцены (`fingerprint`): заменили фото — сцена перерисуется.
 """
@@ -23,7 +23,8 @@ import yaml
 IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp")
 VIDEO_EXT = (".mp4", ".mov", ".webm", ".m4v", ".mkv")
 AUDIO_EXT = (".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac")
-MEDIA_EXT = IMAGE_EXT + VIDEO_EXT + AUDIO_EXT
+DATA_EXT = (".csv",)  # данные графиков (kit.chart, ROADMAP C4): у источника данных те же правила, что у фото
+MEDIA_EXT = IMAGE_EXT + VIDEO_EXT + AUDIO_EXT + DATA_EXT
 FILE = "assets.yaml"
 FIELDS = ("source", "license")  # обязательные поля записи; by — кто дал (необязательно)
 

@@ -441,12 +441,31 @@ ducking и LUFS прежние. QA «Склейки в долю трека» (`k
 библиотека и лицензии. `selftest --kinds` ✅ 8 типов до QA PASS (603 c), `pytest` 598 ✅ (22 мин),
 `selftest` ✅ (231 c, golden не менялся). Кэш рендера проектов не устарел: `subs.py` и шаблоны не тронуты.
 
-### [ ] C4. Библиотека шаблонов + галерея
+### [x] C4. Библиотека шаблонов + галерея
 **Сделать.** Новые общие шаблоны: `chart` (столбики/линия/круг из данных), `timeline`, `compare`, `quote`, `steps`,
 `map`-заглушка, `lower_third`, `cta_end`, `testimonial`, `price_tag`, крупные TikTok-субтитры, `chapter_bumper` (старый R6).
 `python -m studio gallery` — HTML-страница с превью каждого шаблона в каждом формате (из фикстуры selftest).
 **Готово, если:** каждый шаблон есть в галерее в 16:9 и 9:16, у каждого есть golden-кадры; демо типа `data-story` (C1,
 график из CSV) проходит `selftest --kinds`.
+*Сделано (2026-10-24):* пакет `studio/packs/kit/` — 10 общих шаблонов для любой палитры и формата: `chart` (bar — в
+высоком кадре лёжа, line — линия с заливкой растёт от точки к точке, pie — кольцо с легендой и долей в центре; данные —
+CSV в `assets/` (`data`, столбцы `x`/`y`, разделитель `,` `;` таб, «$1,234», «3,5») или `values`; `highlight`, `source`,
+`first_beat`), `timeline`, `steps`, `compare`, `map` (заглушка: сетка-проекция, булавки по lat/lon, дуги маршрута),
+`quote`, `testimonial` (звёзды с половинками, аватар — фото или инициалы), `lower_third` (опц. фото-подложка), `cta_end`
+(логотип файла или кита, кнопка с кликом курсора, рамки «смотрите дальше»), `chapter_bumper`; плоские алиасы у всех,
+`price_tag` → `commerce.price_tag`. База `KitTemplate`: `at` (бит | секунды | слово; `word_triggers` — слова проверяет
+validate/voice), `item_at`, `place`, кегль ×1,15 в высоком кадре; полупрозрачные фигуры — через слой `Ink` (ImageDraw на
+RGBA не смешивает). CSV — ассет (`assets.DATA_EXT`): ключ рендера, validate/qa — источник данных. Крупные TikTok-субтитры
+без кита — `subtitles.style: plate | karaoke | tiktok` (`Style.subs_mode`; без ключа cfg и ключ рендера прежние).
+Фикстура `tests/fixtures/library/` (20 сцен: kit, commerce, media; ассеты — `tools/make_demo_assets.py library`),
+`test_gallery` — gallery + library покрывают весь реестр (39 шаблонов). Golden — `tests/golden/library/<16:9|9:16>/`:
+timeline и 2 кадра на сцену + TikTok-субтитры (у сцен с видео-ассетом допуск 40/0,8 — декодер ffmpeg в CI); старые golden
+не менялись. `python -m studio gallery` → `output/gallery/index.html`: все шаблоны и 3 режима субтитров в 4 форматах,
+по 5 кадров (проигрывание при наведении), поиск, фильтр форматов, параметры из метаданных — 42 c, 164 сцены.
+Демо `data-story` (вертикаль, столбики и линия из двух CSV), `needs` снят. Проверено: листы кадров library во всех
+4 форматах посмотрены, safezone чистый; `tests/test_library.py` (16 тестов), `selftest --kinds` ✅ 9 типов до QA PASS
+(622 c), `selftest` ✅ (250 c: gallery и library = golden), `pytest` ✅. Кэш рендера проектов устарел (`packs/__init__.py`
+в хэше кода всех шаблонов).
 
 ### [ ] C5. Генерация картинок для сцен (Kie AI и др., по желанию, платно)
 **Зачем.** Текст сцены уже известен, значит, известно и то, какая картинка нужна и что с ней будет происходить.

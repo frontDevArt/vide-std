@@ -85,7 +85,9 @@ SCHEMA = {
         "meter": F((int,), doc="долей в такте (4): сильная доля — каждая meter-я"),
     },
     "sfx": {"enabled": F((bool,), True), "level_db": F(NUM, 0)},  # звуки появления — только у шаблонов с sfx_events
-    "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None)},
+    "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None),
+                  "style": F((str,), doc="plate | karaoke | tiktok (крупные, по слову, выше интерфейса площадки); "
+                                         "нет — из пресета палитры или бренд-кита (ROADMAP C4)")},
     "render": {"workers": F((int, NONE), None), "crf": F((int,), 18), "preset": F((str,), "medium")},
     "loudness": F(NUM, -16),
     "qa": {"safe_margin": F(NUM, 0.04)},  # поля кадра для контента сцены (доля стороны), проверка safezone

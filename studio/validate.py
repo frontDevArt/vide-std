@@ -165,6 +165,10 @@ def style(proj, errs, warns):
     """style.mood / style.overrides / glow глав (channel/STYLE.md §14): accent2 не спорит с вердиктами и бренд-цианом."""
     from . import gfx as G
     st = proj.cfg["style"]
+    from .subs import MODES
+    sm = proj.cfg["subtitles"].get("style")
+    if sm is not None and sm not in MODES:
+        errs.append(f"subtitles.style: {sm!r} — можно {', '.join(MODES)}")
     kit = st.get("kit")
     pal = ({k: tuple(v) for k, v in kit["colors"].items()} if kit
            else G.PALETTES.get(st.get("palette", "neon"), G.PALETTES["neon"]))

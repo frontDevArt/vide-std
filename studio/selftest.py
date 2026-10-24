@@ -1,10 +1,11 @@
 """python -m studio selftest — регресс студии офлайн (REFACTOR_PLAN P0.5), заменяет ручной `new regress` → `demo`.
 
-Фикстура gallery (все шаблоны, 2 главы) → validate → voice (fake) → render → assemble → qa → сравнение с golden
+Фикстура gallery (базовые и lab-шаблоны, 2 главы) → validate → voice (fake) → render → assemble → qa → сравнение с golden
 (tests/golden/, P0.4): timeline.json и .srt байт в байт, кадры — с допуском, и ещё раз те же кадры, вынутые из
 готового MP4 (ловит расхождение рендера в воркерах с кадром в процессе). Полная цепочка — на horizontal, vertical —
-voice и кадры без кодирования (`--full` — цепочка на обоих, ~2,5 мин). Golden здесь только сравнивается;
-обновить — pytest tests/test_golden.py --update-golden.
+voice и кадры без кодирования (`--full` — цепочка на обоих, ~2,5 мин). Фикстура library (шаблоны kit, commerce,
+media и TikTok-субтитры, ROADMAP C4) — timeline и кадры в процессе против tests/golden/library/ в обоих форматах.
+Golden здесь только сравнивается; обновить — pytest tests/test_golden.py --update-golden.
 """
 from __future__ import annotations
 
@@ -26,6 +27,13 @@ GOLDEN = STUDIO_ROOT / "tests" / "golden"
 DIFF = STUDIO_ROOT / "tests" / ".golden-diff"
 FIXTURE = STUDIO_ROOT / "tests" / "fixtures" / "gallery"
 KIND_DEMOS = STUDIO_ROOT / "tests" / "fixtures" / "kinds"  # демо типов роликов (ROADMAP C1)
+LIBRARY = STUDIO_ROOT / "tests" / "fixtures" / "library"  # остальные шаблоны: kit, commerce, media (ROADMAP C4)
+LIB_GOLDEN = GOLDEN / "library"
+# Сцены с кадрами из видео-ассета: декодер и масштаб ffmpeg разных версий (Windows и Linux в CI) расходятся на
+# единицы уровней по краям — допуск шире, чем у рисованных кадров, но далеко от «не та сцена / сдвиг кадра».
+VIDEO_TEMPLATES = ("media.video", "media.screen", "media.clip")
+VIDEO_MAX, VIDEO_MEAN = 40, 0.8
+SUBS_GOLDEN = (("ch01", "s02"), ("ch02", "s01"))  # сцены library с TikTok-субтитрами в golden (subtitles.style)
 FONT = STUDIO_ROOT / "assets" / "fonts" / "Manrope-VF.ttf"
 FORMATS = ("horizontal", "vertical")
 FRACS = (0.3, 0.85)  # кадры сцены: посреди входа и почти в конце, когда всё вышло
@@ -52,6 +60,36 @@ def make_gallery(dst: Path, fmt: str = "horizontal") -> Path:
     p = dst / "project.yaml"
     p.write_text(p.read_text(encoding="utf-8").replace("format: horizontal", f"format: {fmt}"), encoding="utf-8")
     return dst
+
+
+def make_library(dst: Path, fmt: str = "horizontal", subs: str | None = None) -> Path:
+    """Копия фикстуры library (ROADMAP C4) с нужным форматом; subs — subtitles.style (tiktok…)."""
+    shutil.copytree(LIBRARY, dst)
+    p = dst / "project.yaml"
+    text = p.read_text(encoding="utf-8").replace("format: horizontal", f"format: {fmt}")
+    p.write_text(text + (f"\nsubtitles: {{style: {subs}}}\n" if subs else ""), encoding="utf-8")
+    return dst
+
+
+def loose_frames(tl) -> set:
+    """Кадры сцен с видео-ассетом (VIDEO_TEMPLATES) — для них допуск VIDEO_MAX/VIDEO_MEAN."""
+    from .packs import REGISTRY
+    return {frame_name(s, int(s["n_frames"] * fr)) for s in tl["scenes"] for fr in FRACS
+            if REGISTRY.canonical(s["template"]) in VIDEO_TEMPLATES}
+
+
+def subs_frames(work: Path, fmt: str, mode: str = "tiktok") -> dict:
+    """Кадры library с субтитрами режима mode (середина сцен SUBS_GOLDEN): имена subs-<режим>-<глава>-<сцена>.png."""
+    from . import project, render, subs, timing
+    proj = project.load(make_library(work / f"subs-{mode}" / "library", fmt, mode))
+    timing.layout(proj, log=_quiet)
+    tl, ctx = render.prepare(proj)
+    out = {}
+    for s in tl["scenes"]:
+        if (s["chapter"], s["id"]) in SUBS_GOLDEN:
+            img = render.frame(ctx, render.make_template(ctx, s), s, s["n_frames"] // 2, subs.font_size(proj))
+            out[f"subs-{mode}-{s['chapter']}-{s['id']}.png"] = img.convert("RGB").reduce(2)
+    return out
 
 
 def frame_name(s, f):
@@ -106,8 +144,9 @@ def frame_diff(golden, img, max_diff=MAX_DIFF, mean_diff=MEAN_DIFF):
     return mx > max_diff or mean > mean_diff, mx, mean, d
 
 
-def compare_frames(frames, gdir, ddir, max_diff=MAX_DIFF, mean_diff=MEAN_DIFF):
-    """Ошибки сравнения кадров с golden; при расхождении факт и карта разницы ×32 — в ddir."""
+def compare_frames(frames, gdir, ddir, max_diff=MAX_DIFF, mean_diff=MEAN_DIFF, loose=()):
+    """Ошибки сравнения кадров с golden; при расхождении факт и карта разницы ×32 — в ddir. loose — имена кадров
+    с допуском VIDEO_MAX/VIDEO_MEAN (видео-ассет)."""
     bad = [f"{n}: лишний golden" for n in sorted(p.name for p in gdir.glob("*.png") if p.name not in frames)]
     worst = (0, 0.0)
     for n, img in frames.items():
@@ -115,7 +154,8 @@ def compare_frames(frames, gdir, ddir, max_diff=MAX_DIFF, mean_diff=MEAN_DIFF):
         if not g.exists():
             bad.append(f"{n}: нет golden")
             continue
-        fail, mx, mean, d = frame_diff(g, img, max_diff, mean_diff)
+        fail, mx, mean, d = frame_diff(g, img, *((max(max_diff, VIDEO_MAX), max(mean_diff, VIDEO_MEAN)) if n in loose
+                                                 else (max_diff, mean_diff)))
         worst = (max(worst[0], mx), max(worst[1], mean))
         if fail:
             ddir.mkdir(parents=True, exist_ok=True)
@@ -215,6 +255,24 @@ def run(full=False, keep=False, workers=None, log=print) -> bool:
             st["errors"], worst = compare_frames(mp4_frames(proj.final_path(), tl), gold / "frames", DIFF / fmt / "mp4",
                                                  MP4_MAX, MP4_MEAN)
             st["note"] = f"допуск макс {MP4_MAX}, средняя {MP4_MEAN}; худший: макс {worst[0]}, средняя {worst[1]:.3f}"
+    for fmt in FORMATS:  # библиотека шаблонов (ROADMAP C4): timeline и кадры, без кодирования
+        log(f"library {fmt}: voice + кадры без кодирования")
+        lib = make_library(work / fmt / "library", fmt)
+        lgold = LIB_GOLDEN / fmt
+        shutil.rmtree(DIFF / "library" / fmt, ignore_errors=True)
+        with r.step("library: timeline.json = golden") as st:
+            lproj = project.load(lib)
+            ltl = timing.layout(lproj, log=_quiet)
+            e = bytes_diff(lgold / "timeline.json", (lproj.build / "timeline.json").read_bytes())
+            if e:
+                st["errors"].append(e)
+        if st["errors"]:
+            continue
+        with r.step("library: кадры в процессе = golden") as st:
+            frames = golden_frames(lproj)
+            frames.update(subs_frames(work / fmt, fmt))
+            st["errors"], worst = compare_frames(frames, lgold / "frames", DIFF / "library" / fmt, loose=loose_frames(ltl))
+            st["note"] = f"{len(frames)} кадров, худший: макс {worst[0]}, средняя {worst[1]:.3f}"
     total = time.time() - r.t0
     ok = not r.fails
     if ok and not keep:
