@@ -1,0 +1,26 @@
+# Демо C5.6 (ROADMAP C5): картинки сцен через Kie AI — images (смета, --yes) → stills → render → assemble → qa.
+# Три разворота image: раскладка на слои (параллакс), фон + вырезанный объект (стикер), «до → после».
+schema_version: 1
+title: Sleep comes in cycles
+topic: "Sleep comes in cycles"
+audience: curious adults; one idea — sleep is not one block
+kind: explainer
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+
+tts: {backend: elevenlabs, voice: auto, rate: 100}
+
+style: {palette: lab}
+
+images:
+  enabled: true
+  style: "flat vector illustration, soft gradients, no text, dark night palette #0B0F1A #12324A #4FD1C5 #F6C177. Camera: side view at eye level"
+  reference: assets/style-ref.png
+  budget_usd: 3
+
+music: {enabled: true}
+subtitles: {enabled: true, max_lines: 2}
+
+chapters: [ch01]

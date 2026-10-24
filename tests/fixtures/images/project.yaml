@@ -1,0 +1,25 @@
+# Фикстура картинок сцен (ROADMAP C5.6): каждый разворот `image:` (imagegen.scene_params) — раскладка на слои,
+# фон + вырезанный объект, «до → после» — рядом с кодовой графикой. Картинки — бэкенд fake (процедурные PNG, офлайн),
+# голос fake: selftest проходит images → voice → кадры = golden → render → assemble → qa без единого запроса в сеть.
+# Golden — tests/golden/images/ (только horizontal).
+title: images fixture
+topic: images fixture
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+
+tts:
+  backend: fake
+  voice: auto
+  rate: 105
+
+style:
+  palette: lab
+
+images:
+  enabled: true
+  backend: fake
+  style: "flat vector illustration, palette #0B0F1A #4FD1C5"
+
+chapters: [ch01]

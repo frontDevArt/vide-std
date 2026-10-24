@@ -5,6 +5,8 @@
 готового MP4 (ловит расхождение рендера в воркерах с кадром в процессе). Полная цепочка — на horizontal, vertical —
 voice и кадры без кодирования (`--full` — цепочка на обоих, ~2,5 мин). Фикстура library (шаблоны kit, commerce,
 media и TikTok-субтитры, ROADMAP C4) — timeline и кадры в процессе против tests/golden/library/ в обоих форматах.
+Фикстура images (картинки сцен на бэкенде fake, ROADMAP C5.6) — images → voice → кадры = tests/golden/images/ →
+render → assemble → qa. Весь прогон — без сети (`no_network`): запрос наружу — ошибка шага.
 Golden здесь только сравнивается; обновить — pytest tests/test_golden.py --update-golden.
 """
 from __future__ import annotations
@@ -29,6 +31,8 @@ FIXTURE = STUDIO_ROOT / "tests" / "fixtures" / "gallery"
 KIND_DEMOS = STUDIO_ROOT / "tests" / "fixtures" / "kinds"  # демо типов роликов (ROADMAP C1)
 LIBRARY = STUDIO_ROOT / "tests" / "fixtures" / "library"  # остальные шаблоны: kit, commerce, media (ROADMAP C4)
 LIB_GOLDEN = GOLDEN / "library"
+IMAGES = STUDIO_ROOT / "tests" / "fixtures" / "images"  # картинки сцен на fake (ROADMAP C5.6)
+IMG_GOLDEN = GOLDEN / "images"
 # Сцены с кадрами из видео-ассета: декодер и масштаб ffmpeg разных версий (Windows и Linux в CI) расходятся на
 # единицы уровней по краям — допуск шире, чем у рисованных кадров, но далеко от «не та сцена / сдвиг кадра».
 VIDEO_TEMPLATES = ("media.video", "media.screen", "media.clip")
@@ -60,6 +64,42 @@ def make_gallery(dst: Path, fmt: str = "horizontal") -> Path:
     p = dst / "project.yaml"
     p.write_text(p.read_text(encoding="utf-8").replace("format: horizontal", f"format: {fmt}"), encoding="utf-8")
     return dst
+
+
+def make_images(dst: Path) -> Path:
+    """Копия фикстуры images (C5.6) в dst и картинки сцен бэкендом fake (офлайн) с учётом в assets.yaml."""
+    from . import cli
+    shutil.copytree(IMAGES, dst)
+    with contextlib.redirect_stdout(io.StringIO()):
+        if cli.main(["images", str(dst)]):
+            raise RuntimeError("images (fake) вернул ошибку")
+    return dst
+
+
+class NetworkUsed(RuntimeError):
+    pass
+
+
+@contextlib.contextmanager
+def no_network():
+    """Соединение из процесса дальше своей машины — NetworkUsed (C5.6: офлайн-регресс и «без единого запроса в
+    сеть»). Loopback разрешён: это не сеть (socketpair и т. п.)."""
+    import socket
+    saved = socket.socket.connect, socket.socket.connect_ex, socket.getaddrinfo, socket.create_connection
+    local = ("localhost", "127.0.0.1", "::1")
+
+    def check(addr):
+        host = addr[0] if isinstance(addr, tuple) else addr
+        if isinstance(host, str) and host not in local:
+            raise NetworkUsed(f"запрос в сеть: {host}")
+    socket.socket.connect = lambda self, addr: (check(addr), saved[0](self, addr))[1]
+    socket.socket.connect_ex = lambda self, addr: (check(addr), saved[1](self, addr))[1]
+    socket.getaddrinfo = lambda host, *a, **k: (check(host), saved[2](host, *a, **k))[1]
+    socket.create_connection = lambda addr, *a, **k: (check(addr), saved[3](addr, *a, **k))[1]
+    try:
+        yield
+    finally:
+        socket.socket.connect, socket.socket.connect_ex, socket.getaddrinfo, socket.create_connection = saved
 
 
 def make_library(dst: Path, fmt: str = "horizontal", subs: str | None = None) -> Path:
@@ -207,6 +247,11 @@ def _quiet(*_a, **_k):
 
 
 def run(full=False, keep=False, workers=None, log=print) -> bool:
+    with no_network():
+        return _run(full, keep, workers, log)
+
+
+def _run(full, keep, workers, log) -> bool:
     from . import cli, project, render, timing
     from .assemble import assemble
     from .qa import run as qa_run
@@ -273,6 +318,7 @@ def run(full=False, keep=False, workers=None, log=print) -> bool:
             frames.update(subs_frames(work / fmt, fmt))
             st["errors"], worst = compare_frames(frames, lgold / "frames", DIFF / "library" / fmt, loose=loose_frames(ltl))
             st["note"] = f"{len(frames)} кадров, худший: макс {worst[0]}, средняя {worst[1]:.3f}"
+    _images_chain(r, work, workers)
     total = time.time() - r.t0
     ok = not r.fails
     if ok and not keep:
@@ -283,6 +329,38 @@ def run(full=False, keep=False, workers=None, log=print) -> bool:
     if not ok or keep:
         log(f"  рабочая папка оставлена: {work}" + (f"; кадры с расхождением — {DIFF}" if not ok else ""))
     return ok
+
+
+def _images_chain(r, work, workers):
+    """Картинки сцен (C5.6): images (fake) → voice → кадры в процессе = golden → render → assemble → qa."""
+    from . import project, render, timing
+    from .assemble import assemble
+    from .qa import run as qa_run
+    r.log("images: картинки fake → полная цепочка")
+    shutil.rmtree(DIFF / "images", ignore_errors=True)
+    with r.step("images (fake) → assets.yaml") as st:
+        root = make_images(work / "images" / "images")
+        proj = project.load(root)
+        st["note"] = f"{len(list((root / 'assets' / 'images').rglob('*.png')))} PNG"
+    if st["errors"]:
+        return
+    with r.step("images: timeline.json = golden") as st:
+        tl = timing.layout(proj, log=_quiet)
+        e = bytes_diff(IMG_GOLDEN / "timeline.json", (proj.build / "timeline.json").read_bytes())
+        if e:
+            st["errors"].append(e)
+    if st["errors"]:
+        return
+    with r.step("images: кадры в процессе = golden") as st:
+        st["errors"], worst = compare_frames(golden_frames(proj), IMG_GOLDEN / "frames", DIFF / "images")
+        st["note"] = f"{len(golden_points(tl))} кадров, худший: макс {worst[0]}, средняя {worst[1]:.3f}"
+    with r.step("images: render → assemble → qa") as st:
+        render.render(proj, workers=workers, log=_quiet)
+        assemble(proj, log=_quiet)
+        lines = []
+        if not qa_run(proj, log=lines.append):
+            st["errors"] += [x for x in lines if x.startswith("[FAIL]")]
+        st["note"] = "; ".join(x[7:] for x in lines if "Картинки: файлы" in x)
 
 
 def run_kinds(keep=False, workers=None, log=print) -> bool:

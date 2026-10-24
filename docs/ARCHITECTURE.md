@@ -51,7 +51,7 @@
 | `assemble.py` | склейка сцен прямо в финал без перекодирования видео (список concat — во временной папке); `--chapters` — ещё файлы глав `build/chapters/chNN.mp4` (иначе их нет: это копия `render/`) |
 | `qa.py` | автопроверки + листы кадров из готового файла |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
-| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4); `--kinds` — демо каждого типа ролика `tests/fixtures/kinds/` до QA PASS |
+| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4); `--kinds` — демо каждого типа ролика `tests/fixtures/kinds/` до QA PASS; фикстура `tests/fixtures/images` (картинки сцен на `fake`, C5.6) — images → voice → кадры = `tests/golden/images/` → render → assemble → qa; весь прогон под `no_network` (соединение дальше loopback — ошибка) |
 
 ## Студии (ROADMAP A1)
 Студия (workspace) — канал, бренд или клиент. Раскладку папок знает только `workspace.py`:

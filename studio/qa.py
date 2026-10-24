@@ -125,6 +125,15 @@ def run(proj: Project, log=print, fast=False):
         skip("Ассеты: источник и лицензия", "в ролике нет фото, видео и звука из assets/")
     else:
         chk(ac[0], "Ассеты: источник и лицензия", ac[1])
+    from .imagegen import qa_check as images_check  # картинки сцен: файлы и лицензия в assets.yaml (ROADMAP C5.6)
+    ic = images_check(proj)
+    if ic is None:
+        skip("Картинки: файлы и лицензия", "картинки выключены или сцены их не просят")
+    else:
+        chk(ic[0], "Картинки: файлы и лицензия", ic[1])
+        if ic[2]:
+            warn("WARN", "Картинки: заглушки fake", f"{len(ic[2])} файлов — не для публикации, сгенерируйте "
+                 "настоящие (images.backend: kie)")
     from .platforms import checks as platform_checks  # выход по профилю площадки (ROADMAP B1)
     platform_checks(proj, info, dur, I, pk, chk, warn)
     if lines:

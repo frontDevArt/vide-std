@@ -382,6 +382,39 @@ def scene_params(proj, chapter: str, scene: dict, n_beats: int = 0) -> tuple[dic
     return out, list(dict.fromkeys(need))
 
 
+def used_files(proj) -> list[str]:
+    """Файлы картинок, которые попадут в кадр (база, слои, вырезанные объекты), — пути от папки проекта, без повторов."""
+    from .assets import refs
+    out = []
+    for ch, d in proj.chapters:
+        for s in d.get("scenes") or []:
+            if s.get("image"):
+                p, need = scene_params(proj, ch, s)
+                out += refs(p) + need
+    return list(dict.fromkeys(out))
+
+
+def qa_check(proj) -> tuple[bool, str, list[str]] | None:
+    """QA «Картинки: файлы и лицензия» (C5.6) → (ok, подробно, заглушки fake); None — картинки выключены или сцены их
+    не просят. Проверяются картинки сцен и все записи assets.yaml из assets/images/: файл на месте, источник и
+    лицензия заполнены."""
+    from . import assets
+    if not enabled(proj.cfg) or not requests(proj):
+        return None
+    reg, _ = assets.load(proj.root)
+    files = list(dict.fromkeys(used_files(proj) + [k for k in reg if k.startswith(DIR + "/")]))
+    gone = [f for f in files if not (proj.root / f).is_file()]
+    bare = [f for f in files if f not in gone and not all((reg.get(f) or {}).get(x) for x in assets.FIELDS)]
+    fakes = [f for f in files if (reg.get(f) or {}).get("license") == FAKE_LICENSE]
+    short = (lambda xs: ", ".join(xs[:3]) + (" …" if len(xs) > 3 else ""))  # noqa: E731
+    if gone or bare:
+        why = ([f"нет файла: {short(gone)} — python -m studio images {proj.slug}"] if gone else []) + (
+            [f"нет источника или лицензии в {assets.FILE}: {short(bare)}"] if bare else [])
+        return False, "; ".join(why), fakes
+    lic = sorted({str(reg[f]["license"]) for f in files})
+    return True, f"{len(files)} файлов; лицензии: {'; '.join(lic[:3])}" + (" …" if len(lic) > 3 else ""), fakes
+
+
 def _save_png(data, out: Path):
     """Картинка (байты любого формата или PIL.Image) → PNG атомарно: обрыв не оставит битый файл в кэше."""
     from PIL import Image
