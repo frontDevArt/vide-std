@@ -47,7 +47,7 @@ subs: tiktok               # karaoke | plate | tiktok
 shape: {radius: 28, line: 3}   # дизайн-пиксели 1920×1080
 intro: sting.mp4           # логотип-«стинг» в начале / outro — в конце
 cta: {text: Order now, url: example.com}
-music: theme.wav           # музыка по умолчанию: music.file проекта, если своего нет
+music: theme.wav           # музыка по умолчанию: music.file проекта, если своего нет (лицензия — brand/music/music.yaml)
 voice: {tone: warm, upbeat}
 ```
 Всё, кроме `name`, необязательно; без `palette` — цвета `base`, без `fonts` — системное семейство `style.font`.
@@ -83,3 +83,13 @@ shade: 0.6                           # затемнение снизу (град
    **посмотреть лист**: контраст текста, читаемость субтитров, акцент не спорит с «плохо».
 4. Показать пользователю лист/демо и ждать подтверждения; правки — в `brand.yaml`, снова `stills`. Стиль фиксируется
    на весь ролик до старта (не меняется по главам).
+
+## Библиотека музыки студии (ROADMAP C3)
+`<студия>/brand/music/` — треки студии, `brand/music/music.yaml` — их происхождение:
+```yaml
+tracks:
+  - {file: drive.mp3, title: Drive, source: "https://… (сток, автор)", license: "CC BY 4.0", by: автор, bpm: 120}
+```
+Проект берёт трек по имени: `music: {file: drive.mp3}` (сначала ищется от папки проекта, затем в библиотеке). Без записи
+с `source` и `license` validate предупреждает, qa «Музыка: источник и лицензия» — ❌. Трек клиента для одного ролика —
+в `assets/` проекта и `assets.yaml`. Процедурная музыка студии (пэд, ритм-трек `music.bpm`) — код, CC0.

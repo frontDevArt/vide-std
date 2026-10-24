@@ -170,6 +170,7 @@ def test_new_kind_music(studio_root):
     cfg = yaml.safe_load((studio_root / "projects" / "m" / "project.yaml").read_text(encoding="utf-8"))
     assert cfg["kind"] == "music" and cfg["tts"]["backend"] == "none"
     assert cfg["target_duration"]  # тип с точной длительностью: без --duration — умолчание типа
+    assert cfg["music"]["sync"] == "beat"  # ROADMAP C3: склейки в долю
 
 
 def test_new_kind_default_explainer(studio_root):
@@ -177,3 +178,4 @@ def test_new_kind_default_explainer(studio_root):
     assert cli.cmd_new(a) == 0
     cfg = yaml.safe_load((studio_root / "projects" / "e" / "project.yaml").read_text(encoding="utf-8"))
     assert cfg["kind"] == "explainer" and cfg["tts"]["backend"] == "fake"
+    assert "sync" not in cfg["music"]

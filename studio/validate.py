@@ -106,6 +106,10 @@ def check(proj) -> Report:
     ae, aw = asset_issues(proj)
     errs += ae
     warns += aw
+    from .music import issues as music_issues  # трек, библиотека, лицензии, sync (ROADMAP C3)
+    me, mw = music_issues(proj)
+    errs += me
+    warns += mw
     from .kinds import issues as kind_issues  # тип ролика (ROADMAP C1)
     ke, kw = kind_issues(proj, est)
     errs += ke

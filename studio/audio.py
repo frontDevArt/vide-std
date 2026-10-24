@@ -2,7 +2,8 @@
 
 - Голос кладётся в позицию «кадр начала сцены + t0 строки» -> рассинхрона с видео нет. Дорожка голоса со звуками
   собирается кусками по BLOCK сэмплов и пишется в WAV сразу int16 — весь ролик в RAM не держится (P4.4).
-- Музыка: одна бесшовная петля, растягивается на весь ролик (на стыках глав музыка не рвётся).
+- Музыка: одна бесшовная петля, растягивается на весь ролик (на стыках глав музыка не рвётся); свой трек на главу —
+  подложка с кроссфейдом (studio/music.py, ROADMAP C3).
 - Подложка приглушается под голосом (sidechain), итог нормализуется по громкости (LUFS),
   сверху лимитер. Уровни проверяет qa.
 - Промежуточные WAV (голос, сырой микс, приглушённая музыка, итог) — в папке `out`, которую даёт вызывающий
@@ -21,6 +22,7 @@ from pathlib import Path
 import numpy as np
 
 from . import sfx as FX, tts as T
+from .music import music_loop  # noqa: F401 — прежнее место пэда (ROADMAP C3: studio/music.py)
 from .project import Project
 from .timing import load_timeline
 
@@ -129,47 +131,6 @@ def sfx_gain(proj: Project, lines, n):
     return rms * 10 ** (float(proj.cfg.get("sfx", {}).get("level_db", 0)) / 20)
 
 
-def music_loop(path, seconds=32.0, seed=5):
-    """Тёмный эмбиент-пэд: Am – F – C – G, по 8 с на аккорд, бесшовная петля."""
-    n = int(SR * seconds)
-    t = np.arange(n, dtype=np.float64) / SR
-    chords = [[57, 60, 64, 69], [53, 57, 60, 65], [48, 55, 60, 64], [55, 59, 62, 67]]
-    seg = seconds / len(chords)
-    out = np.zeros((n, 2), np.float64)
-    rng = np.random.default_rng(seed)
-    for ci, notes in enumerate(chords):
-        c0 = ci * seg
-        # окно аккорда с кроссфейдом xf, по кругу; соседние окна в сумме дают 1 (sin² + cos²)
-        xf = 2.0
-        u = (t - c0 + xf / 2) % seconds
-        w = (np.sin(np.pi / 2 * np.clip(u / xf, 0, 1)) ** 2
-             * np.sin(np.pi / 2 * np.clip((seg + xf - u) / xf, 0, 1)) ** 2)
-        w = np.where(u < seg + xf, w, 0.0)
-        for k, m in enumerate(notes):
-            f = 440 * 2 ** ((m - 69) / 12)
-            f = round(f * seconds) / seconds  # целое число периодов на петлю -> без щелчков
-            for det, pan in ((-0.6, 0.3), (0.0, 0.5), (0.7, 0.7)):
-                fd = round((f + det) * seconds) / seconds
-                p = rng.uniform(0, 6.28)
-                s = np.sin(2 * math.pi * fd * t + p) * 0.6 + 0.25 * np.sin(4 * math.pi * fd * t + p)
-                out[:, 0] += s * w * (1 - pan) * 0.05
-                out[:, 1] += s * w * pan * 0.05
-        fb = 440 * 2 ** ((notes[0] - 12 - 69) / 12)
-        fb = round(fb * seconds) / seconds
-        bass = np.sin(2 * math.pi * fb * t) * w * 0.10
-        out += bass[:, None]
-    # медленное «дыхание» громкости (тоже целое число периодов)
-    lfo = 0.85 + 0.15 * np.sin(2 * math.pi * (4 / seconds) * t)
-    out *= lfo[:, None]
-    out /= np.abs(out).max() + 1e-9
-    out *= 10 ** (-6 / 20)
-    pcm = (np.clip(out, -1, 1) * 32767).astype(np.int16)
-    with wave.open(str(path), "wb") as wf:
-        wf.setnchannels(2); wf.setsampwidth(2); wf.setframerate(SR)
-        wf.writeframes(pcm.tobytes())
-    return str(path)
-
-
 def ff(cmd):
     r = subprocess.run(["ffmpeg", "-hide_banner", "-y"] + cmd, stdin=subprocess.DEVNULL,
                        capture_output=True, text=True)
@@ -205,9 +166,9 @@ def mix(proj: Project, out: Path, log=print) -> str:
     raw = out / "mix_raw.wav"
     ducked = out / "music_ducked.wav"
     if mc.get("enabled", True):
-        loop = mc.get("file") or str(md / "music_loop.wav")
-        if not mc.get("file") and not (md / "music_loop.wav").exists():
-            music_loop(loop)
+        from . import music as M
+        bed = M.bed(proj, tl, out)  # music.by_chapter: подложка уже на всю длину, с кроссфейдами
+        src = ["-i", str(bed)] if bed else ["-stream_loop", "-1", "-i", str(M.default_file(proj))]
         lvl = float(mc.get("level_db", -24))
         duck = ("[m][sc]sidechaincompress=threshold=0.02:ratio=5:attack=40:release=700:makeup=1[md];"
                 if mc.get("duck", True) else "[m]anull[md];")
@@ -216,7 +177,7 @@ def mix(proj: Project, out: Path, log=print) -> str:
               f"volume={lvl}dB,afade=t=in:d=1.2,afade=t=out:st={max(0, D - 2.0):.3f}:d=2.0[m];"
               + duck +
               "[md]asplit=2[md1][md2];[v][md1]amix=inputs=2:normalize=0:duration=first[a]")
-        ff(["-i", voice, "-stream_loop", "-1", "-i", loop, "-filter_complex", fc,
+        ff(["-i", voice] + src + ["-filter_complex", fc,
             "-map", "[a]", "-t", f"{D:.3f}", "-c:a", "pcm_s16le", str(raw),
             "-map", "[md2]", "-t", f"{D:.3f}", "-c:a", "pcm_s16le", str(ducked)])
     else:

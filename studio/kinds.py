@@ -26,6 +26,7 @@ class Kind:
     music: bool = False         # музыка — содержание ролика: music.enabled обязателен, QA — «музыка звучит»
     default_duration: float | None = None  # `new --kind` без --duration (для exact)
     source_audio: bool = False  # речь — звук исходника (clip): QA — «Звук исходника звучит»
+    beat: bool = False          # склейки в долю трека (ROADMAP C3): music.sync, QA — «Склейки в долю»
     needs: str = ""             # недостающий слой движка (задача ROADMAP)
     hint: str = ""              # как строить: шаблоны, структура
 
@@ -41,9 +42,10 @@ KINDS = {k.id: k for k in (
          hint="logo_sting / title → media.product_card (фото, цена) или price_tag → outro с brief.cta; "
               "фото и логотип — assets/ + assets.yaml"),
     Kind("music", "кинетическая типографика под трек, без голоса", voice=False, duration=(10, 90), exact=True,
-         music=True, default_duration=20,
-         hint="сцены без lines, длительность — min_duration, текст в params; music.file — свой трек; "
-              "смена сцен по долям — ROADMAP C3"),
+         music=True, default_duration=20, beat=True,
+         hint="сцены без lines, длительность — min_duration (склейка — в ближайшую долю), текст в params; "
+              "music.sync: beat | bar, music.file — свой трек (иначе ритм-трек кодом, music.bpm); "
+              "first_beat / at_beat / at: N — элементы в долю"),
     Kind("slideshow", "фото + подписи + музыка, без голоса", voice=False, duration=(10, 180), music=True,
          files=("photos",),
          hint="brief.photos — файлы в assets/ (+ assets.yaml); сцена — media.image на фото с подписью (caption), "
@@ -122,6 +124,8 @@ def issues(proj, est: float) -> tuple[list[str], list[str]]:
             warns.append(f"kind: {k.id} — без голоса: укажите tts.backend: none (сейчас {backend})")
     if k.music and not proj.cfg["music"].get("enabled", True):
         errs.append(f"kind: {k.id} — музыка и есть ролик: music.enabled: true")
+    if k.beat and not proj.cfg["music"].get("sync"):
+        warns.append(f"kind: {k.id} — склейки не привязаны к долям: music.sync: beat (qa проверяет ±1 кадр от доли)")
     if k.exact and not proj.cfg.get("target_duration"):
         errs.append(f"kind: {k.id} — нужна точная длительность: target_duration")
     if k.duration:
@@ -152,8 +156,9 @@ def _listicle(proj) -> list[str]:
     return []
 
 
-def qa(proj, tl: dict, dur: float, music_db: float | None) -> list[tuple[bool, str, str]]:
-    """Проверки QA по типу: [(ok, имя, подробно)]. music_db — средний уровень итога, dB (для роликов без голоса)."""
+def qa(proj, tl: dict, dur: float, music_db: float | None, final=None) -> list[tuple[bool, str, str]]:
+    """Проверки QA по типу: [(ok, имя, подробно)]. music_db — средний уровень итога, dB (для роликов без голоса);
+    final — готовый файл: склейки в долю (тип music или music.sync, ROADMAP C3) — по долям в его звуке."""
     k = of(proj.cfg)
     out = []
     if k.duration:
@@ -168,4 +173,9 @@ def qa(proj, tl: dict, dur: float, music_db: float | None) -> list[tuple[bool, s
     if k.source_audio:
         out.append((music_db is not None and music_db > -35, "Звук исходника звучит",
                     f"средний уровень {music_db} dB" if music_db is not None else "тишина"))
+    from . import music as M
+    if final is not None and (k.beat or M.sync_mode(proj)):
+        r = M.qa_sync(proj, tl, final)
+        if r:
+            out.append((r[0], "Склейки в долю трека", r[1]))
     return out

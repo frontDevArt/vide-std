@@ -264,7 +264,7 @@ def run_kinds(keep=False, workers=None, log=print) -> bool:
                 if not qa_run(proj, log=lines.append):
                     st["errors"] += [x for x in lines if x.startswith("[FAIL]")]
                 st["note"] = "; ".join(x[7:] for x in lines if x.startswith("[PASS] Тип") or "звучит" in x
-                                       or "Ассеты" in x)
+                                       or "Ассеты" in x or "в долю" in x)
     ok = not r.fails
     if ok and not keep:
         shutil.rmtree(work, ignore_errors=True)

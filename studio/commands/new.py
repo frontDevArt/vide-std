@@ -105,6 +105,8 @@ def _create(a, ws):
     y = y.replace("target_duration: null", f"target_duration: {duration if duration else 'null'}")
     # явно в project.yaml, а не «по умолчанию»: бэкенд входит в ключ кэша TTS и не должен зависеть от машины
     y = y.replace("  backend: rhvoice ", f"  backend: {backend} ", 1)
+    if k.beat:  # склейки в долю трека (ROADMAP C3)
+        y = y.replace("  # sync: beat ", "  sync: beat   ", 1)
     (dst / "project.yaml").write_text(y, encoding="utf-8")
     print(f"Создан проект: {dst} (тип: {kid}, голос: {backend})\nДальше: фаза 1 (бриф) — docs/PHASES.md"
           + (f"; поля brief: {', '.join(k.brief + k.files)}" if k.brief or k.files else "")

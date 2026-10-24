@@ -22,7 +22,7 @@ bash tools/setup_rhvoice.sh        # если doctor не нашёл ни одн
 выбор записывается в `project.yaml` явно (бэкенд входит в ключ кэша TTS). Нет ни одного — ⚠️ и `rhvoice`: поставить голос.
 Тип ролика — `kind` (`python -m studio kinds`, ROADMAP C1; `new --kind <тип>`): `explainer` (по умолчанию), `short-hook`
 (15–60 с, точная длительность, `brief.hook`), `promo` (`brief: {product, price, cta}`; фото продукта и логотип —
-`media.product_card`, `media.logo_sting`), `music` (без голоса, под трек), `listicle` (`brief.count`, сцены `item: 1…N`),
+`media.product_card`, `media.logo_sting`), `music` (без голоса, под трек; склейки в долю — `music.sync: beat`, ROADMAP C3), `listicle` (`brief.count`, сцены `item: 1…N`),
 `slideshow` (фото + подписи, без голоса, `media.image`), `tutorial` (запись экрана, `media.screen`), `clip` (кусок
 подкаста/интервью, речь — звук исходника, `media.clip`); `data-story` — ждёт графиков (C4). Тип задаёт голос, пределы длительности, обязательные поля `brief:` и проверки validate/QA; у типов с
 файлами брифа (фото, CSV, запись экрана) в `status` есть фаза «1б Материалы»: файлы кладутся в `assets/`, а их

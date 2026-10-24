@@ -38,7 +38,9 @@ music:
   enabled: true
   level_db: -13           # уровень подложки; QA требует, чтобы музыка была на 14–28 LU тише голоса
   duck: true              # приглушать музыку под голосом
-  # file: path/to/music.wav   # своя музыка вместо процедурной (будет зациклена)
+  # sync: beat               # склейки сцен в долю трека (bar — в сильную долю); kind: music — включено (ROADMAP C3)
+  # file: drive.mp3           # свой трек: путь от папки проекта или имя в brand/music/ студии (будет зациклен)
+  # by_chapter: {ch02: calm.mp3}   # свой трек на главу, стык — кроссфейд (crossfade: 2.0)
 
 subtitles:
   enabled: true

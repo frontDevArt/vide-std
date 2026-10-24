@@ -77,7 +77,12 @@ SCHEMA = {
     },
     "music": {
         "enabled": F((bool,), True), "level_db": F(NUM, -13), "duck": F((bool,), True),
-        "file": F((str, NONE), doc="своя музыка вместо процедурной"),
+        "file": F((str, NONE), doc="свой трек вместо процедурного: путь от папки проекта или имя в brand/music/ студии"),
+        "by_chapter": F((dict,), doc="свой трек на главу {chNN: файл} (ROADMAP C3), стык — кроссфейд"),
+        "crossfade": F(NUM, doc="кроссфейд на стыке глав, с (2.0)"),
+        "sync": F((str, NONE), doc="beat | bar — склейки сцен в долю / в сильную долю трека (studio/music.py)"),
+        "bpm": F(NUM, doc="темп процедурного ритм-трека при sync без file (120); подсказка детектору долей"),
+        "meter": F((int,), doc="долей в такте (4): сильная доля — каждая meter-я"),
     },
     "sfx": {"enabled": F((bool,), True), "level_db": F(NUM, 0)},  # звуки появления — только у шаблонов с sfx_events
     "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None)},
