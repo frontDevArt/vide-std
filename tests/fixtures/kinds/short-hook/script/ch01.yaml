@@ -1,0 +1,13 @@
+scenes:
+  - id: s01
+    template: statement
+    lines: ["One hour of scrolling | costs you sleep."]
+    params: {text: "Scrolling *costs* sleep", icon: phone}
+  - id: s02
+    template: counter
+    lines: ["About twenty minutes of it."]
+    params: {from: 0, to: 20, suffix: " min", label: "less sleep"}
+  - id: s03
+    template: outro
+    lines: ["Put the phone away."]
+    params: {text: "Phone *away*"}

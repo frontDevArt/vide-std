@@ -263,7 +263,7 @@ def _fake(text: str, rate: float, out: Path, beats=None):
 def probe(tts_cfg, language="ru", ws=None) -> str:
     """Проверяет, что синтез реально работает (а не просто «бинарник есть»). ws — студия (её ключ ElevenLabs)."""
     from .lang import profile
-    if tts_cfg["backend"] == "fake":
+    if tts_cfg["backend"] in ("fake", "none"):  # none — ролик без голоса (ROADMAP C1): синтез не нужен
         return "ok"
     if tts_cfg["backend"] == "elevenlabs":  # бесплатная проверка: ключ и голос, без синтеза (символы платные)
         _el_request("/user", ws=ws)
@@ -331,6 +331,8 @@ def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt
     """prev/nxt — тексты соседних строк, voice — override настроек голоса (оба только для elevenlabs),
     beats — тексты битов строки (только для fake: паузы на границах '|'), ws — студия (ключ ElevenLabs;
     в ключ кэша не входит: голос тот же — звук тот же, чей бы ни был ключ)."""
+    if tts_cfg["backend"] == "none":
+        raise TTSUnavailable(f"tts.backend: none — ролик без голоса, а строка просит синтез: {text[:60]!r}")
     key = cache_key(text, tts_cfg, rate, prev, nxt, voice, beats)
     out = cache_dir / f"{key}.wav"
     if out.exists() and out.stat().st_size > 1000:

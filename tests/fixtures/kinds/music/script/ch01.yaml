@@ -1,0 +1,13 @@
+scenes:
+  - id: s01
+    template: title
+    min_duration: 3.3
+    params: {kicker: "Volume one", title: "Keep *moving*"}
+  - id: s02
+    template: statement
+    min_duration: 3.3
+    params: {text: "Every *beat* counts"}
+  - id: s03
+    template: outro
+    min_duration: 3.3
+    params: {text: "Never *stop*"}

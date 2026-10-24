@@ -24,6 +24,8 @@ def _key(proj: Project) -> dict:
 
 def calibrate(proj: Project, tl: dict) -> list[str]:
     """Записать замер темпа из timeline; вернуть предупреждения (расхождение с wpm языка > 10 %)."""
+    if not tl.get("words"):  # ролик без речи (ROADMAP C1): темп мерить не по чему
+        return []
     measured = tl["wpm_speech"]
     table = profile(proj.cfg.get("language"))["wpm"]
     data = {**_key(proj), "wpm": measured, "table_wpm": table, "rate": tl.get("rate"), "words": tl.get("words")}

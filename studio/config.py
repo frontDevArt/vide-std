@@ -34,6 +34,9 @@ SCHEMA = {
     "schema_version": F((int,), doc="версия схемы project.yaml; нет — старый файл, migrate() поднимет"),
     "title": F((str,), doc="название ролика"),
     "topic": F((str,), doc="тема"),
+    "kind": F((str,), doc="тип ролика (studio/kinds.py, ROADMAP C1): explainer | short-hook | promo | music | slideshow | "
+                          "listicle | data-story | tutorial | clip; нет — explainer"),
+    "brief": F((dict,), doc="поля брифа по типу ролика: hook, product, price, cta, count, photos, data… (studio/kinds.py)"),
     "audience": F((str,), doc="для кого ролик"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
@@ -52,7 +55,7 @@ SCHEMA = {
         "by_output": F((dict,), doc="поверх для выхода: {tiktok: {title, description, hashtags, cover}}"),
     },
     "tts": {
-        "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake"),
+        "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake | none (без голоса, ROADMAP C1)"),
         "voice": F((str, NONE), "auto"),
         "rate": F(NUM + (str,), 105, "число или auto"),
         "rate_range": F((list,), [98, 125]),

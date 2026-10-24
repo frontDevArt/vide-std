@@ -161,6 +161,8 @@ def load(root) -> Project:
         # модель студии — ELEVENLABS_MODEL_ID; входит в ключ кэша (tts.cache_key)
         if workspace.secret("ELEVENLABS_MODEL_ID", ws):
             tc["model"] = workspace.secret("ELEVENLABS_MODEL_ID", ws)
+    if cfg["tts"]["backend"] == "none":  # ролик без голоса (ROADMAP C1, studio/kinds.py): синтеза нет
+        cfg["tts"]["voice"] = "none"
     if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
         cfg["tts"]["voice"] = "fake"  # голос не нужен; не берём из LANGS, чтобы doctor не считал fake «синтезом»
     if cfg["tts"].get("voice") in (None, "auto"):

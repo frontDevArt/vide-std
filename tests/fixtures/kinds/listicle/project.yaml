@@ -1,0 +1,11 @@
+# Демо типа listicle (ROADMAP C1): топ-N — у сцен пунктов `item: 1…N`, N — brief.count.
+title: Three habits
+topic: three small habits
+kind: listicle
+brief: {count: 3}
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+tts: {backend: fake, voice: auto, rate: 105}
+chapters: [ch01]

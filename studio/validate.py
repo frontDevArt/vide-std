@@ -102,6 +102,10 @@ def check(proj) -> Report:
     tgt = proj.cfg.get("target_duration")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
+    from .kinds import issues as kind_issues  # тип ролика (ROADMAP C1)
+    ke, kw = kind_issues(proj, est)
+    errs += ke
+    warns += kw
     from .platforms import plan_issues
     for o in outs or [proj]:  # площадка: формат и предел длительности (ROADMAP B1), у выходов — каждая (B3)
         pe, pw = plan_issues(o, est)

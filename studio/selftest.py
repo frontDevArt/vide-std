@@ -25,6 +25,7 @@ from .project import STUDIO_ROOT
 GOLDEN = STUDIO_ROOT / "tests" / "golden"
 DIFF = STUDIO_ROOT / "tests" / ".golden-diff"
 FIXTURE = STUDIO_ROOT / "tests" / "fixtures" / "gallery"
+KIND_DEMOS = STUDIO_ROOT / "tests" / "fixtures" / "kinds"  # демо типов роликов (ROADMAP C1)
 FONT = STUDIO_ROOT / "assets" / "fonts" / "Manrope-VF.ttf"
 FORMATS = ("horizontal", "vertical")
 FRACS = (0.3, 0.85)  # кадры сцены: посреди входа и почти в конце, когда всё вышло
@@ -223,4 +224,50 @@ def run(full=False, keep=False, workers=None, log=print) -> bool:
         f"за {total:.0f} c{over}")
     if not ok or keep:
         log(f"  рабочая папка оставлена: {work}" + (f"; кадры с расхождением — {DIFF}" if not ok else ""))
+    return ok
+
+
+def run_kinds(keep=False, workers=None, log=print) -> bool:
+    """`selftest --kinds` (ROADMAP C1): демо каждого готового типа ролика (tests/fixtures/kinds/<тип>/) — validate →
+    voice → render → assemble → qa, итог QA — PASS. Golden нет: проверка — отчёт QA (кадры — в qa/ при --keep)."""
+    from . import cli, kinds, project, render, timing
+    from .assemble import assemble
+    from .qa import run as qa_run
+    pin_fonts()
+    work = Path(tempfile.mkdtemp(prefix="studio-kinds-"))
+    r = _Run(log)
+    ready = [k for k in kinds.KINDS.values() if not k.needs]
+    log(f"selftest --kinds: {len(ready)} типов, офлайн; рабочая папка {work}")
+    for k in kinds.KINDS.values():
+        if k.needs:
+            log(f"{k.id}: ⏭️  демо — вместе с {k.needs}")
+            continue
+        root = work / k.id
+        shutil.copytree(KIND_DEMOS / k.id, root)
+        log(f"{k.id}:")
+        with r.step(f"{k.id}: validate") as st:
+            if cli.main(["validate", str(root)]):
+                st["errors"].append("validate вернул ошибку")
+        if st["errors"]:
+            continue
+        with r.step(f"{k.id}: voice → render → assemble") as st:
+            proj = project.load(root)
+            tl = timing.layout(proj, log=_quiet)
+            render.render(proj, workers=workers, log=_quiet)
+            assemble(proj, log=_quiet)
+            st["note"] = f"{proj.cfg['format']}, {tl['duration']:.1f} c, {tl['total_frames']} кадров"
+        if st["errors"]:
+            continue
+        with r.step(f"{k.id}: qa") as st:
+            lines = []
+            if not qa_run(proj, log=lines.append):
+                st["errors"] += [x for x in lines if x.startswith("[FAIL]")]
+            st["note"] = "; ".join(x[7:] for x in lines if x.startswith("[PASS] Тип") or "Музыка звучит" in x)
+    ok = not r.fails
+    if ok and not keep:
+        shutil.rmtree(work, ignore_errors=True)
+    log(f"{'✅ демо типов прошли QA' if ok else '❌ не прошли: ' + ', '.join(dict.fromkeys(r.fails))} "
+        f"за {time.time() - r.t0:.0f} c")
+    if not ok or keep:
+        log(f"  рабочая папка оставлена: {work}")
     return ok

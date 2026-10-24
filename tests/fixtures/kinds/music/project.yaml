@@ -1,0 +1,13 @@
+# Демо типа music (ROADMAP C1): кинетическая типографика под музыку, без голоса (tts.backend: none).
+# Смена сцен по долям трека — ROADMAP C3; пока сцены по min_duration.
+title: Keep moving
+topic: kinetic typography
+kind: music
+language: en
+format: vertical
+fps: 30
+target_duration: 10
+tts: {backend: none}
+music: {enabled: true}
+subtitles: {enabled: false}
+chapters: [ch01]

@@ -20,7 +20,8 @@ def add(sp):
                                                 "без флага — из studio.yaml, иначе ru")
     # то же, что `python -m studio --studio <id> new`; SUPPRESS — не затирать глобальный флаг
     q.add_argument("--studio", default=argparse.SUPPRESS, metavar="ID", help="студия проекта (studios/<id>/)")
-    q.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake"],
+    q.add_argument("--kind", default=None, help="тип ролика (python -m studio kinds); без флага — explainer")
+    q.add_argument("--tts", choices=["elevenlabs", "edge", "rhvoice", "piper", "fake", "none"],
                    help="голос; без флага — первый доступный: elevenlabs (канал + ключ) → edge → rhvoice")
 
 
@@ -72,9 +73,17 @@ def _create(a, ws):
             raise SystemExit(f"--platform {pf}: формат {a.format} не подходит, нужен {' или '.join(p.formats)}")
         if fmt not in p.formats:
             fmt = p.formats[0]
-    from .. import voices
+    from .. import kinds, voices
+    kid = getattr(a, "kind", None) or kinds.DEFAULT
+    if kid not in kinds.KINDS:
+        raise SystemExit(f"--kind: нет типа {kid} (есть: {', '.join(kinds.KINDS)})")
+    k = kinds.KINDS[kid]
     vl = voices.layer(ws, lang)  # голос студии для языка (ROADMAP A3): бэкенд и темп — оттуда
-    backend = a.tts or vl.get("backend") or default_backend(lang)
+    # ролик без голоса (music, slideshow, clip — ROADMAP C1): синтеза нет, правило «нет голоса — стоп» не действует
+    backend = "none" if not k.voice else a.tts or vl.get("backend") or default_backend(lang)
+    if backend == "none" and k.voice:
+        raise SystemExit(f"--tts none: тип {kid} озвученный — нужен голос (или --kind music / slideshow)")
+    duration = a.duration or (k.default_duration if k.exact else None)
     if not backend:
         backend = "rhvoice"
         print("⚠️  нет доступного голоса (ключ ElevenLabs для канала, edge_tts, RHVoice) — записан rhvoice;\n"
@@ -92,9 +101,12 @@ def _create(a, ws):
     y = y.replace("format: vertical", f"format: {fmt}")
     if pf:
         y = y.replace("platform: null", f"platform: {pf}", 1)
-    y = y.replace("target_duration: null", f"target_duration: {a.duration if a.duration else 'null'}")
+    y = y.replace("kind: explainer ", f"kind: {kid} ", 1)
+    y = y.replace("target_duration: null", f"target_duration: {duration if duration else 'null'}")
     # явно в project.yaml, а не «по умолчанию»: бэкенд входит в ключ кэша TTS и не должен зависеть от машины
     y = y.replace("  backend: rhvoice ", f"  backend: {backend} ", 1)
     (dst / "project.yaml").write_text(y, encoding="utf-8")
-    print(f"Создан проект: {dst} (голос: {backend})\nДальше: фаза 1 (бриф) — docs/PHASES.md")
+    print(f"Создан проект: {dst} (тип: {kid}, голос: {backend})\nДальше: фаза 1 (бриф) — docs/PHASES.md"
+          + (f"; поля brief: {', '.join(k.brief + k.files)}" if k.brief or k.files else "")
+          + (f"\n⚠️  для типа {kid} в студии ещё нет шаблонов: {k.needs}" if k.needs else ""))
     return 0

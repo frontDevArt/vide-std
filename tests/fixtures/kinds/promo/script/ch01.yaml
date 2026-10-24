@@ -1,0 +1,13 @@
+scenes:
+  - id: s01
+    template: title
+    lines: ["Meet the Aurora desk lamp."]
+    params: {kicker: "New", title: "Aurora *lamp*"}
+  - id: s02
+    template: commerce.price_tag
+    lines: ["It was ninety nine. | Now it is forty nine."]
+    params: {tag: {was: "$99", now: "$49", x: 540, y: 160, at: 0, strike_at: 1, now_at: 1}}
+  - id: s03
+    template: outro
+    lines: ["Order today."]
+    params: {text: "Order *today*"}

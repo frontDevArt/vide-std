@@ -24,6 +24,7 @@
 | `voices.py` | голос студии (ROADMAP A3): `voices:` по языкам из `studio.yaml` — слой tts между `defaults` и project.yaml, `env:ИМЯ`; `max_accents`; замеры темпа голоса на студию — `studios/<id>/voices.yaml` |
 | `textutil.py` | текст строки: сегменты `\|`, текст для TTS и для экрана, вес слогов для оценки длительности, ёмкость субтитров |
 | `lang.py` | профиль языка (`language`): голоса по умолчанию, фраза проверки TTS, ориентир темпа (`wpm`), «чужой алфавит» для validate |
+| `kinds.py` | типы роликов (ROADMAP C1): `kind` в `project.yaml` → голос, пределы длительности, поля `brief:`, проверки validate/status/qa ([ниже](#типы-роликов-roadmap-c1)) |
 | `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |
 | `tts.py` | бэкенды TTS, кэш, обрезка тишины, поиск пауз |
 | `timing.py` | раскладка: строки → биты → сцены → кадры; подбор темпа под точную длительность |
@@ -46,7 +47,7 @@
 | `assemble.py` | склейка сцен прямо в финал без перекодирования видео (список concat — во временной папке); `--chapters` — ещё файлы глав `build/chapters/chNN.mp4` (иначе их нет: это копия `render/`) |
 | `qa.py` | автопроверки + листы кадров из готового файла |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
-| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4) |
+| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4); `--kinds` — демо каждого типа ролика `tests/fixtures/kinds/` до QA PASS |
 
 ## Студии (ROADMAP A1)
 Студия (workspace) — канал, бренд или клиент. Раскладку папок знает только `workspace.py`:
@@ -67,6 +68,14 @@ studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, c
   `brand/brand.yaml`, `CLAUDE.md`, для `youtube` — `channel/POSITIONING.md` — и создаёт проект демо стиля
   `projects/<id>-style/` (сценарий `demo/ch01.yaml` на языке студии, шаблоны `core.*` — все форматы). Мастер
   Claude — `/new-studio`: анкета из описания, кит по референсу (BRAND.md), демо 10–15 с на утверждение.
+
+## Типы роликов (ROADMAP C1)
+`studio/kinds.py` — `kind` в `project.yaml` (нет — `explainer`; в cfg ключ не попадает, ключ кэша рендера старых проектов
+тот же). Тип — запись `Kind`: голос (`voice=False` — `tts.backend: none`, `tts.synth` такой строки не синтезирует),
+пределы длительности и нужна ли точная, обязательные поля `brief:` и файлы брифа, музыка как содержание, `needs` —
+недостающий слой движка (тип принимается, validate ⚠️, демо — в той задаче). Проверки: `kinds.issues` — в `validate`,
+`kinds.brief_missing`/`missing_files` — фазы «1 Бриф» и «1б Материалы» в `status`, `kinds.qa` — строки QA. Демо по типу —
+`tests/fixtures/kinds/<тип>/`: `tests/test_kinds.py` — validate и тайминг, `selftest --kinds` — до QA PASS.
 
 ## Площадки (ROADMAP B1)
 `studio/platforms.py` — профили выходов: `youtube`, `youtube-shorts`, `tiktok`, `instagram-reels`, `instagram-feed` (4:5),

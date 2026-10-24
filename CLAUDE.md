@@ -11,7 +11,8 @@
 
 ## Команды
 ```
-python -m studio new "<тема>" [--slug x] [--format vertical|horizontal|square|portrait] [--platform tiktok] [--duration 30] [--tts edge]
+python -m studio new "<тема>" [--slug x] [--kind promo] [--format vertical|horizontal|square|portrait] [--platform tiktok] [--duration 30] [--tts edge]
+python -m studio kinds                     # типы роликов: explainer, short-hook, promo, music (без голоса), listicle…
 python -m studio validate <проект>         # проверка сценария
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
@@ -27,7 +28,7 @@ python -m studio platforms [<id>]          # профили площадок: к
 python -m studio frame    <проект> <сек>    # один кадр PNG
 python -m studio all      <проект> [--yes]  # voice → render → assemble → qa подряд (короткие ролики)
 python -m studio demo     <проект>          # демо стиля 10–15 с в projects/<slug>-demo/ (STYLE §14)
-python -m studio selftest [--full]          # регресс студии офлайн (~1,5 мин) — после правок движка
+python -m studio selftest [--full|--kinds]  # регресс студии офлайн (~1,5 мин) — после правок движка; --kinds — демо типов до QA
 python -m studio clean    <проект> [--keep-final] [--older-than 30d] [--dry-run]  # чистка build/ с отчётом
 python -m studio studios                   # студии и их проекты; --studio <id> перед командой — работать в студии
 python -m studio new-studio <id> --name "…" --kind brand|youtube|client --lang en --platforms tiktok  # новая студия (мастер — /new-studio)
@@ -36,6 +37,7 @@ python -m studio new-studio <id> --name "…" --kind brand|youtube|client --lang
 
 ## Железные правила (каждое оплачено временем, см. docs/LESSONS.md)
 - **Нет рабочего синтеза речи — сказать пользователю и остановиться.** Не делать ролик только с субтитрами.
+  Исключение — типы без голоса по замыслу (`kind: music`, `slideshow`; `tts.backend: none`, `python -m studio kinds`).
 - Речь не обрезать и не ускорять за `rate_range`. Не влезает в длительность → предложить сократить текст.
 - Сначала `stills` и **посмотреть PNG**, потом полный рендер.
 - Рендер и другие команды дольше ~5 минут — в фоне (`run_in_background`); ждать уведомления. Вывод каждой

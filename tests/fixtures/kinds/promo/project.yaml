@@ -1,0 +1,11 @@
+# Демо типа promo (ROADMAP C1): продукт, цена, призыв. Фото и логотип — с медиа-слоем (ROADMAP C2).
+title: Desk lamp sale
+topic: desk lamp promo
+kind: promo
+brief: {product: "Aurora desk lamp", price: "$49", cta: "Order today"}
+language: en
+format: square
+fps: 30
+target_duration: 12
+tts: {backend: fake, voice: auto, rate: auto}
+chapters: [ch01]
