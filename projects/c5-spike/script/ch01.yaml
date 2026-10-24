@@ -18,3 +18,21 @@ scenes:
     template: statement
     min_duration: 3.0
     params: {text: "Each cycle is about *90 minutes*", sub: "light → deep → REM"}
+  # C5.1: раскладка Seedream (слои на холсте кадра по bounding_box) и вырезанные объекты nano-banana-2 / klein
+  - id: s05
+    template: media.image
+    min_duration: 4.5
+    params: {motion: parallax, zoom: [1.02, 1.12], pan: [[0.6, 0], [-0.6, 0]],
+             layers: [{file: assets/room-empty.png, depth: 0.1}, {file: assets/room-layer2.png, depth: 0.7},
+                      {file: assets/room-layer3.png, depth: 1.0}],
+             caption: "Layers from *one* scene", caption_at: "0.5s"}
+  - id: s06
+    template: media.image
+    min_duration: 3.0
+    params: {file: assets/nb2-sleeper.png, fit: contain, box: [0.15, 0.2, 0.85, 0.75], zoom: [1.0, 1.0],
+             kicker: "nano-banana-2", caption: "Cut out with *rembg*", caption_at: 0}
+  - id: s07
+    template: media.image
+    min_duration: 3.0
+    params: {file: assets/klein-sleeper.png, fit: contain, box: [0.15, 0.2, 0.85, 0.75], zoom: [1.0, 1.0],
+             kicker: "flux-3 klein", caption: "Cut out with *rembg*", caption_at: 0}
