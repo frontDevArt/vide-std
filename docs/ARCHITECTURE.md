@@ -160,6 +160,19 @@ golden — `tests/golden/library/<формат>/` (timeline и по 2 кадра
 Дальше нарезка идёт обычным конвейером: `validate → voice → stills → render → assemble → qa`; `qa` проверяет предел
 длительности площадки.
 
+## Ревью по таймкодам (ROADMAP D1)
+`python -m studio review <проект> [--out <выход>] [--port 8765]` (`studio/review.py`) — `ThreadingHTTPServer` stdlib
+только на `127.0.0.1` (внешний доступ клиента — отдельное решение по безопасности, ROADMAP «Решения», п. 4).
+Видео — `build/final/<slug>.draft.mp4` (`assemble --draft`), иначе финал; отдаётся с `Range` (перемотка). Сцены — из
+`timeline.json`. Комментарий: `{id: cN, t, chapter, scene, scene_t, x, y, text, status: open|done}` в
+`review/comments.json` (у выхода — `review/<выход>/`); это вход проекта, в git. Статус версии `draft` → `approved`
+(только без открытых; новый комментарий возвращает `draft`). Защита: `Host` — только свой адрес (DNS-rebinding),
+запись — только `Content-Type: application/json` (форма чужой страницы не пройдёт без CORS-preflight).
+Без сервера: `review --list` — текст для Claude (то же, что кнопка «Скопировать для Claude», в конце `Сцены: …`),
+`--done c1,c2`, `--status approved`. `render --scenes chNN/sNN,…` рендерит только эти сцены, а устаревшие вне списка
+называет строкой «Устарели и вне --scenes» — правка задела соседей. Правка `params` доходит до рендера только через
+`timeline.json`, поэтому `/review-fix` после любой правки сценария запускает `voice` (озвучка из кэша).
+
 ## Пакет к выходу (ROADMAP B5)
 `python -m studio package <проект> [--out <выход>]` (`studio/package.py`; последний шаг `all`) — всё для ручной
 загрузки в `output/<slug>/` рядом с `<выход>.mp4` и `.srt`/`.vtt`. Проект без `deliverables` — файлы `<slug>.*`,

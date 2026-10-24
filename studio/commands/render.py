@@ -8,6 +8,8 @@ from ..project import load, resolve_project
 def add(sp):
     q = project_parser(sp, "render", "рендер сцен")
     q.add_argument("--chapter")
+    q.add_argument("--scenes", metavar="chNN/sNN,…",
+                   help="только эти сцены (правки по ревью: python -m studio review <проект> --list)")
     q.add_argument("--workers", type=int)
     q.add_argument("--force", action="store_true")
     q.add_argument("--draft", action="store_true", help="черновик: полразмера, ultrafast, кэш build/render-draft/")
@@ -22,5 +24,5 @@ def run(a):
         if a.alpha:
             export_alpha(proj, a.alpha, a.chapter)
         else:
-            render(proj, a.chapter, a.workers, force=a.force, draft=a.draft)
+            render(proj, a.chapter, a.workers, force=a.force, draft=a.draft, scenes=a.scenes)
     return 0
