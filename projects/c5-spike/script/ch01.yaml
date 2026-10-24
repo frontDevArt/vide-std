@@ -1,0 +1,20 @@
+scenes:
+  - id: s01
+    template: lab.full_number
+    min_duration: 3.5
+    params: {value: 8, suffix: h, caption: "of sleep", sub: "what adults are told they need", at: "0.3s"}
+  - id: s02
+    template: media.image
+    min_duration: 4.5
+    params: {motion: parallax, zoom: [1.02, 1.12], pan: [[0.6, 0], [-0.6, 0]],
+             layers: [{file: assets/bedroom-bg.png, depth: 0.15}, {file: assets/sleeper.png, depth: 1.0, fit: contain}],
+             caption: "But sleep is *not* one block", caption_at: "0.8s"}
+  - id: s03
+    template: media.image
+    min_duration: 4.0
+    params: {file: assets/sleeper.png, fit: contain, box: [0.32, 0.08, 0.68, 0.78], zoom: [1.0, 1.06],
+             kicker: "Cycles", caption: "Four to six *cycles* a night", caption_at: "0.5s"}
+  - id: s04
+    template: statement
+    min_duration: 3.0
+    params: {text: "Each cycle is about *90 minutes*", sub: "light → deep → REM"}

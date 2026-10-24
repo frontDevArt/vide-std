@@ -1,0 +1,7 @@
+# Сгенерировано через Kie AI (google/nano-banana), 4 кредита ≈ $0.02 за картинку; промпты — в prompt.
+assets:
+  - {file: assets/bedroom-bg.png, source: "Kie AI google/nano-banana", license: "Kie AI ToS — коммерческое использование (проверить в C5.1)", by: генерация,
+     prompt: "quiet bedroom at night, side view, window with moonlight, no people + style lab"}
+  - {file: assets/sleeper-raw.png, source: "Kie AI google/nano-banana", license: "Kie AI ToS — коммерческое использование (проверить в C5.1)", by: генерация,
+     prompt: "person sleeping curled on side, isolated on plain gray + style lab"}
+  - {file: assets/sleeper.png, source: "sleeper-raw.png → rembg isnet-general-use", license: "как у sleeper-raw.png", by: студия}
