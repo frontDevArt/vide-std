@@ -17,7 +17,7 @@ from pathlib import Path
 
 import yaml
 
-from .config import DEFAULTS, FORMATS, deep_merge, migrate, check  # DEFAULTS, deep_merge, FORMATS — старые имена
+from .config import DEFAULTS, FORMATS, OPT_IN, deep_merge, migrate, check, section_defaults  # DEFAULTS, deep_merge, FORMATS — старые имена
 from . import brand, voices, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
@@ -147,6 +147,9 @@ def load(root) -> Project:
     if "tts" in user:
         user["tts"] = ut
     cfg = deep_merge(DEFAULTS, deep_merge(studio_defaults, deep_merge({"tts": vl} if vl else {}, user)))
+    for sec in OPT_IN:  # раздел по желанию (images, ROADMAP C5): задан — дополняется умолчаниями, нет — нет в cfg
+        if isinstance(cfg.get(sec), dict):
+            cfg[sec] = deep_merge(section_defaults(sec), cfg[sec])
     cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
     if cfg["subtitles"].get("style"):  # режим субтитров проекта поверх пресета и кита (ROADMAP C4) → Style.subs
         cfg["style"] = dict(cfg["style"], subs=cfg["subtitles"]["style"])

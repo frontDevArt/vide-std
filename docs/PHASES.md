@@ -35,6 +35,10 @@ en и др. — `--lang`), формат, точная длительность �
 - длиннее → `horizontal`, `target_duration: null`, главы по 3–8 минут.
 Канал (`palette: lab`): `style.mood` (настроение §14 `studios/notes-from-the-mind/channel/STYLE.md`) — выбрать здесь; затем сценарий
 демо в `demo/ch01.yaml` и `python -m studio demo <проект>` → MP4 пользователю, ждать утверждения до фазы 2.
+Картинки (ROADMAP C5, `docs/IMAGES.md`): нужны ли сгенерированные картинки и в каких сценах — решить здесь. Да —
+блок `images: {enabled: true, style: "<суффикс стиля>", budget_usd: 3}` в `project.yaml`, сцены просят их блоком
+`image:` (`docs/SCENE_SPEC.md`); `status` добавит фазу «3б Картинки». Нет — блока нет, только кодовая графика.
+Генерация платная: смета и «да» пользователя до запроса.
 **Готово, если:** нет `TODO` в title/topic, `chapters` перечислены.
 
 ## Фаза 2 — План → `outline.md`

@@ -88,6 +88,28 @@ assets:
 Прозрачный экспорт для монтажки — `python -m studio render <проект> --alpha mov|webm`: графика без фона и субтитров,
 ProRes 4444 или VP9 с альфой, `build/final/<slug>.alpha.mov`.
 
+## Сгенерированные картинки: `image:` сцены (ROADMAP C5)
+Включается на ролик: блок `images:` в `project.yaml` (или `studio.yaml → defaults`), без блока — выключено.
+Умолчания и цены — [`IMAGES.md`](IMAGES.md); схема — `studio/config.py`, проверки — `studio/imagegen.py`.
+```yaml
+images: {enabled: true, style: "flat vector illustration, palette #0B0F1A #4FD1C5 …", budget_usd: 3}
+# по умолчанию: backend kie, model nano-banana-2, resolution 2K, layers seedream/5-flash-layer-decomposition, cutout rembg
+```
+Сцена просит картинку блоком `image:` (словарь или список):
+```yaml
+image:
+  - prompt: "a cozy bedroom at night, a person asleep in bed, a bedside lamp"
+    role: scene        # scene — сцена целиком под раскладку на слои | bg — фон | subject — объект под вырезание | state_b
+    layers: [room, bed with a person, bedside table with a lamp]   # только scene: что вынести в слои
+    variant: 0         # сид: другой вариант той же картинки
+  - {prompt: "the same room, morning light", role: state_b}        # правка первой картинки сцены — «до → после»
+```
+Картинка кэшируется в `assets/images/<ключ>.png`; ключ — промпт + `images.style` + `model` + `resolution` + `variant`
+(у `state_b` — ещё ключ первой картинки сцены). `validate`: `image:` при выключенных `images` — ❌ с подсказкой; нет
+`prompt`, чужая `role`, `state_b` первой, `variant` не целое ≥ 0 — ❌. `status` показывает фазу «3б Картинки», только
+если `images.enabled`. Текст и цифры в кадр — только кодом: модели коверкают буквы. Генерация — `python -m studio
+images` (C5.4), разворачивание в `params.layers` шаблона `media.image` — C5.5.
+
 ## Шаблоны (встроенные)
 Шаблоны разложены по пакетам `studio/packs/`: `core` (title, statement, bullets, counter, outro), `phone` (cards,
 questions и три `phone_*`), `lab` (канал, ниже), `commerce` (`price_tag` — ценник «было → стало» на верёвочке и чек

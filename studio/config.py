@@ -91,22 +91,46 @@ SCHEMA = {
     "render": {"workers": F((int, NONE), None), "crf": F((int,), 18), "preset": F((str,), "medium")},
     "loudness": F(NUM, -16),
     "qa": {"safe_margin": F(NUM, 0.04)},  # поля кадра для контента сцены (доля стороны), проверка safezone
+    "images": {  # картинки для сцен (ROADMAP C5, docs/IMAGES.md, studio/imagegen.py); умолчания — только при блоке
+        "enabled": F((bool,), False, "true — сцены могут просить картинки (image:); false — только кодовая графика"),
+        "backend": F((str,), "kie", "kie | fake (процедурные PNG, офлайн) | none — сменный, как tts.backend"),
+        "model": F((str,), "nano-banana-2", "модель генерации (таблица docs/IMAGES.md); входит в ключ кэша"),
+        "resolution": F((str,), "2K", "1K | 2K | 4K; входит в ключ кэша"),
+        "layers": F((str, NONE), "seedream/5-flash-layer-decomposition",
+                    "раскладка сцены целиком (role: scene) на базу и слои с bounding_box; null — без раскладки"),
+        "cutout": F((str,), "rembg", "вырезание объекта (role: subject): rembg (локально) | kie (recraft) | none"),
+        "style": F((str,), "", "суффикс ко всем промптам: стиль на весь ролик; входит в ключ кэша"),
+        "reference": F((str, NONE), doc="картинка-референс стиля (путь от папки проекта): держит стиль между картинками"),
+        "budget_usd": F(NUM, 3, "предел на ролик, $; выше — стоп и вопрос пользователю"),
+    },
     "chapters": F((list, NONE), []),
 }
 
 
-def _defaults(schema: dict) -> dict:
+# Разделы, чьи умолчания попадают в cfg, только если раздел задан (project.yaml или defaults студии): без блока — как
+# раньше, cfg и ключи кэша старых проектов прежние. Умолчания раздела — section_defaults(); подставляет project.load.
+OPT_IN = ("images",)
+
+
+def _defaults(schema: dict, top: bool = True) -> dict:
     out = {}
     for k, f in schema.items():
+        if top and k in OPT_IN:
+            continue
         if isinstance(f, dict):
-            if _defaults(f):  # раздел без значений по умолчанию (cutdown) в cfg не попадает
-                out[k] = _defaults(f)
+            if _defaults(f, False):  # раздел без значений по умолчанию (cutdown) в cfg не попадает
+                out[k] = _defaults(f, False)
         elif f.default is not _MISSING and k != "schema_version":
             out[k] = f.default
     return out
 
 
 DEFAULTS = _defaults(SCHEMA)
+
+
+def section_defaults(name: str) -> dict:
+    """Умолчания раздела из OPT_IN (images): то, что получит раздел, заданный хотя бы одним ключом."""
+    return _defaults(SCHEMA[name], False)
 
 
 def deep_merge(base: dict, over: dict) -> dict:

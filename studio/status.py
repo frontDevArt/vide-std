@@ -32,6 +32,13 @@ def phases(proj: Project):
     missing = [c for c in listed if c not in have]
     out.append(("3 Сценарий", bool(listed) and not missing,
                 f"глав в плане {len(listed)}, написано {len(have)}" + (f"; нет: {', '.join(missing)}" if missing else "")))
+    from . import imagegen
+    if imagegen.enabled(cfg):  # картинки сцен (ROADMAP C5): фаза — только при images.enabled
+        req, miss = imagegen.keys(proj), imagegen.missing(proj)
+        det = (f"{len(req) - len(miss)}/{len(req)} в {imagegen.DIR}/" if req else "сцены не просят картинок (image:)")
+        if miss:
+            det += f"; нет: {', '.join(miss[:3])}{' …' if len(miss) > 3 else ''}"
+        out.append(("3б Картинки", not miss, det))
     tl = proj.build / "timeline.json"
     voice_ok = False
     if tl.exists():
@@ -69,6 +76,7 @@ NEXT = {
     "1б Материалы": "Положи файлы брифа в папку проекта (assets/) и пропиши пути в brief: (python -m studio kinds).",
     "2 План (outline.md)": "Напиши outline.md: главы, хронометраж, бюджет слов (фаза 2).",
     "3 Сценарий": "Пиши следующую главу script/<chNN>.yaml, затем `python -m studio validate` (фаза 3).",
+    "3б Картинки": "`python -m studio images <проект>` — смета, затем `--yes` (ROADMAP C5.4, docs/IMAGES.md).",
     "4 Озвучка и тайминг": "`python -m studio voice <проект>` (фаза 4).",
     "5 Контрольные кадры": "`python -m studio stills <проект> [--chapter chNN]` и посмотри PNG (фаза 5).",
     "6 Рендер сцен": "`python -m studio render <проект>` в фоне, можно по главам (фаза 6).",
@@ -95,7 +103,8 @@ def report(proj: Project, log=print):
     ph = phases(proj)
     outs = proj.targets()
     if proj.outputs:  # выходы (ROADMAP B3): бриф, план, сценарий — общие; озвучка … QA — у каждого выхода свои
-        ph = ph[:3] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[3:]]
+        shared = next(i for i, (n, _, _) in enumerate(ph) if n.startswith("4 "))  # до озвучки — общее у выходов
+        ph = ph[:shared] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[shared:]]
     words, wpm, src = pace(outs[0])
     from .kinds import of as kind_of
     log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')} [тип {kind_of(proj.cfg).id}]")

@@ -106,6 +106,10 @@ def check(proj) -> Report:
     ae, aw = asset_issues(proj)
     errs += ae
     warns += aw
+    from .imagegen import issues as image_issues  # блок images и запросы image: сцен (ROADMAP C5)
+    ie, iw = image_issues(proj)
+    errs += ie
+    warns += iw
     from .music import issues as music_issues  # трек, библиотека, лицензии, sync (ROADMAP C3)
     me, mw = music_issues(proj)
     errs += me
