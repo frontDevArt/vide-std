@@ -23,6 +23,7 @@ class Report:
 
 
 def check(proj) -> Report:
+    from . import imagegen as IG
     from .packs import REGISTRY, TemplateNameError, load_project_templates
     from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG
     from .lang import profile
@@ -50,7 +51,7 @@ def check(proj) -> Report:
             if not sid or (ch, sid) in ids:
                 errs.append(f"{ch}: сцена без id или повтор id ({sid})")
             ids.add((ch, sid))
-            tp = s.get("template", "statement")
+            tp = IG.template_of(s)
             if tp not in REGISTRY:
                 near = difflib.get_close_matches(str(tp), list(REGISTRY), n=3)
                 errs.append(f"{ch}/{sid}: нет шаблона '{tp}'" + (f" — может, {' / '.join(near)}?" if near else "")

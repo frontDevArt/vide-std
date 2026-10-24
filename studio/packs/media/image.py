@@ -10,6 +10,7 @@ from ..registry import AT, P, template
 from .base import MediaTemplate, kb_curve, pan_at, window
 
 MOTIONS = ("kenburns", "parallax", "reveal", "before_after", "none")
+MAX_UP = 1.2  # стикер не растягиваем сильнее: кромка маски вырезанного PNG ступенчатая (C5.0)
 
 
 @template("image",
@@ -18,7 +19,9 @@ MOTIONS = ("kenburns", "parallax", "reveal", "before_after", "none")
               "подпись снизу.",
           params={"file": P(None, "фото, путь от папки проекта (assets/…)", str),
                   "layers": P(None, "parallax: слои от дальнего к ближнему [{file, depth 0–1, fit: cover|contain, "
-                                    "focus: [x, y]}] — объект — PNG с прозрачностью", list),
+                                    "focus: [x, y], box: [x0, y0, x1, y1] — место на картинке в долях (раскладка), "
+                                    "sticker: тень по альфе, at: появление}] — объект — PNG с прозрачностью", list),
+                  "sticker": P(False, "файл — вырезанный объект: целиком, без обрезки рамкой, тень по альфе"),
                   "after": P(None, "before_after: второе фото (после)", str),
                   "motion": P("kenburns", "kenburns | parallax | reveal | before_after | none"),
                   "zoom": P([1.04, 1.14], "масштаб в начале и в конце сцены (≥ 1)", list),
@@ -29,8 +32,9 @@ MOTIONS = ("kenburns", "parallax", "reveal", "before_after", "none")
                   "reveal": P("wipe", "reveal: wipe (шторка слева направо) | circle (круг из центра)"),
                   "labels": P(None, "before_after: ярлыки [до, после]", list),
                   **MediaTemplate.COMMON},
-          beats="движение — на всю сцену; reveal и before_after — с `at` (бит, секунды или слово), подпись — с "
-                "`caption_at`. Без голоса битов нет: `at: '1.2s'`")
+          beats="движение — на всю сцену; reveal и before_after — с `at` (бит, секунды или слово), слой — со своего "
+                "`at`, подпись — с `caption_at`. Без голоса битов нет: `at: '1.2s'`. Сцена с `image:` "
+                "(images.enabled) сама получает file/layers/after из готовых PNG (imagegen.scene_params)")
 class ImageScene(MediaTemplate):
     def setup(self):
         m = self.p.get("motion", "kenburns")
@@ -40,21 +44,36 @@ class ImageScene(MediaTemplate):
         if self.motion in ("none", "before_after"):
             self.z0 = self.z1 = 1.0
         self.pan = self.p.get("pan") or [[0, 0], [0, 0]]
+        self.sticker = bool(self.p.get("sticker")) and self.motion in ("kenburns", "none")
+        if self.sticker:  # объект целиком: панорама увела бы его за край рамки
+            self.pan = [[0, 0], [0, 0]]
         self.layers = []
         specs = self.p.get("layers") if self.motion == "parallax" and self.p.get("layers") else [
-            {"file": self.p.get("file"), "depth": 1.0, "fit": self.p.get("fit", "cover"), "focus": self.p.get("focus")}]
+            {"file": self.p.get("file"), "depth": 1.0, "fit": self.p.get("fit", "cover"), "focus": self.p.get("focus"),
+             "sticker": self.sticker}]
         for sp in specs:
             if not sp.get("file"):
                 continue
             d = float(sp.get("depth", 1.0))
-            # слой ближе — сильнее масштаб и сдвиг; запас m — чтобы было куда сдвигать и при масштабе 1
-            m = 0.05 + 0.10 * d if self.motion == "parallax" else 0.0
-            zl0, zl1 = (1 + (self.z0 - 1) * (0.5 + d), 1 + (self.z1 - 1) * (0.5 + d)) if self.motion == "parallax" \
-                else (self.z0, self.z1)
+            box = sp.get("box")
+            # слой ближе — сильнее масштаб и сдвиг; запас m — чтобы было куда сдвигать и при масштабе 1.
+            # Слой с местом (объект раскладки, стикер) ходит меньше: крупный ход ближнего слоя рвёт сцену (C5.0)
+            par = self.motion == "parallax"
+            m = (0.03 + 0.05 * d if box else 0.05 + 0.10 * d) if par else 0.0
+            zf = (0.5 + 0.5 * d if box else 0.5 + d) if par else 1.0
+            zl0, zl1 = 1 + (self.z0 - 1) * zf, 1 + (self.z1 - 1) * zf
             S = max(zl0, zl1) * (1 + m)
-            img = MD.fit(MD.image(self.src(sp["file"])), round(self.bw * S), round(self.bh * S),
-                         sp.get("fit", "cover"), tuple(sp.get("focus") or (0.5, 0.5)))
-            self.layers.append({"img": img, "d": d, "m": m, "z": (zl0, zl1)})
+            W, H = round(self.bw * S), round(self.bh * S)
+            src = MD.image(self.src(sp["file"]))
+            if sp.get("sticker") and not box:  # объект один: в середину, что видна и при наибольшем масштабе
+                f = 0.5 / S
+                box = [0.5 - f, 0.5 - f, 0.5 + f, 0.5 + f]
+            if box:
+                img = self._placed(src, W, H, box, bool(sp.get("sticker")), MAX_UP * (1 + m))
+            else:
+                img = MD.fit(src, W, H, sp.get("fit", "cover"), tuple(sp.get("focus") or (0.5, 0.5)))
+            t_in = self.at(sp["at"], 0.0) if sp.get("at") is not None else None
+            self.layers.append({"img": img, "d": d, "m": m, "z": (zl0, zl1), "at": t_in})
         self.after = None
         if self.motion == "before_after" and self.p.get("after"):
             self.after = MD.fit(MD.image(self.src(self.p["after"])), self.bw, self.bh, self.p.get("fit", "cover"),
@@ -65,7 +84,29 @@ class ImageScene(MediaTemplate):
             a, b = (list(self.p["labels"]) + ["", ""])[:2]
             self.lab = [self._chip(a, "dim"), self._chip(b, "accent")]
         self.setup_frame()
+        if self.sticker:  # у стикера своя тень по альфе, рамка его не режет и не отбрасывает прямоугольную тень
+            self.mk = self.shadow = None
         self.setup_caption()
+
+    def _placed(self, src, W, H, box, sticker, cap):
+        """Слой с местом: PNG вписан целиком в box (доли холста W×H — те же, что доли картинки фона), стоит внизу
+        рамки по центру; стикер — не крупнее cap от своего размера и с тенью по альфе."""
+        x0, y0, x1, y1 = (float(v) for v in box)
+        bw, bh = max(1.0, (x1 - x0) * W), max(1.0, (y1 - y0) * H)
+        k = min(bw / src.width, bh / src.height)
+        if sticker:
+            k = min(k, cap)
+        spr = src.resize((max(1, round(src.width * k)), max(1, round(src.height * k))), Image.LANCZOS)
+        x, y = round(x0 * W + (bw - spr.width) / 2), round(y0 * H + bh - spr.height)
+        out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        if sticker:
+            a = Image.new("L", (W, H), 0)
+            a.paste(spr.getchannel("A").point(lambda v: v * 140 // 255), (x, y + int(10 * self.u)))
+            sh = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+            sh.putalpha(a.filter(ImageFilter.GaussianBlur(max(2, int(14 * self.u)))))
+            out.alpha_composite(sh)
+        out.alpha_composite(spr, (x, y))
+        return out
 
     def _chip(self, text, color):
         if not text:
@@ -83,12 +124,19 @@ class ImageScene(MediaTemplate):
         cx, cy = pan_at(self.pan, k)
         out = Image.new("RGBA", (self.bw, self.bh), (0, 0, 0, 0))
         for L in self.layers:
+            a = 1.0 if L["at"] is None else eo(prog(t, L["at"], L["at"] + 0.45))
+            if a <= 0.004:
+                continue
             zl = lerp(L["z"][0], L["z"][1], k) * (1 + L["m"])
             if self.motion == "parallax":
                 c = (cx * L["d"], cy * L["d"])
             else:
                 c = (cx, cy)
-            out.alpha_composite(window(L["img"], self.bw, self.bh, zl, *c))
+            w = window(L["img"], self.bw, self.bh, zl, *c)
+            if a < 1:  # появление по биту: проявляется и чуть поднимается
+                G.blit(out, w, 0, (1 - a) * 24 * self.u, a)
+            else:
+                out.alpha_composite(w)
         return out
 
     def draw_media(self, img, t):

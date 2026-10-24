@@ -108,7 +108,20 @@ image:
 (у `state_b` — ещё ключ первой картинки сцены). `validate`: `image:` при выключенных `images` — ❌ с подсказкой; нет
 `prompt`, чужая `role`, `state_b` первой, `variant` не целое ≥ 0 — ❌. `status` показывает фазу «3б Картинки», только
 если `images.enabled`. Текст и цифры в кадр — только кодом: модели коверкают буквы. Генерация — `python -m studio
-images` (смета, `--yes` для платного, учёт в `assets.yaml` — [`IMAGES.md`](IMAGES.md)), разворачивание в `params.layers` шаблона `media.image` — C5.5.
+images` (смета, `--yes` для платного, учёт в `assets.yaml` — [`IMAGES.md`](IMAGES.md)).
+
+Сцена с `image:` без `template` — `media.image`; её `params` берутся из готовых PNG (`imagegen.scene_params`, при
+`render`/`stills`), явные `params` сцены — поверх (`caption`, `zoom`, `pan`, свой `motion`):
+- `scene` с `layers` → `motion: parallax`: база раскладки (`depth` 0,1) и слои по `layers.json` от дальнего к
+  ближнему (`depth` 0,45 → 1), у каждого `box` — место прямо из `bounding_box`; без раскладки — Ken Burns по картинке;
+- `bg` + `subject` → параллакс: фон и вырезанный объект стикером (`sticker: true`, `box` — `imagegen.SUBJECT_BOX` по
+  формату); один `subject` — стикер на фоне ролика;
+- `state_b` → `motion: before_after`, первая картинка → правка, шторка на втором бите.
+Слои поверх базы появляются по битам (i-й — на бите i), при одном бите — сразу. Нет PNG — `render` останавливается с
+подсказкой `python -m studio images`: сеть и генерация в рендере не участвуют, одно и то же на входе — тот же кадр.
+У слоя с `box` ход меньше (запас 0,03 + 0,05·depth вместо 0,05 + 0,10·depth): ближний объект не уезжает за край.
+Стикер — PNG целиком в `box`, внизу рамки, не крупнее ×1,2 своего размера, тень по альфе; `sticker: true` у сцены с
+одним `file` — объект в середине кадра без рамочной тени и обрезки.
 
 ## Шаблоны (встроенные)
 Шаблоны разложены по пакетам `studio/packs/`: `core` (title, statement, bullets, counter, outro), `phone` (cards,
@@ -616,14 +629,15 @@ lab · Full Number для цен и сумм: числа ≥ 1000 с запят�
 
 Фото: Ken Burns (медленный наезд и панорама), параллакс 2.5D по слоям (фон и вырезанный объект PNG), проявление по маске (шторка или круг), «до → после» шторкой. Весь кадр под обрез или рамка с формой, подпись снизу.
 
-- **Биты:** движение — на всю сцену; reveal и before_after — с `at` (бит, секунды или слово), подпись — с `caption_at`. Без голоса битов нет: `at: '1.2s'`
+- **Биты:** движение — на всю сцену; reveal и before_after — с `at` (бит, секунды или слово), слой — со своего `at`, подпись — с `caption_at`. Без голоса битов нет: `at: '1.2s'`. Сцена с `image:` (images.enabled) сама получает file/layers/after из готовых PNG (imagegen.scene_params)
 - **Форматы:** vertical, horizontal, square, portrait
 - **Общие параметры `MediaTemplate`:** `box`, `shape`, `border`, `enter`, `exit`, `caption`, `kicker`, `caption_at`, `dim`
 
 | Параметр | Тип | По умолчанию | Описание |
 |---|---|---|---|
 | `file` | строка | `None` | фото, путь от папки проекта (assets/…) |
-| `layers` | список | `None` | parallax: слои от дальнего к ближнему [{file, depth 0–1, fit: cover\|contain, focus: [x, y]}] — объект — PNG с прозрачностью |
+| `layers` | список | `None` | parallax: слои от дальнего к ближнему [{file, depth 0–1, fit: cover\|contain, focus: [x, y], box: [x0, y0, x1, y1] — место на картинке в долях (раскладка), sticker: тень по альфе, at: появление}] — объект — PNG с прозрачностью |
+| `sticker` | да/нет | `False` | файл — вырезанный объект: целиком, без обрезки рамкой, тень по альфе |
 | `after` | строка | `None` | before_after: второе фото (после) |
 | `motion` | строка | `'kenburns'` | kenburns \| parallax \| reveal \| before_after \| none |
 | `zoom` | список | `[1.04, 1.14]` | масштаб в начале и в конце сцены (≥ 1) |

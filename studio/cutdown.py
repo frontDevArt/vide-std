@@ -24,6 +24,7 @@ from pathlib import Path
 
 import yaml
 
+from . import imagegen as IG
 from .cutrefs import read_yaml  # загрузка проекта-нарезки (ссылки from:) — studio/cutrefs.py
 
 CTA_WORDS = ("subscribe", "comment", "подпиш", "коммент")  # призывы исходника — не в нарезку (у нарезки свой CTA)
@@ -73,7 +74,7 @@ def _lines(sc) -> list[str]:
 
 def rate(sc: dict) -> tuple[float, list, str]:
     """(очки, метки, причина пропуска) сцены: развязка и крючок — очки; карточка главы и призыв — пропуск."""
-    tp = str(sc.get("template", "statement"))
+    tp = str(IG.template_of(sc))
     p = sc.get("params") or {}
     text = " ".join(_lines(sc))
     if "chapter" in tp:
@@ -123,7 +124,7 @@ def scene_table(src) -> tuple[list, str]:
                 d = max(d, float(sc.get("min_duration", 0)))
             score, tags, skip = rate(sc)
             text = _lines(sc)
-            out.append(Scene(ch, str(sc.get("id")), str(sc.get("template", "statement")), round(d, 2),
+            out.append(Scene(ch, str(sc.get("id")), str(IG.template_of(sc)), round(d, 2),
                              text[0] if text else "", score, tags, skip, len(out)))
     return out, how
 

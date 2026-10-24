@@ -9,7 +9,7 @@ images:
 
 # script/chNN.yaml — сцена просит картинку (одну или списком)
 - id: s05
-  template: image
+  template: media.image   # можно не писать: сцена с image: — media.image
   image:
     prompt: "a cozy bedroom at night, a person asleep in bed, a bedside lamp"
     role: scene            # scene | bg | subject | state_b (ROLES)
@@ -48,6 +48,14 @@ CUTOUTS = ("rembg", "kie", "none")
 RESOLUTIONS = ("1K", "2K", "4K")
 KEYS = ("prompt", "role", "variant", "layers")
 DIR = "assets/images"  # кэш картинок в папке проекта: <ключ>.png
+
+
+TEMPLATE = "media.image"  # шаблон сцены с image: (без template — он)
+
+
+def template_of(scene: dict) -> str:
+    """Шаблон сцены сценария: явный `template`; нет — media.image у сцены с `image:`, иначе statement."""
+    return scene.get("template", TEMPLATE if scene.get("image") else "statement")
 
 
 def settings(cfg: dict) -> dict:
@@ -296,6 +304,82 @@ def generate(proj, job: Job, ws=None) -> dict:
         raise ImagesUnavailable(f"images.backend {b!r} — можно {', '.join(BACKENDS)}")
     job.out.parent.mkdir(parents=True, exist_ok=True)
     return fn(proj, job, st, ws or proj.ws)
+
+
+# ---------------------------------------------------------------- сцена → params шаблона image (C5.5)
+# Объект без своей рамки (subject) — стикер в этом месте кадра: доли картинки фона, объект стоит внизу рамки.
+SUBJECT_BOX = {"horizontal": [0.3, 0.1, 0.7, 0.95], "vertical": [0.08, 0.22, 0.92, 0.8],
+               "square": [0.15, 0.1, 0.85, 0.95], "portrait": [0.12, 0.15, 0.88, 0.9]}
+BASE_DEPTH, BG_DEPTH = 0.1, 0.15  # дальний слой почти неподвижен
+NEAR = (0.45, 1.0)  # глубины слоёв раскладки: от дальнего к ближнему
+
+
+def _rel(proj, p: Path) -> str:
+    return p.relative_to(proj.root).as_posix()
+
+
+def _fg_at(layers: list, n_beats: int) -> list:
+    """Слои поверх базы появляются по битам: i-й — на бите i (битов меньше — на последнем). Бит один — сразу все."""
+    if n_beats >= 2:
+        for i, L in enumerate(layers):
+            L["at"] = min(i, n_beats - 1)
+    return layers
+
+
+def scene_params(proj, chapter: str, scene: dict, n_beats: int = 0) -> tuple[dict, list[str]]:
+    """Сцена с `image:` → (params шаблона image, недостающие файлы). Только по готовым PNG: файлы не генерируются,
+    одно и то же на входе — одно и то же на выходе. Явные `params` сцены поверх этого (render._prepare).
+    scene — раскладка на базу и слои (layers.json) → параллакс, слои на месте `box` и по битам; без раскладки — Ken
+    Burns. bg (+ subject) → параллакс: фон и вырезанный объект стикером. subject один — стикер на фоне ролика.
+    state_b → «до → после» с первой картинкой сцены на втором бите."""
+    if not enabled(proj.cfg):
+        return {}, []
+    st = settings(proj.cfg)
+    where = f"{chapter}/{scene.get('id')}"
+    mine = [(r, k) for w, r, k in keys(proj) if w.split("#")[0] == where]
+    if not mine:
+        return {}, []
+    need = []
+
+    def have(p: Path) -> str:
+        if not p.exists():
+            need.append(_rel(proj, p))
+        return _rel(proj, p)
+
+    def subject(k):
+        cut = cut_path(proj, k) if st["cutout"] != "none" else path(proj, k)
+        box = SUBJECT_BOX.get(proj.cfg.get("format"), SUBJECT_BOX["horizontal"])
+        return {"file": have(cut), "depth": 1.0, "box": list(box), "sticker": True}
+
+    role = lambda r: r.get("role", "scene")  # noqa: E731
+    first, k0 = mine[0]
+    out = {"file": have(path(proj, k0))}
+    after = next((k for r, k in mine[1:] if role(r) == "state_b"), None)
+    subj = next((k for r, k in mine if role(r) == "subject"), None)
+    if after is not None:
+        out.update({"motion": "before_after", "after": have(path(proj, after))})
+        if n_beats >= 2:
+            out["at"] = 1
+    elif role(first) == "scene" and first.get("layers") and st["layers"]:
+        lj = layers_dir(proj, k0) / "layers.json"
+        have(lj)
+        if lj.exists():
+            meta = json.loads(lj.read_text(encoding="utf-8"))
+            d = lj.parent
+            base = [{"file": have(d / meta["base"]), "depth": BASE_DEPTH}] if meta.get("base") else [
+                {"file": out["file"], "depth": BASE_DEPTH}]
+            fg = sorted(meta.get("layers") or [], key=lambda x: int(x.get("z", 0)))
+            n = len(fg)
+            fg = [{"file": have(d / x["file"]), "box": [float(v) for v in x["box"]],
+                   "depth": round(NEAR[0] + (NEAR[1] - NEAR[0]) * (i / (n - 1) if n > 1 else 1.0), 3)}
+                  for i, x in enumerate(fg)]
+            out.update({"motion": "parallax", "layers": base + _fg_at(fg, n_beats)})
+    elif role(first) == "subject":
+        out.update({"motion": "parallax", "layers": _fg_at([subject(k0)], n_beats)})
+    elif subj is not None:  # фон + объект
+        out.update({"motion": "parallax",
+                    "layers": [{"file": out["file"], "depth": BG_DEPTH}] + _fg_at([subject(subj)], n_beats)})
+    return out, list(dict.fromkeys(need))
 
 
 def _save_png(data, out: Path):

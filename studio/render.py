@@ -23,6 +23,7 @@ from PIL import Image
 
 from . import assets as AS
 from . import gfx as G
+from . import imagegen as IG
 from . import subs as S
 from . import packs as TP
 from . import platforms as PL
@@ -92,6 +93,7 @@ def _prepare(proj: Project, draft=False):
     if use_glow and scenes:
         state["lab_glow"] = glows.get(scenes[0]["chapter"]) or base_glow  # начало ролика — без перехода
     codes = {}  # класс шаблона → хэш кода, который рисует его сцены
+    scripts = {(ch, sc.get("id")): sc for ch, d in proj.chapters for sc in d.get("scenes") or []}
     style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
@@ -100,6 +102,9 @@ def _prepare(proj: Project, draft=False):
         if use_glow:
             s["glow"] = {"from": state["lab_glow"], "to": glows.get(s["chapter"]) or base_glow}
             state["lab_glow"] = s["glow"]["to"]
+        auto = _image_params(proj, scripts, s)  # сцена с image: → params шаблона image (ROADMAP C5.5)
+        if auto:
+            s["params"] = {**auto, **s["params"]}
         cls = TP.REGISTRY.get(s["template"])
         if cls is None:
             raise SystemExit(f"Неизвестный шаблон '{s['template']}' в сцене {s['chapter']}/{s['id']}")
@@ -120,8 +125,21 @@ def _prepare(proj: Project, draft=False):
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
                                 proj.cfg["render"]["crf"], preset, W, H, ctx["safe"], ctx["subs_top"]] + ([extra] if extra else [])
                                + ([ctx["subs_bottom"]] if ctx["subs_bottom"] is not None else [])
-                               + ([s["glow"]] if use_glow else []) + ([media] if media else []))
+                               + ([s["glow"]] if use_glow else []) + ([media] if media else [])
+                               + ([auto] if auto else []))
     return tl, ctx
+
+
+def _image_params(proj, scripts, s):
+    """params из картинок сцены (imagegen.scene_params) — только по готовым PNG; нет файла — стоп с подсказкой."""
+    sc = scripts.get((s["chapter"], s["id"]))
+    if not sc or not sc.get("image") or getattr(TP.REGISTRY.get(s["template"]), "NAME", None) != IG.TEMPLATE:
+        return {}  # картинка для своего шаблона сцены — его params, не наши
+    auto, need = IG.scene_params(proj, s["chapter"], sc, len(s.get("beats") or []))
+    if need:
+        raise SystemExit(f"Сцена {s['chapter']}/{s['id']}: нет картинок {', '.join(need[:3])}"
+                         f"{' …' if len(need) > 3 else ''} — сначала: python -m studio images {proj.slug}")
+    return auto
 
 
 # ---------------------------------------------------------------- per-process caches

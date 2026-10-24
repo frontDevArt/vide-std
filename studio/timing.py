@@ -16,6 +16,7 @@ import json
 import math
 import re
 
+from . import imagegen as IG
 from . import tts as T
 from .project import Project, stable_hash
 from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count
@@ -238,7 +239,7 @@ def layout(proj: Project, log=print) -> dict:
                 beats.append({"text": display_text(L["segs"][si]), "line": li,
                               "t0": round(cur + a, 3), "t1": round(cur + b, 3)})
             cur += L["dur"] + L["pause_after"]
-        scenes.append({"chapter": ch, "id": sc["id"], "template": sc.get("template", "statement"),
+        scenes.append({"chapter": ch, "id": sc["id"], "template": IG.template_of(sc),
                        "params": sc.get("params") or {}, "lines": placed, "beats": beats, "words": words,
                        "start": t, "dur": d})
         t += d
