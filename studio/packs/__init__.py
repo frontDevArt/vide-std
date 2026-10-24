@@ -4,6 +4,7 @@
 - `phone` — lock, feed, cards, questions, close (первый ролик; алиасы phone_lock, phone_feed, …);
 - `lab`   — шаблоны канала Notes From The Mind (алиасы lab_*), фон и элементы пресета `lab`;
 - `commerce` — ценник-бирка, чек, число с разделителями тысяч (на основе lab; P2.9);
+- `media` — фото, видео, запись экрана, клип, логотип-стинг, карточка продукта (ассеты проекта; ROADMAP C2);
 - `project` — шаблоны из projects/<slug>/templates/*.py (`load_project_templates`).
 
 Реестр, имена и типы параметров — `registry.py`. Старый вход `studio.templates` работает.
@@ -12,7 +13,7 @@ from __future__ import annotations
 
 from .registry import AT, FORMATS, NUM, P, PROJECT, REGISTRY, Param, TemplateNameError, template  # noqa: F401
 from .base import Template, plural  # noqa: F401
-from . import core, phone, lab, commerce  # noqa: E402,F401  — регистрируют встроенные шаблоны
+from . import core, phone, lab, commerce, media  # noqa: E402,F401  — регистрируют встроенные шаблоны
 
 
 def load_project_templates(root):

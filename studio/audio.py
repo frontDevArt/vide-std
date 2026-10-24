@@ -59,9 +59,10 @@ def _voice_block(lines, a0, a1, wavs):
 
 
 def voice_track(proj: Project, tl, out: Path) -> str:
-    """Голос + звуки появления -> out/voice.wav (int16), кусками по BLOCK сэмплов."""
+    """Голос + звук исходников (клип, видео с audio: true) + звуки появления -> out/voice.wav (int16), кусками по BLOCK."""
     n = int(round(tl["total_frames"] * SR / tl["fps"]))
     lines = _voice_lines(proj, tl)
+    clips = media_track(proj, tl)
     ev = sfx_events(proj, tl) if proj.cfg.get("sfx", {}).get("enabled", True) else []
     gain = sfx_gain(proj, lines, n) if ev else 0.0
     out = out / "voice.wav"
@@ -71,10 +72,35 @@ def voice_track(proj: Project, tl, out: Path) -> str:
         for a0 in range(0, n, BLOCK):
             a1 = min(n, a0 + BLOCK)
             x = _voice_block(lines, a0, a1, wavs)
+            for a, y in clips:
+                lo, hi = max(a, a0), min(a + len(y), a1)
+                if lo < hi:
+                    x[lo - a0:hi - a0] += y[lo - a:hi - a]
             if ev:
                 x += FX.track(a1 - a0, ev, gain, start=a0)
             w.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
     return str(out)
+
+
+def media_track(proj: Project, tl):
+    """Звук исходников сцен (ROADMAP C2: шаблоны media с `audio_clips()` — клип, видео с audio: true) ->
+    [(сэмпл начала, float32)]: идёт в дорожку голоса — музыка под ним приглушается, итог нормализуется по LUFS."""
+    from . import media as MD, packs as TP
+    if not any(hasattr(TP.REGISTRY.get(s.get("template")), "audio_clips") for s in tl["scenes"]):
+        return []  # звука исходников нет — prepare (хэш кода шаблонов) не нужен
+    from .render import prepare
+    tl2, ctx = prepare(proj)
+    out = []
+    for s in tl2["scenes"]:
+        cls = TP.REGISTRY[s["template"]]
+        if not hasattr(cls, "audio_clips"):
+            continue
+        base = s["start_frame"] * SR // tl2["fps"]
+        for c in cls(ctx, s, s["state_in"]).audio_clips():
+            y = MD.audio(c["file"], c["start"], c["dur"] - c["t"], c["speed"]) * 10 ** (c["gain_db"] / 20)
+            y = y[:max(0, int(round((s["dur"] - c["t"]) * SR)))]  # не дольше сцены
+            out.append((base + int(round(c["t"] * SR)), y.astype(np.float32)))
+    return out
 
 
 def sfx_events(proj: Project, tl):

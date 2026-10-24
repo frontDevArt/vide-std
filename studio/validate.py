@@ -102,6 +102,10 @@ def check(proj) -> Report:
     tgt = proj.cfg.get("target_duration")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
+    from .assets import issues as asset_issues  # фото, видео, звук сцен и assets.yaml (ROADMAP C2)
+    ae, aw = asset_issues(proj)
+    errs += ae
+    warns += aw
     from .kinds import issues as kind_issues  # тип ролика (ROADMAP C1)
     ke, kw = kind_issues(proj, est)
     errs += ke

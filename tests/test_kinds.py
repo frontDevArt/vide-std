@@ -129,7 +129,7 @@ def test_media_kind_files_phase(tmp_path):
     proj = project.load(root)
     rep = validate.check(proj)
     assert any("assets/a.jpg" in e for e in rep.errs)
-    assert any("C2" in w for w in rep.warns)
+    assert not any("шаблонов для него ещё нет" in w for w in rep.warns)  # C2: медиа-слой есть, needs снят
     ph = [n for n, _, _ in status.phases(proj)]
     assert "1б Материалы" in ph
 

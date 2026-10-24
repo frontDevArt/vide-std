@@ -250,19 +250,21 @@ def run_kinds(keep=False, workers=None, log=print) -> bool:
                 st["errors"].append("validate вернул ошибку")
         if st["errors"]:
             continue
-        with r.step(f"{k.id}: voice → render → assemble") as st:
-            proj = project.load(root)
-            tl = timing.layout(proj, log=_quiet)
-            render.render(proj, workers=workers, log=_quiet)
-            assemble(proj, log=_quiet)
-            st["note"] = f"{proj.cfg['format']}, {tl['duration']:.1f} c, {tl['total_frames']} кадров"
-        if st["errors"]:
-            continue
-        with r.step(f"{k.id}: qa") as st:
-            lines = []
-            if not qa_run(proj, log=lines.append):
-                st["errors"] += [x for x in lines if x.startswith("[FAIL]")]
-            st["note"] = "; ".join(x[7:] for x in lines if x.startswith("[PASS] Тип") or "Музыка звучит" in x)
+        for proj in project.load(root).targets():  # выходы (deliverables) — каждый до QA: promo — 9:16 и 1:1 (C2)
+            name = k.id + (f" [{proj.out}]" if proj.out else "")
+            with r.step(f"{name}: voice → render → assemble") as st:
+                tl = timing.layout(proj, log=_quiet)
+                render.render(proj, workers=workers, log=_quiet)
+                assemble(proj, log=_quiet)
+                st["note"] = f"{proj.cfg['format']}, {tl['duration']:.1f} c, {tl['total_frames']} кадров"
+            if st["errors"]:
+                continue
+            with r.step(f"{name}: qa") as st:
+                lines = []
+                if not qa_run(proj, log=lines.append):
+                    st["errors"] += [x for x in lines if x.startswith("[FAIL]")]
+                st["note"] = "; ".join(x[7:] for x in lines if x.startswith("[PASS] Тип") or "звучит" in x
+                                       or "Ассеты" in x)
     ok = not r.fails
     if ok and not keep:
         shutil.rmtree(work, ignore_errors=True)

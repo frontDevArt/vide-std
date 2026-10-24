@@ -1,11 +1,13 @@
-# Демо типа promo (ROADMAP C1): продукт, цена, призыв. Фото и логотип — с медиа-слоем (ROADMAP C2).
+# Демо типа promo (ROADMAP C1, C2): продукт, цена, призыв — 3 фото продукта и логотип (assets/ + assets.yaml),
+# два выхода: TikTok 9:16 и квадрат 1:1. Голос fake (офлайн).
 title: Desk lamp sale
 topic: desk lamp promo
 kind: promo
 brief: {product: "Aurora desk lamp", price: "$49", cta: "Order today"}
 language: en
-format: square
+format: vertical
+deliverables: [tiktok, square]
 fps: 30
-target_duration: 12
+target_duration: 15
 tts: {backend: fake, voice: auto, rate: auto}
 chapters: [ch01]

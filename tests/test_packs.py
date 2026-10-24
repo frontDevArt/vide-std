@@ -18,7 +18,8 @@ OLD = {  # плоские имена до P2.4 → полное имя
 }
 
 
-NEW = {"commerce.price_tag", "commerce.number"}  # P2.9: новые шаблоны, старых имён у них нет
+NEW = {"commerce.price_tag", "commerce.number",  # P2.9: новые шаблоны, старых имён у них нет
+       "media.image", "media.video", "media.screen", "media.clip", "media.logo_sting", "media.product_card"}  # C2
 
 
 def test_old_names_are_aliases():

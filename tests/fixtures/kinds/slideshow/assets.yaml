@@ -1,0 +1,7 @@
+# Демо: нарисовано кодом (tools/make_demo_assets.py).
+assets:
+  - {file: assets/dusk.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/valley.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/night.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/sea.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/birds.png, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}

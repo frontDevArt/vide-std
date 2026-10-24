@@ -109,9 +109,16 @@ def run(proj: Project, log=print, fast=False):
     chk(I is not None and abs(I - float(proj.cfg.get("loudness", -16))) < 1.5 and pk < -0.5, "Громкость итога",
         f"{I:.1f} LUFS, пик {pk:.1f} dBFS" if I is not None else "тишина: нет ни речи, ни музыки")
     from .kinds import of as kind_of, qa as kind_checks  # тип ролика (ROADMAP C1): длительность, голос, музыка
-    music_db = mean_db(final, 0, dur) if kind_of(proj.cfg).music and not lines else None
+    k = kind_of(proj.cfg)
+    music_db = mean_db(final, 0, dur) if (k.music or k.source_audio) and not lines else None
     for ok, name, det in kind_checks(proj, tl, dur, music_db):
         chk(ok, name, det)
+    from .assets import qa_check as assets_check  # ассеты сцен: файл, источник, лицензия (ROADMAP C2)
+    ac = assets_check(proj)
+    if ac is None:
+        skip("Ассеты: источник и лицензия", "в ролике нет фото, видео и звука из assets/")
+    else:
+        chk(ac[0], "Ассеты: источник и лицензия", ac[1])
     from .platforms import checks as platform_checks  # выход по профилю площадки (ROADMAP B1)
     platform_checks(proj, info, dur, I, pk, chk, warn)
     if lines:

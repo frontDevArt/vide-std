@@ -4,6 +4,7 @@
 пределы длительности, обязательные поля `brief:` (файлы из брифа — фаза «Материалы» в status), проверки validate и QA.
 Без `kind` проект — `explainer`, как до C1; в cfg ключ не попадает (ключ кэша рендера старых проектов не меняется).
 `needs` — чего ещё нет в движке (задача ROADMAP): тип принимается, validate предупреждает, демо — вместе с той задачей.
+Фото, видео, запись экрана и звук исходника — шаблоны `media.*` и ассеты проекта (ROADMAP C2, studio/assets.py).
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ class Kind:
     files: tuple = ()           # поля brief — пути к файлам от папки проекта (строка или список)
     music: bool = False         # музыка — содержание ролика: music.enabled обязателен, QA — «музыка звучит»
     default_duration: float | None = None  # `new --kind` без --duration (для exact)
+    source_audio: bool = False  # речь — звук исходника (clip): QA — «Звук исходника звучит»
     needs: str = ""             # недостающий слой движка (задача ROADMAP)
     hint: str = ""              # как строить: шаблоны, структура
 
@@ -36,25 +38,28 @@ KINDS = {k.id: k for k in (
          hint="крючок (brief.hook) — первой строкой первой сцены, одна мысль, финал-призыв"),
     Kind("promo", "промо продукта: продукт, цена, призыв", duration=(6, 60), exact=True,
          brief=("product", "price", "cta"), default_duration=15,
-         hint="title → price_tag / number → outro с brief.cta; фото продукта и логотип — с ROADMAP C2"),
+         hint="logo_sting / title → media.product_card (фото, цена) или price_tag → outro с brief.cta; "
+              "фото и логотип — assets/ + assets.yaml"),
     Kind("music", "кинетическая типографика под трек, без голоса", voice=False, duration=(10, 90), exact=True,
          music=True, default_duration=20,
          hint="сцены без lines, длительность — min_duration, текст в params; music.file — свой трек; "
               "смена сцен по долям — ROADMAP C3"),
     Kind("slideshow", "фото + подписи + музыка, без голоса", voice=False, duration=(10, 180), music=True,
-         files=("photos",), needs="C2 (шаблон image: фото, Ken Burns)",
-         hint="brief.photos — файлы в assets/; сцена на фото с подписью"),
+         files=("photos",),
+         hint="brief.photos — файлы в assets/ (+ assets.yaml); сцена — media.image на фото с подписью (caption), "
+              "Ken Burns, min_duration 3–5 c"),
     Kind("listicle", "топ-N: пункты по порядку", brief=("count",),
          hint="вступление, затем сцены пунктов с item: 1…N (по возрастанию или обратный отсчёт), brief.count = N"),
     Kind("data-story", "история в цифрах: графики из CSV", files=("data",),
          needs="C4 (шаблон chart: столбики, линия, круг из данных)",
          hint="brief.data — CSV в assets/; counter / number для отдельных чисел уже есть"),
     Kind("tutorial", "туториал: запись экрана + выноски + зум", files=("recording",),
-         needs="C2 (шаблон screen: запись экрана, зум на область)",
-         hint="brief.recording — запись экрана в assets/"),
+         hint="brief.recording — запись экрана в assets/; сцены media.screen с одним файлом: start — с какой "
+              "секунды, zoom / callouts / clicks — по битам озвучки"),
     Kind("clip", "кусок подкаста или интервью: звук/видео + волна + караоке", voice=False, files=("source",),
-         needs="C2 (шаблон video и звук исходника вместо синтеза)",
-         hint="brief.source — аудио или видео исходника в assets/; речь — из исходника, не синтез"),
+         source_audio=True,
+         hint="brief.source — аудио или видео исходника в assets/; сцены media.clip (start — с какой секунды, "
+              "min_duration — длина куска, captions — расшифровка); речь — из исходника, не синтез"),
 )}
 
 
@@ -159,5 +164,8 @@ def qa(proj, tl: dict, dur: float, music_db: float | None) -> list[tuple[bool, s
         out.append((said == 0, f"Тип {k.id}: без голоса", "речи нет" if not said else f"строк речи: {said}"))
     if k.music:
         out.append((music_db is not None and music_db > -35, "Музыка звучит",
+                    f"средний уровень {music_db} dB" if music_db is not None else "тишина"))
+    if k.source_audio:
+        out.append((music_db is not None and music_db > -35, "Звук исходника звучит",
                     f"средний уровень {music_db} dB" if music_db is not None else "тишина"))
     return out

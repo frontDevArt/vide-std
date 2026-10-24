@@ -29,7 +29,9 @@ def test_covers_every_template():
     used = {REGISTRY.canonical(n) or n for n in used}  # в фикстуре — старые имена (алиасы)
     # commerce (P2.9) пришёл на этапе 2, где golden меняться не может; рисование проверяет test_commerce.py
     # (lab_anchor ≡ commerce.price_tag, листы fake-discounts). В фикстуру — вместе с ближайшей сменой golden.
-    full = {n for n in REGISTRY.templates() if not n.startswith("commerce.")}
+    # media (ROADMAP C2) — шаблоны с файлами-ассетами; рисование и вёрстку во всех форматах проверяет test_media.py,
+    # QA — демо типов (selftest --kinds). Галерея и golden каждого шаблона в 16:9 и 9:16 — ROADMAP C4.
+    full = {n for n in REGISTRY.templates() if not n.startswith(("commerce.", "media."))}
     assert used == full, (full - used, used - full)
 
 

@@ -17,6 +17,7 @@ python -m studio validate <проект>         # проверка сценар
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
 python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера
+#   --alpha mov|webm — графика без фона и субтитров на прозрачном (ProRes 4444 / VP9) для монтажки
 python -m studio assemble <проект> [--draft] [--chapters] # финальный MP4 + .srt/.vtt (--draft → build/final/<slug>.draft.mp4; --chapters — ещё build/chapters/chNN.mp4)
 python -m studio qa       <проект> [--fast] # проверки + qa/*.png
 # deliverables: [youtube, tiktok] в project.yaml — выходы: voice/stills/render/assemble/qa/all по всем или --out <выход>;
