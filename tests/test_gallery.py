@@ -33,7 +33,8 @@ def test_covers_every_template():
     # Новый шаблон без сцены в фикстурах — красный тест: golden (P0.4, C4), selftest (P0.5) и галерея
     # (python -m studio gallery) его не увидят. gallery — базовые и lab, library — kit, commerce, media (ROADMAP C4).
     used = _used(FIXTURE) | _used(LIBRARY)
-    full = set(REGISTRY.templates())
+    # кроме шаблонов на внешнем движке (REQUIRES, web.html — C6): их кадр зависит от сборки браузера, тест — test_web_html
+    full = {n for n, c in REGISTRY.templates().items() if not getattr(c, "REQUIRES", None)}
     assert used == full, (full - used, used - full)
 
 

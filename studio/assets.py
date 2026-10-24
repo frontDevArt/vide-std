@@ -24,7 +24,8 @@ IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp")
 VIDEO_EXT = (".mp4", ".mov", ".webm", ".m4v", ".mkv")
 AUDIO_EXT = (".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac")
 DATA_EXT = (".csv",)  # данные графиков (kit.chart, ROADMAP C4): у источника данных те же правила, что у фото
-MEDIA_EXT = IMAGE_EXT + VIDEO_EXT + AUDIO_EXT + DATA_EXT
+PAGE_EXT = (".html", ".htm")  # страница сцены web.html (ROADMAP C6): та же запись в assets.yaml, содержимое в ключе кэша
+MEDIA_EXT = IMAGE_EXT + VIDEO_EXT + AUDIO_EXT + DATA_EXT + PAGE_EXT
 FILE = "assets.yaml"
 FIELDS = ("source", "license")  # обязательные поля записи; by — кто дал (необязательно)
 

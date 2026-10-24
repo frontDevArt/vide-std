@@ -123,6 +123,32 @@ images` (смета, `--yes` для платного, учёт в `assets.yaml` 
 Стикер — PNG целиком в `box`, внизу рамки, не крупнее ×1,2 своего размера, тень по альфе; `sticker: true` у сцены с
 одним `file` — объект в середине кадра без рамочной тени и обрезки.
 
+## Сцена из HTML: `web.html` (ROADMAP C6, второй движок)
+Для «богатых» сцен, которые PIL рисует дорого или никак: размытие и «стекло» (`filter`, `backdrop-filter`),
+3D-перспектива, градиент по тексту, SVG, сложная вёрстка текста. Тело сцены рисует страница HTML/CSS в headless
+Chromium (playwright, не входит в requirements: `pip install playwright && python -m playwright install chromium`).
+Сценарий, голос, тайминг, фон, субтитры, микс, кэш, куски и QA — наши; кадр страницы ложится слоем между фоном и
+субтитрами, поэтому склейка `-c copy` и черновик работают как у любой сцены.
+```yaml
+- id: s02
+  template: web.html
+  params: {file: assets/rich.html, vars: {title: "Two engines"}}   # страница — ассет проекта, запись в assets.yaml
+  lines: ["A browser draws this one, | frame by frame, | on our clock."]
+```
+Контракт страницы (пример — `tests/fixtures/web/assets/rich.html`):
+- вёрстка в «пикселях 1080»: короткая сторона кадра — 1080 CSS px при любом размере (черновик — `zoom` корня);
+  размеры кадра — `SCENE.W`, `SCENE.H`, рабочая и безопасная зоны — `SCENE.area`, `SCENE.safe`;
+- фон `html, body` — прозрачный (иначе страница закроет фон студии);
+- время только виртуальное: все анимации документа стоят на паузе, кадру t выставляется `currentTime = t` — CSS
+  `@keyframes` с `animation-delay` (от начала сцены) работают сами; свой ход — `window.seek = (t, S) => {…}`.
+  Таймеры, `requestAnimationFrame`, `Date.now()` и переходы `transition`, запущенные сменой класса, — нет;
+- биты: `--b0`…`--bN` (начала, `s`), `--e0`… (концы), `SCENE.beats` (с текстом), слова — `SCENE.words`;
+- стиль ролика: цвета палитры `--c-<имя>` (`--c-accent`, `--c-text`, …), шрифт `var(--font)` (файлы стиля), данные —
+  `SCENE.vars` и `--v-<имя>` из `params.vars`;
+- сеть закрыта (только `file:`/`data:`); в ключе кэша — сам `.html`: CSS, JS, картинки — внутри него, иначе `render --force`.
+Цена — в 3–6 раз дороже кадра PIL (замеры и когда что брать — `ROADMAP.md`, C6). В фикстурах галереи и golden шаблона
+нет (кадр зависит от сборки Chromium), тест — `tests/test_web_html.py`.
+
 ## Шаблоны (встроенные)
 Шаблоны разложены по пакетам `studio/packs/`: `core` (title, statement, bullets, counter, outro), `phone` (cards,
 questions и три `phone_*`), `lab` (канал, ниже), `commerce` (`price_tag` — ценник «было → стало» на верёвочке и чек
@@ -308,6 +334,7 @@ style:
 | [`kit.steps`](#kitsteps) | `steps` | Шаги процесса: номера в кружках, соединённые линией; шаг загорается по триггеру, пройденные остаются залитыми, линия к следующему растёт. | vertical, horizontal, square, portrait |
 | [`kit.testimonial`](#kittestimonial) | `testimonial` | Отзыв клиента: карточка со звёздами (заполняются по одной, бывают половинки), текст, аватар (фото или инициалы), имя, кто он и откуда отзыв. | vertical, horizontal, square, portrait |
 | [`kit.timeline`](#kittimeline) | `timeline` | Лента времени: ось растёт от события к событию, точка выпрыгивает, дата и подпись поднимаются. | vertical, horizontal, square, portrait |
+| [`web.html`](#webhtml) | — | Сцена из HTML/CSS (второй движок, спайк C6): страница рисуется в headless Chromium с прозрачным фоном и ложится слоем на наш фон под субтитры. | vertical, horizontal, square, portrait |
 
 ### core.bullets
 
@@ -893,6 +920,19 @@ lab · Full Number для цен и сумм: числа ≥ 1000 с запят�
 |---|---|---|---|
 | `events` | список | `[{'date': '2010', 'text': 'Событие'}]` | события [{date, text, at}] (3–6) |
 | `first_beat` | число | `None` | событие i — на бите first_beat + i, если у него нет at |
+
+### web.html
+
+Сцена из HTML/CSS (второй движок, спайк C6): страница рисуется в headless Chromium с прозрачным фоном и ложится слоем на наш фон под субтитры. Время — виртуальное: CSS-анимации и `window.seek(t)`. Нужен playwright с Chromium (не входит в requirements).
+
+- **Биты:** странице: `--b0`…`--bN` в CSS и SCENE.beats (тексты и время битов), слова — SCENE.words
+- **Форматы:** vertical, horizontal, square, portrait
+
+| Параметр | Тип | По умолчанию | Описание |
+|---|---|---|---|
+| `file` | строка | `None` | страница .html, путь от папки проекта (assets/…); в ключе кэша — только этот файл: CSS, JS и картинки — внутри него или --force |
+| `vars` | словарь | `None` | данные странице: window.SCENE.vars и CSS-переменные --v-<имя> |
+| `fade` | да/нет | `True` | вход и выход сцены прозрачностью слоя (как у остальных шаблонов) |
 
 ### Общие параметры `LabTemplate`
 

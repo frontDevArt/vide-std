@@ -7,6 +7,7 @@
 - `media` — фото, видео, запись экрана, клип, логотип-стинг, карточка продукта (ассеты проекта; ROADMAP C2);
 - `kit` — общие шаблоны для любой палитры: chart (из CSV), timeline, steps, compare, map, quote, testimonial,
   lower_third, cta_end, chapter_bumper (ROADMAP C4);
+- `web` — `html`: сцена из HTML/CSS в headless Chromium (второй движок, спайк ROADMAP C6; нужен playwright);
 - `project` — шаблоны из projects/<slug>/templates/*.py (`load_project_templates`).
 
 Реестр, имена и типы параметров — `registry.py`. Старый вход `studio.templates` работает.
@@ -15,7 +16,7 @@ from __future__ import annotations
 
 from .registry import AT, FORMATS, NUM, P, PROJECT, REGISTRY, Param, TemplateNameError, template  # noqa: F401
 from .base import Template, plural  # noqa: F401
-from . import core, phone, lab, commerce, media, kit  # noqa: E402,F401  — регистрируют встроенные шаблоны
+from . import core, phone, lab, commerce, media, kit, web  # noqa: E402,F401  — регистрируют встроенные шаблоны
 
 
 def load_project_templates(root):

@@ -1,0 +1,17 @@
+chapter: ch01
+title: "web html"
+scenes:
+  - id: s01
+    template: statement
+    params: {text: "Rich *scenes*"}
+    lines: ["Some scenes want | blur, depth and soft light."]
+  - id: s02
+    template: web.html
+    params:
+      file: assets/rich.html
+      vars: {title: "Two engines", note: "one timeline"}
+    lines: ["A browser draws this one, | frame by frame, | on our clock."]
+  - id: s03
+    template: statement
+    params: {text: "One *cut*"}
+    lines: ["Same voice, | same subtitles, | same cut."]

@@ -17,6 +17,7 @@ sudo apt install ffmpeg git cmake build-essential python3-pip fontconfig
 pip install -r requirements.txt
 bash tools/setup_rhvoice.sh          # офлайн-голос; проверено
 pip install edge-tts                 # опционально, нейро-голос (интернет)
+pip install playwright && python -m playwright install chromium  # опционально, сцены web.html (ROADMAP C6)
 ```
 
 ## macOS

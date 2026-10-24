@@ -100,7 +100,8 @@ def build(formats=None, out: Path | None = None, workers=None, log=print) -> Pat
 def absent(entries) -> list[str]:
     from .packs import REGISTRY
     seen = {e["template"] for e in entries}
-    return sorted(n for n in REGISTRY.templates() if n not in seen and not n.startswith("project."))
+    return sorted(n for n, c in REGISTRY.templates().items()
+                  if n not in seen and not n.startswith("project.") and not getattr(c, "REQUIRES", None))  # web.html (C6)
 
 
 # ------------------------------------------------------------------ HTML
