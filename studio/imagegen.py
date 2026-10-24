@@ -16,12 +16,24 @@ images:
     layers: [room, bed with a person, bedside table with a lamp]   # только scene: что вынести в слои
     variant: 0             # сид: другой вариант той же картинки
 ```
-Здесь — схема, проверки validate и путь картинки в кэше (`path`). Бэкенды и генерация — C5.3, команда `images` — C5.4.
+Здесь — схема, проверки validate, путь картинки в кэше (`path`), план работ со сметой (`plan`, `estimate`) и бэкенды
+(`generate`): `kie` (Kie AI: задача → опрос статуса), `fake` (процедурные PNG, офлайн — тесты и selftest), `none` (только
+готовые файлы). Команда `images` (смета, «да», бюджет, assets.yaml, rembg) — C5.4.
+
+Ключ Kie — только `workspace.secret("KIE_API_KEY", ws)` (.env студии → окружение → корневой .env); в лог, чат,
+сообщения об ошибках и ключи кэша не попадает.
 """
 from __future__ import annotations
 
+import io
+import json
+import random
+import time
+import uuid
+from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import workspace
 from .project import stable_hash
 
 ROLES = {
@@ -148,3 +160,403 @@ def issues(proj) -> tuple[list, list]:
         warns.append("images.backend: none — картинки сцен генерироваться не будут, нужны готовые файлы в "
                      f"{DIR}/")
     return errs, warns
+
+
+# ---------------------------------------------------------------- план и смета
+class ImagesUnavailable(RuntimeError):
+    """Генерация невозможна или прервана (нет ключа, 401/402/403, задача упала, таймаут) — без ретраев."""
+
+
+CREDITS_PER_USD = 200  # курс Kie (docs/IMAGES.md)
+UNPRICED = 20  # кредитов за вызов модели без замеренной цены: смета с запасом, а не ноль
+# Модели генерации: цена (кредиты; по разрешению или одна; None — не замерена), поле картинок-входов, сид, кадры.
+# edit — модель, которой уходит запрос с картинками-входами (референс стиля, база state_b), если своя их не берёт.
+ASPECTS = ("1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9")
+KLEIN_ASPECTS = ("1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9")
+MODELS = {
+    "nano-banana-2": {"credits": {"1K": 8, "2K": 12, "4K": 18}, "refs": "image_input", "resolution": True},
+    "google/nano-banana": {"credits": 4, "edit": "google/nano-banana-edit"},
+    "google/nano-banana-edit": {"credits": None, "refs": "image_urls", "refs_required": True},
+    "flux-3/klein-text-to-image": {"credits": {"1K": 1.6, "2K": 2.5, "4K": 6.5}, "edit": "flux-3/klein-edit-image",
+                                   "resolution": True, "seed": True, "aspects": KLEIN_ASPECTS},
+    "flux-3/klein-edit-image": {"credits": None, "refs": "image_urls", "refs_required": True, "resolution": True,
+                                "seed": True, "aspects": KLEIN_ASPECTS},
+}
+LAYER_MODELS = {"seedream/5-flash-layer-decomposition": 12.96}  # картинка → база + слои с bounding_box
+CUTOUT_MODEL, CUTOUT_CREDITS = "recraft/remove-background", None  # images.cutout: kie; вход ≤ 5 МБ
+FORMAT_ASPECT = {"vertical": "9:16", "horizontal": "16:9", "square": "1:1", "portrait": "4:5"}
+
+
+@dataclass
+class Job:
+    """Одна работа плана. step: image (генерация) | layers (раскладка картинки key) | cutout (вырезание объекта).
+    out — что появится по готовности (есть файл — работа сделана, повтор бесплатен)."""
+    step: str
+    where: str
+    key: str
+    model: str
+    credits: float
+    out: Path
+    req: dict = field(default_factory=dict)
+    base: str | None = None  # state_b — ключ картинки, которую правим
+    priced: bool = True
+    local: bool = False  # rembg — без сети и денег, шаг команды images (C5.4)
+
+
+def layers_dir(proj, key: str) -> Path:
+    """Раскладка картинки: base.png (сцена без объектов), 1.png… (прозрачные слои), layers.json (рамки 0–1)."""
+    return proj.root / DIR / f"{key}.layers"
+
+
+def cut_path(proj, key: str) -> Path:
+    return proj.root / DIR / f"{key}.cut.png"
+
+
+def aspect(proj, req: dict) -> str:
+    """Кадр картинки: объект для вырезания — квадрат, остальное — по формату проекта."""
+    return "1:1" if req.get("role") == "subject" else FORMAT_ASPECT.get(proj.cfg.get("format"), "16:9")
+
+
+def _model(st: dict, refs: bool) -> str:
+    """Модель запроса: с картинками-входами — та, что их берёт (images.model или её edit)."""
+    m = st["model"]
+    if m not in MODELS:
+        raise ImagesUnavailable(f"images.model {m!r} не описан в imagegen.MODELS (вход и цена) — можно "
+                                f"{', '.join(MODELS)}; новую модель — добавить туда с замером цены (docs/IMAGES.md)")
+    if refs and not MODELS[m].get("refs"):
+        m = MODELS[m]["edit"]
+    return m
+
+
+def _price(model: str, resolution: str) -> float | None:
+    c = MODELS[model]["credits"]
+    return c.get(resolution) if isinstance(c, dict) else c
+
+
+def plan(proj) -> list[Job]:
+    """Все работы ролика по порядку (state_b — после своей базы, раскладка и вырезание — после картинки)."""
+    st = settings(proj.cfg)
+    ref = bool(st.get("reference"))
+    jobs = []
+    for where, r, k in keys(proj):
+        role = r.get("role", "scene")
+        scene = where.split("#")[0]
+        base = None
+        if role == "state_b":
+            base = next(j.key for j in jobs if j.step == "image" and j.where.split("#")[0] == scene)
+        m = _model(st, ref or base is not None)
+        c = _price(m, st["resolution"])
+        jobs.append(Job("image", where, k, m, UNPRICED if c is None else c, path(proj, k), r, base, c is not None))
+        if role == "scene" and r.get("layers") and st["layers"]:
+            c = LAYER_MODELS.get(st["layers"])
+            jobs.append(Job("layers", where, k, st["layers"], UNPRICED if c is None else c,
+                            layers_dir(proj, k) / "layers.json", r, priced=c is not None))
+        if role == "subject" and st["cutout"] == "kie":
+            jobs.append(Job("cutout", where, k, CUTOUT_MODEL, UNPRICED if CUTOUT_CREDITS is None else CUTOUT_CREDITS,
+                            cut_path(proj, k), r, priced=CUTOUT_CREDITS is not None))
+        elif role == "subject" and st["cutout"] != "none":
+            jobs.append(Job("cutout", where, k, st["cutout"], 0, cut_path(proj, k), r, local=True))
+    return jobs
+
+
+def estimate(proj, jobs: list[Job] | None = None) -> dict:
+    """Смета того, чего ещё нет в кэше: {todo, cached, credits, usd, budget_usd, over, unpriced}.
+    fake и none — бесплатно. Цена не замерена — UNPRICED кредитов за вызов, модель — в unpriced."""
+    st = settings(proj.cfg)
+    jobs = plan(proj) if jobs is None else jobs
+    todo = [j for j in jobs if not j.out.exists()]
+    paid = [j for j in todo if st["backend"] == "kie" and not j.local]
+    credits = round(sum(j.credits for j in paid), 2)
+    usd = round(credits / CREDITS_PER_USD, 4)
+    return {"todo": todo, "cached": len(jobs) - len(todo), "credits": credits, "usd": usd,
+            "budget_usd": st["budget_usd"], "over": usd > st["budget_usd"],
+            "unpriced": sorted({j.model for j in paid if not j.priced})}
+
+
+def prompt_text(req: dict, st: dict) -> str:
+    """Промпт модели: текст сцены + стиль ролика (images.style)."""
+    p = req["prompt"].strip()
+    s = (st.get("style") or "").strip()
+    return f"{p.rstrip('.')}. {s}" if s else p
+
+
+def generate(proj, job: Job, ws=None) -> dict:
+    """Сделать одну работу бэкендом images.backend → {credits, files, task?}. Файл пишется целиком или никак."""
+    st = settings(proj.cfg)
+    b = st["backend"]
+    if b == "none":
+        raise ImagesUnavailable(f"images.backend: none — генерации нет; положите готовый файл {job.out.name} в "
+                                f"{job.out.parent.relative_to(proj.root).as_posix()}/ ({job.where})")
+    fn = {"fake": _fake, "kie": _kie_job}.get(b)
+    if fn is None:
+        raise ImagesUnavailable(f"images.backend {b!r} — можно {', '.join(BACKENDS)}")
+    if job.local and b != "fake":
+        raise ImagesUnavailable(f"{job.model}: локальный шаг команды images (C5.4), а не бэкенда")
+    job.out.parent.mkdir(parents=True, exist_ok=True)
+    return fn(proj, job, st, ws or proj.ws)
+
+
+def _save_png(data, out: Path):
+    """Картинка (байты любого формата или PIL.Image) → PNG атомарно: обрыв не оставит битый файл в кэше."""
+    from PIL import Image
+    im = data if isinstance(data, Image.Image) else Image.open(io.BytesIO(data))
+    im.load()
+    if im.mode not in ("RGB", "RGBA"):
+        im = im.convert("RGBA" if "A" in im.getbands() or im.mode == "P" else "RGB")
+    tmp = out.with_name(out.name + ".part")
+    im.save(tmp, format="PNG")
+    tmp.replace(out)
+
+
+def _write_json(obj, out: Path):
+    tmp = out.with_name(out.name + ".part")
+    tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=1), encoding="utf-8")
+    tmp.replace(out)
+
+
+# ---------------------------------------------------------------- fake (тесты и selftest)
+# Процедурные PNG без сети и денег: градиент и фигуры из ключа — одинаково на любой ОС. Длинная сторона FAKE_SIDE —
+# чтобы selftest шёл быстро; раскладка и вырезание дают те же файлы, что у kie.
+FAKE_SIDE = 768
+
+
+def _fake_size(a: str) -> tuple[int, int]:
+    w, h = (int(x) for x in a.split(":"))
+    return (FAKE_SIDE, round(FAKE_SIDE * h / w)) if w >= h else (round(FAKE_SIDE * w / h), FAKE_SIDE)
+
+
+def _fake_picture(seed: str, size, rgba=False):
+    from PIL import Image, ImageDraw
+    rnd = random.Random(stable_hash(seed, 16))
+    color = (lambda: tuple(rnd.randrange(30, 230) for _ in range(3)))
+    w, h = size
+    c0, c1 = color(), color()
+    im = Image.new("RGBA" if rgba else "RGB", size, (0, 0, 0, 0) if rgba else c0)
+    d = ImageDraw.Draw(im)
+    if not rgba:
+        for y in range(h):
+            t = y / max(1, h - 1)
+            d.line([(0, y), (w, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(c0, c1)))
+    for _ in range(4):
+        x0, y0 = rnd.randrange(0, max(1, w * 3 // 4)), rnd.randrange(0, max(1, h * 3 // 4))
+        x1, y1 = x0 + rnd.randrange(w // 8, w // 3 + 1), y0 + rnd.randrange(h // 8, h // 3 + 1)
+        (d.ellipse if rnd.random() < 0.5 else d.rectangle)([x0, y0, x1, y1], fill=color() + (255,))
+    return im
+
+
+def _fake(proj, job: Job, st: dict, ws) -> dict:
+    from PIL import Image, ImageDraw
+    if job.step == "image":
+        _save_png(_fake_picture(job.key, _fake_size(aspect(proj, job.req))), job.out)
+        return {"credits": 0, "files": [job.out]}
+    src = Image.open(path(proj, job.key)).convert("RGBA")
+    w, h = src.size
+    if job.step == "cutout":  # объект — овал в центре, вокруг прозрачно
+        mask = Image.new("L", src.size, 0)
+        ImageDraw.Draw(mask).ellipse([w // 6, h // 6, w * 5 // 6, h * 5 // 6], fill=255)
+        src.putalpha(mask)
+        _save_png(src, job.out)
+        return {"credits": 0, "files": [job.out]}
+    d = job.out.parent  # layers: база — сама картинка, слои — фигуры в рамках вдоль низа кадра
+    d.mkdir(parents=True, exist_ok=True)
+    _save_png(src.convert("RGB"), d / "base.png")
+    names = job.req.get("layers") or []
+    meta, files = {"model": job.model, "base": "base.png", "layers": []}, [d / "base.png"]
+    for i, name in enumerate(names, 1):
+        box = [round((i - 1) / len(names) + 0.02, 4), 0.55, round(i / len(names) - 0.02, 4), 0.95]
+        size = (max(1, round((box[2] - box[0]) * w)), max(1, round((box[3] - box[1]) * h)))
+        _save_png(_fake_picture(f"{job.key}/{i}", size, rgba=True), d / f"{i}.png")
+        meta["layers"].append({"file": f"{i}.png", "name": name, "z": i, "box": box})
+        files.append(d / f"{i}.png")
+    _write_json(meta, job.out)
+    return {"credits": 0, "files": files}
+
+
+# ---------------------------------------------------------------- kie (Kie AI, платно)
+KIE_API = "https://api.kie.ai/api/v1"
+KIE_UPLOAD = "https://kieai.redpandaai.co/api/file-stream-upload"
+KIE_TIMEOUT = 600  # с на задачу: у Kie задача без результата 10 мин → 408
+KIE_POLL = 4  # с между опросами статуса
+KIE_RETRIES = 3  # сбоев опроса подряд (сеть, 5xx); создание задачи не повторяем — оно стоит денег
+KIE_HINTS = {401: "ключ неверный (KIE_API_KEY)", 402: "нет кредитов — пополните баланс kie.ai",
+             403: "доступ запрещён (тариф/прокси) — не ретраим", 404: "нет такой задачи или ресурса",
+             422: "неверные параметры запроса", 429: "лимит запросов", 455: "сервис на обслуживании"}
+_sleep, _clock = time.sleep, time.monotonic  # подменяются в тестах
+_UPLOADS: dict = {}  # (файл, mtime) → URL загрузки: живёт 24 ч, на один запуск хватит
+
+
+class _Transient(ImagesUnavailable):
+    """Сбой сети или 5xx — опрос статуса можно повторить."""
+
+
+def _kie_key(ws=None) -> str:
+    k = workspace.secret("KIE_API_KEY", ws)
+    if not k:
+        raise ImagesUnavailable("нет ключа Kie AI: впишите KIE_API_KEY в .env студии (studios/<id>/.env) или в "
+                                "корневой .env (имя — в .env.example)")
+    return k
+
+
+def _urlopen(req, timeout):
+    import urllib.request
+    return urllib.request.urlopen(req, timeout=timeout)
+
+
+def _kie_call(url, *, body=None, data=None, ctype=None, method="GET", ws=None, timeout=60):
+    """Запрос к Kie → поле data. Ошибка бывает и с HTTP 200 — смотрим `code`. 4xx (401/402/403/422…) — ошибка сразу,
+    без ретраев; сеть и 5xx — _Transient. Ключ из сообщений вырезается."""
+    import urllib.error
+    import urllib.request
+    key = _kie_key(ws)
+    if body is not None:
+        data, ctype = json.dumps(body).encode(), "application/json"
+    headers = {"Authorization": f"Bearer {key}", "Accept": "application/json"}
+    if ctype:
+        headers["Content-Type"] = ctype
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
+    try:
+        with _urlopen(req, timeout) as r:
+            raw = r.read().decode(errors="replace")
+    except urllib.error.HTTPError as e:
+        msg = e.read().decode(errors="replace").replace(key, "***")[:300]
+        raise (_Transient if e.code >= 500 else ImagesUnavailable)(
+            f"Kie HTTP {e.code} {KIE_HINTS.get(e.code, '')}: {msg}")
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+        raise _Transient(f"Kie недоступен: {getattr(e, 'reason', e)}")
+    try:
+        j = json.loads(raw)
+    except ValueError:
+        raise _Transient(f"Kie: ответ не JSON: {raw.replace(key, '***')[:200]}")
+    code = j.get("code")
+    if code != 200:
+        msg = str(j.get("msg") or "").replace(key, "***")[:300]
+        raise (_Transient if isinstance(code, int) and code >= 500 else ImagesUnavailable)(
+            f"Kie code {code} {KIE_HINTS.get(code, '')}: {msg}")
+    return j.get("data")
+
+
+def kie_balance(ws=None) -> float:
+    """Баланс, кредиты (200 = $1): смету сверять с ним до и после генерации."""
+    return float(_kie_call(f"{KIE_API}/chat/credit", ws=ws))
+
+
+def kie_upload(file, ws=None) -> str:
+    """Свою картинку на вход модели (референс, база state_b, вход раскладки) → URL (живёт 24 ч: кэшируем результат
+    генерации, а не ссылку)."""
+    file = Path(file)
+    memo = (str(file.resolve()), file.stat().st_mtime)
+    if memo in _UPLOADS:
+        return _UPLOADS[memo]
+    bnd = uuid.uuid4().hex
+    mime = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}.get(
+        file.suffix.lower(), "application/octet-stream")
+    data = (f'--{bnd}\r\nContent-Disposition: form-data; name="uploadPath"\r\n\r\nvide-std/images\r\n'
+            f'--{bnd}\r\nContent-Disposition: form-data; name="file"; filename="{file.name}"\r\n'
+            f"Content-Type: {mime}\r\n\r\n").encode() + file.read_bytes() + f"\r\n--{bnd}--\r\n".encode()
+    d = _kie_call(KIE_UPLOAD, data=data, ctype=f"multipart/form-data; boundary={bnd}", method="POST", ws=ws,
+                  timeout=180)
+    url = (d or {}).get("downloadUrl")
+    if not url:
+        raise ImagesUnavailable(f"Kie upload {file.name}: нет downloadUrl в ответе")
+    _UPLOADS[memo] = url
+    return url
+
+
+def kie_task(model: str, inp: dict, ws=None, timeout: float = KIE_TIMEOUT, poll: float = KIE_POLL) -> dict:
+    """createTask → опрос recordInfo до success / fail / таймаута → {task, credits, result} (result — resultJson)."""
+    tid = (_kie_call(f"{KIE_API}/jobs/createTask", body={"model": model, "input": inp}, method="POST", ws=ws)
+           or {}).get("taskId")
+    if not tid:
+        raise ImagesUnavailable(f"Kie createTask {model}: нет taskId в ответе")
+    t0, fails, state = _clock(), 0, None
+    while True:
+        _sleep(poll)
+        try:
+            d = _kie_call(f"{KIE_API}/jobs/recordInfo?taskId={tid}", ws=ws) or {}
+            fails, state = 0, d.get("state")
+        except _Transient as e:
+            fails += 1
+            if fails >= KIE_RETRIES:
+                raise ImagesUnavailable(f"Kie задача {tid}: {fails} сбоя опроса подряд — {e}")
+            d = {}
+        if state == "success":
+            res = d.get("resultJson") or "{}"
+            return {"task": tid, "credits": d.get("creditsConsumed"),
+                    "result": json.loads(res) if isinstance(res, str) else res}
+        if state == "fail":
+            raise ImagesUnavailable(f"Kie задача {tid} ({model}) упала: {d.get('failCode')} {d.get('failMsg')}")
+        if _clock() - t0 > timeout:
+            raise ImagesUnavailable(f"Kie задача {tid} ({model}): нет результата за {timeout:.0f} с (состояние "
+                                    f"{state}); кредиты могли списаться — сверить баланс")
+
+
+def _download(url: str) -> bytes:
+    import urllib.error
+    import urllib.request
+    try:
+        with _urlopen(urllib.request.Request(url, headers={"User-Agent": "vide-std"}), 180) as r:
+            return r.read()
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+        raise ImagesUnavailable(f"не скачать результат Kie {url.split('?')[0]}: {getattr(e, 'reason', e)}")
+
+
+def kie_input(proj, job: Job, st: dict, refs: list) -> dict:
+    """Вход модели генерации по MODELS: промпт со стилем, кадр, разрешение, сид (= variant), картинки-входы."""
+    m = MODELS[job.model]
+    want, allowed = aspect(proj, job.req), m.get("aspects", ASPECTS)
+    if want not in allowed:  # ближайший по отношению сторон: шаблон всё равно кадрирует
+        ratio = (lambda a: int(a.split(":")[0]) / int(a.split(":")[1]))
+        want = min(allowed, key=lambda a: abs(ratio(a) - ratio(want)))
+    inp = {"prompt": prompt_text(job.req, st), "aspect_ratio": want, "output_format": "png"}
+    if m.get("resolution"):
+        inp["resolution"] = st["resolution"]
+    if m.get("seed"):
+        inp["seed"] = int(job.req.get("variant") or 0)
+    if refs:
+        inp[m["refs"]] = refs
+    elif m.get("refs_required"):
+        raise ImagesUnavailable(f"{job.model}: нужна картинка-вход (images.reference или база state_b)")
+    return inp
+
+
+def _kie_one(job: Job, model: str, inp: dict, ws) -> dict:
+    r = kie_task(model, inp, ws)
+    urls = r["result"].get("resultUrls") or []
+    if not urls:
+        raise ImagesUnavailable(f"Kie задача {r['task']}: нет resultUrls")
+    _save_png(_download(urls[0]), job.out)
+    return {"credits": r["credits"], "task": r["task"], "files": [job.out]}
+
+
+def _kie_job(proj, job: Job, st: dict, ws) -> dict:
+    if job.step == "image":
+        refs = [kie_upload(path(proj, job.base), ws)] if job.base else []  # «та же сцена, но…»: база — первой
+        if st.get("reference"):
+            ref = proj.root / st["reference"]
+            if not ref.exists():
+                raise ImagesUnavailable(f"images.reference: нет файла {st['reference']}")
+            refs.append(kie_upload(ref, ws))
+        return _kie_one(job, job.model, kie_input(proj, job, st, refs), ws)
+    src = kie_upload(path(proj, job.key), ws)
+    if job.step == "cutout":
+        return _kie_one(job, job.model, {"image": src}, ws)
+    r = kie_task(job.model, {"image_url": src, "prompt": "Separate into layers: " + "; ".join(job.req["layers"]) + ".",
+                             "size": st["resolution"], "output_format": "png"}, ws)
+    data = (r["result"].get("resultObject") or {}).get("layers_data") or []
+    if not data:
+        raise ImagesUnavailable(f"Kie задача {r['task']}: нет layers_data в ответе раскладки")
+    d = job.out.parent
+    d.mkdir(parents=True, exist_ok=True)
+    meta, files = {"model": job.model, "task": r["task"], "base": None, "layers": []}, []
+    for x in sorted(data, key=lambda x: int(x.get("z_index", 0))):
+        z, bb = int(x.get("z_index", 0)), (x.get("bounding_box") or {}).get("normalized")
+        name = f"{z}.png" if bb else "base.png"
+        _save_png(_download(x["url"]), d / name)
+        files.append(d / name)
+        if bb:  # рамка 0–1000 → доли кадра; PNG слоя крупнее рамки — шаблон вписывает его в box (C5.5)
+            meta["layers"].append({"file": name, "name": x.get("name") or "", "z": z,
+                                   "box": [round(v / 1000, 4) for v in bb]})
+        else:
+            meta["base"] = name
+    _write_json(meta, job.out)
+    return {"credits": r["credits"], "task": r["task"], "files": files}

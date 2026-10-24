@@ -14,6 +14,21 @@
   `POST https://kieai.redpandaai.co/api/file-stream-upload` (multipart) → `data.downloadUrl`; файл живёт 24 ч.
 - Курс: **200 кредитов = $1**. Документация: `docs.kie.ai` (полный список — `docs.kie.ai/llms.txt`).
 
+## Бэкенды (`studio/imagegen.py`, C5.3)
+`images.backend`: `kie` — платно; `fake` — процедурные PNG из ключа, офлайн и бесплатно (тесты, selftest); `none` —
+генерации нет, нужны готовые файлы. `plan(proj)` — работы ролика по порядку: `image` (генерация), `layers` (раскладка
+`role: scene` с `layers:`), `cutout` (`role: subject`; `rembg` — локальный шаг команды `images`, C5.4). `estimate(proj)` —
+смета того, чего ещё нет в кэше: кредиты, $, `over` при превышении `budget_usd`; модель без замеренной цены (`credits:
+None` в `MODELS`) считается по 20 кредитов и попадает в `unpriced`. `generate(proj, job)` — одна работа, файл
+пишется атомарно (`.part` → замена). Файлы кэша в `assets/images/`: `<ключ>.png`; раскладка — `<ключ>.layers/`
+(`base.png`, `1.png`…, `layers.json` с `box` в долях кадра 0–1); вырезанный объект — `<ключ>.cut.png`.
+- Кадр — по формату проекта (`vertical` → 9:16, `portrait` → 4:5…), `subject` — 1:1; нет такого у модели — ближайший.
+- Картинки-входы (референс `images.reference`, база у `state_b` — первой) загружаются через `file-stream-upload`;
+  модель без входов (`google/nano-banana`, `flux-3/klein`) меняется на свою `edit`-модель.
+- `kie`: `createTask` → опрос `recordInfo` раз в 4 с до `success`/`fail`, таймаут 600 с. Ошибка по `code` даже при
+  HTTP 200; 4xx (401 ключ, 402 кредиты, 403, 422) — сразу ошибка без ретраев; сеть и 5xx при опросе — до 3 раз подряд,
+  создание задачи не повторяется (оно стоит денег). Ключ в сообщениях ошибок вырезается.
+
 ## Модели-кандидаты
 Цены — по странице Kie или замеру `creditsConsumed`; «?» — не опубликовано, уточнить замером.
 

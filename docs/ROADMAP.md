@@ -501,7 +501,7 @@ images:
   `seedream/5-flash-layer-decomposition` (база без объектов + прозрачные слои с `bounding_box`), стикер — `rembg`.
   Ответ поддержки Kie (2026-10-24, в `IMAGES.md`): коммерческое использование разрешено, ограничений сверх условий
   поставщика модели нет. Не проверены условия BFL (Klein) и ByteDance (Seedream).
-- [ ] **C5.2 Схема:** блок `images:` в `project.yaml` и `studio.yaml → defaults` (умолчания из `IMAGES.md`: `model`,
+- [x] **C5.2 Схема:** блок `images:` в `project.yaml` и `studio.yaml → defaults` (умолчания из `IMAGES.md`: `model`,
   `resolution`, `layers`, `cutout`, `style`, `budget_usd`); сцена в `script/*.yaml` просит картинку блоком `image:` —
   промпт, роль (`scene` — сцена целиком под раскладку / `bg` / `subject` / `state_b`), вариант (сид). `validate`: сцена с
   `image:` при `images.enabled: false` — ❌ с подсказкой. Поле «Картинки» в брифе, фаза «картинки» в `status`.
@@ -512,9 +512,20 @@ images:
   `validate` — ❌ при выключенных картинках и на кривых запросах; `status` — фаза «3б Картинки» при `enabled` (готово —
   все PNG в кэше), общая для выходов. Поле «Картинки» — в брифе канала, `/new-video`, `/topic-to-brief`, PHASES,
   SCENE_SPEC, шаблон `studio.yaml`. `tests/test_images_schema.py` (8 тестов), полный `pytest` и `selftest` ✅, golden прежние.
-- [ ] **C5.3 Бэкенды** `studio/imagegen.py` по образцу `tts.py`: `fake` (процедурные PNG, офлайн — для тестов и selftest),
+- [x] **C5.3 Бэкенды** `studio/imagegen.py` по образцу `tts.py`: `fake` (процедурные PNG, офлайн — для тестов и selftest),
   `kie`, `none`; `estimate()` и `generate()`; задача → опрос статуса с таймаутом; ошибка с HTTP 200 по полю `code`, 403 —
   не ретраить; загрузка своих картинок (референс, вход раскладки) через `file-stream-upload`.
+  *Сделано (2026-10-24):* `imagegen.plan()` — работы ролика (`image` / `layers` / `cutout`, у `state_b` — ключ базы),
+  `estimate()` — смета некэшированного в кредитах и $ с `over` по `budget_usd` и `unpriced` (нет замера — 20 кредитов
+  за вызов, а не ноль), `generate()` — одна работа атомарной записью. `MODELS` — входы и цены Kie (`nano-banana-2`,
+  `google/nano-banana` и `-edit`, `flux-3/klein` и `-edit`, раскладка seedream, `recraft/remove-background`); с
+  картинкой-входом модель меняется на свою `edit`. `kie`: `createTask` → опрос `recordInfo` с таймаутом 600 с, ошибка по
+  `code` при HTTP 200, 4xx — без ретраев, сеть/5xx при опросе — до 3 раз, создание задачи не повторяется; `kie_upload`
+  (multipart, кэш на процесс), `kie_balance`; ключ — `workspace.secret`, из ошибок вырезан. Раскладка → `<ключ>.layers/`
+  (`base.png`, слои, `layers.json` с `box` 0–1). `fake` — детерминированные PNG, раскладка и вырезание тех же файлов;
+  `none` — просит готовый файл. Входы моделей сверены с `docs.kie.ai` и запросами спайка C5.1. `tests/test_imagegen_backends.py`
+  (15 тестов, сеть подменена — ни одного платного вызова), полный `pytest` и `selftest` ✅, golden прежние. Живой вызов
+  `kie` из `imagegen` — в C5.4 вместе с командой и сметой.
 - [ ] **C5.4 Команда** `python -m studio images <проект> [--yes]` — генерация в `projects/<slug>/assets/`, кэш по хэшу «промпт +
   стиль + модель + вариант» (повторный запуск бесплатен), учёт в `assets.yaml` (промпт, модель, цена, файл, лицензия).
   **Перед генерацией — оценка стоимости и «да» пользователя (`--yes`, как у ElevenLabs)**, стоп при `budget_usd`; баланс
