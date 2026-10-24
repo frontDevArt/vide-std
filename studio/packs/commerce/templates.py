@@ -11,7 +11,7 @@ from .receipt import RECEIPT_DEFAULTS, Receipt
 from .tag import TAG_DEFAULTS, PriceTag
 
 
-@template("price_tag",
+@template("price_tag", aliases=("price_tag",),
           doc="Ценник-бирка на верёвочке: падает от гвоздика у верха зоны и качается, старая цена зачёркивается accent-2, новая "
               "выпрыгивает пружиной; опц. чек из принтера справа (строки по триггерам, отрыв крупным планом). "
               "Бирка и чек переходят через склейку (tag.from_prev / keep: [tag, receipt]).",

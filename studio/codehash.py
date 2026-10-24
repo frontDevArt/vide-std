@@ -19,7 +19,8 @@ from .project import STUDIO_ROOT
 STUDIO = STUDIO_ROOT / "studio"
 # из render.py не идём: подготовка данных (их результат уже в хэше сцены) и реестр пакетов (`packs/__init__`
 # грузит все пакеты; код шаблона считается по сцене); профили площадок — данные: поля сетки вёрстки (B2) в ключе сцены
-_NOT_DRAWING = {"studio.project", "studio.timing", "studio.packs", "studio.platforms"}
+# ассеты (C2) — данные: содержимое файлов сцены в ключе (assets.fingerprint), код шаблонов media — через их импорты
+_NOT_DRAWING = {"studio.project", "studio.timing", "studio.packs", "studio.platforms", "studio.assets"}
 
 
 def _module_file(name):

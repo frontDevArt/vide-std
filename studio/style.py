@@ -95,6 +95,7 @@ class Style:
     overrides: tuple = ()          # ((ключ, "#hex"), ...) отсортировано
     font: str = DEFAULT_FONT       # семейство для fc-match, когда у пресета нет своих файлов
     kit: str = ""                  # бренд-кит (studio/brand.py) — JSON; пусто — встроенные PALETTES/STYLES
+    subs_mode: str = ""            # subtitles.style проекта: plate | karaoke | tiktok поверх пресета/кита (ROADMAP C4)
 
     @classmethod
     def from_cfg(cls, style: dict | None) -> "Style":
@@ -103,13 +104,13 @@ class Style:
         kit = style.get("kit")
         return cls(kit["base"] if kit else style.get("palette", "neon"), style.get("mood"),
                    tuple(sorted((style.get("overrides") or {}).items())), style.get("font") or DEFAULT_FONT,
-                   json.dumps(kit, sort_keys=True, ensure_ascii=False) if kit else "")
+                   json.dumps(kit, sort_keys=True, ensure_ascii=False) if kit else "", style.get("subs") or "")
 
     def __post_init__(self):
         self.pal  # неверное настроение/overrides — ошибка сразу, как раньше в apply_style
 
     def __reduce__(self):  # в воркеры рендера — только входы; производные пересчитаются
-        return (Style, (self.palette, self.mood, self.overrides, self.font, self.kit))
+        return (Style, (self.palette, self.mood, self.overrides, self.font, self.kit, self.subs_mode))
 
     @functools.cached_property
     def brand(self):
@@ -147,7 +148,8 @@ class Style:
 
     @property
     def subs(self):
-        return self.preset.get("subs")
+        """Режим субтитров: subtitles.style проекта, иначе пресет или бренд-кит (karaoke | plate | tiktok), иначе None."""
+        return self.subs_mode or self.preset.get("subs")
 
     @property
     def fonts(self):
@@ -161,7 +163,7 @@ class Style:
 
     @property
     def key(self):
-        return (self.palette, self.mood, self.overrides, self.font, self.kit)
+        return (self.palette, self.mood, self.overrides, self.font, self.kit) + ((self.subs_mode,) if self.subs_mode else ())
 
     def col(self, c, a=255):
         """'cyan' | (r,g,b) | '#rrggbb' -> (r,g,b,a); неизвестное имя — accent."""

@@ -1,0 +1,20 @@
+scenes:
+  - id: s01
+    template: title
+    lines: ["Three small habits."]
+    params: {kicker: "Top three", title: "Small *habits*"}
+  - id: s02
+    item: 3
+    template: statement
+    lines: ["Number three: drink water."]
+    params: {text: "Drink *water*", sub: "Number three"}
+  - id: s03
+    item: 2
+    template: statement
+    lines: ["Number two: walk outside."]
+    params: {text: "Walk *outside*", sub: "Number two"}
+  - id: s04
+    item: 1
+    template: statement
+    lines: ["Number one: sleep on time."]
+    params: {text: "Sleep *on time*", sub: "Number one"}

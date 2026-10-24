@@ -3,15 +3,22 @@ from __future__ import annotations
 
 from . import gfx
 
-TIKTOK_SCALE = 1.6  # крупные субтитры бренд-кита (subs: tiktok) относительно обычных
+TIKTOK_SCALE = 1.6  # крупные субтитры (subtitles.style или бренд-кит subs: tiktok) относительно обычных
+MODES = ("plate", "karaoke", "tiktok")  # subtitles.style: плашка | караоке по словам | крупные TikTok
+
+
+def mode(proj) -> str | None:
+    """Режим субтитров проекта: subtitles.style (ROADMAP C4), иначе бренд-кит; пресет палитры (lab — karaoke) не
+    меняет ни размер, ни место, поэтому здесь не нужен."""
+    st = proj.cfg.get("style") or {}
+    return st.get("subs") or (st.get("kit") or {}).get("subs")
 
 
 def font_size(proj):
     W, H = proj.size
     s = proj.cfg["subtitles"].get("size")
     s = int(s) if s else int(round(min(W, H) * 0.052))
-    kit = (proj.cfg.get("style") or {}).get("kit") or {}
-    return int(s * TIKTOK_SCALE) if kit.get("subs") == "tiktok" else s  # перенос и QA — тем размером, что рисуется
+    return int(s * TIKTOK_SCALE) if mode(proj) == "tiktok" else s  # перенос и QA — тем размером, что рисуется
 
 
 def _zone(proj) -> dict | None:
@@ -41,8 +48,7 @@ def band_top(proj) -> float | None:
     if not sb.get("enabled", True):
         return None
     W, H = proj.size
-    kit = (proj.cfg.get("style") or {}).get("kit") or {}
-    if kit.get("subs") == "tiktok":
+    if mode(proj) == "tiktok":
         center = 0.66 if H >= W else 0.80
     else:
         center = 0.835 if H >= W else 0.885

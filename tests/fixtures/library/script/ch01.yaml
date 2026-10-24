@@ -1,0 +1,65 @@
+# Глава 1: данные и история — kit.chart (столбики из CSV, линия, круг), timeline, steps, compare, map.
+chapter: ch01
+title: "data and story"
+scenes:
+  - id: s01
+    template: chapter_bumper
+    lines: ["Part one: | the numbers."]
+    params: {number: 1, total: 2, kicker: "Chapter", title: "The *numbers*"}
+  - id: s02
+    template: chart
+    lines: ["Sales grew every month | and peaked in June."]
+    params: {type: bar, data: assets/sales.csv, title: "Monthly *sales*", prefix: "$", highlight: Jun, at: "grew",
+             source: "Source: demo data"}
+  - id: s03
+    template: chart
+    lines: ["Time online | climbed year after year."]
+    params:
+      type: line
+      title: "Hours *online*"
+      suffix: " h"
+      values: [{label: "2019", value: 3.1}, {label: "2020", value: 4.4}, {label: "2021", value: 4.2},
+               {label: "2022", value: 4.6}, {label: "2023", value: 4.9}, {label: "2024", value: 5.2}]
+      highlight: 5
+      at: "climbed"
+  - id: s04
+    template: chart
+    lines: ["Most of it | goes to video."]
+    params:
+      type: pie
+      title: "Where the *time* goes"
+      values: [{label: "Video", value: 46}, {label: "Social", value: 28}, {label: "Games", value: 16}, {label: "Other", value: 10}]
+      highlight: Video
+      at: "most"
+  - id: s05
+    template: timeline
+    lines: ["It started in two thousand seven, | grew in twenty twelve, | and exploded in twenty twenty."]
+    params:
+      title: "A short *history*"
+      events: [{date: "2007", text: "first smartphone", at: "started"}, {date: "2012", text: "feeds everywhere", at: "grew"},
+               {date: "2020", text: "short video boom", at: "exploded"}, {date: "2024", text: "today"}]
+  - id: s06
+    template: steps
+    lines: ["Three steps: | notice, | pause, | choose."]
+    params:
+      title: "How to *reset*"
+      first_beat: 1
+      steps: [{title: "Notice", text: "the urge"}, {title: "Pause", text: "ten seconds"}, {title: "Choose", text: "on purpose"}]
+  - id: s07
+    template: compare
+    lines: ["Paper or phone? | Paper wins on focus, | the phone wins on speed."]
+    params:
+      title: "Paper vs *phone*"
+      left: {title: "Paper", color: accent}
+      right: {title: "Phone", color: accent2}
+      rows: [{label: "focus", left: "high", right: "low", win: left, at: "focus"},
+             {label: "speed", left: "slow", right: "fast", win: right, at: "speed"},
+             {label: "cost", left: "$2", right: "$900", win: left}]
+  - id: s08
+    template: map
+    lines: ["From London | to New York | to Tokyo."]
+    params:
+      title: "Where it *spread*"
+      route: true
+      pins: [{lat: 51.5, lon: -0.1, label: "London", at: "london"}, {lat: 40.7, lon: -74.0, label: "New York", at: "york"},
+             {lat: 35.7, lon: 139.7, label: "Tokyo", at: "tokyo"}]

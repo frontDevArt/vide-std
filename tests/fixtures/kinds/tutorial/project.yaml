@@ -1,0 +1,10 @@
+# Демо типа tutorial (ROADMAP C1, C2): запись экрана + выноски + зум (media.screen), голос fake (офлайн).
+title: Create a report
+topic: how to create a report
+kind: tutorial
+brief: {recording: assets/screen.mp4}
+language: en
+format: horizontal
+fps: 30
+tts: {backend: fake, voice: auto, rate: 105}
+chapters: [ch01]

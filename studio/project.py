@@ -17,7 +17,7 @@ from pathlib import Path
 
 import yaml
 
-from .config import DEFAULTS, FORMATS, deep_merge, migrate, check  # DEFAULTS, deep_merge, FORMATS — старые имена
+from .config import DEFAULTS, FORMATS, OPT_IN, deep_merge, migrate, check, section_defaults  # DEFAULTS, deep_merge, FORMATS — старые имена
 from . import brand, voices, workspace
 from .workspace import ROOT as STUDIO_ROOT  # старое имя; пути данных — workspace.current()
 VERSION = "0.3.0"
@@ -147,7 +147,12 @@ def load(root) -> Project:
     if "tts" in user:
         user["tts"] = ut
     cfg = deep_merge(DEFAULTS, deep_merge(studio_defaults, deep_merge({"tts": vl} if vl else {}, user)))
+    for sec in OPT_IN:  # раздел по желанию (images, ROADMAP C5): задан — дополняется умолчаниями, нет — нет в cfg
+        if isinstance(cfg.get(sec), dict):
+            cfg[sec] = deep_merge(section_defaults(sec), cfg[sec])
     cfg = brand.resolve(cfg, ws.root)  # style.brand → style.kit (ROADMAP A2)
+    if cfg["subtitles"].get("style"):  # режим субтитров проекта поверх пресета и кита (ROADMAP C4) → Style.subs
+        cfg["style"] = dict(cfg["style"], subs=cfg["subtitles"]["style"])
     if 48000 % int(cfg["fps"]):
         raise SystemExit("fps должен делить 48000 (24/25/30/60)")
     tc = cfg["tts"]
@@ -161,6 +166,8 @@ def load(root) -> Project:
         # модель студии — ELEVENLABS_MODEL_ID; входит в ключ кэша (tts.cache_key)
         if workspace.secret("ELEVENLABS_MODEL_ID", ws):
             tc["model"] = workspace.secret("ELEVENLABS_MODEL_ID", ws)
+    if cfg["tts"]["backend"] == "none":  # ролик без голоса (ROADMAP C1, studio/kinds.py): синтеза нет
+        cfg["tts"]["voice"] = "none"
     if cfg["tts"]["backend"] == "fake" and cfg["tts"].get("voice") in (None, "auto"):
         cfg["tts"]["voice"] = "fake"  # голос не нужен; не берём из LANGS, чтобы doctor не считал fake «синтезом»
     if cfg["tts"].get("voice") in (None, "auto"):

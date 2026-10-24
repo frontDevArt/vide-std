@@ -10,6 +10,7 @@ from studio import cli, project, render, timing
 from studio.templates import REGISTRY
 
 FIXTURE = ROOT / "tests" / "fixtures" / "gallery"
+LIBRARY = ROOT / "tests" / "fixtures" / "library"
 
 
 @pytest.fixture(scope="module", params=["horizontal", "vertical"])
@@ -20,16 +21,20 @@ def voiced(request, tmp_path_factory):
     return proj
 
 
-def test_covers_every_template():
-    # Новый шаблон без сцены в фикстуре — красный тест: golden (P0.4) и selftest (P0.5) его не увидят.
+def _used(fixture):
     used = set()
-    for ch in yaml.safe_load((FIXTURE / "project.yaml").read_text(encoding="utf-8"))["chapters"]:
-        data = yaml.safe_load((FIXTURE / "script" / f"{ch}.yaml").read_text(encoding="utf-8"))
+    for ch in yaml.safe_load((fixture / "project.yaml").read_text(encoding="utf-8"))["chapters"]:
+        data = yaml.safe_load((fixture / "script" / f"{ch}.yaml").read_text(encoding="utf-8"))
         used |= {s["template"] for s in data["scenes"]}
-    used = {REGISTRY.canonical(n) or n for n in used}  # в фикстуре — старые имена (алиасы)
-    # commerce (P2.9) пришёл на этапе 2, где golden меняться не может; рисование проверяет test_commerce.py
-    # (lab_anchor ≡ commerce.price_tag, листы fake-discounts). В фикстуру — вместе с ближайшей сменой golden.
-    full = {n for n in REGISTRY.templates() if not n.startswith("commerce.")}
+    return {REGISTRY.canonical(n) or n for n in used}  # в фикстурах — и старые имена (алиасы)
+
+
+def test_covers_every_template():
+    # Новый шаблон без сцены в фикстурах — красный тест: golden (P0.4, C4), selftest (P0.5) и галерея
+    # (python -m studio gallery) его не увидят. gallery — базовые и lab, library — kit, commerce, media (ROADMAP C4).
+    used = _used(FIXTURE) | _used(LIBRARY)
+    # кроме шаблонов на внешнем движке (REQUIRES, web.html — C6): их кадр зависит от сборки браузера, тест — test_web_html
+    full = {n for n, c in REGISTRY.templates().items() if not getattr(c, "REQUIRES", None)}
     assert used == full, (full - used, used - full)
 
 

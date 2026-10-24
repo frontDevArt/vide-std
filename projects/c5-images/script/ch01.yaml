@@ -1,0 +1,27 @@
+chapter: ch01
+title: "Sleep comes in cycles"
+scenes:
+  - id: s01
+    template: lab.full_number
+    lines: ["Adults are told | to sleep eight hours."]
+    params: {value: 8, suffix: h, caption: "of sleep", sub: "what adults are told they need", at: "eight"}
+  - id: s02
+    lines: ["But a night of sleep | is not one block.", "It is a quiet room | where the body | runs a program."]
+    image:
+      prompt: "a cozy bedroom at night, a person asleep in bed, a bedside table with a lamp, a window with moonlight"
+      role: scene
+      layers: [bed with a sleeping person, bedside table with a lamp]
+  - id: s03
+    lines: ["The sleeper drifts | through four to six cycles."]
+    image:
+      - {prompt: "an empty bedroom at night with a window and moonlight, no people", role: bg}
+      - {prompt: "a person sleeping curled on their side under a blanket, isolated on a plain light gray background", role: subject}
+  - id: s04
+    template: statement
+    lines: ["Each cycle | lasts about ninety minutes."]
+    params: {text: "Each cycle is about *90 minutes*", sub: "light → deep → REM"}
+  - id: s05
+    lines: ["Wake up at the end of a cycle, | and the same room | feels like morning."]
+    image:
+      - {prompt: "a bedroom at night, a person asleep in bed, dark blue light", role: bg}
+      - {prompt: "the same bedroom at sunrise, warm golden light through the window, the person waking and stretching", role: state_b}

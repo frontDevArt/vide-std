@@ -13,6 +13,7 @@ defaults:
   format: __FORMAT__
   style:
     brand: brand           # бренд-кит brand/brand.yaml (ROADMAP A2)
+  # images: {enabled: true, style: "…", budget_usd: 3}   # AI-картинки сцен (ROADMAP C5, docs/IMAGES.md), платно
 
 # Голос студии по языку проекта: DEFAULTS → defaults → voices[язык] → project.yaml (ROADMAP A3, docs/TTS.md).
 # env:ИМЯ — значение из .env студии (в git и чат не попадает). rate — числом после первого ролика.

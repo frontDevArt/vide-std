@@ -24,6 +24,10 @@
 | `voices.py` | голос студии (ROADMAP A3): `voices:` по языкам из `studio.yaml` — слой tts между `defaults` и project.yaml, `env:ИМЯ`; `max_accents`; замеры темпа голоса на студию — `studios/<id>/voices.yaml` |
 | `textutil.py` | текст строки: сегменты `\|`, текст для TTS и для экрана, вес слогов для оценки длительности, ёмкость субтитров |
 | `lang.py` | профиль языка (`language`): голоса по умолчанию, фраза проверки TTS, ориентир темпа (`wpm`), «чужой алфавит» для validate |
+| `assets.py` | ассеты проекта (ROADMAP C2): `assets/` + `assets.yaml` (файл, источник, лицензия, кто дал); `refs` — медиа в `params` сцены, `issues` — validate, `qa_check` — строка QA, `fingerprint` — содержимое файлов в ключе сцены; у нарезки ищет и в папке исходника ([ниже](#медиа-слой-roadmap-c2)) |
+| `imagegen.py` | картинки сцен (ROADMAP C5, [`IMAGES.md`](IMAGES.md)): схема `images:` и запросы `image:`, ключ кэша `assets/images/<ключ>.png`, `plan`/`estimate` — работы и смета, `generate` — бэкенды `kie`/`fake`/`none` и локальный `rembg` (`tools/rembg-venv/`), `entries`/`register` — учёт в `assets.yaml`; команда — `commands/images.py` |
+| `media.py` | декодирование для шаблонов `media`: фото (кэш), `Video` — кадры видео потоком из ffmpeg нужного размера и fps (подряд — чтение, назад или далеко вперёд — перезапуск с `-ss`, за концом — стоп-кадр), `audio` — звук исходника (моно float32), `envelope` — громкость по кадрам |
+| `kinds.py` | типы роликов (ROADMAP C1): `kind` в `project.yaml` → голос, пределы длительности, поля `brief:`, проверки validate/status/qa ([ниже](#типы-роликов-roadmap-c1)) |
 | `config.py` | схема `project.yaml`: ключи, типы, значения по умолчанию, `schema_version` и `migrate()`, ⚠️ на неизвестный ключ |
 | `tts.py` | бэкенды TTS, кэш, обрезка тишины, поиск пауз |
 | `timing.py` | раскладка: строки → биты → сцены → кадры; подбор темпа под точную длительность |
@@ -33,7 +37,7 @@
 | `brand.py` | бренд-кит студии `brand/brand.yaml` (ROADMAP A2, [`BRAND.md`](BRAND.md)): проверка, `resolve` — `style.brand` → `cfg["style"]["kit"]` в `project.load` |
 | `anim.py` | прогресс и кривые для всех пакетов: `span(t, a, b)` — отрезок, `ramp(t, start, dur)` — длительность; кубические `eo`/`eio`/`eob`/`ei`, CSS-кривые STYLE §6 (`ease_out_expo`, `ease_in_out`, `ease_in`), `spring` |
 | `gfx.py` | шрифты, easing (из `anim`, `prog` = `span`), спрайты со свечением, фон, иконки, телефон (`style=` у хелперов, стиль — в ключе кэшей) |
-| `packs/` | пакеты шаблонов сцен: `registry.py` (реестр с пространствами имён `core.title`, `lab.flow`, `project.<имя>`; старые плоские имена — алиасы; коллизия → ошибка; `Param` — тип, умолчание, описание; `formats`), `base.py` (`Template`), `core/` (title, statement, bullets, counter, outro), `phone/` (телефон с лентой + 5 шаблонов первого ролика), `lab/` (пресет канала: `background` — фон и камера (`composite_camera` — affine только по плиткам с контентом, P3.1), `elements` — примитивы и фирменные элементы, `triggers` — `at`, `check` — проверка `at` для validate/voice, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны), `commerce/` (на основе lab: `elements` — бирка, чек, цепь, `thousands`; миксины `PriceTag` и `Receipt`; шаблоны `price_tag`, `number`); `reference.py` — справочник шаблонов в Markdown из метаданных (`templates --md`, блок в `SCENE_SPEC.md`, P5.3); `load_project_templates` — шаблоны проекта в пространство `project` |
+| `packs/` | пакеты шаблонов сцен: `registry.py` (реестр с пространствами имён `core.title`, `lab.flow`, `project.<имя>`; старые плоские имена — алиасы; коллизия → ошибка; `Param` — тип, умолчание, описание; `formats`), `base.py` (`Template`), `core/` (title, statement, bullets, counter, outro), `phone/` (телефон с лентой + 5 шаблонов первого ролика), `lab/` (пресет канала: `background` — фон и камера (`composite_camera` — affine только по плиткам с контентом, P3.1), `elements` — примитивы и фирменные элементы, `triggers` — `at`, `check` — проверка `at` для validate/voice, `base` — `LabTemplate`, `hero`/`crowd`/`templates` — шаблоны), `commerce/` (на основе lab: `elements` — бирка, чек, цепь, `thousands`; миксины `PriceTag` и `Receipt`; шаблоны `price_tag`, `number`), `media/` (ROADMAP C2: `base` — `MediaTemplate`: рамка `box`, форма, вход/выход, подпись, подложка «под обрез» вне проверки зоны (`safe_draw`); `image`, `video` — video/screen/clip, `brand` — logo_sting/product_card); `web/` (ROADMAP C6: `html` — сцена из HTML/CSS в headless Chromium слоем между фоном и субтитрами, `browser` — браузер на процесс, виртуальное время; playwright не в requirements, шаблон с `REQUIRES` — вне галереи и golden); `reference.py` — справочник шаблонов в Markdown из метаданных (`templates --md`, блок в `SCENE_SPEC.md`, P5.3); `load_project_templates` — шаблоны проекта в пространство `project` |
 | `templates.py`, `lab.py` | прежние входы (шаблоны проектов, тесты): те же имена из `packs/`; запись `studio.lab.<имя> = …` доходит до модуля пакета |
 | `motion.py` | тайминги STYLE §6 (кадры @30) и составные анимации (кривые — из `anim`, `prog` = `ramp`), камера как функция глобального времени |
 | `sfx.py` | синтез звуков появления, дорожка SFX по событиям шаблонов (−28…−32 dB к голосу) |
@@ -41,12 +45,13 @@
 | `log.py` | лог каждой команды: вывод в консоль дублируется в `projects/<slug>/logs/<команда>-<время>.log` (без проекта — `logs/` рабочей области), трассировка падения — туда же; хранятся последние 20 на команду; `status`/`templates` (`LOG = False`) лог не пишут |
 | `codehash.py` | хэш кода рисования для ключа сцены: файлы ищутся по импортам шаблона сцены, а не по списку |
 | `safezone.py` | вёрстка: рамка контента сцены (шаблон на прозрачном слое) против полей кадра → ⚠️ в `stills` и `qa` |
-| `audio.py` | дорожка голоса по таймлайну (кусками по 30 с, int16 — память не растёт с длиной), процедурная музыка, sidechain, LUFS |
+| `audio.py` | дорожка голоса по таймлайну (кусками по 30 с, int16 — память не растёт с длиной) + звук исходников сцен (`media_track`: `audio_clips()` шаблона — клип, видео с `audio: true`), процедурная музыка, sidechain, LUFS |
+| `music.py` | музыка и ритм (ROADMAP C3): файл трека (проект, библиотека студии `brand/music/` + `music.yaml`), ритм-трек кодом, доли и сильные доли (онсеты numpy → темп автокорреляцией → доли DP Ellis → пик онсета; кэш `build/mix/beats-<sha1>.json`), `sync` — склейки в долю (`snap` из `timing.layout`), подложка по главам с кроссфейдом (`bed`), validate/qa (лицензия, «Склейки в долю» по звуку итога) |
 | `clean.py` | `clean`: удаляет из `build/` пересобираемое (рендер, черновой рендер, главы, микс, финал — кроме `--keep-final`, TTS вне таймлайна, старые `build/*.log`), отчёт по группам; `timeline.json`, калибровка и TTS из таймлайна остаются, у платного синтеза TTS не трогается вовсе. `--older-than 30d` — только давно не менявшиеся проекты (без проекта — все такие) |
 | `assemble.py` | склейка сцен прямо в финал без перекодирования видео (список concat — во временной папке); `--chapters` — ещё файлы глав `build/chapters/chNN.mp4` (иначе их нет: это копия `render/`) |
 | `qa.py` | автопроверки + листы кадров из готового файла |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
-| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4) |
+| `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4); `--kinds` — демо каждого типа ролика `tests/fixtures/kinds/` до QA PASS; фикстура `tests/fixtures/images` (картинки сцен на `fake`, C5.6) — images → voice → кадры = `tests/golden/images/` → render → assemble → qa; весь прогон под `no_network` (соединение дальше loopback — ошибка) |
 
 ## Студии (ROADMAP A1)
 Студия (workspace) — канал, бренд или клиент. Раскладку папок знает только `workspace.py`:
@@ -67,6 +72,52 @@ studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, c
   `brand/brand.yaml`, `CLAUDE.md`, для `youtube` — `channel/POSITIONING.md` — и создаёт проект демо стиля
   `projects/<id>-style/` (сценарий `demo/ch01.yaml` на языке студии, шаблоны `core.*` — все форматы). Мастер
   Claude — `/new-studio`: анкета из описания, кит по референсу (BRAND.md), демо 10–15 с на утверждение.
+
+## Типы роликов (ROADMAP C1)
+`studio/kinds.py` — `kind` в `project.yaml` (нет — `explainer`; в cfg ключ не попадает, ключ кэша рендера старых проектов
+тот же). Тип — запись `Kind`: голос (`voice=False` — `tts.backend: none`, `tts.synth` такой строки не синтезирует),
+пределы длительности и нужна ли точная, обязательные поля `brief:` и файлы брифа, музыка как содержание, звук исходника
+как речь (`source_audio`, clip), `needs` — недостающий слой движка (тип принимается, validate ⚠️, демо — в той задаче;
+после C4 не осталось ни у одного типа: `data-story` строится на `chart`). Проверки: `kinds.issues` — в `validate`,
+`kinds.brief_missing`/`missing_files` — фазы «1 Бриф» и «1б Материалы» в `status`, `kinds.qa` — строки QA. Демо по типу —
+`tests/fixtures/kinds/<тип>/`: `tests/test_kinds.py` — validate и тайминг, `selftest --kinds` — до QA PASS (каждый выход
+из `deliverables`: promo — 9:16 и 1:1).
+
+## Медиа-слой (ROADMAP C2)
+Файлы — `projects/<slug>/assets/`, их происхождение — `assets.yaml` (`studio/assets.py`). Сцена ссылается на файл путём от
+папки проекта в `params` — ссылкой считается любая строка с расширением медиа (`assets.refs`), поэтому шаблонам не нужно
+объявлять, какие параметры — файлы. validate: нет файла — ❌, нет записи или лицензии — ⚠️; qa «Ассеты: источник и
+лицензия» — ❌. `prepare` кладёт в ctx `roots` (папка проекта, у нарезки ещё исходника) и добавляет в ключ сцены
+`assets.fingerprint` — sha1 содержимого файлов (кэш по mtime и размеру): фото заменили тем же именем — сцена устарела;
+у сцен без медиа ключ прежний. `studio.assets` — в `codehash._NOT_DRAWING` (данные, а не рисование).
+Шаблоны — пакет `packs/media/`; дорогое (подгонка фото под масштаб, маски, тени, волна звука) — в `setup`, в `draw` —
+окно `resize(box=…)` с субпиксельным сдвигом (Ken Burns и параллакс без дрожи). Видео не грузится в память: `media.Video`
+отдаёт кадры потоком; сцены рендерятся подряд, кусок рендера (`CHUNK`) начинается с `-ss`. Фото и видео без `box` — на весь
+кадр под обрез: это подложка, `MediaTemplate.safe_draw` отдаёт safezone только подпись и элементы поверх (у шаблонов с
+рамкой — всё). Звук: шаблон с `audio_clips()` → `audio.media_track` кладёт звук исходника в дорожку голоса — sidechain
+приглушает музыку под ним, итог нормализуется по LUFS; так `clip` звучит речью исходника без синтеза (`tts.backend: none`,
+QA «Звук исходника звучит»). `render --alpha mov|webm` (`render.export_alpha`) — кадры шаблонов на прозрачном без фона и
+субтитров одним проходом в ProRes 4444 (`yuva444p10le`) или VP9 (`yuva420p`), `build/final/<slug>.alpha.<fmt>`.
+CSV графиков (`kit.chart`, ROADMAP C4) — тоже ассеты (`assets.DATA_EXT`): у источника данных те же правила, что у фото.
+
+## Библиотека шаблонов и галерея (ROADMAP C4)
+Пакет `packs/kit/` — общие шаблоны для любой палитры и формата: `chart` (столбики, линия, круг из CSV или `values`),
+`timeline`, `steps`, `compare`, `map` (заглушка: сетка-проекция и булавки), `quote`, `testimonial`, `lower_third`,
+`cta_end`, `chapter_bumper`; у `commerce.price_tag` появился алиас `price_tag`. База `KitTemplate`: триггер `at` (бит |
+секунды | слово, как у media и lab; `word_triggers = True` — слова проверяет `lab/check.trigger_errors` в validate и
+voice), `item_at` (элемент списка: `at` → бит `first_beat + i` → равномерно), `place` (блок «заголовок + содержимое» по
+центру `self.area`), кегль `fs` (×1,18 в широком кадре, ×1,15 в высоком 9:16 и 4:5). Полупрозрачные фигуры — только
+через `kit.base.Ink`: `ImageDraw` на RGBA-кадре не смешивает цвет, а записывает альфу в пиксели, и в итоговом RGB
+полупрозрачное стало бы сплошным (так была залита полоса `chapter_bumper` в первом прогоне). Фикстура
+`tests/fixtures/library/` — по сцене на каждый шаблон, которого нет в `gallery` (kit, commerce, media), палитра lab;
+golden — `tests/golden/library/<формат>/` (timeline и по 2 кадра на сцену, плюс кадры с TikTok-субтитрами), у сцен с
+видео-ассетом допуск шире (`selftest.VIDEO_TEMPLATES`: декодер ffmpeg разных версий). `test_gallery` требует, чтобы
+две фикстуры вместе покрывали весь реестр. `python -m studio gallery` (`studio/gallery.py`) снимает обе фикстуры в
+каждом формате воркерами (по 5 кадров на сцену) и режимы субтитров, страница — `output/gallery/index.html` (поиск,
+фильтр форматов, проигрывание кадров при наведении, параметры из метаданных шаблона).
+Режим субтитров проекта — `subtitles.style: plate | karaoke | tiktok`: `project.load` кладёт его в `style.subs`,
+`Style.subs_mode` перекрывает пресет и бренд-кит (`Style.subs`), `subs.mode()` — размер и место полосы; без ключа cfg и
+ключ рендера прежние.
 
 ## Площадки (ROADMAP B1)
 `studio/platforms.py` — профили выходов: `youtube`, `youtube-shorts`, `tiktok`, `instagram-reels`, `instagram-feed` (4:5),
@@ -145,7 +196,8 @@ studios/<id>/            studio.yaml (+ voices: по языкам), CLAUDE.md, c
    считается заранее по всем сценам по порядку и подаётся на вход каждой сцене (`state_in`).
 3. **Единая геометрия.** Телефон, субтитры, палитра, шрифт — общие для всего проекта.
 4. **Один звук на весь ролик.** Голос кладётся сэмпл-точно по таймлайну, музыка — одна петля
-   на весь ролик, громкость нормализуется один раз. На стыках глав звук не рвётся.
+   на весь ролик (свой трек на главу — одна подложка с кроссфейдами), громкость нормализуется один раз. На стыках глав
+   звук не рвётся. Трек играет с нуля ролика — поэтому доли файла и есть доли ролика (`music.sync`).
 5. **Одинаковый кодек.** Все сцены кодируются с одними параметрами и склеиваются `-c copy`.
 6. **Зафиксированные решения.** Голос, темп, палитра, термины — в `project.yaml`/`outline.md`,
    а не в памяти сессии.

@@ -1,0 +1,24 @@
+# Сцены с image: без template — media.image; params сами разворачиваются из готовых PNG (render._prepare).
+chapter: ch01
+title: "images"
+scenes:
+  - id: s01
+    template: title
+    lines: ["Why do we sleep?"]
+    params: {kicker: "Images", title: "Why we *sleep*"}
+  - id: s02
+    lines: ["A quiet bedroom. | A bed. | A lamp by the bed."]
+    image:
+      prompt: "a cozy bedroom at night, a bed, a bedside lamp"
+      role: scene
+      layers: [bed, bedside lamp]
+  - id: s03
+    lines: ["An empty room, | and then a person."]
+    image:
+      - {prompt: "an empty bedroom at night", role: bg}
+      - {prompt: "a person in pajamas, side view", role: subject}
+  - id: s04
+    lines: ["A dark room. | The same room at dawn."]
+    image:
+      - {prompt: "a dark bedroom at night", role: bg}
+      - {prompt: "the same bedroom at dawn, warm light", role: state_b}

@@ -1,0 +1,392 @@
+{
+ "src": "4bcee56fbe0a",
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
+ "rate": 105.0,
+ "voice": "fake",
+ "backend": "fake",
+ "total_frames": 382,
+ "duration": 12.733333333333333,
+ "words": 29,
+ "wpm_speech": 173.6,
+ "wpm_overall": 136.6,
+ "scenes": [
+  {
+   "chapter": "ch01",
+   "id": "s01",
+   "template": "title",
+   "params": {
+    "kicker": "Images",
+    "title": "Why we *sleep*"
+   },
+   "lines": [
+    {
+     "text": "Why do we sleep?",
+     "wav": "42d03ba883a1665f.wav",
+     "t0": 0.45,
+     "t1": 1.596
+    }
+   ],
+   "beats": [
+    {
+     "text": "Why do we sleep?",
+     "line": 0,
+     "t0": 0.45,
+     "t1": 1.596
+    }
+   ],
+   "words": [
+    {
+     "w": "Why",
+     "line": 0,
+     "t0": 0.45,
+     "t1": 0.688
+    },
+    {
+     "w": "do",
+     "line": 0,
+     "t0": 0.716,
+     "t1": 0.911
+    },
+    {
+     "w": "we",
+     "line": 0,
+     "t0": 0.94,
+     "t1": 1.135
+    },
+    {
+     "w": "sleep?",
+     "line": 0,
+     "t0": 1.163,
+     "t1": 1.596
+    }
+   ],
+   "start": 0.0,
+   "dur": 1.8666666666666667,
+   "start_frame": 0,
+   "n_frames": 56,
+   "subs": [
+    {
+     "lines": [
+      "Why do we sleep?"
+     ],
+     "t0": 0.4,
+     "t1": 1.817
+    }
+   ],
+   "hash": "c8280441d215"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s02",
+   "template": "media.image",
+   "params": {},
+   "lines": [
+    {
+     "text": "A quiet bedroom. A bed. A lamp by the bed.",
+     "wav": "1eb53fb147834dac.wav",
+     "t0": 0.2793,
+     "t1": 3.9043
+    }
+   ],
+   "beats": [
+    {
+     "text": "A quiet bedroom.",
+     "line": 0,
+     "t0": 0.2793,
+     "t1": 1.6593
+    },
+    {
+     "text": "A bed.",
+     "line": 0,
+     "t0": 1.9593,
+     "t1": 2.3893
+    },
+    {
+     "text": "A lamp by the bed.",
+     "line": 0,
+     "t0": 2.6793,
+     "t1": 3.9043
+    }
+   ],
+   "words": [
+    {
+     "w": "A",
+     "line": 0,
+     "t0": 0.2793,
+     "t1": 0.4313
+    },
+    {
+     "w": "quiet",
+     "line": 0,
+     "t0": 0.4603,
+     "t1": 1.0023
+    },
+    {
+     "w": "bedroom.",
+     "line": 0,
+     "t0": 1.0313,
+     "t1": 1.6593
+    },
+    {
+     "w": "A",
+     "line": 0,
+     "t0": 1.9643,
+     "t1": 2.1163
+    },
+    {
+     "w": "bed.",
+     "line": 0,
+     "t0": 2.1443,
+     "t1": 2.3823
+    },
+    {
+     "w": "A",
+     "line": 0,
+     "t0": 2.6873,
+     "t1": 2.8393
+    },
+    {
+     "w": "lamp",
+     "line": 0,
+     "t0": 2.8683,
+     "t1": 3.1483
+    },
+    {
+     "w": "by",
+     "line": 0,
+     "t0": 3.1773,
+     "t1": 3.3723
+    },
+    {
+     "w": "the",
+     "line": 0,
+     "t0": 3.4003,
+     "t1": 3.6383
+    },
+    {
+     "w": "bed.",
+     "line": 0,
+     "t0": 3.6673,
+     "t1": 3.9043
+    }
+   ],
+   "start": 1.8666666666666667,
+   "dur": 4.166666666666667,
+   "start_frame": 56,
+   "n_frames": 125,
+   "subs": [
+    {
+     "lines": [
+      "A quiet bedroom. A bed."
+     ],
+     "t0": 0.229,
+     "t1": 2.609
+    },
+    {
+     "lines": [
+      "A lamp by the bed."
+     ],
+     "t0": 2.629,
+     "t1": 4.117
+    }
+   ],
+   "hash": "b0ecf198b56f"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s03",
+   "template": "media.image",
+   "params": {},
+   "lines": [
+    {
+     "text": "An empty room, and then a person.",
+     "wav": "d2c67b65663ae235.wav",
+     "t0": 0.2877,
+     "t1": 2.7467
+    }
+   ],
+   "beats": [
+    {
+     "text": "An empty room,",
+     "line": 0,
+     "t0": 0.2877,
+     "t1": 1.3677
+    },
+    {
+     "text": "and then a person.",
+     "line": 0,
+     "t0": 1.5077,
+     "t1": 2.7467
+    }
+   ],
+   "words": [
+    {
+     "w": "An",
+     "line": 0,
+     "t0": 0.2877,
+     "t1": 0.4827
+    },
+    {
+     "w": "empty",
+     "line": 0,
+     "t0": 0.5117,
+     "t1": 0.9437
+    },
+    {
+     "w": "room,",
+     "line": 0,
+     "t0": 0.9727,
+     "t1": 1.3627
+    },
+    {
+     "w": "and",
+     "line": 0,
+     "t0": 1.5147,
+     "t1": 1.7527
+    },
+    {
+     "w": "then",
+     "line": 0,
+     "t0": 1.7817,
+     "t1": 2.0617
+    },
+    {
+     "w": "a",
+     "line": 0,
+     "t0": 2.0907,
+     "t1": 2.2427
+    },
+    {
+     "w": "person.",
+     "line": 0,
+     "t0": 2.2717,
+     "t1": 2.7467
+    }
+   ],
+   "start": 6.033333333333333,
+   "dur": 3.033333333333333,
+   "start_frame": 181,
+   "n_frames": 91,
+   "subs": [
+    {
+     "lines": [
+      "An empty room,"
+     ],
+     "t0": 0.238,
+     "t1": 1.438
+    },
+    {
+     "lines": [
+      "and then a person."
+     ],
+     "t0": 1.458,
+     "t1": 2.983
+    }
+   ],
+   "hash": "972170f67219"
+  },
+  {
+   "chapter": "ch01",
+   "id": "s04",
+   "template": "media.image",
+   "params": {},
+   "lines": [
+    {
+     "text": "A dark room. The same room at dawn.",
+     "wav": "407cdc1483b6fe2d.wav",
+     "t0": 0.2633,
+     "t1": 3.0553
+    }
+   ],
+   "beats": [
+    {
+     "text": "A dark room.",
+     "line": 0,
+     "t0": 0.2633,
+     "t1": 1.1433
+    },
+    {
+     "text": "The same room at dawn.",
+     "line": 0,
+     "t0": 1.4433,
+     "t1": 3.0553
+    }
+   ],
+   "words": [
+    {
+     "w": "A",
+     "line": 0,
+     "t0": 0.2633,
+     "t1": 0.4153
+    },
+    {
+     "w": "dark",
+     "line": 0,
+     "t0": 0.4443,
+     "t1": 0.7243
+    },
+    {
+     "w": "room.",
+     "line": 0,
+     "t0": 0.7533,
+     "t1": 1.1433
+    },
+    {
+     "w": "The",
+     "line": 0,
+     "t0": 1.4483,
+     "t1": 1.6853
+    },
+    {
+     "w": "same",
+     "line": 0,
+     "t0": 1.7143,
+     "t1": 2.1043
+    },
+    {
+     "w": "room",
+     "line": 0,
+     "t0": 2.1333,
+     "t1": 2.5233
+    },
+    {
+     "w": "at",
+     "line": 0,
+     "t0": 2.5513,
+     "t1": 2.7463
+    },
+    {
+     "w": "dawn.",
+     "line": 0,
+     "t0": 2.7753,
+     "t1": 3.0553
+    }
+   ],
+   "start": 9.066666666666666,
+   "dur": 3.6666666666666665,
+   "start_frame": 272,
+   "n_frames": 110,
+   "subs": [
+    {
+     "lines": [
+      "A dark room."
+     ],
+     "t0": 0.213,
+     "t1": 1.373
+    },
+    {
+     "lines": [
+      "The same room at dawn."
+     ],
+     "t0": 1.393,
+     "t1": 3.405
+    }
+   ],
+   "hash": "612abe089cb7"
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+# Демо типа slideshow (ROADMAP C1, C2): фото + подписи + музыка, без голоса (tts.backend: none).
+# Ken Burns, параллакс по слоям (фон + вырезанные птицы PNG), «до → после»; фото — assets/ + assets.yaml.
+title: Four horizons
+topic: landscapes slideshow
+kind: slideshow
+brief: {photos: [assets/dusk.jpg, assets/valley.jpg, assets/night.jpg, assets/sea.jpg]}
+language: en
+format: horizontal
+fps: 30
+tts: {backend: none}
+music: {enabled: true}
+subtitles: {enabled: false}
+chapters: [ch01]

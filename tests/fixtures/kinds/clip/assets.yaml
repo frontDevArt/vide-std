@@ -1,0 +1,3 @@
+# Демо: видео и «речь» синтезированы кодом (tools/make_demo_assets.py), голоса человека нет.
+assets:
+  - {file: assets/podcast.mp4, source: tools/make_demo_assets.py, license: CC0 (своя графика и звук), by: студия}

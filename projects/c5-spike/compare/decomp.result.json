@@ -1,0 +1,84 @@
+{
+ "resultObject": {
+  "layers_data": [
+   {
+    "z_index": 0,
+    "size": "2752x1536",
+    "output_format": "png",
+    "url": "https://tempfile.aiquickdraw.com/seedream5flash/1792864102891-sw6hjp30pbd.png"
+   },
+   {
+    "z_index": 1,
+    "size": "546x809",
+    "output_format": "png",
+    "bounding_box": {
+     "absolute": [
+      1604,
+      141,
+      2150,
+      950
+     ],
+     "normalized": [
+      583,
+      92,
+      781,
+      618
+     ]
+    },
+    "name": "empty room background with window",
+    "description": "Extract the entire empty room background including the wall, floor, rug and the six-pane glowing window, do not include the bed, sleeping person, bedside table or lamp.",
+    "url": "https://tempfile.aiquickdraw.com/seedream5flash/1792864103787-xehp8bk53ot.png"
+   },
+   {
+    "z_index": 2,
+    "size": "1954x839",
+    "output_format": "png",
+    "bounding_box": {
+     "absolute": [
+      1177,
+      991,
+      2160,
+      1413
+     ],
+     "normalized": [
+      428,
+      645,
+      785,
+      919
+     ]
+    },
+    "name": "bed with sleeping person",
+    "description": "Extract the full bed including headboard, bed frame, bedding, blanket, pillow and the sleeping woman lying on the bed, keep all elements of the bed and the person as a single combined layer.",
+    "url": "https://tempfile.aiquickdraw.com/seedream5flash/1792864104653-5il2o87vwz.png"
+   },
+   {
+    "z_index": 3,
+    "size": "1379x1596",
+    "output_format": "png",
+    "bounding_box": {
+     "absolute": [
+      2202,
+      1120,
+      2417,
+      1369
+     ],
+     "normalized": [
+      800,
+      729,
+      878,
+      891
+     ]
+    },
+    "name": "bedside table with lamp",
+    "description": "Extract the bedside table with drawer and the glowing purple table lamp placed on top of the table, keep both the table and lamp as a single combined layer.",
+    "url": "https://tempfile.aiquickdraw.com/seedream5flash/1792864105781-e5witqwr7z9.png"
+   }
+  ]
+ },
+ "resultUrls": [
+  "https://tempfile.aiquickdraw.com/seedream5flash/1792864102891-sw6hjp30pbd.png",
+  "https://tempfile.aiquickdraw.com/seedream5flash/1792864103787-xehp8bk53ot.png",
+  "https://tempfile.aiquickdraw.com/seedream5flash/1792864104653-5il2o87vwz.png",
+  "https://tempfile.aiquickdraw.com/seedream5flash/1792864105781-e5witqwr7z9.png"
+ ]
+}

@@ -1,0 +1,6 @@
+# Источник и права каждого файла, что попадает в кадр (ROADMAP C2). Демо: нарисовано кодом (tools/make_demo_assets.py).
+assets:
+  - {file: assets/lamp-front.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/lamp-side.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/lamp-night.jpg, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}
+  - {file: assets/logo.png, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}

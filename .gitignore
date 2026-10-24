@@ -21,6 +21,8 @@ output/
 tools/rhvoice/
 tools/.build/
 tools/piper-voices/
+# Вырезание фона для слоёв картинок (ROADMAP C5): свой venv, чтобы не трогать Pillow студии
+tools/rembg-venv/
 
 # Claude Code: локальное
 .claude/settings.local.json
@@ -43,3 +45,5 @@ tests/.golden-diff/
 Thumbs.db
 desktop.ini
 .DS_Store
+# Спайк C5: исходники сравнения моделей (тяжёлые PNG); в git — листы sheet-*.jpg и ответы Kie *.result.json
+projects/c5-spike/compare/*.png

@@ -13,8 +13,17 @@ def phases(proj: Project):
     r = proj.root
     cfg = proj.cfg
     out = []
-    brief_ok = bool(cfg.get("topic")) and "TODO" not in str(cfg.get("title", "TODO")) and "TODO" not in str(cfg.get("topic"))
-    out.append(("1 Бриф", brief_ok, "project.yaml: title, topic, format, target_duration, голос"))
+    from . import kinds
+    k = kinds.of(cfg)
+    lack = kinds.brief_missing(proj)  # обязательные поля брифа по типу ролика (ROADMAP C1)
+    brief_ok = (bool(cfg.get("topic")) and "TODO" not in str(cfg.get("title", "TODO"))
+                and "TODO" not in str(cfg.get("topic")) and not lack)
+    out.append(("1 Бриф", brief_ok, f"project.yaml: title, topic, format, target_duration, голос; тип {k.id}"
+                + (f"; нет: {', '.join('brief.' + f for f in lack)}" if lack else "")))
+    if k.files:  # фото, данные, запись экрана, исходник — файлы брифа в папке проекта
+        miss = kinds.missing_files(proj)
+        out.append(("1б Материалы", not lack and not miss,
+                    f"brief: {', '.join(k.files)}" + (f"; нет файлов: {', '.join(miss[:3])}" if miss else "")))
     ol = r / "outline.md"
     outline_ok = ol.exists() and "TODO" not in ol.read_text(encoding="utf-8")
     out.append(("2 План (outline.md)", outline_ok, "главы, длительности, бюджет слов"))
@@ -23,13 +32,21 @@ def phases(proj: Project):
     missing = [c for c in listed if c not in have]
     out.append(("3 Сценарий", bool(listed) and not missing,
                 f"глав в плане {len(listed)}, написано {len(have)}" + (f"; нет: {', '.join(missing)}" if missing else "")))
+    from . import imagegen
+    if imagegen.enabled(cfg):  # картинки сцен (ROADMAP C5): фаза — только при images.enabled
+        req, miss = imagegen.keys(proj), imagegen.missing(proj)
+        det = (f"{len(req) - len(miss)}/{len(req)} в {imagegen.DIR}/" if req else "сцены не просят картинок (image:)")
+        if miss:
+            det += f"; нет: {', '.join(miss[:3])}{' …' if len(miss) > 3 else ''}"
+        out.append(("3б Картинки", not miss, det))
     tl = proj.build / "timeline.json"
     voice_ok = False
     if tl.exists():
         import json
         from .timing import source_hash
         voice_ok = json.loads(tl.read_text(encoding="utf-8")).get("src") == source_hash(proj)
-    out.append(("4 Озвучка и тайминг", voice_ok, "build/timeline.json актуален" if voice_ok else "нужно: voice"))
+    out.append(("4 Озвучка и тайминг", voice_ok, ("build/timeline.json актуален" if voice_ok else "нужно: voice")
+                + ("" if k.voice else " (без голоса — только тайминг)")))
     st = list((proj.qa_dir).glob("stills_*.png"))
     stills_ok = voice_ok and bool(st) and max(_mt(p) for p in st) >= _mt(tl)
     out.append(("5 Контрольные кадры", stills_ok, "qa/stills_*.png посмотрены?"))
@@ -56,8 +73,10 @@ def phases(proj: Project):
 
 NEXT = {
     "1 Бриф": "Заполни project.yaml (фаза 1 в docs/PHASES.md).",
+    "1б Материалы": "Положи файлы брифа в папку проекта (assets/) и пропиши пути в brief: (python -m studio kinds).",
     "2 План (outline.md)": "Напиши outline.md: главы, хронометраж, бюджет слов (фаза 2).",
     "3 Сценарий": "Пиши следующую главу script/<chNN>.yaml, затем `python -m studio validate` (фаза 3).",
+    "3б Картинки": "`python -m studio images <проект>` — смета, затем `--yes` (ROADMAP C5.4, docs/IMAGES.md).",
     "4 Озвучка и тайминг": "`python -m studio voice <проект>` (фаза 4).",
     "5 Контрольные кадры": "`python -m studio stills <проект> [--chapter chNN]` и посмотри PNG (фаза 5).",
     "6 Рендер сцен": "`python -m studio render <проект>` в фоне, можно по главам (фаза 6).",
@@ -84,9 +103,11 @@ def report(proj: Project, log=print):
     ph = phases(proj)
     outs = proj.targets()
     if proj.outputs:  # выходы (ROADMAP B3): бриф, план, сценарий — общие; озвучка … QA — у каждого выхода свои
-        ph = ph[:3] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[3:]]
+        shared = next(i for i, (n, _, _) in enumerate(ph) if n.startswith("4 "))  # до озвучки — общее у выходов
+        ph = ph[:shared] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[shared:]]
     words, wpm, src = pace(outs[0])
-    log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')}")
+    from .kinds import of as kind_of
+    log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')} [тип {kind_of(proj.cfg).id}]")
     frames = ", ".join(f"{o.out or o.cfg['format']} {o.size[0]}×{o.size[1]}" for o in outs)
     log(f"{'Выходы' if proj.outputs else 'Формат'} {frames}, {proj.fps} fps; "
         f"цель {proj.cfg.get('target_duration') or 'по речи'}; слов в сценарии: {words} "

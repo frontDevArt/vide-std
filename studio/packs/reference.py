@@ -13,7 +13,7 @@ from .registry import PROJECT, type_name
 
 BEGIN = "<!-- templates:begin — генерируется `python -m studio templates --md --write`, руками не править -->"
 END = "<!-- templates:end -->"
-PACK_ORDER = ("core", "phone", "lab", "commerce", PROJECT)
+PACK_ORDER = ("core", "phone", "lab", "commerce", "media", PROJECT)
 
 
 def _cell(s, code=False):

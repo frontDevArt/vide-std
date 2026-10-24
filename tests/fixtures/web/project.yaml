@@ -1,0 +1,18 @@
+# Фикстура ROADMAP C6: сцена web.html между сценами PIL — голос fake, офлайн. Тест — tests/test_web_html.py
+# (пропускается без playwright с Chromium), замеры — tools/bench_html.py.
+title: web html fixture
+topic: web html fixture
+language: en
+format: vertical
+fps: 30
+target_duration: null
+
+tts:
+  backend: fake
+  voice: auto
+  rate: 105
+
+style:
+  palette: lab
+
+chapters: [ch01]

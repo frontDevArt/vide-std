@@ -75,6 +75,11 @@ class Template:
     def draw(self, img, t, T):
         raise NotImplementedError
 
+    def safe_draw(self, img, t, T):
+        """То, что проверяет «Контент в безопасной зоне» (studio/safezone.py): по умолчанию весь кадр шаблона;
+        фото и видео на весь кадр (media) — подложка, им можно под обрез, проверяется только то, что поверх."""
+        self.draw(img, t, T)
+
     feed_speed = None
     dim_out = 0.0  # затемнение экрана телефона в конце сцены (передаётся следующей сцене)
 

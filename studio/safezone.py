@@ -26,7 +26,7 @@ def content_box(ctx, tpl, scene, t):
     Без дрейфа камеры (`lab.apply_camera`, масштаб до 103 %): он общий для всего кадра и не вёрстка — с ним
     свёрстанная горизонталь `lab` (поля ~5 %) мигала бы ⚠️ на 3,5 %."""
     layer = Image.new("RGBA", (ctx["W"], ctx["H"]), (0, 0, 0, 0))
-    tpl.draw(layer, t, scene["start_frame"] / ctx["fps"] + t)
+    tpl.safe_draw(layer, t, scene["start_frame"] / ctx["fps"] + t)  # без подложки «под обрез» (media, ROADMAP C2)
     ys, xs = np.nonzero(np.asarray(layer)[:, :, 3] > ALPHA)
     return (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1) if len(xs) else None
 

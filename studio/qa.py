@@ -108,6 +108,32 @@ def run(proj: Project, log=print, fast=False):
     I, pk = loudness(final)
     chk(I is not None and abs(I - float(proj.cfg.get("loudness", -16))) < 1.5 and pk < -0.5, "Громкость итога",
         f"{I:.1f} LUFS, пик {pk:.1f} dBFS" if I is not None else "тишина: нет ни речи, ни музыки")
+    from .kinds import of as kind_of, qa as kind_checks  # тип ролика (ROADMAP C1): длительность, голос, музыка
+    k = kind_of(proj.cfg)
+    music_db = mean_db(final, 0, dur) if (k.music or k.source_audio) and not lines else None
+    for ok, name, det in kind_checks(proj, tl, dur, music_db, final):
+        chk(ok, name, det)
+    from .music import qa_license as music_license  # трек из библиотеки или assets/ — с источником и лицензией (C3)
+    ml = music_license(proj)
+    if ml is None:
+        skip("Музыка: источник и лицензия", "музыка выключена")
+    else:
+        chk(ml[0], "Музыка: источник и лицензия", ml[1])
+    from .assets import qa_check as assets_check  # ассеты сцен: файл, источник, лицензия (ROADMAP C2)
+    ac = assets_check(proj)
+    if ac is None:
+        skip("Ассеты: источник и лицензия", "в ролике нет фото, видео и звука из assets/")
+    else:
+        chk(ac[0], "Ассеты: источник и лицензия", ac[1])
+    from .imagegen import qa_check as images_check  # картинки сцен: файлы и лицензия в assets.yaml (ROADMAP C5.6)
+    ic = images_check(proj)
+    if ic is None:
+        skip("Картинки: файлы и лицензия", "картинки выключены или сцены их не просят")
+    else:
+        chk(ic[0], "Картинки: файлы и лицензия", ic[1])
+        if ic[2]:
+            warn("WARN", "Картинки: заглушки fake", f"{len(ic[2])} файлов — не для публикации, сгенерируйте "
+                 "настоящие (images.backend: kie)")
     from .platforms import checks as platform_checks  # выход по профилю площадки (ROADMAP B1)
     platform_checks(proj, info, dur, I, pk, chk, warn)
     if lines:

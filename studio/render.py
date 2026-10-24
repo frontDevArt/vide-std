@@ -21,7 +21,9 @@ from pathlib import Path
 
 from PIL import Image
 
+from . import assets as AS
 from . import gfx as G
+from . import imagegen as IG
 from . import subs as S
 from . import packs as TP
 from . import platforms as PL
@@ -80,7 +82,8 @@ def _prepare(proj: Project, draft=False):
     preset = DRAFT_PRESET if draft else proj.cfg["render"]["preset"]
     ctx = {"W": W, "H": H, "fps": tl["fps"], "language": proj.cfg["language"], "style": style, "preset": preset,
            "safe": PL.layout_zone(proj.cfg), "subs_top": S.band_top(proj),  # сетка вёрстки: Template.safe/area (B2)
-           "subs_bottom": S.bottom_limit(proj)}  # субтитры над нижним полем зоны площадки (B3)
+           "subs_bottom": S.bottom_limit(proj),  # субтитры над нижним полем зоны площадки (B3)
+           "roots": [str(r) for r in AS.roots(proj)]}  # ассеты сцен (assets/…) — от папки проекта (ROADMAP C2)
     scenes = tl["scenes"]
     state = {"feed_offset": 0.0, "screen_dim": 0.0}
     # подсветки фона по главам (glow в script/chNN.yaml): цвет на стыке переносится через state
@@ -90,6 +93,7 @@ def _prepare(proj: Project, draft=False):
     if use_glow and scenes:
         state["lab_glow"] = glows.get(scenes[0]["chapter"]) or base_glow  # начало ролика — без перехода
     codes = {}  # класс шаблона → хэш кода, который рисует его сцены
+    scripts = {(ch, sc.get("id")): sc for ch, d in proj.chapters for sc in d.get("scenes") or []}
     style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
@@ -98,6 +102,9 @@ def _prepare(proj: Project, draft=False):
         if use_glow:
             s["glow"] = {"from": state["lab_glow"], "to": glows.get(s["chapter"]) or base_glow}
             state["lab_glow"] = s["glow"]["to"]
+        auto = _image_params(proj, scripts, s)  # сцена с image: → params шаблона image (ROADMAP C5.5)
+        if auto:
+            s["params"] = {**auto, **s["params"]}
         cls = TP.REGISTRY.get(s["template"])
         if cls is None:
             raise SystemExit(f"Неизвестный шаблон '{s['template']}' в сцене {s['chapter']}/{s['id']}")
@@ -114,11 +121,25 @@ def _prepare(proj: Project, draft=False):
         if hasattr(tpl, "state_out"):  # шаблоны lab: шапка, часы, перенос цифры через склейку
             state.update(tpl.state_out())
         extra = {k: v for k, v in s["state_in"].items() if k not in ("feed_offset", "screen_dim")}
+        media = AS.fingerprint(AS.roots(proj), s["params"])  # содержимое фото и видео сцены: заменили файл — перерисовать
         s["key"] = stable_hash([s["hash"], round(s["state_in"]["feed_offset"], 2), s["state_in"]["screen_dim"], codes[cls], style_key,
                                 proj.cfg["render"]["crf"], preset, W, H, ctx["safe"], ctx["subs_top"]] + ([extra] if extra else [])
                                + ([ctx["subs_bottom"]] if ctx["subs_bottom"] is not None else [])
-                               + ([s["glow"]] if use_glow else []))
+                               + ([s["glow"]] if use_glow else []) + ([media] if media else [])
+                               + ([auto] if auto else []))
     return tl, ctx
+
+
+def _image_params(proj, scripts, s):
+    """params из картинок сцены (imagegen.scene_params) — только по готовым PNG; нет файла — стоп с подсказкой."""
+    sc = scripts.get((s["chapter"], s["id"]))
+    if not sc or not sc.get("image") or getattr(TP.REGISTRY.get(s["template"]), "NAME", None) != IG.TEMPLATE:
+        return {}  # картинка для своего шаблона сцены — его params, не наши
+    auto, need = IG.scene_params(proj, s["chapter"], sc, len(s.get("beats") or []))
+    if need:
+        raise SystemExit(f"Сцена {s['chapter']}/{s['id']}: нет картинок {', '.join(need[:3])}"
+                         f"{' …' if len(need) > 3 else ''} — сначала: python -m studio images {proj.slug}")
+    return auto
 
 
 # ---------------------------------------------------------------- per-process caches
@@ -265,14 +286,18 @@ def make_template(ctx, scene):
     return tpl
 
 
-def frame(ctx, tpl, scene, f, sub_size):
+def frame(ctx, tpl, scene, f, sub_size, alpha=False):
+    """Кадр f сцены. alpha — без фона и субтитров, на прозрачном (экспорт для монтажки, `export_alpha`)."""
     fps = ctx["fps"]
     t = f / fps
     T = (scene["start_frame"] + f) / fps
     style = ctx["style"]
-    glow = glow_at(scene, t)
-    bg = _bg(ctx["W"], ctx["H"], style)
-    img = bg.frame(T, glow) if glow else bg.frame(T)
+    if alpha:
+        img = Image.new("RGBA", (ctx["W"], ctx["H"]), (0, 0, 0, 0))
+    else:
+        glow = glow_at(scene, t)
+        bg = _bg(ctx["W"], ctx["H"], style)
+        img = bg.frame(T, glow) if glow else bg.frame(T)
     if getattr(tpl, "camera", False) and style.camera:
         from .packs.lab.background import composite_camera
         layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -280,8 +305,50 @@ def frame(ctx, tpl, scene, f, sub_size):
         composite_camera(img, layer, T)
     else:
         tpl.draw(img, t, T)
-    draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style, ctx.get("subs_bottom"))
+    if not alpha:
+        draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style, ctx.get("subs_bottom"))
     return img
+
+
+ALPHA = {  # прозрачный экспорт для монтажки (ROADMAP C2, старый R4): кодек и пиксельный формат с альфой
+    "mov": ["-c:v", "prores_ks", "-profile:v", "4", "-pix_fmt", "yuva444p10le", "-vendor", "apl0"],  # ProRes 4444
+    "webm": ["-c:v", "libvpx-vp9", "-pix_fmt", "yuva420p", "-b:v", "0", "-crf", "30", "-row-mt", "1",
+             "-auto-alt-ref", "0"],
+}
+
+
+def export_alpha(proj: Project, fmt="mov", chapter=None, log=print):
+    """Графика ролика без фона и субтитров на прозрачном → build/final/<slug>[.<глава>].alpha.<mov|webm> (без звука):
+    слой поверх своего видео в монтажке. Без кэша — одним проходом по сценам."""
+    if fmt not in ALPHA:
+        raise SystemExit(f"--alpha: {fmt}? Есть: {', '.join(ALPHA)}")
+    tl, ctx = prepare(proj)
+    scenes = [s for s in tl["scenes"] if chapter in (None, s["chapter"])]
+    if not scenes:
+        raise SystemExit(f"Нет сцен главы {chapter}")
+    W, H, fps = ctx["W"], ctx["H"], ctx["fps"]
+    out = proj.bdir("final") / f"{proj.slug}{'.' + chapter if chapter else ''}.alpha.{fmt}"
+    tmp = out.with_name(out.stem + ".part." + fmt)
+    cmd = ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{W}x{H}", "-r", str(fps),
+           "-i", "-", *ALPHA[fmt], "-an", str(tmp)]
+    n = sum(s["n_frames"] for s in scenes)
+    log(f"Прозрачный экспорт {fmt} {W}×{H}: {len(scenes)} сцен, {n} кадров")
+    t0 = time.time()
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        for s in scenes:
+            tpl = make_template(ctx, s)
+            for f in range(s["n_frames"]):
+                p.stdin.write(frame(ctx, tpl, s, f, 0, alpha=True).tobytes())
+        p.stdin.close()
+    except BrokenPipeError:
+        pass
+    err = p.stderr.read().decode(errors="replace")
+    if p.wait() != 0:
+        raise RuntimeError(f"ffmpeg (alpha {fmt}): {err[-400:]}")
+    os.replace(tmp, out)
+    log(f"Готово: {out} ({time.time() - t0:.0f} c)")
+    return out
 
 
 def _render_scene_job(proj_root, scene, ctx, sub_size, out, crf, preset, f0, f1, key):

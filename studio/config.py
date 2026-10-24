@@ -34,6 +34,9 @@ SCHEMA = {
     "schema_version": F((int,), doc="версия схемы project.yaml; нет — старый файл, migrate() поднимет"),
     "title": F((str,), doc="название ролика"),
     "topic": F((str,), doc="тема"),
+    "kind": F((str,), doc="тип ролика (studio/kinds.py, ROADMAP C1): explainer | short-hook | promo | music | slideshow | "
+                          "listicle | data-story | tutorial | clip; нет — explainer"),
+    "brief": F((dict,), doc="поля брифа по типу ролика: hook, product, price, cta, count, photos, data… (studio/kinds.py)"),
     "audience": F((str,), doc="для кого ролик"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
@@ -52,7 +55,7 @@ SCHEMA = {
         "by_output": F((dict,), doc="поверх для выхода: {tiktok: {title, description, hashtags, cover}}"),
     },
     "tts": {
-        "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake"),
+        "backend": F((str,), "rhvoice", "rhvoice | edge | piper | elevenlabs | fake | none (без голоса, ROADMAP C1)"),
         "voice": F((str, NONE), "auto"),
         "rate": F(NUM + (str,), 105, "число или auto"),
         "rate_range": F((list,), [98, 125]),
@@ -74,29 +77,60 @@ SCHEMA = {
     },
     "music": {
         "enabled": F((bool,), True), "level_db": F(NUM, -13), "duck": F((bool,), True),
-        "file": F((str, NONE), doc="своя музыка вместо процедурной"),
+        "file": F((str, NONE), doc="свой трек вместо процедурного: путь от папки проекта или имя в brand/music/ студии"),
+        "by_chapter": F((dict,), doc="свой трек на главу {chNN: файл} (ROADMAP C3), стык — кроссфейд"),
+        "crossfade": F(NUM, doc="кроссфейд на стыке глав, с (2.0)"),
+        "sync": F((str, NONE), doc="beat | bar — склейки сцен в долю / в сильную долю трека (studio/music.py)"),
+        "bpm": F(NUM, doc="темп процедурного ритм-трека при sync без file (120); подсказка детектору долей"),
+        "meter": F((int,), doc="долей в такте (4): сильная доля — каждая meter-я"),
     },
     "sfx": {"enabled": F((bool,), True), "level_db": F(NUM, 0)},  # звуки появления — только у шаблонов с sfx_events
-    "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None)},
+    "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None),
+                  "style": F((str,), doc="plate | karaoke | tiktok (крупные, по слову, выше интерфейса площадки); "
+                                         "нет — из пресета палитры или бренд-кита (ROADMAP C4)")},
     "render": {"workers": F((int, NONE), None), "crf": F((int,), 18), "preset": F((str,), "medium")},
     "loudness": F(NUM, -16),
     "qa": {"safe_margin": F(NUM, 0.04)},  # поля кадра для контента сцены (доля стороны), проверка safezone
+    "images": {  # картинки для сцен (ROADMAP C5, docs/IMAGES.md, studio/imagegen.py); умолчания — только при блоке
+        "enabled": F((bool,), False, "true — сцены могут просить картинки (image:); false — только кодовая графика"),
+        "backend": F((str,), "kie", "kie | fake (процедурные PNG, офлайн) | none — сменный, как tts.backend"),
+        "model": F((str,), "nano-banana-2", "модель генерации (таблица docs/IMAGES.md); входит в ключ кэша"),
+        "resolution": F((str,), "2K", "1K | 2K | 4K; входит в ключ кэша"),
+        "layers": F((str, NONE), "seedream/5-flash-layer-decomposition",
+                    "раскладка сцены целиком (role: scene) на базу и слои с bounding_box; null — без раскладки"),
+        "cutout": F((str,), "rembg", "вырезание объекта (role: subject): rembg (локально) | kie (recraft) | none"),
+        "style": F((str,), "", "суффикс ко всем промптам: стиль на весь ролик; входит в ключ кэша"),
+        "reference": F((str, NONE), doc="картинка-референс стиля (путь от папки проекта): держит стиль между картинками"),
+        "budget_usd": F(NUM, 3, "предел на ролик, $; выше — стоп и вопрос пользователю"),
+    },
     "chapters": F((list, NONE), []),
 }
 
 
-def _defaults(schema: dict) -> dict:
+# Разделы, чьи умолчания попадают в cfg, только если раздел задан (project.yaml или defaults студии): без блока — как
+# раньше, cfg и ключи кэша старых проектов прежние. Умолчания раздела — section_defaults(); подставляет project.load.
+OPT_IN = ("images",)
+
+
+def _defaults(schema: dict, top: bool = True) -> dict:
     out = {}
     for k, f in schema.items():
+        if top and k in OPT_IN:
+            continue
         if isinstance(f, dict):
-            if _defaults(f):  # раздел без значений по умолчанию (cutdown) в cfg не попадает
-                out[k] = _defaults(f)
+            if _defaults(f, False):  # раздел без значений по умолчанию (cutdown) в cfg не попадает
+                out[k] = _defaults(f, False)
         elif f.default is not _MISSING and k != "schema_version":
             out[k] = f.default
     return out
 
 
 DEFAULTS = _defaults(SCHEMA)
+
+
+def section_defaults(name: str) -> dict:
+    """Умолчания раздела из OPT_IN (images): то, что получит раздел, заданный хотя бы одним ключом."""
+    return _defaults(SCHEMA[name], False)
 
 
 def deep_merge(base: dict, over: dict) -> dict:

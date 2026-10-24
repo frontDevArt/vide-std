@@ -1,0 +1,12 @@
+# Демо типа data-story (ROADMAP C1, C4): история в цифрах — графики kit.chart из CSV (assets/ + assets.yaml),
+# столбики, линия и круг. Данные выдуманы для демо (tools/make_demo_assets.py), голос fake (офлайн).
+title: Screen time in numbers
+topic: screen time by age and year
+kind: data-story
+brief: {data: [assets/screen-time.csv, assets/by-year.csv]}
+language: en
+format: vertical
+fps: 30
+target_duration: null
+tts: {backend: fake, voice: auto, rate: 105}
+chapters: [ch01]

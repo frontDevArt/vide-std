@@ -1,0 +1,7 @@
+scenes:
+  - id: s01
+    template: media.clip
+    min_duration: 8
+    params: {file: assets/podcast.mp4, start: 1.0, speaker: "Alex Moore", role: "host, Night Notes",
+             captions: [{t: 0.2, text: "The trick is not to be faster"}, {t: 3.0, text: "but to stop doing what"},
+                        {t: 5.4, text: "nobody actually needs"}]}

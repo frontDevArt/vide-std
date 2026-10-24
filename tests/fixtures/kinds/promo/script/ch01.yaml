@@ -1,0 +1,23 @@
+scenes:
+  - id: s01
+    template: media.logo_sting
+    lines: ["Meet Aurora."]
+    params: {file: assets/logo.png, tagline: "Light that *follows* you"}
+  - id: s02
+    template: media.image
+    lines: ["A desk lamp that follows your day."]
+    params: {file: assets/lamp-front.jpg, zoom: [1.04, 1.16], pan: [[0, 0.4], [0, -0.2]],
+             kicker: "Aurora desk lamp", caption: "Bends where *you* need it", caption_at: 0}
+  - id: s03
+    template: media.product_card
+    lines: ["It was ninety nine. | Now it is forty nine."]
+    params: {file: assets/lamp-side.jpg, name: "Aurora lamp", note: "Warm LED · USB-C", was: "$99", price: "$49",
+             badge: "-50%", strike_at: 1, at: 1}
+  - id: s04
+    template: media.image
+    lines: ["Warm light, all night long."]
+    params: {file: assets/lamp-night.jpg, motion: reveal, reveal: circle, at: 0, caption: "Warm light at *night*"}
+  - id: s05
+    template: outro
+    lines: ["Order today."]
+    params: {text: "Order *today*"}

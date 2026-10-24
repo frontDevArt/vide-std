@@ -1,0 +1,29 @@
+{
+ "model": "seedream/5-flash-layer-decomposition",
+ "task": "9af692e06638594757ec074ac9f2403f",
+ "base": "base.png",
+ "layers": [
+  {
+   "file": "1.png",
+   "name": "bedside table with lamp",
+   "z": 1,
+   "box": [
+    0.797,
+    0.73,
+    0.872,
+    0.876
+   ]
+  },
+  {
+   "file": "2.png",
+   "name": "bed with sleeping person",
+   "z": 2,
+   "box": [
+    0.429,
+    0.646,
+    0.782,
+    0.919
+   ]
+  }
+ ]
+}

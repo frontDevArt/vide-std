@@ -16,6 +16,7 @@ import json
 import math
 import re
 
+from . import imagegen as IG
 from . import tts as T
 from .project import Project, stable_hash
 from .textutil import segments, tts_text, display_text, weight, ends_with_comma, word_count
@@ -184,7 +185,9 @@ def layout(proj: Project, log=print) -> dict:
     base = base_total(proj, voiced)
     if target and base > target:  # rate числом: подбор не проверял, а сжимать последнюю сцену нельзя (B2)
         raise _too_long(target, base, rate)
-    slack = max(0.0, (target - base)) if target else 0.0
+    from . import music as M
+    sync = M.sync_mode(proj)  # ROADMAP C3: запас раздаёт привязка склеек к долям, а не паузы
+    slack = max(0.0, (target - base)) if target and not sync else 0.0
 
     # раскладываем запас: 1) сценам с want_duration (мягкое желание), 2) паузам между сценами
     # (не больше max_extra_gap), 3) остаток — в хвост последней сцены
@@ -207,14 +210,23 @@ def layout(proj: Project, log=print) -> dict:
         extra_gap = min(P["max_extra_gap"], slack * 0.5 / (n - 1))
     tail_extra = slack - extra_gap * (n - 1) if slack else 0.0
 
-    scenes, t = [], 0.0
+    plan = []  # (head, body, d) сцены
     for i, (ch, sc, lines) in enumerate(voiced):
         head = P["start"] if i == 0 else P["scene"] / 2 + extra_gap / 2
         tail = P["end"] if i == n - 1 else P["scene"] / 2 + extra_gap / 2
         if i == n - 1:
             tail += tail_extra
         body = head + _speech_len(lines) + tail + float(sc.get("hold", 0))
-        d = max(body, float(sc.get("min_duration", 0))) + want_extra.get(i, 0.0)
+        plan.append((head, body, max(body, float(sc.get("min_duration", 0))) + want_extra.get(i, 0.0)))
+    g = M.grid(proj, target or sum(max(d, b) for _, b, d in plan) + 10) if sync else None  # без target — с запасом
+    if g:  # склейки сцен в долю трека: сцена не короче своей речи (body), без голоса — как получится по долям
+        ds = M.snap([d for _, _, d in plan], [body if v[2] else 0.0 for (_, body, _), v in zip(plan, voiced)],
+                    g["cuts"], target)
+        plan = [(head, body, d) for (head, body, _), d in zip(plan, ds)]
+
+    scenes, t = [], 0.0
+    for i, (ch, sc, lines) in enumerate(voiced):
+        head, body, d = plan[i]
         head += (d - body) * 0.35 if d > body else 0  # растянутую сцену начинаем чуть позже
         cur = head
         beats, placed, words = [], [], []
@@ -227,7 +239,7 @@ def layout(proj: Project, log=print) -> dict:
                 beats.append({"text": display_text(L["segs"][si]), "line": li,
                               "t0": round(cur + a, 3), "t1": round(cur + b, 3)})
             cur += L["dur"] + L["pause_after"]
-        scenes.append({"chapter": ch, "id": sc["id"], "template": sc.get("template", "statement"),
+        scenes.append({"chapter": ch, "id": sc["id"], "template": IG.template_of(sc),
                        "params": sc.get("params") or {}, "lines": placed, "beats": beats, "words": words,
                        "start": t, "dur": d})
         t += d
@@ -246,6 +258,8 @@ def layout(proj: Project, log=print) -> dict:
         s["start"] = f0 / fps
         s["dur"] = s["n_frames"] / fps
         s["subs"] = S.chunks_for_scene(proj, s)
+        if g and not s["lines"]:  # без голоса — доли трека как биты (после субтитров: это не речь), элементы в долю
+            s["beats"] = M.scene_beats(g, s["start"], s["dur"])
         s["hash"] = stable_hash([s["template"], s["params"], s["lines"], s["beats"], s["subs"],
                                  s["start_frame"], s["n_frames"]] + ([s["words"]] if s["template"].startswith(("lab_", "lab.")) else []))
 
@@ -256,6 +270,8 @@ def layout(proj: Project, log=print) -> dict:
           "duration": total_frames / fps, "words": words,
           "wpm_speech": round(words / max(speech, 1e-6) * 60, 1),
           "wpm_overall": round(words / (total_frames / fps) * 60, 1), "scenes": scenes}
+    if g:
+        tl["sync"] = {"mode": g["mode"], "bpm": g["bpm"], "file": g["file"]}
     out = proj.build / "timeline.json"
     txt = json.dumps(tl, ensure_ascii=False, indent=1)
     if not out.exists() or out.read_text(encoding="utf-8") != txt:  # не трогаем файл без изменений
@@ -267,8 +283,10 @@ def layout(proj: Project, log=print) -> dict:
 def source_hash(proj: Project) -> str:
     """Хэш всего, что влияет на озвучку и тайминг (а не дата файлов): status сравнивает его."""
     c = proj.cfg
+    from .music import source_key
+    mk = source_key(proj)  # доли трека (ROADMAP C3) — только при music.sync: хэш старых проектов прежний
     return stable_hash([c["tts"], c["pauses"], c.get("target_duration"), c["fps"], c["format"], c["subtitles"],
-                        [(ch, d) for ch, d in proj.chapters]])
+                        [(ch, d) for ch, d in proj.chapters]] + ([mk] if mk else []))
 
 
 def load_timeline(proj: Project) -> dict:

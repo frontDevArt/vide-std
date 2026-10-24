@@ -1,0 +1,18 @@
+scenes:
+  - id: s01
+    template: title
+    lines: ["How to create a report in two clicks."]
+    params: {kicker: "Tutorial", title: "New *report*"}
+  - id: s02
+    template: media.screen
+    lines: ["Open reports, | then type a title."]
+    params: {file: assets/screen.mp4, start: 0.0, title: "Reports",
+             zoom: [{at: 1, box: [0.15, 0.1, 0.75, 0.55]}],
+             callouts: [{at: 0, text: "Reports", x: 0.09, y: 0.24}, {at: 1, text: "Type a title", x: 0.45, y: 0.27}]}
+  - id: s03
+    template: media.screen
+    lines: ["Press create, | and the report is ready."]
+    params: {file: assets/screen.mp4, start: 5.0, title: "Reports",
+             clicks: [{at: "2.0s", x: 0.31, y: 0.6}],
+             zoom: [{at: "2.3s", box: [0.55, 0.6, 1.0, 1.0]}],
+             callouts: [{at: 0, text: "Create", x: 0.31, y: 0.6}, {at: "2.6s", text: "Done!", x: 0.84, y: 0.87}]}

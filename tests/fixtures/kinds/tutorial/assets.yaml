@@ -1,0 +1,3 @@
+# Демо: запись экрана нарисована кодом (tools/make_demo_assets.py), интерфейс выдуманный.
+assets:
+  - {file: assets/screen.mp4, source: tools/make_demo_assets.py, license: CC0 (своя графика), by: студия}

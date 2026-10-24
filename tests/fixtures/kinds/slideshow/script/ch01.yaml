@@ -1,0 +1,21 @@
+scenes:
+  - id: s01
+    template: media.image
+    min_duration: 3.5
+    params: {file: assets/dusk.jpg, kicker: "Four horizons", caption: "Dusk over the *hills*", caption_at: "0.4s"}
+  - id: s02
+    template: media.image
+    min_duration: 3.5
+    params: {motion: parallax, zoom: [1.0, 1.1], pan: [[-0.8, 0], [0.8, 0]],
+             layers: [{file: assets/valley.jpg, depth: 0.2}, {file: assets/birds.png, depth: 1.0, fit: contain}],
+             caption: "A *green* valley", caption_at: "0.5s"}
+  - id: s03
+    template: media.image
+    min_duration: 3.5
+    params: {file: assets/night.jpg, motion: before_after, after: assets/sea.jpg, at: "1.0s", labels: ["Night", "Morning"],
+             caption: "From night to *morning*", caption_at: "0.3s"}
+  - id: s04
+    template: media.image
+    min_duration: 3.5
+    params: {file: assets/sea.jpg, box: [0.1, 0.06, 0.9, 0.8], shape: round, border: true, zoom: [1.12, 1.0],
+             caption: "And the *sea*", caption_at: "0.6s"}

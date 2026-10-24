@@ -1,0 +1,10 @@
+# Демо типа explainer (ROADMAP C1): диктор + анимация + субтитры, длительность по речи.
+title: Why we procrastinate
+topic: why we procrastinate
+kind: explainer
+language: en
+format: horizontal
+fps: 30
+target_duration: null
+tts: {backend: fake, voice: auto, rate: 105}
+chapters: [ch01]

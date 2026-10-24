@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Демо «богатой» сцены (ROADMAP C6): размытие, градиенты, 3D, рисование SVG-линии — по битам озвучки.
+     Вёрстка в «пикселях 1080» (короткая сторона), время — только из CSS-анимаций: студия ставит их на паузу
+     и задаёт currentTime каждого кадра. Фон прозрачный — под страницей фон студии, над ней субтитры. -->
+<html><head><meta charset="utf-8"><style>
+  html, body { margin: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+  body { font-family: var(--font); color: var(--c-text); }
+  .blob { position: absolute; width: 760px; height: 760px; left: 50%; top: 40%; border-radius: 50%;
+          margin: -380px 0 0 -380px; filter: blur(70px); opacity: 0;
+          background: radial-gradient(circle at 35% 35%, var(--c-accent), transparent 60%),
+                      radial-gradient(circle at 70% 65%, var(--c-magenta), transparent 62%);
+          animation: blob 1.2s ease-out 0s forwards, spin 20s linear 0s infinite; }
+  @keyframes blob { to { opacity: .85; } }
+  @keyframes spin { to { transform: rotate(360deg) scale(1.15); } }
+  .card { position: absolute; left: 50%; top: 40%; width: 820px; padding: 64px 56px; box-sizing: border-box;
+          transform: translate(-50%, -50%) perspective(1400px) rotateX(28deg) translateY(120px); opacity: 0;
+          border-radius: 44px; background: linear-gradient(160deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+          border: 2px solid rgba(255,255,255,.28); backdrop-filter: blur(18px);
+          box-shadow: 0 40px 120px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35);
+          animation: card .9s cubic-bezier(.2,.9,.25,1.15) var(--b0) forwards; }
+  @keyframes card { to { opacity: 1; transform: translate(-50%, -50%) perspective(1400px) rotateX(0) translateY(0); } }
+  h1 { margin: 0 0 28px; font-size: 104px; font-weight: 800; line-height: 1; letter-spacing: -2px;
+       background: linear-gradient(90deg, var(--c-text), var(--c-accent)); -webkit-background-clip: text; color: transparent; }
+  .row { display: flex; gap: 22px; }
+  .pill { flex: 1; height: 120px; border-radius: 28px; opacity: 0; transform: scale(.6);
+          background: linear-gradient(135deg, var(--c-accent), var(--c-violet));
+          box-shadow: 0 18px 40px rgba(0,0,0,.35); animation: pop .6s cubic-bezier(.3,1.6,.5,1) forwards; }
+  .pill:nth-child(1) { animation-delay: var(--b1); }
+  .pill:nth-child(2) { animation-delay: calc(var(--b1) + .12s); }
+  .pill:nth-child(3) { animation-delay: calc(var(--b1) + .24s); }
+  @keyframes pop { to { opacity: 1; transform: scale(1); } }
+  svg { display: block; margin-top: 36px; width: 100%; height: 170px; overflow: visible; }
+  path { fill: none; stroke: var(--c-lime); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 1200;
+         stroke-dashoffset: 1200; filter: drop-shadow(0 0 14px var(--c-lime));
+         animation: draw 1.4s ease-in-out var(--b2) forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .note { margin-top: 26px; font-size: 44px; font-weight: 600; opacity: .8; }
+</style></head><body>
+  <div class="blob"></div>
+  <div class="card">
+    <h1 id="title">Two engines</h1>
+    <div class="row"><div class="pill"></div><div class="pill"></div><div class="pill"></div></div>
+    <svg viewBox="0 0 700 170"><path d="M10 150 C 120 150, 160 40, 260 70 S 420 160, 500 80 S 640 10, 690 20"/></svg>
+    <div class="note" id="note"></div>
+  </div>
+<script>
+  // данные сцены — из window.SCENE (vars, биты); время — не трогаем: его ведёт студия
+  const V = (window.SCENE && SCENE.vars) || {};
+  if (V.title) document.getElementById('title').textContent = V.title;
+  document.getElementById('note').textContent = V.note || '';
+</script>
+</body></html>

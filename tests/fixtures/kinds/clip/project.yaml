@@ -1,0 +1,13 @@
+# Демо типа clip (ROADMAP C1, C2): кусок «подкаста» — видео и звук исходника (media.clip, без синтеза: tts.backend:
+# none), волна, караоке из расшифровки. Звук исходника идёт в микс вместо голоса. Исходник нарисован кодом.
+title: Podcast moment
+topic: podcast clip
+kind: clip
+brief: {source: assets/podcast.mp4}
+language: en
+format: vertical
+fps: 30
+tts: {backend: none}
+music: {enabled: false}
+subtitles: {enabled: false}
+chapters: [ch01]

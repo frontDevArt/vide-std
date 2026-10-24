@@ -1,0 +1,27 @@
+scenes:
+  - id: s01
+    template: title
+    min_duration: 3.2
+    params: {kicker: "Volume one", title: "Keep *moving*"}
+  - id: s02
+    template: statement
+    min_duration: 3.2
+    params: {text: "Every *beat* counts"}
+  - id: s03
+    template: bullets
+    min_duration: 4.4
+    params:
+      header: "On the beat"
+      first_beat: 2
+      items:
+        - {icon: check, text: "Step"}
+        - {icon: check, text: "Turn"}
+        - {icon: check, text: "Drop"}
+  - id: s04
+    template: statement
+    min_duration: 3.2
+    params: {text: "Feel the *drop*", sub: "on the bar", at_beat: 1}
+  - id: s05
+    template: outro
+    min_duration: 6
+    params: {text: "Never *stop*"}

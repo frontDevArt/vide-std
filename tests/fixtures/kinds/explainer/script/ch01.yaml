@@ -1,0 +1,15 @@
+scenes:
+  - id: s01
+    template: title
+    lines: ["Why do we put things off?"]
+    params: {kicker: "Explainer", title: "Why we *wait*"}
+  - id: s02
+    template: bullets
+    lines: ["Three reasons: | fear, | boredom, | and fatigue."]
+    params:
+      header: "Three reasons"
+      items: [{icon: eye, text: "Fear"}, {icon: clock, text: "Boredom"}, {icon: hourglass, text: "Fatigue"}]
+  - id: s03
+    template: outro
+    lines: ["Start with five minutes."]
+    params: {text: "Start with *five* minutes"}

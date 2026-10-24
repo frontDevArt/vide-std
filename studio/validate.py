@@ -23,6 +23,7 @@ class Report:
 
 
 def check(proj) -> Report:
+    from . import imagegen as IG
     from .packs import REGISTRY, TemplateNameError, load_project_templates
     from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG
     from .lang import profile
@@ -50,7 +51,7 @@ def check(proj) -> Report:
             if not sid or (ch, sid) in ids:
                 errs.append(f"{ch}: сцена без id или повтор id ({sid})")
             ids.add((ch, sid))
-            tp = s.get("template", "statement")
+            tp = IG.template_of(s)
             if tp not in REGISTRY:
                 near = difflib.get_close_matches(str(tp), list(REGISTRY), n=3)
                 errs.append(f"{ch}/{sid}: нет шаблона '{tp}'" + (f" — может, {' / '.join(near)}?" if near else "")
@@ -102,6 +103,22 @@ def check(proj) -> Report:
     tgt = proj.cfg.get("target_duration")
     if tgt and est > tgt * 0.92:
         warns.append(f"Текста много для {tgt} c (оценка {est:.0f} c) — темп может упереться в потолок")
+    from .assets import issues as asset_issues  # фото, видео, звук сцен и assets.yaml (ROADMAP C2)
+    ae, aw = asset_issues(proj)
+    errs += ae
+    warns += aw
+    from .imagegen import issues as image_issues  # блок images и запросы image: сцен (ROADMAP C5)
+    ie, iw = image_issues(proj)
+    errs += ie
+    warns += iw
+    from .music import issues as music_issues  # трек, библиотека, лицензии, sync (ROADMAP C3)
+    me, mw = music_issues(proj)
+    errs += me
+    warns += mw
+    from .kinds import issues as kind_issues  # тип ролика (ROADMAP C1)
+    ke, kw = kind_issues(proj, est)
+    errs += ke
+    warns += kw
     from .platforms import plan_issues
     for o in outs or [proj]:  # площадка: формат и предел длительности (ROADMAP B1), у выходов — каждая (B3)
         pe, pw = plan_issues(o, est)
@@ -153,6 +170,10 @@ def style(proj, errs, warns):
     """style.mood / style.overrides / glow глав (channel/STYLE.md §14): accent2 не спорит с вердиктами и бренд-цианом."""
     from . import gfx as G
     st = proj.cfg["style"]
+    from .subs import MODES
+    sm = proj.cfg["subtitles"].get("style")
+    if sm is not None and sm not in MODES:
+        errs.append(f"subtitles.style: {sm!r} — можно {', '.join(MODES)}")
     kit = st.get("kit")
     pal = ({k: tuple(v) for k, v in kit["colors"].items()} if kit
            else G.PALETTES.get(st.get("palette", "neon"), G.PALETTES["neon"]))

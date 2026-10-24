@@ -3,6 +3,9 @@ schema_version: 1        # версия схемы project.yaml; файлы бе
 title: TODO
 topic: TODO
 audience: TODO            # для кого ролик, что зритель должен вынести
+kind: explainer           # тип ролика (python -m studio kinds): explainer | short-hook | promo | music | slideshow | listicle | …
+                          #   задаёт голос (music/slideshow — без голоса), пределы длительности, поля brief: и проверки QA
+# brief: {}               # поля брифа по типу: short-hook {hook}, promo {product, price, cta}, listicle {count}, …
 language: ru              # язык озвучки и текста: ru | en | ... (studio/lang.py). Голос auto берётся отсюда
 format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square 1080×1080
 platform: null            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
@@ -12,7 +15,7 @@ target_duration: null     # секунды, если длительность д
 
 tts:
   backend: rhvoice        # `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
-                          #   | fake (тон вместо речи — только тесты/черновики)
+                          #   | fake (тон вместо речи — только тесты/черновики) | none (ролик без голоса: music, slideshow)
   voice: auto             # auto — по языку (studio/lang.py). ru: aleksandr-hq | ru-RU-DmitryNeural | ru_RU-dmitri-medium;
                           #   en: slt | en-US-GuyNeural | en_US-lessac-medium
   rate: auto              # auto — подбор под target_duration; ДЛЯ ДЛИННЫХ РОЛИКОВ ЗАФИКСИРУЙТЕ ЧИСЛО после 1-й главы
@@ -35,7 +38,9 @@ music:
   enabled: true
   level_db: -13           # уровень подложки; QA требует, чтобы музыка была на 14–28 LU тише голоса
   duck: true              # приглушать музыку под голосом
-  # file: path/to/music.wav   # своя музыка вместо процедурной (будет зациклена)
+  # sync: beat               # склейки сцен в долю трека (bar — в сильную долю); kind: music — включено (ROADMAP C3)
+  # file: drive.mp3           # свой трек: путь от папки проекта или имя в brand/music/ студии (будет зациклен)
+  # by_chapter: {ch02: calm.mp3}   # свой трек на главу, стык — кроссфейд (crossfade: 2.0)
 
 subtitles:
   enabled: true

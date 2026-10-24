@@ -1,0 +1,14 @@
+# Спайк C5.0 (ROADMAP C5): смотрится ли AI-картинка (Kie AI, google/nano-banana) рядом с кодовой графикой lab.
+# Без голоса: важна картинка, не речь. Объект вырезан rembg (isnet-general-use) в tools/rembg-venv.
+title: Sleep spike
+topic: AI images next to lab graphics
+kind: slideshow
+language: en
+format: horizontal
+fps: 30
+style: {palette: lab}
+tts: {backend: none}
+music: {enabled: true}
+brief: {photos: [assets/bedroom-bg.png, assets/sleeper.png]}
+subtitles: {enabled: false}
+chapters: [ch01]

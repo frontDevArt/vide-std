@@ -1,0 +1,4 @@
+# Источник и права данных (ROADMAP C4: CSV графиков — ассеты, как фото). Демо: выдуманные данные.
+assets:
+  - {file: assets/screen-time.csv, source: "tools/make_demo_assets.py, выдуманные данные для демо", license: CC0, by: студия}
+  - {file: assets/by-year.csv, source: "tools/make_demo_assets.py, выдуманные данные для демо", license: CC0, by: студия}

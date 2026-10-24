@@ -1,0 +1,12 @@
+# Демо типа short-hook (ROADMAP C1): 15–60 с, точная длительность, крючок в первой сцене.
+title: Your phone at night
+topic: phone light before sleep
+kind: short-hook
+brief: {hook: "One hour of scrolling costs you twenty minutes of sleep."}
+language: en
+format: vertical
+fps: 30
+target_duration: 15
+tts: {backend: fake, voice: auto, rate: auto}
+music: {level_db: -15}   # речи мало, пауз много: подложка тише, чтобы разница с голосом была в норме QA (14–28 LU)
+chapters: [ch01]
