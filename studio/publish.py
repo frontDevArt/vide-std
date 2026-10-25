@@ -10,6 +10,7 @@
   время, сданная версия D5 с тем же файлом, sha1 и длительность файла;
 - `--list` — что, где и когда опубликовано.
 Ворота у `--done` те же, что у карточки: опубликовано непроверенное — отметить можно только с `--force` (с пометкой).
+Загрузка через API (ROADMAP E2, только YouTube) — `--api youtube`, studio/youtube.py; запись — тем же `record`.
 """
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ from .project import Project
 
 FILE = "published.yaml"
 HEAD = ("# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.\n"
-        "# Пишет команда после ручной загрузки; поправить ссылку или время руками можно.\n")
+        "# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.\n")
 # куда загружать вручную: площадка → (страница загрузки, шаги); у рекламы и квадрата — кабинет заказчика
 UPLOAD = {
     "youtube": ("https://studio.youtube.com", ("«Создать» → «Загрузить видео»; видимость — сначала «Доступ по "
@@ -127,8 +128,9 @@ def card(t: Project, log=print) -> bool:
 
 
 def record(t: Project, url: str, at: str | None = None, note: str | None = None, force: bool = False,
-           log=print) -> dict | None:
-    """Отметить ручную публикацию выхода в published.yaml. None — ворота не пройдены (без --force)."""
+           extra: dict | None = None, log=print) -> dict | None:
+    """Отметить публикацию выхода в published.yaml (вручную; `extra` — поля загрузки через API, E2).
+    None — ворота не пройдены (без --force)."""
     from .deliver import _sha1
     from .timing import load_timeline
     p, _ = package.platform(t)
@@ -156,12 +158,14 @@ def record(t: Project, url: str, at: str | None = None, note: str | None = None,
            "duration": round(load_timeline(t)["duration"], 2)}
     if note:
         rec["note"] = note
+    rec.update(extra or {})
     if errs:
         rec["forced"] = errs
     recs = [r for r in load(t) if r.get("url") != url]  # та же ссылка — обновить запись, не дублировать
     recs.append(rec)
     _save(t, recs)
-    log(f"✅ {package.name(t)} опубликован: {url} ({rec['date']}"
+    done = f"загружен ({rec['privacy']})" if rec.get("via") == "api" and rec.get("privacy") != "public" else "опубликован"
+    log(f"✅ {package.name(t)} {done}: {url} ({rec['date']}"
         + (f", версия v{rec['version']}" if rec["version"] else ", вне сданных версий") + f") → {FILE}")
     return rec
 

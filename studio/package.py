@@ -49,6 +49,19 @@ def name(proj: Project) -> str:
     return proj.out or proj.slug
 
 
+def texts(proj: Project) -> tuple[str, str]:
+    """(название, описание) из `<выход>.description.md`, собранного `build`, — для загрузки через API (E2)."""
+    f = proj.output_dir() / f"{name(proj)}.description.md"
+    if not f.exists():
+        raise SystemExit(f"нет {f.name} — сначала: python -m studio package {proj.slug}")
+    s = f.read_text(encoding="utf-8")
+    title = re.search(r"^## Название[^\n]*\n\n([^\n]*)\n", s, re.M)
+    text = re.search(r"^```text\n(.*?)\n```$", s, re.M | re.S)
+    if not (title and text):
+        raise SystemExit(f"{f.name}: не найдены название и описание — пересоберите: python -m studio package {proj.slug}")
+    return title.group(1).strip(), text.group(1).strip()
+
+
 def platform(proj: Project) -> tuple[platforms.Platform, bool]:
     """Площадка выхода; не задана — площадка формата (platforms.LAYOUT) и False."""
     p = platforms.of(proj)

@@ -276,6 +276,24 @@ done`), `--until`/`--only` — часть плана. Сценарии пише�
   выхода — `--out` обязателен.
 - `status` печатает строку «Публикация: …» (выходы и даты или «не опубликован»), фазы не меняются.
 
+## Публикация через API (ROADMAP E2, только YouTube)
+`python -m studio publish <проект> [--out <выход>] --api youtube [--auth | --yes [--privacy private|unlisted|public]
+[--at "ГГГГ-ММ-ДД ЧЧ:ММ"]]` (`studio/youtube.py`). Загрузка — только после явного «да» человека в чате.
+- Доступ: OAuth-клиент Google «Desktop app» — `YOUTUBE_CLIENT_SECRETS=<путь к JSON>` (или `YOUTUBE_CLIENT_ID` +
+  `YOUTUBE_CLIENT_SECRET`) через `workspace.secret`; `--auth` — вход в браузере (PKCE, ответ на 127.0.0.1, scope
+  `youtube.upload` + `youtube.readonly` для имени канала), refresh-токен и канал — `.env.youtube.json` рядом с `.env`
+  студии (в .gitignore по `.env.*`): у каждой студии свой канал. Токены не печатаются.
+- Без `--yes` — карточка: ворота E1 (пакет, QA) + вход, канал, название и описание из `<выход>.description.md`
+  (`package.texts`), видимость, время, категория (`package.category`, 22), язык, `containsSyntheticMedia`
+  (`package.synthetic`, по умолчанию да), `selfDeclaredMadeForKids` (`package.made_for_kids`, нет). Сеть не трогает.
+- `--yes` — `videos.insert` resumable upload (обрыв и 5xx → запрос принятого `bytes */N` и докачка, до 6 попыток),
+  затем обложка `thumbnails.set` (отказ — предупреждение: свою обложку YouTube даёт каналу, подтверждённому по
+  телефону), затем `publish.record` с `via: api`, `privacy`, `video_id`, `publish_at`. «<» и «>» в тексте заменяются
+  (API их не принимает). `--at` — `status.publishAt`, только у `private`, только в будущем.
+- Сеть — только `urllib` (`youtube._http`, тесты подменяют); новых зависимостей нет. Квота: загрузка — 1 единица
+  корзины «Video Uploads», 100 в сутки (docs, 2026-10). Приложение Google в статусе «Testing» — refresh-токен живёт
+  7 дней, `invalid_grant` → просьба повторить `--auth`.
+
 ## Почему склейки не видны («как будто сделано за один заход»)
 1. **Единое время.** Сцена знает своё глобальное начало (кадр). Фон — функция глобального времени,
    поэтому на стыке сцен и глав он продолжается, а не начинается заново.

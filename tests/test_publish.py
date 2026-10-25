@@ -1,11 +1,15 @@
 """ROADMAP E1: публикация вручную — карточка загрузки, ворота, отметка в published.yaml, --list, status."""
+import json
 import shutil
+import threading
+import urllib.request
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 import yaml
 
-from studio import cli, deliver, project, publish, status
+from studio import cli, deliver, project, publish, status, youtube
 
 FIXTURE = Path(__file__).parent / "fixtures" / "fake_tts"
 SCENES = [{"id": "s01", "template": "statement", "params": {"text": "Habit"},
@@ -98,3 +102,108 @@ def test_list_and_status(built, capsys):
 def test_status_unpublished(tmp_path, capsys):
     shutil.copytree(FIXTURE, tmp_path / "p")
     assert publish.summary(project.load(tmp_path / "p")).startswith("не опубликован")
+
+
+# ---------------------------------------------------------------- ROADMAP E2: YouTube Data API (без сети)
+class FakeYT:
+    """Подмена youtube._http: токен, канал, сессия загрузки (первый PUT обрывается 503), обложка 403."""
+
+    def __init__(self):
+        self.calls, self.puts = [], 0
+
+    def __call__(self, method, url, headers=None, data=None, timeout=120):
+        headers = headers or {}
+        body = data.read() if hasattr(data, "read") else data
+        self.calls.append((method, url, headers, body))
+        if url == youtube.TOKEN_URL:
+            f = dict(x.split("=", 1) for x in body.decode().split("&"))
+            if f.get("refresh_token") == "bad":
+                return 400, {}, b'{"error": "invalid_grant"}'
+            return 200, {}, json.dumps({"access_token": "AT", "refresh_token": "RT", "scope": "s"}).encode()
+        if url.startswith(youtube.CHANNELS_URL):
+            return 200, {}, b'{"items": [{"id": "UC1", "snippet": {"title": "Notes"}}]}'
+        if url.startswith(youtube.UPLOAD_URL):
+            return 200, {"location": "https://upload.test/session"}, b""
+        if url == "https://upload.test/session":
+            if headers.get("Content-Range", "").startswith("bytes */"):
+                return 308, {"range": "bytes=0-99"}, b""
+            self.puts += 1
+            if self.puts == 1:
+                return 503, {}, b""
+            return 201, {}, b'{"id": "vid1"}'
+        if url.startswith(youtube.THUMB_URL):
+            return 403, {}, b'{"error": {"errors": [{"reason": "forbidden"}], "message": "no"}}'
+        raise AssertionError(url)
+
+
+@pytest.fixture
+def yt(tmp_path, monkeypatch):
+    sec = tmp_path / "client_secret_x.json"
+    sec.write_text(json.dumps({"installed": {"client_id": "CID", "client_secret": "CS"}}), encoding="utf-8")
+    monkeypatch.setenv("YOUTUBE_CLIENT_SECRETS", str(sec))
+    tok = tmp_path / ".env.youtube.json"
+    monkeypatch.setattr(youtube, "token_path", lambda ws: tok)
+    fake = FakeYT()
+    monkeypatch.setattr(youtube, "_http", fake)
+    monkeypatch.setattr(youtube, "_sleep", lambda s: None)
+    return fake, tok
+
+
+def test_api_auth_loopback(built, yt):
+    fake, tok = yt
+
+    def browse(url):  # «браузер»: Google переадресует на 127.0.0.1 с кодом и тем же state
+        q = {k: v[0] for k, v in parse_qs(urlparse(url).query).items()}
+        assert q["code_challenge_method"] == "S256" and youtube.SCOPES[0] in q["scope"]
+        threading.Thread(target=lambda: urllib.request.urlopen(
+            f"{q['redirect_uri']}/?code=C0DE&state={q['state']}", timeout=10).read()).start()
+
+    rec = youtube.auth(built.ws, log=lambda *_: None, browse=browse, wait=20)
+    assert rec["channel_title"] == "Notes" and json.loads(tok.read_text(encoding="utf-8"))["refresh_token"] == "RT"
+    ex = fake.calls[0][3].decode()
+    assert "code=C0DE" in ex and "code_verifier=" in ex and "grant_type=authorization_code" in ex
+    assert tok.name.startswith(".env.")  # в .gitignore по шаблону .env.*
+
+
+def test_api_card_and_upload(built, yt, capsys):
+    fake, tok = yt
+    yo = built.output("youtube")
+    _pass(yo)
+    assert cli.main(["publish", str(built.root), "--out", "youtube", "--api", "youtube"]) == 1
+    assert "вход не выполнен" in capsys.readouterr().out and not fake.calls
+    tok.write_text(json.dumps({"refresh_token": "RT", "channel_id": "UC1", "channel_title": "Notes"}), encoding="utf-8")
+    assert cli.main(["publish", str(built.root), "--api", "youtube"]) == 0  # tiktok пропущен: только YouTube
+    out = capsys.readouterr().out
+    assert "Канал: «Notes»" in out and "Видимость: private" in out and "containsSyntheticMedia): да" in out
+    assert "--api youtube --yes" in out and "tiktok" not in out and not fake.calls  # карточка ничего не шлёт
+    with pytest.raises(SystemExit, match="только у --privacy private"):
+        cli.main(["publish", str(built.root), "--api", "youtube", "--privacy", "unlisted", "--at", "2099-01-01 10:00"])
+    assert cli.main(["publish", str(built.root), "--out", "youtube", "--api", "youtube", "--yes"]) == 0
+    out = capsys.readouterr().out
+    init = next(c for c in fake.calls if c[1].startswith(youtube.UPLOAD_URL))
+    body = json.loads(init[3])
+    assert body["snippet"]["title"] == "Habits" and body["snippet"]["description"].startswith("Checked.")
+    assert body["status"] == {"privacyStatus": "private", "selfDeclaredMadeForKids": False,
+                              "containsSyntheticMedia": True}
+    size = (yo.output_dir() / "youtube.mp4").stat().st_size
+    resume = [c for c in fake.calls if c[1] == "https://upload.test/session" and c[3]][-1]
+    assert resume[2]["Content-Range"] == f"bytes 100-{size - 1}/{size}" and len(resume[3]) == size - 100
+    assert "докачка" in out and "обложка не загружена" in out and "загружен (private)" in out
+    r = publish.of(built, "youtube")[-1]
+    assert (r["url"], r["via"], r["privacy"], r["video_id"]) == \
+        ("https://www.youtube.com/watch?v=vid1", "api", "private", "vid1")
+    assert "Bearer" not in out and "AT" not in out.split()  # токены не печатаются
+
+
+def test_api_refuses(built, yt):
+    fake, tok = yt
+    with pytest.raises(SystemExit, match="--done"):
+        cli.main(["publish", str(built.root), "--api", "youtube", "--done", "--url", "https://youtu.be/x"])
+    tok.write_text(json.dumps({"refresh_token": "bad"}), encoding="utf-8")
+    with pytest.raises(SystemExit, match="--auth"):
+        youtube.access(built.ws)
+    with pytest.raises(SystemExit, match="прошло"):
+        youtube.meta(built.output("youtube"), at="2001-01-01 10:00")
+    (built.output("youtube").qa_dir / "report.md").unlink()  # QA не PASS — не загружаем
+    assert youtube.upload(built.output("youtube"), log=lambda *_: None) is None
+    assert not [c for c in fake.calls if c[1].startswith(youtube.UPLOAD_URL)]

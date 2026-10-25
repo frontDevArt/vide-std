@@ -1,0 +1,14 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки; поправить ссылку или время руками можно.
+- out: null
+  platform: youtube-shorts
+  url: https://www.youtube.com/watch?v=SvA2vP_G9Gs
+  date: 2026-10-25 15:59
+  version: null
+  file: fake-discounts-cut-1.mp4
+  sha1: b2d7c6962687
+  duration: 27.97
+  note: 'YouTube API: private'
+  via: api
+  privacy: private
+  video_id: SvA2vP_G9Gs
