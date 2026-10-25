@@ -130,4 +130,6 @@ def report(proj: Project, log=print):
     if nxt and " [" in nxt:
         step += f" Выход: --out {nxt.split(' [')[1].rstrip(']')}."
     log("Следующий шаг: " + step)
+    from .publish import summary
+    log("Публикация: " + summary(proj))
     return ph
