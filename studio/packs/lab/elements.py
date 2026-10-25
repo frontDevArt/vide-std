@@ -235,10 +235,10 @@ def dot_glow(d):
 
 
 @functools.lru_cache(maxsize=16)
-def stamp_sprite(verdict, z=1.0):
+def stamp_sprite(verdict, z=1.0, word=None):
     """Штамп вердикта: скруглённая плашка, обводка цвета вердикта, капс Unbounded, «чернильная» текстура."""
     c = VERDICTS.get(verdict.upper(), "myth")
-    word = txt(verdict.upper(), 170 * z, "extrabold", c, "num", 0.04)
+    word = txt((word or verdict).upper(), 170 * z, "extrabold", c, "num", 0.04)  # слово — на языке ролика (D3)
     pw, ph = word.width + int(112 * z), word.height + int(36 * z)
     rings = int(13 * z)
     W, H = pw + 2 * rings, ph + 2 * rings
@@ -259,10 +259,10 @@ def stamp_sprite(verdict, z=1.0):
 
 
 @functools.lru_cache(maxsize=8)
-def study_card(authors, where, evidence, z=1.0, w=724):
+def study_card(authors, where, evidence, z=1.0, w=724, labels=("STUDY", "EVIDENCE")):
     """Карточка исследования: STUDY · сила доказательств (5 сегментов) · авторы · журнал, год, n."""
     w = int(w * z)
-    tag = txt("STUDY", 19 * z, "medium", "bg", "mono", 0.06)
+    tag = txt(labels[0], 19 * z, "medium", "bg", "mono", 0.06)
     who = G.text_sprite(authors, int(30 * z), "extrabold", "text", family="head", align="left", maxw=int(w - 56 * z))
     whr = txt(where, 19 * z, "medium", "dim", "mono")
     h = int(24 * z + tag.height + 14 * z + who.height + 6 * z + whr.height + 24 * z)
@@ -271,7 +271,7 @@ def study_card(authors, where, evidence, z=1.0, w=724):
     x0, y0 = int(28 * z), int(24 * z)
     d.rounded_rectangle((x0, y0, x0 + tag.width + 10 * z, y0 + tag.height + 4 * z), 8 * z, fill=C("accent"))
     card.alpha_composite(tag, (x0 + int(3 * z), y0 + int(2 * z)))
-    lab = txt("EVIDENCE", 16 * z, "medium", "dim", "mono")
+    lab = txt(labels[1], 16 * z, "medium", "dim", "mono")
     mx = int(w - 28 * z - 5 * 36 * z)
     card.alpha_composite(lab, (mx - lab.width - int(6 * z), y0 + int(4 * z)))
     for i in range(5):

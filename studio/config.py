@@ -46,6 +46,8 @@ SCHEMA = {
                                         "свои формат, вёрстка, рендер и QA (ROADMAP B3)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
     "cutdown": {"source": F((str,), doc="нарезка (ROADMAP B4): slug исходника — его настройки, сцены (from:) и озвучка")},
+    "translation": {"source": F((str,), doc="перевод (ROADMAP D3): slug исходника; входы — translation.yaml"),
+                    "from": F((str,), doc="язык исходника")},
     "package": {  # пакет к выходу (ROADMAP B5, studio/package.py) — вне ключа рендера
         "title": F((str,), doc="название на площадке (иначе title)"),
         "description": F((str,), doc="текст описания / подписи (иначе topic)"),

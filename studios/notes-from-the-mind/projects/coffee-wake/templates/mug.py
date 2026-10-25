@@ -22,6 +22,7 @@ from studio.templates import template
 
 BW, BH, BR = 360, 430, 76        # корпус кружки (дизайн-px): ширина, высота, радиус низа
 INSET = 16                       # стенка: жидкость внутри корпуса
+AXIS = {"en": "ALERTNESS ↑", "es": "ALERTA ↑"}  # подпись шкалы на языке ролика (перевод, ROADMAP D3)
 MOVE = 0.9                       # переезд уровня, с
 STATE = "cw_mug"
 
@@ -134,7 +135,7 @@ class LabMug(LabTemplate):
         self.mug, self.pad = mug_sprite(z)
         self.liq = {c: liquid_sprite(z, c) for c in ("accent", "accent2")}
         self.ticks_spr = ticks_sprite(z)
-        self.axis = txt("ALERTNESS ↑", 20 * z, "medium", "dim", "mono", 0.08)
+        self.axis = txt(AXIS.get(self.ctx.get("language"), AXIS["en"]), 20 * z, "medium", "dim", "mono", 0.08)
         if self.bl:
             t = txt(str(self.bl.get("label", "BASELINE")).upper(), 20 * z, "medium", "text", "mono", 0.08)
             w, h = int(t.width + 36 * z), int(44 * z)
