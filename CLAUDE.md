@@ -38,6 +38,8 @@ python -m studio review   <проект> [--list] [--done c1,c2]  # ревью: 
 #   render --scenes ch01/s02,ch02/s05 — только эти сцены (правки по ревью)
 python -m studio --studio <id> batch [--run] [--list] [--yes] [--until ГГГГ-ММ-ДД]  # серия по studios/<id>/plan.yaml:
 #   проекты → готовые сценарии в очередь (all); --run — выполнить; ночью — scripts/night-batch.ps1 (Планировщик)
+python -m studio --studio <id> calendar [--month ГГГГ-ММ] [--stage review,ready] [--md]  # календарь: plan.yaml + стадии
+#   idea → brief → production → review → ready → published (из файлов; просрочки ⚠️; --md → CALENDAR.md студии)
 python -m studio jobs [run|retry <id|failed>|clear]  # очередь задач машины: jobs/<id>.json + лог, возобновление после обрыва
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio gallery [--formats vertical,horizontal]  # превью всех шаблонов во всех форматах → output/gallery/index.html

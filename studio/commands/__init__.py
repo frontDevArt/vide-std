@@ -9,7 +9,7 @@ import importlib
 NAMES = ("doctor", "new", "validate", "images", "voice", "stills", "render", "assemble", "qa", "all", "status",
          "templates", "frame", "demo", "selftest", "clean", "studios", "new-studio",
          "platforms", "cutdown", "package", "kinds", "gallery", "review", "batch", "jobs", "translate", "deliver",
-         "publish", "analytics")
+         "publish", "analytics", "calendar")
 
 
 def module(name):
