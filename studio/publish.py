@@ -116,8 +116,8 @@ def card(t: Project, log=print) -> bool:
         + (f"; субтитры: {nm}.srt" if (d / f"{nm}.srt").exists() else ""))
     log(f"  Название: {title}")
     log(f"  {'Описание' if p.title_max else 'Подпись'}: блок из {nm}.description.md — целиком")
-    if p.ai:
-        log(f"  ИИ-контент: {p.ai}")
+    need, why = package.ai_label(t)
+    log(f"  Отметка ИИ-контента: {'ДА' if need else 'нет'} — {why}" + (f". Где: {p.ai}" if p.ai else ""))
     log(f"  Перед кнопкой «Опубликовать» — пройти {nm}.checklist.md")
     done = of(t, t.out)
     if done:

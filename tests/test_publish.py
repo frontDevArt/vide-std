@@ -106,10 +106,15 @@ def test_status_unpublished(tmp_path, capsys):
 
 # ---------------------------------------------------------------- ROADMAP E2: YouTube Data API (без сети)
 class FakeYT:
-    """Подмена youtube._http: токен, канал, сессия загрузки (первый PUT обрывается 503), обложка 403."""
+    """Подмена youtube._http: токен, канал, сессия загрузки (первый PUT обрывается 503), обложка 403;
+    как живой YouTube 2026-10-25 — videos.list отметку ИИ не отдаёт никогда, videos.update возвращает её в ответе
+    (`sticky=False` — не возвращает: отметка не встала)."""
 
     def __init__(self):
-        self.calls, self.puts = [], 0
+        self.calls, self.puts, self.sticky, self.ai = [], 0, True, None
+        self.status = {"uploadStatus": "processed", "privacyStatus": "private", "license": "youtube",
+                       "embeddable": True, "publicStatsViewable": True, "madeForKids": False,
+                       "selfDeclaredMadeForKids": False}
 
     def __call__(self, method, url, headers=None, data=None, timeout=120):
         headers = headers or {}
@@ -119,7 +124,8 @@ class FakeYT:
             f = dict(x.split("=", 1) for x in body.decode().split("&"))
             if f.get("refresh_token") == "bad":
                 return 400, {}, b'{"error": "invalid_grant"}'
-            return 200, {}, json.dumps({"access_token": "AT", "refresh_token": "RT", "scope": "s"}).encode()
+            return 200, {}, json.dumps({"access_token": "AT", "refresh_token": "RT",
+                                        "scope": " ".join(youtube.SCOPES)}).encode()
         if url.startswith(youtube.CHANNELS_URL):
             return 200, {}, b'{"items": [{"id": "UC1", "snippet": {"title": "Notes"}}]}'
         if url.startswith(youtube.UPLOAD_URL):
@@ -131,6 +137,14 @@ class FakeYT:
             if self.puts == 1:
                 return 503, {}, b""
             return 201, {}, b'{"id": "vid1"}'
+        if url.startswith(youtube.VIDEOS_URL) and method == "GET":
+            return 200, {}, json.dumps({"items": [{"id": "vid1", "status": self.status}]}).encode()
+        if url.startswith(youtube.VIDEOS_URL) and method == "PUT":
+            new = json.loads(body)["status"]
+            self.ai = new.pop("containsSyntheticMedia")  # что ответили; list его не отдаёт
+            self.status = dict(new, uploadStatus="processed", madeForKids=False)
+            echo = dict(new, uploadStatus="processed", **({"containsSyntheticMedia": self.ai} if self.sticky else {}))
+            return 200, {}, json.dumps({"id": "vid1", "status": echo}).encode()
         if url.startswith(youtube.THUMB_URL):
             return 403, {}, b'{"error": {"errors": [{"reason": "forbidden"}], "message": "no"}}'
         raise AssertionError(url)
@@ -171,10 +185,17 @@ def test_api_card_and_upload(built, yt, capsys):
     _pass(yo)
     assert cli.main(["publish", str(built.root), "--out", "youtube", "--api", "youtube"]) == 1
     assert "вход не выполнен" in capsys.readouterr().out and not fake.calls
-    tok.write_text(json.dumps({"refresh_token": "RT", "channel_id": "UC1", "channel_title": "Notes"}), encoding="utf-8")
+    old = {"refresh_token": "RT", "channel_id": "UC1", "channel_title": "Notes", "scope": "youtube.upload youtube.readonly"}
+    tok.write_text(json.dumps(old), encoding="utf-8")
+    assert cli.main(["publish", str(built.root), "--out", "youtube", "--api", "youtube"]) == 1  # вход E2 v1: без update
+    assert "отметку ИИ не поставить" in capsys.readouterr().out
+    with pytest.raises(SystemExit, match="не загружаю"):
+        youtube.upload(yo, log=lambda *_: None)
+    tok.write_text(json.dumps(dict(old, scope=" ".join(youtube.SCOPES))), encoding="utf-8")
     assert cli.main(["publish", str(built.root), "--api", "youtube"]) == 0  # tiktok пропущен: только YouTube
     out = capsys.readouterr().out
-    assert "Канал: «Notes»" in out and "Видимость: private" in out and "containsSyntheticMedia): да" in out
+    assert "Канал: «Notes»" in out and "Видимость: private" in out
+    assert "Отметка ИИ (containsSyntheticMedia): нет — графика нарисована кодом" in out  # голос fake, без генератора
     assert "--api youtube --yes" in out and "tiktok" not in out and not fake.calls  # карточка ничего не шлёт
     with pytest.raises(SystemExit, match="только у --privacy private"):
         cli.main(["publish", str(built.root), "--api", "youtube", "--privacy", "unlisted", "--at", "2099-01-01 10:00"])
@@ -184,15 +205,59 @@ def test_api_card_and_upload(built, yt, capsys):
     body = json.loads(init[3])
     assert body["snippet"]["title"] == "Habits" and body["snippet"]["description"].startswith("Checked.")
     assert body["status"] == {"privacyStatus": "private", "selfDeclaredMadeForKids": False,
-                              "containsSyntheticMedia": True}
+                              "containsSyntheticMedia": False}  # «нет» — тоже явным ответом
     size = (yo.output_dir() / "youtube.mp4").stat().st_size
     resume = [c for c in fake.calls if c[1] == "https://upload.test/session" and c[3]][-1]
     assert resume[2]["Content-Range"] == f"bytes 100-{size - 1}/{size}" and len(resume[3]) == size - 100
     assert "докачка" in out and "обложка не загружена" in out and "загружен (private)" in out
+    assert "✅ отметка ИИ-контента: нет" in out
+    upd = json.loads(next(c for c in fake.calls if c[0] == "PUT" and c[1].startswith(youtube.VIDEOS_URL))[3])
+    assert upd["id"] == "vid1" and upd["status"]["containsSyntheticMedia"] is False
+    assert upd["status"]["privacyStatus"] == "private" and "uploadStatus" not in upd["status"]  # видимость сохранена
+    assert fake.ai is False and "containsSyntheticMedia" not in fake.status  # list поле не отдаёт — верим ответу update
     r = publish.of(built, "youtube")[-1]
-    assert (r["url"], r["via"], r["privacy"], r["video_id"]) == \
-        ("https://www.youtube.com/watch?v=vid1", "api", "private", "vid1")
+    assert (r["url"], r["via"], r["privacy"], r["video_id"], r["ai_label"], r["ai_confirmed"]) == \
+        ("https://www.youtube.com/watch?v=vid1", "api", "private", "vid1", False, True)
     assert "Bearer" not in out and "AT" not in out.split()  # токены не печатаются
+    # YouTube не вернул ответ — громкий ❌, код 1, ai_confirmed: false; --check — то же для загруженных
+    fake.sticky, fake.puts = False, 0
+    assert cli.main(["publish", str(built.root), "--out", "youtube", "--api", "youtube", "--yes"]) == 1
+    assert "ОТМЕТКА ИИ-КОНТЕНТА НЕ ПОДТВЕРЖДЕНА (нужно: нет)" in capsys.readouterr().out
+    assert publish.of(built, "youtube")[-1]["ai_confirmed"] is False
+    assert cli.main(["publish", str(built.root), "--api", "youtube", "--check"]) == 1
+    # правило изменилось (человек: package.ai_label: true) — --check меняет ответ на «да»
+    fake.sticky = True
+    capsys.readouterr()
+    built.cfg.setdefault("package", {})["ai_label"] = True
+    try:
+        assert youtube.check(built) is True
+    finally:
+        del built.cfg["package"]["ai_label"]
+    assert "отметка ИИ — ДА (изменена); package.ai_label: true" in capsys.readouterr().out and fake.ai is True
+    r = publish.of(built, "youtube")[-1]
+    assert (r["ai_label"], r["ai_confirmed"]) == (True, True)
+
+
+def test_ai_label_rules(built, monkeypatch):
+    """Отметка ИИ — по правилам, а не всегда: рисованное + синтетический диктор → нет."""
+    from studio import imagegen, package
+    yo, tt = built.output("youtube"), built.output("tiktok")
+    assert package.ai_label(yo)[0] is False and package.ai_label(tt)[0] is False  # голос fake — не реалистичный
+    for t in (yo, tt):
+        t.cfg["tts"]["backend"] = "elevenlabs"
+    assert package.ai_label(yo)[0] is False  # YouTube: синтетический диктор без подражания человеку — нет
+    need, why = package.ai_label(tt)
+    assert need and "реалистичный синтетический голос" in why  # TikTok: реалистичный ИИ-голос — да
+    monkeypatch.setattr(imagegen, "requests", lambda p: [("ch01/s01", {"prompt": "x"})])
+    yo.cfg["images"] = {"enabled": True, "backend": "kie"}
+    need, why = package.ai_label(yo)
+    assert need and "генератора" in why
+    yo.cfg["images"]["backend"] = "fake"  # процедурные PNG — не ИИ
+    assert package.ai_label(yo)[0] is False
+    yo.cfg["package"]["ai_label"] = True  # решение человека важнее (клон голоса, ИИ-музыка, реалистичная сцена)
+    assert package.ai_label(yo) == (True, "package.ai_label: true — решение человека")
+    tt.cfg["package"]["ai_label"] = False
+    assert package.ai_label(tt)[0] is False
 
 
 def test_api_refuses(built, yt):

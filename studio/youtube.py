@@ -9,7 +9,11 @@
   в `.env` студии или корня, через `workspace.secret`;
 - `publish <проект> --api youtube --auth` — вход в браузере (PKCE, ответ на 127.0.0.1), refresh-токен и канал —
   в `.env.youtube.json` рядом с `.env` студии (в .gitignore по `.env.*`): у каждой студии свой канал.
-Токены никуда не печатаются. Сеть — только `urllib` (без google-api-python-client): `_http` подменяют тесты.
+Отметка ИИ (`status.containsSyntheticMedia`) — по правилу `package.ai_label` (да — реалистичное, что можно принять
+за настоящее; нет — рисованная анимация и синтетический диктор), и «нет» тоже отвечается явно. Поставила ли её
+videos.insert — не узнать (videos.list поле не отдаёт), поэтому после загрузки её ставит `videos.update` (видимость и
+прочие поля status сохраняются), и она считается стоящей, только если YouTube вернул то же значение в ответе update;
+нет — ❌ и код 1. `--check` — то же для уже загруженных роликов проекта. Токены никуда не печатаются. Сеть — только `urllib` (без google-api-python-client): `_http` подменяют тесты.
 Квота (docs videos.insert, 2026-10): загрузка — 1 единица из корзины «Video Uploads», 100 загрузок в сутки.
 TikTok и Instagram через API не загружаем: доступ к публикации даётся после проверки приложения площадкой — вручную (E1).
 """
@@ -31,12 +35,18 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from . import package, workspace
 from .project import Project
 
-SCOPES = ("https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly")
+# force-ssl — чтение канала и videos.update: отметку ИИ после videos.insert не подтвердить (videos.list её не отдаёт),
+# поэтому её всегда ставим update и проверяем по его ответу (`disclose`)
+SCOPES = ("https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl")
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 UPLOAD_URL = "https://www.googleapis.com/upload/youtube/v3/videos"
 THUMB_URL = "https://www.googleapis.com/upload/youtube/v3/thumbnails/set"
 CHANNELS_URL = "https://www.googleapis.com/youtube/v3/channels"
+VIDEOS_URL = "https://www.googleapis.com/youtube/v3/videos"
+MUTABLE = ("privacyStatus", "embeddable", "license", "publicStatsViewable", "publishAt", "selfDeclaredMadeForKids")
+STUDIO_AI = ("YouTube Studio → «Контент» → ролик → «Подробнее» → «AI use» / «Altered or synthetic content» → "
+             "ответ как в карточке → сохранить")
 PRIVACY = ("private", "unlisted", "public")
 CATEGORY = "22"  # People & Blogs — умолчание YouTube; своё — package.category (27 — Education)
 TRIES = 6        # попыток докачки после обрыва / 5xx
@@ -227,7 +237,7 @@ def meta(t: Project, privacy: str = "private", at: str | None = None) -> tuple[d
         title, text = (s.replace("<", "‹").replace(">", "›") for s in (title, text))
     lang = t.cfg["language"]
     status = {"privacyStatus": privacy, "selfDeclaredMadeForKids": bool(pk.get("made_for_kids", False)),
-              "containsSyntheticMedia": bool(pk.get("synthetic", True))}
+              "containsSyntheticMedia": package.ai_label(t)[0]}
     if when:
         status["publishAt"] = when
     body = {"snippet": {"title": title, "description": text, "categoryId": str(pk.get("category", CATEGORY)),
@@ -246,6 +256,9 @@ def card(t: Project, privacy: str = "private", at: str | None = None, log=print)
     log(f"📤 {nm} → YouTube API: {video}")
     if not ch.get("refresh_token"):
         errs.append(f"вход не выполнен — python -m studio publish {t.slug} --api youtube --auth")
+    elif not can_disclose(ch):
+        errs.append("вход без права менять ролик — отметку ИИ не поставить и не проверить; войти заново: "
+                    f"python -m studio publish {t.slug} --api youtube --auth")
     if not errs:
         body, w = meta(t, privacy, at)
         warns += w
@@ -256,8 +269,9 @@ def card(t: Project, privacy: str = "private", at: str | None = None, log=print)
         log(f"  Видимость: {privacy}" + (f", публикация {at} ({st['publishAt']})" if at else "")
             + f"; категория {body['snippet']['categoryId']}, язык {body['snippet']['defaultLanguage']}")
         log(f"  Файл: {video.name}, {video.stat().st_size / 2**20:.1f} МБ; обложка {nm}.cover.jpg")
-        log(f"  ИИ-контент (containsSyntheticMedia): {'да' if st['containsSyntheticMedia'] else 'нет'}; "
-            f"для детей: {'да' if st['selfDeclaredMadeForKids'] else 'нет'}")
+        log(f"  Отметка ИИ (containsSyntheticMedia): {'ДА' if st['containsSyntheticMedia'] else 'нет'} — "
+            f"{package.ai_label(t)[1]}; ставится и подтверждается после загрузки")
+        log(f"  Для детей: {'да' if st['selfDeclaredMadeForKids'] else 'нет'}")
     for x in errs:
         log(f"  ❌ {x}")
     for x in warns:
@@ -269,6 +283,44 @@ def card(t: Project, privacy: str = "private", at: str | None = None, log=print)
         + (f" --out {t.out}" if t.out else "") + " --api youtube --yes"
         + (f" --privacy {privacy}" if privacy != "private" else "") + (f' --at "{at}"' if at else ""))
     return True
+
+
+def can_disclose(tok: dict) -> bool:
+    return SCOPES[1] in (tok.get("scope") or "").split()
+
+
+def status(tok: str, vid: str) -> dict:
+    st, _, b = _http("GET", VIDEOS_URL + "?" + urlencode({"part": "status", "id": vid}),
+                     {"Authorization": f"Bearer {tok}"})
+    if st != 200:
+        raise _error(st, b, "чтение ролика")
+    items = json.loads(b).get("items") or []
+    if not items:
+        raise SystemExit(f"YouTube: ролик {vid} не найден на канале (удалён?)")
+    return items[0]["status"]
+
+
+def disclose(tok: str, vid: str, value: bool, log=print) -> bool:
+    """Ответ «ИИ-контент: да/нет» на ролике — всегда videos.update. True — YouTube вернул то же значение в ответе update.
+    Чтением не проверить: videos.list поле не возвращает никогда (живой прогон 2026-10-25: update отвечает
+    `containsSyntheticMedia: true`, list сразу после — без поля; так же у github.com/onjoroge1/ai-video-gen/pull/188,
+    где Studio показала «AI use: Yes»). Глазами — Studio, это последнее слово."""
+    cur = status(tok, vid)
+    # update перезаписывает изменяемые поля status: всё, что есть, отправляем обратно, иначе видимость сбросится
+    new = {k: cur[k] for k in MUTABLE if k in cur}
+    new["containsSyntheticMedia"] = value
+    st, _, b = _http("PUT", VIDEOS_URL + "?part=status", {"Authorization": f"Bearer {tok}",
+                     "Content-Type": "application/json; charset=UTF-8"},
+                     json.dumps({"id": vid, "status": new}).encode())
+    if st != 200:
+        log(f"  ❌ отметка ИИ: {_error(st, b, 'videos.update').code}")
+        return False
+    got = json.loads(b or b"{}").get("status") or {}
+    after = status(tok, vid)
+    if after.get("privacyStatus") != cur.get("privacyStatus"):
+        log(f"  ❌ видимость изменилась: {cur.get('privacyStatus')} → {after.get('privacyStatus')} — проверить в Studio")
+        return False
+    return got.get("containsSyntheticMedia") is value  # «нет» — тоже только явным false в ответе
 
 
 def _send(session: str, video: Path, tok: str, log=print) -> dict:
@@ -314,6 +366,9 @@ def upload(t: Project, privacy: str = "private", at: str | None = None, log=prin
     for x in warns + w:
         log(f"  ⚠️ {x}")
     ws = t.ws
+    if not can_disclose(token(ws)):
+        raise SystemExit("YouTube: вход без права менять ролик — отметку ИИ не поставить и не проверить, не загружаю; "
+                         f"войти заново: python -m studio publish {t.slug} --api youtube --auth")
     tok = access(ws)
     nm = package.name(t)
     video = t.output_dir() / f"{nm}.mp4"
@@ -336,5 +391,39 @@ def upload(t: Project, privacy: str = "private", at: str | None = None, log=prin
     extra = {"via": "api", "privacy": privacy, "video_id": vid}
     if at:
         extra["publish_at"] = at
+    ai = body["status"]["containsSyntheticMedia"]
+    extra["ai_label"] = ai
+    extra["ai_confirmed"] = ok = disclose(tok, vid, ai, log)
+    word = "ДА" if ai else "нет"
+    log(f"  ✅ отметка ИИ-контента: {word} (подтверждено ответом videos.update; глазами — Studio → ролик → «AI use»)"
+        if ok else f"  ❌ ОТМЕТКА ИИ-КОНТЕНТА НЕ ПОДТВЕРЖДЕНА (нужно: {word}) — до открытия ролика: {STUDIO_AI}; "
+        f"потом: python -m studio publish {t.slug} --api youtube --check")
     return publish.record(t, url, note=f"YouTube API: {privacy}" + (f", публикация {at}" if at else ""),
                           extra=extra, log=log)
+
+
+def check(proj: Project, log=print) -> bool:
+    """Ролики проекта, загруженные через API: отметка ИИ — по правилу `package.ai_label` сейчас (да или явное нет),
+    через videos.update с подтверждением; запись `ai_label` / `ai_confirmed` в published.yaml."""
+    from . import publish
+    recs = publish.load(proj)
+    mine = [r for r in recs if r.get("via") == "api" and r.get("video_id")]
+    if not mine:
+        log(f"У {proj.slug} нет роликов, загруженных через API")
+        return True
+    if not can_disclose(token(proj.ws)):
+        raise SystemExit("YouTube: вход без права менять ролик — войти заново: "
+                         f"python -m studio publish {proj.slug} --api youtube --auth")
+    tok = access(proj.ws)
+    bad = 0
+    for r in mine:
+        t = proj.output(r["out"]) if r.get("out") else proj
+        ai, why = package.ai_label(t)
+        changed = r.get("ai_label") is not None and r["ai_label"] != ai
+        r["ai_label"], r["ai_confirmed"] = ai, (ok := disclose(tok, r["video_id"], ai, log))
+        bad += not ok
+        word = "ДА" if ai else "нет"
+        log(f"  {'✅' if ok else '❌'} {r['url']} ({r.get('privacy')}): отметка ИИ — {word}"
+            + (" (изменена)" if changed else "") + f"; {why}" + ("" if ok else f" — НЕ подтверждена: {STUDIO_AI}"))
+    publish._save(proj, recs)
+    return not bad

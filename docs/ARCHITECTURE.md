@@ -237,8 +237,15 @@ done`), `--until`/`--only` — часть плана. Сценарии пише�
   Студия-канал (`kind: youtube` или `channel/POSITIONING.md`) без источников — ❌.
 - `<выход>.checklist.md` — пункты с галочками: файл и предел длительности, итог `qa/<выход>/report.md`, субтитры
   (вшиты — не включать автосубтитры; YouTube — загрузить `.srt`), обложка, тексты, главы, источники, хэштеги,
-  отметка ИИ-контента площадки (`Platform.ai`, `ai_voice`: реалистичный синтетический голос сам по себе требует
-  отметки у TikTok и Meta, у YouTube — только если выдаёт себя за реального человека), язык; внизу — ❌/⚠️ пакета.
+  отметка ИИ-контента — решение `package.ai_label(proj)` с причиной (ниже) и где её ставить (`Platform.ai`), язык;
+  внизу — ❌/⚠️ пакета.
+- Отметка ИИ-контента — `package.ai_label(proj) → (да/нет, почему)`, одно правило для чек-листа, карточки `publish` и
+  загрузки через API (сверено 2026-10-25, support.google.com/youtube/answer/14328491): отмечается реалистичное, что
+  можно принять за настоящее, а не сам факт ИИ. По порядку: 1) `package.ai_label: true|false` — решение человека
+  (голос-клон реального человека, ИИ-музыка как основа, реалистичная сцена — студия этого не видит); 2) картинки
+  генератора (`images.enabled`, backend `kie`, у сцен есть `image:`) — да; 3) площадка с `ai_voice` (TikTok, Instagram)
+  и нейросетевой голос (`REALISTIC`: elevenlabs, edge, piper) — да; иначе — нет (графика кодом — нереалистичная
+  анимация; синтетический диктор без подражания человеку YouTube отмечать не требует).
 - `package.by_output.<выход>` перекрывает `title`/`description`/`hashtags`/`cover` для выхода. `package:` вне ключа
   рендера, `package.py` рендер не импортирует — правка текстов ничего не перерисовывает.
 
@@ -281,14 +288,25 @@ done`), `--until`/`--only` — часть плана. Сценарии пише�
 [--at "ГГГГ-ММ-ДД ЧЧ:ММ"]]` (`studio/youtube.py`). Загрузка — только после явного «да» человека в чате.
 - Доступ: OAuth-клиент Google «Desktop app» — `YOUTUBE_CLIENT_SECRETS=<путь к JSON>` (или `YOUTUBE_CLIENT_ID` +
   `YOUTUBE_CLIENT_SECRET`) через `workspace.secret`; `--auth` — вход в браузере (PKCE, ответ на 127.0.0.1, scope
-  `youtube.upload` + `youtube.readonly` для имени канала), refresh-токен и канал — `.env.youtube.json` рядом с `.env`
+  `youtube.upload` + `youtube.force-ssl` — имя канала и `videos.update` для отметки ИИ), refresh-токен и канал — `.env.youtube.json` рядом с `.env`
   студии (в .gitignore по `.env.*`): у каждой студии свой канал. Токены не печатаются.
 - Без `--yes` — карточка: ворота E1 (пакет, QA) + вход, канал, название и описание из `<выход>.description.md`
   (`package.texts`), видимость, время, категория (`package.category`, 22), язык, `containsSyntheticMedia`
-  (`package.synthetic`, по умолчанию да), `selfDeclaredMadeForKids` (`package.made_for_kids`, нет). Сеть не трогает.
+  (`package.ai_label(proj)`, да/нет с причиной), `selfDeclaredMadeForKids` (`package.made_for_kids`, нет). Сеть не трогает.
 - `--yes` — `videos.insert` resumable upload (обрыв и 5xx → запрос принятого `bytes */N` и докачка, до 6 попыток),
   затем обложка `thumbnails.set` (отказ — предупреждение: свою обложку YouTube даёт каналу, подтверждённому по
-  телефону), затем `publish.record` с `via: api`, `privacy`, `video_id`, `publish_at`. «<» и «>» в тексте заменяются
+  телефону), затем отметка ИИ `disclose` (ниже), затем `publish.record` с `via: api`, `privacy`, `video_id`,
+  `publish_at`, `ai_label`, `ai_confirmed`.
+- Отметка ИИ (`containsSyntheticMedia`) — значение `package.ai_label`, «нет» тоже отвечается явно. Живой прогон
+  2026-10-25: после `videos.insert` с полем `videos.list` его не вернул — и не вернул и после `videos.update`, хотя
+  ответ update его содержит: list это поле не отдаёт вообще (так же — github.com/onjoroge1/ai-video-gen/pull/188,
+  Studio там показала «AI use: Yes»). Поэтому `disclose(value)` после загрузки всегда делает `videos.update`
+  (50 единиц квоты) со всеми изменяемыми полями status из `videos.list` (иначе update сбросит видимость) и считает
+  ответ подтверждённым, только если update вернул то же значение явно (`false` тоже приходит явным полем — проверено
+  вживую); видимость после — сверяется. Не подтверждён — ❌ «поставить вручную в Studio», код 1; запись — `ai_label`
+  (что ответили) и `ai_confirmed`. Вход без `force-ssl` (старый токен) — карточка ❌ и отказ загружать.
+  `--check` — то же для всех роликов проекта, загруженных через API, по правилу на сейчас (правило поменялось —
+  ответ меняется, «(изменена)»). «<» и «>» в тексте заменяются
   (API их не принимает). `--at` — `status.publishAt`, только у `private`, только в будущем.
 - Сеть — только `urllib` (`youtube._http`, тесты подменяют); новых зависимостей нет. Квота: загрузка — 1 единица
   корзины «Video Uploads», 100 в сутки (docs, 2026-10). Приложение Google в статусе «Testing» — refresh-токен живёт

@@ -1,5 +1,5 @@
 # Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
-# Пишет команда после ручной загрузки; поправить ссылку или время руками можно.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
 - out: null
   platform: youtube-shorts
   url: https://www.youtube.com/watch?v=SvA2vP_G9Gs
@@ -12,3 +12,5 @@
   via: api
   privacy: private
   video_id: SvA2vP_G9Gs
+  ai_label: false
+  ai_confirmed: true

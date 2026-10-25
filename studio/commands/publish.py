@@ -22,6 +22,7 @@ def add(sp):
     q.add_argument("--privacy", choices=("private", "unlisted", "public"), default="private",
                    help="с --api: видимость ролика (по умолчанию private — черновик)")
     q.add_argument("--auth", action="store_true", help="с --api: войти в аккаунт канала студии в браузере")
+    q.add_argument("--check", action="store_true", help="с --api: отметка ИИ у загруженных роликов — по правилу, с подтверждением")
 
 
 def run(a):
@@ -49,6 +50,8 @@ def _api(a, proj):
     if a.auth:
         Y.auth(proj.ws)
         return 0
+    if a.check:
+        return 0 if Y.check(proj) else 1
     if a.done or a.force:
         raise SystemExit("--api: без --done и --force — запись делает сама загрузка, ворота обязательны")
     outs = [t for t in proj.targets(a.out) if Y.supports(t)]
@@ -57,7 +60,8 @@ def _api(a, proj):
     if a.yes:
         if len(outs) > 1:
             raise SystemExit("--yes: одна загрузка — --out <выход> (" + ", ".join(t.out for t in outs) + ")")
-        return 0 if Y.upload(outs[0], a.privacy, a.at) else 1
+        rec = Y.upload(outs[0], a.privacy, a.at)
+        return 0 if rec and rec.get("ai_confirmed") else 1
     bad = 0
     for t in outs:
         if len(outs) > 1:
