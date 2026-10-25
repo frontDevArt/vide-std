@@ -49,6 +49,45 @@ def name(proj: Project) -> str:
     return proj.out or proj.slug
 
 
+def texts(proj: Project) -> tuple[str, str]:
+    """(название, описание) из `<выход>.description.md`, собранного `build`, — для загрузки через API (E2)."""
+    f = proj.output_dir() / f"{name(proj)}.description.md"
+    if not f.exists():
+        raise SystemExit(f"нет {f.name} — сначала: python -m studio package {proj.slug}")
+    s = f.read_text(encoding="utf-8")
+    title = re.search(r"^## Название[^\n]*\n\n([^\n]*)\n", s, re.M)
+    text = re.search(r"^```text\n(.*?)\n```$", s, re.M | re.S)
+    if not (title and text):
+        raise SystemExit(f"{f.name}: не найдены название и описание — пересоберите: python -m studio package {proj.slug}")
+    return title.group(1).strip(), text.group(1).strip()
+
+
+def ai_label(proj: Project) -> tuple[bool, str]:
+    """Нужна ли отметка ИИ-контента на площадке выхода: (да/нет, почему). Правила (сверено 2026-10-25,
+    support.google.com/youtube/answer/14328491; TikTok и Meta — Platform.ai): отметка — за реалистичное, что можно
+    принять за настоящее, а не за сам факт ИИ.
+    1. `package.ai_label: true|false` — решение человека, важнее всего ниже (голос-клон реального человека,
+       ИИ-музыка как основа ролика, реалистичная сцена — студия этого сама не видит).
+    2. Картинки генератора (`images.enabled`, backend kie, у сцен есть image:) — да: реалистичность кадра не проверить.
+    3. Площадка с `ai_voice` (TikTok, Instagram) и нейросетевой голос (REALISTIC) — да: реалистичный ИИ-голос сам
+       по себе требует отметки.
+    Иначе — нет: графика нарисована кодом (нереалистичная анимация), голос диктора синтетический и не подражает
+    реальному человеку (YouTube такое отмечать не требует)."""
+    from . import imagegen
+    pk = settings(proj)
+    if pk.get("ai_label") is not None:
+        v = bool(pk["ai_label"])
+        return v, f"package.ai_label: {str(v).lower()} — решение человека"
+    if imagegen.enabled(proj.cfg) and imagegen.settings(proj.cfg)["backend"] == "kie" and imagegen.requests(proj):
+        return True, "картинки сцен из генератора (images.backend: kie) — реалистичность кадра не проверить"
+    p, _ = platform(proj)
+    synth = proj.cfg["tts"]["backend"]
+    if p.ai_voice and synth in REALISTIC:
+        return True, f"{p.name}: реалистичный синтетический голос ({synth}) сам по себе требует отметки"
+    voice = "голоса нет" if synth == "none" else f"голос {synth} не подражает реальному человеку"
+    return False, f"графика нарисована кодом, {voice} — {p.name} такое отмечать не требует"
+
+
 def platform(proj: Project) -> tuple[platforms.Platform, bool]:
     """Площадка выхода; не задана — площадка формата (platforms.LAYOUT) и False."""
     p = platforms.of(proj)
@@ -351,7 +390,6 @@ def build(proj: Project, log=print) -> tuple[list[str], list[str]]:
     (d / f"{nm}.description.md").write_text("\n".join(desc), encoding="utf-8")
 
     burned = proj.cfg["subtitles"].get("enabled", True) and p.burn_subs
-    synth = proj.cfg["tts"]["backend"]
     ok = lambda c: "✅" if c else "❌"  # noqa: E731
     qa = _qa_status(proj)
     lim = platforms._dur(p)
@@ -378,12 +416,11 @@ def build(proj: Project, log=print) -> tuple[list[str], list[str]]:
                                                  else "") + ")") if need_src else ""))
     if p.tags_max:
         items.append(f"- [ ] Хэштеги: {len(tags)} из {p.tags_max}" + (f" ({' '.join(tags)})" if tags else ""))
-    items.append(f"- [ ] **Синтетический контент.** Голос — синтез (`tts.backend: {synth}`), картинка нарисована кодом. "
-                 + (p.ai or "Отметку ИИ-контента — по правилам площадки."))
-    if synth in REALISTIC:
-        items.append(f"- [ ] {'**Отметить ИИ-контент**' if p.ai_voice else 'Отметка ИИ не нужна'}: голос {synth} "
-                     "звучит реалистично" + ("" if p.ai_voice else ", но не подражает реальному человеку и кадр "
-                                              "рисованный — проверить, что это так"))
+    need, why = ai_label(proj)
+    items.append(f"- [ ] {'**Отметка ИИ-контента: ДА**' if need else 'Отметка ИИ-контента: нет'} — {why}. "
+                 + (p.ai or "Где отметить — по правилам площадки.")
+                 + ("" if need else " Голос похож на реального человека, ИИ-музыка или реалистичная сцена — "
+                    "`package.ai_label: true` и пересобрать пакет."))
     items.append(f"- [ ] Язык ролика на площадке: {proj.cfg['language']}; аудитория «не для детей», если так")
     chk = [f"# {nm}: перед публикацией", "", f"<!-- {head} -->", ""] + items
     if errs or warns:

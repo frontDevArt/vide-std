@@ -9,6 +9,8 @@
         brief: briefs/brew-three.md         # бриф для /new-video (необязательно)
         platforms: [tiktok, instagram-reels] # первая — platform проекта, две и больше — deliverables
         kind: promo                         # и format, duration, lang, tts — как флаги `new`
+      - topic: "Holiday gift guide"         # без даты — бэклог
+        stage: idea                         # идея (ROADMAP E4): batch проект не создаёт, calendar показывает 💡
 
 `python -m studio batch`: создаёт проекты, которых ещё нет; проекты с готовым сценарием (бриф и script/ по фазам
 `status`) и без QA ✅ ставит в очередь (`all <проект>`, studio/jobs.py); `--run` — сразу выполняет очередь.
@@ -24,7 +26,8 @@ import yaml
 
 from . import jobs, workspace
 
-ITEM_KEYS = {"date", "topic", "slug", "brief", "platforms", "kind", "format", "duration", "lang", "tts"}
+ITEM_KEYS = {"date", "topic", "slug", "brief", "platforms", "kind", "format", "duration", "lang", "tts", "stage"}
+STAGES = ("idea",)  # `stage:` пункта — только задержать идею; остальные стадии calendar выводит из файлов (E4)
 
 
 def plan_path(ws) -> Path:
@@ -62,6 +65,8 @@ def load(path) -> dict:
                 platform(p)
             except KeyError as e:
                 errs.append(f"{where}: {e.args[0]}")
+        if it.get("stage") is not None and it["stage"] not in STAGES:
+            errs.append(f"{where}: stage {it['stage']!r} — можно только idea (остальное calendar видит по файлам)")
         if it.get("kind") and it["kind"] not in kinds.KINDS:
             errs.append(f"{where}: нет типа {it['kind']} (python -m studio kinds)")
         d = it.get("date")
@@ -102,6 +107,8 @@ def state(ws, it, queue=None) -> tuple[str, str]:
     ready — можно рендерить; failed — задача упала; done — QA ✅ у всех выходов."""
     root = ws.project(it["slug"])
     if not (root / "project.yaml").exists():
+        if it.get("stage") == "idea":
+            return "idea", "идея (stage: idea) — проект не создаём"
         return "new", "проекта нет"
     q = [j for j in (queue if queue is not None else jobs.load()) if _job_root(j) == root.resolve()]
     last = q[-1] if q else None
@@ -148,7 +155,7 @@ def select(items, until=None, only=None):
     return out
 
 
-MARK = {"new": "🆕", "draft": "✍️ ", "ready": "⬜", "queued": "⏳", "running": "▶", "failed": "❌", "done": "✅"}
+MARK = {"idea": "💡", "new": "🆕", "draft": "✍️ ", "ready": "⬜", "queued": "⏳", "running": "▶", "failed": "❌", "done": "✅"}
 
 
 def report(ws, plan, items, log=print) -> dict:

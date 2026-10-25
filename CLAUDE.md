@@ -28,10 +28,18 @@ python -m studio package  <проект> [--out <выход>]  # пакет к �
 python -m studio translate <проект> --to es [--tts edge]  # перевод: <slug>-es/ + лист translation.yaml (заполняет Claude) →
 #   повторный translate <slug>-es пишет сценарий; project.yaml и script/ перевода не править — только лист
 python -m studio deliver  <проект> [--note "…"] [--list] [--diff v1 v2]  # сдача: output/<slug>/vN/ + CHANGELOG.md проекта + <slug>-vN.zip
+python -m studio publish  <проект> [--out <выход>] [--done --url <ссылка> [--at "ГГГГ-ММ-ДД ЧЧ:ММ"]] [--list]
+#   публикация вручную: карточка загрузки (куда, файлы, ИИ-отметка, чек-лист); загружает человек; --done — запись в published.yaml
+#   --api youtube [--auth] — карточка загрузки через API; --yes [--privacy] [--at] — загрузка (private), только после «да» в чате;
+#   отметка ИИ — по правилу package.ai_label (да/нет с причиной), ставится и подтверждается сама (❌ — сказать); --check — у загруженных
+python -m studio --studio <id> analytics [--fetch] [--import <csv>] [--set <ссылка> views=… ctr=…] [--auth]
+#   цифры опубликованных роликов (просмотры, удержание, CTR) → studios/<id>/analytics/REPORT.md — читают /topic-radar и брифы
 python -m studio review   <проект> [--list] [--done c1,c2]  # ревью: страница 127.0.0.1, комментарии по таймкодам → review/comments.json; правки — /review-fix
 #   render --scenes ch01/s02,ch02/s05 — только эти сцены (правки по ревью)
 python -m studio --studio <id> batch [--run] [--list] [--yes] [--until ГГГГ-ММ-ДД]  # серия по studios/<id>/plan.yaml:
 #   проекты → готовые сценарии в очередь (all); --run — выполнить; ночью — scripts/night-batch.ps1 (Планировщик)
+python -m studio --studio <id> calendar [--month ГГГГ-ММ] [--stage review,ready] [--md]  # календарь: plan.yaml + стадии
+#   idea → brief → production → review → ready → published (из файлов; просрочки ⚠️; --md → CALENDAR.md студии)
 python -m studio jobs [run|retry <id|failed>|clear]  # очередь задач машины: jobs/<id>.json + лог, возобновление после обрыва
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio gallery [--formats vertical,horizontal]  # превью всех шаблонов во всех форматах → output/gallery/index.html
@@ -61,6 +69,8 @@ python -m studio new-studio <id> --name "…" --kind brand|youtube|client --lang
 - Всё, что видно через склейку сцен, — через `state` (см. `docs/SCENE_SPEC.md`), а не локальной анимацией.
 - Перед сдачей: `qa` — все ✅, открыты `qa/subs_check.png` и `qa/final_frames.png`. Для публикации — `package`:
   открыть обложку `output/<slug>/<выход>.cover.jpg`, пройти `<выход>.checklist.md`.
+- Публикует только человек: Claude показывает `publish`-карточку, а `--done --url` пишет только со ссылкой от пользователя.
+  `publish --api youtube --yes` — только после явного «да» пользователя в чате на эту загрузку (название, площадка, видимость, время).
 - Политику сетевого прокси не обходить; 403 — не ретраить, сообщить.
 
 ## Текст для озвучки

@@ -10,6 +10,9 @@ studios/*/projects/*/qa/
 studios/*/projects/*-demo/
 logs/
 *.log
+# скачанные массовые отчёты YouTube Reporting API (ROADMAP E3) — кэш, цифры живут в analytics/videos.yaml
+studios/*/analytics/reach/
+analytics/reach/
 output/
 
 # Секреты (ключ ElevenLabs и т.п.)
