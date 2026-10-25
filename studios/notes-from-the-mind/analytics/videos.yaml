@@ -1,0 +1,17 @@
+# Цифры роликов студии (ROADMAP E3): python -m studio --studio <id> analytics [--fetch | --import | --set].
+# Поля ролика берутся из проекта заново при каждом запуске; metrics/sources — копятся (руками можно).
+- url: https://www.youtube.com/watch?v=SvA2vP_G9Gs
+  project: fake-discounts-cut-1
+  out: null
+  platform: youtube-shorts
+  video_id: SvA2vP_G9Gs
+  published: 2026-10-25 15:59
+  privacy: private
+  duration: 27.97
+  title: You Know It's a Trick. It Still Works.
+  rubric: Money Brain
+  verdict: null
+  format: vertical
+  hook: That line through the old price? You know it's a trick.
+  metrics: {}
+  sources: {}

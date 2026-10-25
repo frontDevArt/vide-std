@@ -169,3 +169,6 @@ YouTube через API (ROADMAP E2) — `publish <проект> --out <выхо�
 сразу (поставить в Studio, потом `--api youtube --check`). Голос — клон реального человека, ИИ-музыка как основа,
 реалистичная сцена — спросить пользователя и записать `package.ai_label: true`. TikTok и
 Instagram — только вручную.
+Аналитика (ROADMAP E3) — после публикации, раз в неделю перед радаром: `python -m studio --studio <id> analytics --fetch`
+(YouTube, только чтение) → `studios/<id>/analytics/REPORT.md`; YouTube Studio CSV — `--import`, TikTok и Instagram —
+`--set <ссылка> views=… avg_view_pct=…` с цифрами от пользователя. `/topic-radar` и `/topic-to-brief` ссылаются на отчёт.

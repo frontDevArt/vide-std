@@ -312,6 +312,28 @@ done`), `--until`/`--only` — часть плана. Сценарии пише�
   корзины «Video Uploads», 100 в сутки (docs, 2026-10). Приложение Google в статусе «Testing» — refresh-токен живёт
   7 дней, `invalid_grant` → просьба повторить `--auth`.
 
+### Аналитика студии (ROADMAP E3)
+`python -m studio --studio <id> analytics [--fetch] [--import <csv>] [--set <ссылка> метрика=число…] [--auth] [--list]`
+(`studio/analytics.py`). Уровень студии, не проекта: ролики — записи `published.yaml` всех её проектов (E1/E2) плюс
+сведения из сценария (рубрика — `params.chrome.rubric` первой сцены с шапкой, вердикт — `package.verdict`, хук —
+первая реплика, длина и площадка — из записи).
+- `--fetch` (YouTube, только чтение): YouTube Analytics API v2 `reports` — `ids=channel==MINE`, `dimensions=video`,
+  `filters=video==a,b…`, с даты первой публикации: `views`, `estimatedMinutesWatched`, `averageViewDuration`,
+  `averageViewPercentage`, `likes`, `comments`, `subscribersGained`; удержание — по ролику `audienceWatchRatio` по
+  `elapsedVideoTimeRatio` → `ret_3s` / `ret_50` / `ret_end` (%). Показов и CTR в Analytics API нет (docs metrics,
+  2026-10) — они только в массовом отчёте Reporting API `channel_reach_basic_a1`: задание создаётся при первом
+  `--fetch`, отчёты по дням YouTube выкладывает через сутки-двое; скачанные CSV — кэш `analytics/reach/` (не в git),
+  CTR — взвешенный по показам. Право — `yt-analytics.readonly` (третий scope входа E2; старый вход — `analytics --auth`).
+  Сеть — `youtube._http`, как у загрузки; 403 (API не включён в проекте Google Cloud) не ретраится.
+- `--import` — CSV таблицы YouTube Studio (англ. и рус. заголовки, строка «Total» пропускается, время ч:мм:сс,
+  часы просмотра → минуты), строки — по ID ролика, иначе по названию. `--set` — руками (TikTok, Instagram).
+- Хранение: `analytics/videos.yaml` (в git) — по ссылке ролика сведения (пересобираются из проектов каждый запуск)
+  и `metrics` + `sources` (`api|reach|csv <файл>|manual <дата>`), которые копятся; ролик пропал из `published.yaml`,
+  а цифры есть — остаётся. `analytics/REPORT.md` — таблица роликов, «Что зашло» (медиана просмотров, средний досмотр
+  и CTR по рубрикам, длинам — `LENGTHS`, площадкам; группа < 3 роликов — «мало данных»), хуки по удержанию на 3-й
+  секунде, «Выводы для радара» с цифрами. Его читают `/topic-radar` (раздел «Что зашло у нас», +1 к «Спросу»,
+  «Опыт канала» у темы) и `/topic-to-brief`.
+
 ## Почему склейки не видны («как будто сделано за один заход»)
 1. **Единое время.** Сцена знает своё глобальное начало (кадр). Фон — функция глобального времени,
    поэтому на стыке сцен и глав он продолжается, а не начинается заново.

@@ -37,7 +37,9 @@ from .project import Project
 
 # force-ssl — чтение канала и videos.update: отметку ИИ после videos.insert не подтвердить (videos.list её не отдаёт),
 # поэтому её всегда ставим update и проверяем по его ответу (`disclose`)
-SCOPES = ("https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl")
+# yt-analytics.readonly — цифры роликов для аналитики студии (ROADMAP E3, studio/analytics.py): только чтение
+ANALYTICS = "https://www.googleapis.com/auth/yt-analytics.readonly"
+SCOPES = ("https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl", ANALYTICS)
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 UPLOAD_URL = "https://www.googleapis.com/upload/youtube/v3/videos"

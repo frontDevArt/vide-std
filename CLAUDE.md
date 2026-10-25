@@ -32,6 +32,8 @@ python -m studio publish  <проект> [--out <выход>] [--done --url <с�
 #   публикация вручную: карточка загрузки (куда, файлы, ИИ-отметка, чек-лист); загружает человек; --done — запись в published.yaml
 #   --api youtube [--auth] — карточка загрузки через API; --yes [--privacy] [--at] — загрузка (private), только после «да» в чате;
 #   отметка ИИ — по правилу package.ai_label (да/нет с причиной), ставится и подтверждается сама (❌ — сказать); --check — у загруженных
+python -m studio --studio <id> analytics [--fetch] [--import <csv>] [--set <ссылка> views=… ctr=…] [--auth]
+#   цифры опубликованных роликов (просмотры, удержание, CTR) → studios/<id>/analytics/REPORT.md — читают /topic-radar и брифы
 python -m studio review   <проект> [--list] [--done c1,c2]  # ревью: страница 127.0.0.1, комментарии по таймкодам → review/comments.json; правки — /review-fix
 #   render --scenes ch01/s02,ch02/s05 — только эти сцены (правки по ревью)
 python -m studio --studio <id> batch [--run] [--list] [--yes] [--until ГГГГ-ММ-ДД]  # серия по studios/<id>/plan.yaml:
