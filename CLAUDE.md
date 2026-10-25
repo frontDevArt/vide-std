@@ -27,6 +27,7 @@ python -m studio cutdown  <проект> --to youtube-shorts [--count 3] [--list
 python -m studio package  <проект> [--out <выход>]  # пакет к выходу: обложка, описание (главы, источники, хэштеги), чек-лист → output/<slug>/
 python -m studio translate <проект> --to es [--tts edge]  # перевод: <slug>-es/ + лист translation.yaml (заполняет Claude) →
 #   повторный translate <slug>-es пишет сценарий; project.yaml и script/ перевода не править — только лист
+python -m studio deliver  <проект> [--note "…"] [--list] [--diff v1 v2]  # сдача: output/<slug>/vN/ + CHANGELOG.md проекта + <slug>-vN.zip
 python -m studio review   <проект> [--list] [--done c1,c2]  # ревью: страница 127.0.0.1, комментарии по таймкодам → review/comments.json; правки — /review-fix
 #   render --scenes ch01/s02,ch02/s05 — только эти сцены (правки по ревью)
 python -m studio --studio <id> batch [--run] [--list] [--yes] [--until ГГГГ-ММ-ДД]  # серия по studios/<id>/plan.yaml:
