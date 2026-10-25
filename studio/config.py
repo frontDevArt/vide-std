@@ -38,6 +38,10 @@ SCHEMA = {
                           "listicle | data-story | tutorial | clip; нет — explainer"),
     "brief": F((dict,), doc="поля брифа по типу ролика: hook, product, price, cta, count, photos, data… (studio/kinds.py)"),
     "audience": F((str,), doc="для кого ролик"),
+    "avoid": F((list,), doc="бриф: чего избегать — строки (чек-лист глазами) и правила {max_words_on_screen: 6}, "
+                            "{words: [...]}, {numbers_without_source: true} (studio/gates.py, ROADMAP D4)"),
+    "done_means": F((list,), doc="бриф: что значит готово — строки (глазами) и правила {final_hold: 1.5}, "
+                                 "{logo_in_final: true}, {cta_in_final: true} (studio/gates.py)"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
     "format": F((str,), "vertical", "vertical | horizontal | square | portrait (4:5) (project.FORMATS)"),
@@ -46,6 +50,8 @@ SCHEMA = {
                                         "свои формат, вёрстка, рендер и QA (ROADMAP B3)"),
     "target_duration": F(NUM + (NONE,), None, "секунды, если длительность точная; null — по речи"),
     "cutdown": {"source": F((str,), doc="нарезка (ROADMAP B4): slug исходника — его настройки, сцены (from:) и озвучка")},
+    "translation": {"source": F((str,), doc="перевод (ROADMAP D3): slug исходника; входы — translation.yaml"),
+                    "from": F((str,), doc="язык исходника")},
     "package": {  # пакет к выходу (ROADMAP B5, studio/package.py) — вне ключа рендера
         "title": F((str,), doc="название на площадке (иначе title)"),
         "description": F((str,), doc="текст описания / подписи (иначе topic)"),

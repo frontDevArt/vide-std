@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 
 from ... import gfx as G
 from ... import motion as M
+from ...lang import ui
 from ..registry import P, template
 from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, glass, put, rich, ring_pad, tile, txt
@@ -190,7 +191,7 @@ class LabHeroStack(HeroMixin, LabTemplate):
             w = int((780 + 72) * z)  # как в демо: 780 — ширина текста, плюс поля 36 + 36
             if not self.wide:  # высокий кадр: во всю рамку, справа место под вылет «?»
                 w = int(self.area.w - 50 * z)
-            lab = txt(c.get("label", "VIRAL CLAIM"), 20 * z, "medium", "dim", "mono", 0.08)
+            lab = txt(c.get("label", ui(self.ctx.get("language"), "viral_claim")), 20 * z, "medium", "dim", "mono", 0.08)
             body = rich(c.get("text", ""), 46 * z, w - 72 * z)
             meta = txt(c["meta"], 19 * z, "medium", "dim", "mono") if c.get("meta") else None
             h = int(30 * z + lab.height + 12 * z + body.height + (14 * z + meta.height if meta else 0) + 30 * z)

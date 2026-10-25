@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 from ... import gfx as G
 from ... import motion as M
+from ...lang import ui
 from ..registry import AT, P, template
 from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, glass, line_icon, put, ring_pad, tile, txt
@@ -163,7 +164,7 @@ class LabVersus(LabTemplate):
             d = ImageDraw.Draw(img, "RGBA")
             x = self.W / 2
             d.line((x, 210 * z, x, 210 * z + 640 * z * dk), fill=(255, 255, 255, int(40 * vd)), width=max(1, int(2 * z)))
-            vs = txt("VS", 22 * z, "extrabold", "dim", "num")
+            vs = txt(ui(self.ctx.get("language"), "vs"), 22 * z, "extrabold", "dim", "num")
             put(img, vs, x, 180 * z, dk * vd, anchor="c")
 
     def _draw_tall(self, img, t, T):
@@ -178,7 +179,7 @@ class LabVersus(LabTemplate):
                 if dk > 0:
                     d = ImageDraw.Draw(img, "RGBA")
                     cy, half = y + 30 * z, self.area.w / 2 * dk
-                    vs = txt("VS", 22 * z, "extrabold", "dim", "num")
+                    vs = txt(ui(self.ctx.get("language"), "vs"), 22 * z, "extrabold", "dim", "num")
                     gap = vs.width / 2 + 18 * z
                     for a, b in ((self.area.cx - half, self.area.cx - gap), (self.area.cx + gap, self.area.cx + half)):
                         if b > a:
@@ -402,7 +403,7 @@ class LabChapter(LabTemplate):
         self.title = G.text_sprite(str(p.get("title", "")).upper(), int(64 * z), "extrabold", "text", family="head",
                                    align="left" if self.wide else "center", maxw=int(900 * z if self.wide else self.area.w))
         self.subt = txt(p["subtitle"], 24 * z, "medium", "dim", "mono") if p.get("subtitle") else None
-        self.prog = txt(f"chapter {n} of {int(p.get('total', 8))}", 20 * z, "medium", "dim", "mono", 0.04)
+        self.prog = txt(ui(self.ctx.get("language"), "chapter_of").format(n=n, total=int(p.get('total', 8))), 20 * z, "medium", "dim", "mono", 0.04)
         self.n, self.total = n, int(p.get("total", 8))
 
     def draw_body(self, img, t, T):

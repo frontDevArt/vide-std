@@ -64,7 +64,9 @@ def phases(proj: Project):
     fin = proj.final_path()
     scene_files = list((proj.build / "render").glob("*/*.mp4")) if (proj.build / "render").exists() else []
     asm_ok = fin.exists() and fresh == total and total > 0 and _mt(fin) >= max([_mt(p) for p in scene_files] + [0])
-    out.append(("7 Сборка", asm_ok, str(fin.relative_to(r)) if fin.exists() else "нет финала"))
+    # у выхода (B3) финал — output/<slug>/ в корне студии, вне папки проекта
+    shown = fin.relative_to(r) if fin.is_relative_to(r) else fin.relative_to(proj.output_dir().parent.parent)
+    out.append(("7 Сборка", asm_ok, str(shown) if fin.exists() else "нет финала"))
     rep = proj.qa_dir / "report.md"
     qa_ok = asm_ok and rep.exists() and _mt(rep) >= _mt(fin) and "Итог: **PASS**" in rep.read_text(encoding="utf-8")
     out.append(("8 QA", qa_ok, "qa/report.md" if rep.exists() else "не запускался"))
@@ -99,12 +101,19 @@ def pace(proj: Project):
     return (words, *wpm(proj))
 
 
-def report(proj: Project, log=print):
+def all_phases(proj: Project):
+    """Фазы проекта со всеми выходами: бриф, план, сценарий — общие; озвучка … QA — у каждого выхода свои
+    (ROADMAP B3), имя фазы выхода — «8 QA [tiktok]»."""
     ph = phases(proj)
-    outs = proj.targets()
-    if proj.outputs:  # выходы (ROADMAP B3): бриф, план, сценарий — общие; озвучка … QA — у каждого выхода свои
+    if proj.outputs:
         shared = next(i for i, (n, _, _) in enumerate(ph) if n.startswith("4 "))  # до озвучки — общее у выходов
-        ph = ph[:shared] + [(f"{name} [{o.out}]", ok, det) for o in outs for name, ok, det in phases(o)[shared:]]
+        ph = ph[:shared] + [(f"{name} [{o.out}]", ok, det) for o in proj.targets() for name, ok, det in phases(o)[shared:]]
+    return ph
+
+
+def report(proj: Project, log=print):
+    ph = all_phases(proj)
+    outs = proj.targets()
     words, wpm, src = pace(outs[0])
     from .kinds import of as kind_of
     log(f"Проект: {proj.slug} — {proj.cfg.get('title', '')} [тип {kind_of(proj.cfg).id}]")

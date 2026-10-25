@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 
 from ... import gfx as G
 from ... import motion as M
+from ...lang import ui
 from ..registry import P, template
 from .base import LabTemplate
 from .elements import C, SS, _down, _focus_list, _ss_canvas, person_icon, put, ring_pad, study_card, txt
@@ -50,7 +51,8 @@ class LabCrowd(HeroMixin, LabTemplate):
         z = self.z
         st = self.p.get("study")
         colw = 724 if self.wide else int(self.area.w / z)  # ширина колонки справа; в высоком кадре — вся рамка
-        self.study = study_card(st.get("authors", ""), st.get("where", ""), int(st.get("evidence", 3)), z, colw) if st else None
+        self.study = study_card(st.get("authors", ""), st.get("where", ""), int(st.get("evidence", 3)), z, colw,
+                                (ui(self.ctx.get("language"), "study"), ui(self.ctx.get("language"), "evidence"))) if st else None
         self.study_ring = ring_pad(self.study.width, self.study.height, int(18 * z)) if st else None
         cr = self.p.get("crowd")
         if cr:

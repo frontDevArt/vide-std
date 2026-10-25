@@ -486,14 +486,36 @@ def render_scenes(proj: Project, todo, ctx, workers, log=print, force=False):
             finished(*futs[fu], n, dt)
 
 
-def render(proj: Project, chapter=None, workers=None, log=print, force=False, draft=False):
+def pick_scenes(tl, spec):
+    """`--scenes ch01/s02,ch02/s05` → множество (глава, сцена); неизвестная сцена — стоп с подсказкой."""
+    have = {(s["chapter"], s["id"]) for s in tl["scenes"]}
+    out = set()
+    for x in filter(None, (p.strip() for p in (spec or "").split(","))):
+        ch, _, sid = x.partition("/")
+        if (ch, sid) not in have:
+            raise SystemExit(f"--scenes: нет сцены {x} (формат chNN/sNN)")
+        out.add((ch, sid))
+    return out
+
+
+def render(proj: Project, chapter=None, workers=None, log=print, force=False, draft=False, scenes=None):
+    """scenes — «ch01/s02,ch02/s05»: только эти сцены (правки по ревью, ROADMAP D1); прочие устаревшие — в отчёт."""
     tl, ctx = prepare(proj, draft)
-    todo = [s for s in tl["scenes"] if (chapter in (None, s["chapter"])) and (force or not is_fresh(proj, s))]
+    pick = pick_scenes(tl, scenes) if scenes else None
+    todo = [s for s in tl["scenes"] if (chapter in (None, s["chapter"])) and (force or not is_fresh(proj, s))
+            and (pick is None or (s["chapter"], s["id"]) in pick)]
+    if pick is not None:
+        rest = [f"{s['chapter']}/{s['id']}" for s in tl["scenes"]
+                if (s["chapter"], s["id"]) not in pick and not is_fresh(proj, s)]
+        if rest:
+            log(f"Устарели и вне --scenes ({len(rest)}): {', '.join(rest[:12])}{' …' if len(rest) > 12 else ''}")
     if not todo:
         log("Все сцены актуальны — рендерить нечего.")
         return tl
     workers = workers or proj.cfg["render"].get("workers") or default_workers()
     log(f"{'Черновой рендер' if draft else 'Рендер'} {ctx['W']}×{ctx['H']}: {len(todo)} сцен, {sum(s['n_frames'] for s in todo)} кадров, процессов: {workers}")
+    if pick is not None:
+        log(f"Сцены: {', '.join(s['chapter'] + '/' + s['id'] for s in todo)}")
     render_scenes(proj, todo, ctx, workers, log, force)
     return tl
 

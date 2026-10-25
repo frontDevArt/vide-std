@@ -34,6 +34,8 @@ def run(a):
     with open(src / "project.yaml", encoding="utf-8") as f:
         cfg = yaml.safe_load(f) or {}
     cfg.update(title=f"style demo: {cfg.get('title', src.name)}", target_duration=None, chapters=["ch01"])
+    # демо стиля — не ролик: финала с логотипом и призывом в нём нет (правила студии, ROADMAP D4)
+    cfg["done_means"] = list(cfg.get("done_means") or []) + [{"logo_in_final": False}, {"cta_in_final": False}]
     with open(dst / "project.yaml", "w", encoding="utf-8") as f:
         f.write(f"# Сгенерировано `python -m studio demo {src.name}` — правьте исходный проект и demo/ch01.yaml.\n")
         yaml.safe_dump(cfg, f, allow_unicode=True, sort_keys=False)

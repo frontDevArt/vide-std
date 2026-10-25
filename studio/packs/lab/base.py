@@ -9,6 +9,7 @@ from PIL import ImageDraw
 
 from ... import gfx as G
 from ... import motion as M
+from ...lang import ui, verdict_word
 from ..base import Template
 from ..registry import P
 from .elements import (C, SS, VERDICTS, _down, _minutes, _ss_canvas, clock_face, dot_glow, neuron_sprite, put,
@@ -148,10 +149,11 @@ class LabTemplate(Template):
         self.step_spr = [(txt(s, 20 * z, "medium", "dim", "mono", 0.06), txt(s, 20 * z, "medium", "text", "mono", 0.06))
                          for s in self.steps]
         src = self.p.get("source")
-        self.src = self._source(src.get("label", "SOURCE"), src.get("text", "")) if src else None
+        self.src = self._source(src.get("label", ui(self.ctx.get("language"), "source")), src.get("text", "")) if src else None
         v = self.p.get("verdict")
         if v:
-            self.stamp = stamp_sprite(v.get("verdict", "MYTH").upper(), z)
+            self.stamp = stamp_sprite(v.get("verdict", "MYTH").upper(), z,
+                                      verdict_word(self.ctx.get("language"), v.get("verdict", "MYTH")))
             self.v_color = VERDICTS.get(v.get("verdict", "MYTH").upper(), "myth")
             self.v_sub = self._stamp_sub(v["sub"]) if v.get("sub") else None
             self.flash = G.radial(int(1400 * z), self.v_color, 0.55, 1.4)
@@ -266,8 +268,9 @@ class LabTemplate(Template):
             self.draw_clock(img, t, T, clock)
         elif self.steps:
             cur = int(ch.get("step", 0))
-            if self.v_t is not None and "VERDICT" in self.steps:
-                cur_v = self.steps.index("VERDICT")
+            vstep = next((s for s in ("VERDICT", ui(self.ctx.get("language"), "verdict_step").upper()) if s in self.steps), None)
+            if self.v_t is not None and vstep:
+                cur_v = self.steps.index(vstep)
             else:
                 cur_v = None
             pstep = int(prev.get("step", cur)) if prev.get("steps") else cur
@@ -331,12 +334,17 @@ class LabTemplate(Template):
         put(img, self.flash, self.W / 2, self.H * 0.44, math.sin(f * math.pi) * 0.9, anchor="c")
         k = M.spring(M.prog(t, self.v_t, M.fr(M.F_STAMP) + 0.25))
         a = min(1.0, k * 2)
+        # длинное слово штампа (перевод, D3: MEDIA VERDAD) — ужать под ширину кадра; английские слова влезают как есть
+        pad = int(40 * z * 2.5)
+        bw, bh = self.stamp.width - 2 * pad, self.stamp.height - 2 * pad
+        rw = bw * math.cos(math.radians(8)) + bh * math.sin(math.radians(8))
+        fit = min(1.0, self.W * 0.88 / rw)
+        big = min(1.4, max(1.0, self.W * 0.92 / (rw * fit)))  # влёт длинного слова — не шире кадра
         # масштаб 1,4→1, поворот к −8° (против часовой; у PIL положительный угол — против часовой)
-        put(img, self.stamp, self.W / 2, self.H * 0.42, a, M.lerp(1.4, 1.0, k), rot=M.lerp(14, 8, k), anchor="c")
+        put(img, self.stamp, self.W / 2, self.H * 0.42, a, M.lerp(big, 1.0, k) * fit, rot=M.lerp(14, 8, k), anchor="c")
         if self.v_sub is not None:
             sk = M.ease_out_expo(M.prog(t, self.v_t + 0.45, M.fr(M.F_APPEAR)))
-            box_h = self.stamp.height - 2 * int(40 * z * 2.5)  # без отступа свечения
-            put(img, self.v_sub, self.W / 2, self.H * 0.42 + box_h / 2 + 22 * z + self.v_sub.height / 2 + (1 - sk) * 16 * z,
+            put(img, self.v_sub, self.W / 2, self.H * 0.42 + bh * fit / 2 + 22 * z + self.v_sub.height / 2 + (1 - sk) * 16 * z,
                 sk, anchor="c")
 
     def _draw_verdict_tall(self, img, t, f):
