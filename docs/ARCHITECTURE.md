@@ -173,6 +173,23 @@ golden — `tests/golden/library/<формат>/` (timeline и по 2 кадра
 называет строкой «Устарели и вне --scenes» — правка задела соседей. Правка `params` доходит до рендера только через
 `timeline.json`, поэтому `/review-fix` после любой правки сценария запускает `voice` (озвучка из кэша).
 
+## Серии и очередь (ROADMAP D2)
+Контент-план студии — `studios/<id>/plan.yaml` (`studio/batch.py`): `series`, `defaults` и `items` с полями `date`,
+`topic`, `slug`, `brief`, `platforms` (первая — `platform`, две и больше — `deliverables`), `kind`, `format`,
+`duration`, `lang`, `tts`; ошибки плана — все сразу. `python -m studio [--studio <id>] batch [--plan файл]`: пункта без
+проекта — `new` (те же умолчания студии, в шапке project.yaml — дата и бриф); проект с готовым брифом и сценарием (фазы
+`1…`/`3…` из `status.all_phases`) и без QA ✅ у всех выходов — задача `all <абсолютный путь> [--yes] [--workers N]` в
+очередь; `--run` — выполнить очередь, `--list` — только таблица (`new · draft · ready · queued · running · failed ·
+done`), `--until`/`--only` — часть плана. Сценарии пишет Claude — `batch` их не сочиняет.
+Очередь (`studio/jobs.py`) — одна на машину: `jobs/<id>.json` в корне (не в git), id — время постановки, порядок id =
+порядок выполнения; `queued → running → done | failed`; вывод — `jobs/<id>.log` (дописывается при повторе). Та же
+команда в `queued`/`running` второй раз не ставится. Исполнитель — `jobs.run()` (`jobs run`, `batch --run`): замок
+`jobs/runner.lock` с PID (живой — второй не стартует, новые задачи возьмёт первый; мёртвый — снимается), задача —
+`python -m studio <argv>` подпроцессом, `stdin` из `/dev/null`, PID задачи в её файле. Возобновление: `running` без
+живого исполнителя → снова `queued` (а если пережил исполнителя процесс задачи — сначала дождаться его: два рендера
+одного проекта портят `build/`); Ctrl+C — задача снова `queued`. Повтор дёшев: озвучка и сцены в кэше. Ночной запуск —
+`scripts/night-batch.ps1 -Studio <id> [-Yes]` в Планировщике заданий (как радар); `-Yes` — согласие на платный синтез.
+
 ## Пакет к выходу (ROADMAP B5)
 `python -m studio package <проект> [--out <выход>]` (`studio/package.py`; последний шаг `all`) — всё для ручной
 загрузки в `output/<slug>/` рядом с `<выход>.mp4` и `.srt`/`.vtt`. Проект без `deliverables` — файлы `<slug>.*`,

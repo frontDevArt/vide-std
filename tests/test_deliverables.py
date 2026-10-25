@@ -181,3 +181,17 @@ def test_price_tag_hangs_inside_zone(tmp_path):
                 zn, (W, H) = ctx["safe"], o.size  # поля зоны (без запаса 1 % рамки шаблона), как у qa
                 assert box[1] >= zn["top"] * H and box[0] >= zn["left"] * W and box[2] <= (1 - zn["right"]) * W,                     (fmt, t, box)
         assert tpl.tag_pose(0.0)[1] == pytest.approx(tpl.pivot_y() + HOLE_Y * tpl.z)  # падает от гвоздика
+
+
+def test_status_final_outside_project(tmp_path):
+    """D2 (найдено на серии): у выхода проекта студии финал — output/<slug>/ в корне студии, вне папки проекта;
+    status/batch падали на relative_to."""
+    from studio import status, workspace
+    with workspace.use(tmp_path):
+        proj = _proj(tmp_path / "projects" / "p", deliverables=["tiktok"])
+        out = proj.targets()[0]
+        fin = out.final_path()
+        assert fin == tmp_path / "output" / "p" / "tiktok.mp4"
+        fin.write_bytes(b"")
+        det = dict((n, d) for n, _, d in status.phases(out))["7 Сборка"]
+        assert det == str(Path("output") / "p" / "tiktok.mp4")

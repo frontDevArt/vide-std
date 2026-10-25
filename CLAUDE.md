@@ -27,6 +27,9 @@ python -m studio cutdown  <проект> --to youtube-shorts [--count 3] [--list
 python -m studio package  <проект> [--out <выход>]  # пакет к выходу: обложка, описание (главы, источники, хэштеги), чек-лист → output/<slug>/
 python -m studio review   <проект> [--list] [--done c1,c2]  # ревью: страница 127.0.0.1, комментарии по таймкодам → review/comments.json; правки — /review-fix
 #   render --scenes ch01/s02,ch02/s05 — только эти сцены (правки по ревью)
+python -m studio --studio <id> batch [--run] [--list] [--yes] [--until ГГГГ-ММ-ДД]  # серия по studios/<id>/plan.yaml:
+#   проекты → готовые сценарии в очередь (all); --run — выполнить; ночью — scripts/night-batch.ps1 (Планировщик)
+python -m studio jobs [run|retry <id|failed>|clear]  # очередь задач машины: jobs/<id>.json + лог, возобновление после обрыва
 python -m studio templates                 # шаблоны сцен и их параметры
 python -m studio gallery [--formats vertical,horizontal]  # превью всех шаблонов во всех форматах → output/gallery/index.html
 python -m studio platforms [<id>]          # профили площадок: кадр, длительность, безопасная зона, громкость

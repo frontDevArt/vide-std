@@ -120,6 +120,18 @@ def owner(project_root) -> Workspace:
     return cur
 
 
+def at_dir(root) -> Workspace:
+    """Студия по её папке (контент-план `batch --plan`, ROADMAP D2): текущая, если это она; папка со `studio.yaml` —
+    студия с общими внешними голосами корня; иначе рабочая область в этой папке."""
+    root = Path(root).resolve()
+    cur = current()
+    if root == cur.root.resolve():
+        return cur
+    if (root / "studio.yaml").exists():
+        return Workspace.at(root, id=root.name, tools=ROOT / "tools")
+    return Workspace.at(root)
+
+
 def current() -> Workspace:
     return _current
 
