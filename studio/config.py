@@ -38,6 +38,10 @@ SCHEMA = {
                           "listicle | data-story | tutorial | clip; нет — explainer"),
     "brief": F((dict,), doc="поля брифа по типу ролика: hook, product, price, cta, count, photos, data… (studio/kinds.py)"),
     "audience": F((str,), doc="для кого ролик"),
+    "avoid": F((list,), doc="бриф: чего избегать — строки (чек-лист глазами) и правила {max_words_on_screen: 6}, "
+                            "{words: [...]}, {numbers_without_source: true} (studio/gates.py, ROADMAP D4)"),
+    "done_means": F((list,), doc="бриф: что значит готово — строки (глазами) и правила {final_hold: 1.5}, "
+                                 "{logo_in_final: true}, {cta_in_final: true} (studio/gates.py)"),
     "language": F((str,), "ru", "язык озвучки и текста ролика (studio/lang.py: LANGS)"),
     "fps": F((int,), 30),
     "format": F((str,), "vertical", "vertical | horizontal | square | portrait (4:5) (project.FORMATS)"),

@@ -167,6 +167,10 @@ def run(proj: Project, log=print, fast=False):
     from .safezone import qa_check
     qa_check(proj, lambda st, name, det: chk(st == "PASS", name, det))
 
+    # --- ворота качества (ROADMAP D4): бриф avoid / done_means, правила студии, контраст, мелькание, плотность
+    from .gates import qa as gates_qa
+    eyes = gates_qa(proj, tl, final, chk, warn)
+
     # --- листы кадров из ГОТОВОГО файла (заодно доказывает воспроизведение)
     tmp = proj.qa_dir / "_g.png"
     y0 = int(H * subs_top(proj, W, H))
@@ -190,6 +194,10 @@ def run(proj: Project, log=print, fast=False):
         for st, n, d in res:
             fh.write(f"- {mark[st]} {n} — {d}\n")
         fh.write("\nОткрой глазами: " + ("`qa/subs_check.png`, " if subs else "") + "`qa/final_frames.png`.\n")
+        if eyes:
+            fh.write("\n## Проверить глазами (бриф и студия)\n\n")
+            for sec, txt in eyes:
+                fh.write(f"- [ ] {'Избегать' if sec == 'avoid' else 'Готово, если'}: {txt}\n")
     log(("ВСЁ ОК" if ok else "ЕСТЬ ПРОБЛЕМЫ") + f" -> {proj.qa_dir / 'report.md'}")
     return ok
 

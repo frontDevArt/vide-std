@@ -26,3 +26,11 @@ defaults:
 voices:
   en: {backend: elevenlabs, voice: env:ELEVENLABS_VOICE_ID, rate: 100}
 max_accents: 2             # переопределений голоса (voice: сцен/строк) на ролик без ⚠️ — крючок и вердикт
+
+# Ворота качества (ROADMAP D4, studio/gates.py): для всех проектов канала, к ним — avoid / done_means проекта.
+quality:
+  avoid:
+    - {numbers_without_source: true}   # «у каждой цифры источник»: params.source / study или cite: сцена с источником
+    - "факт без источника (Авторы, год) в озвучке"
+  done_means:
+    - "вердикт назван словами и штампом"

@@ -50,6 +50,7 @@
 | `clean.py` | `clean`: удаляет из `build/` пересобираемое (рендер, черновой рендер, главы, микс, финал — кроме `--keep-final`, TTS вне таймлайна, старые `build/*.log`), отчёт по группам; `timeline.json`, калибровка и TTS из таймлайна остаются, у платного синтеза TTS не трогается вовсе. `--older-than 30d` — только давно не менявшиеся проекты (без проекта — все такие) |
 | `assemble.py` | склейка сцен прямо в финал без перекодирования видео (список concat — во временной папке); `--chapters` — ещё файлы глав `build/chapters/chNN.mp4` (иначе их нет: это копия `render/`) |
 | `qa.py` | автопроверки + листы кадров из готового файла |
+| `gates.py` | ворота качества (ROADMAP D4): `avoid` / `done_means` брифа и `quality:` студии → validate и qa; контраст палитры, мелькание, плотность текста |
 | `status.py` | какие фазы готовы (по хэшам и файлам) и что делать дальше |
 | `selftest.py` | `selftest`: фикстура `tests/fixtures/gallery` → validate → voice (`fake`) → render → assemble → qa → сравнение с `tests/golden/` (timeline и `.srt` байт в байт, кадры — с допуском, в том числе вынутые из MP4); `--kinds` — демо каждого типа ролика `tests/fixtures/kinds/` до QA PASS; фикстура `tests/fixtures/images` (картинки сцен на `fake`, C5.6) — images → voice → кадры = `tests/golden/images/` → render → assemble → qa; весь прогон под `no_network` (соединение дальше loopback — ошибка) |
 

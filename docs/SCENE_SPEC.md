@@ -15,7 +15,13 @@ scenes:
     hold: 0                 # секунды после речи (например, финальный титр)
     voice: {style: 0.4}     # необязательно: акцент голоса на сцену (только elevenlabs, docs/TTS.md)
     item: 3                 # только kind: listicle — номер пункта топ-N (1…brief.count, по порядку или обратный отсчёт)
+    cite: s06               # цифра в кадре опирается на источник другой сцены (chNN/sNN или sNN этой главы)
 ```
+**Цифры и источник (ROADMAP D4).** При правиле `numbers_without_source` (канал Notes From The Mind — в `studio.yaml`)
+сцена с цифрой в кадре — цифры в надписях `params` (кроме шапки `chrome`) или числа `value`, `to`, `hero.value`,
+`myth.value`, `crowd.n`, график `kit.chart` — должна показывать источник: `params.source {label, text}` или `study`,
+либо источник предыдущей сцены переживает склейку (`keep: [source]`), либо `cite:` на сцену с источником. Карточки
+глав (`lab.chapter`, `kit.chapter_bumper`, `core.title`) — нумерация, не цифры. Иначе validate — ❌ с подсказкой.
 Ролик без голоса (`kind: music`/`slideshow`, `tts.backend: none`, ROADMAP C1): у сцен нет `lines`, длительность —
 `min_duration`, весь текст в кадре — в `params`. Биты сцены пусты, поэтому шаблоны показывают всё с начала сцены.
 

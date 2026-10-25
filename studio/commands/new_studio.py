@@ -16,6 +16,9 @@ import shutil
 
 from .. import workspace
 
+# ворота качества студии (ROADMAP D4, studio/gates.py): канал — у каждой цифры источник, бренд/клиент — логотип и CTA
+_LOGO_CTA = "{done_means: [{logo_in_final: true}, {cta_in_final: true}]}"
+QUALITY = {"youtube": "{avoid: [{numbers_without_source: true}]}", "brand": _LOGO_CTA, "client": _LOGO_CTA}
 TEMPLATE = workspace.ROOT / "studios" / "_template"  # заготовка — в репозитории, не в рабочей области тестов
 PLATFORMS = {"youtube": ["youtube", "youtube-shorts"], "brand": ["tiktok", "instagram-reels"],
              "client": ["tiktok", "instagram-reels"]}
@@ -94,6 +97,7 @@ def run(a):
             v = _voice(lang, backend, a.voice if i == 0 else None)
             voices.append(f"  {lang}: {{backend: {backend}" + (f", voice: {v}" if v else "") + "}")
     yaml_subs["VOICES"] = "\n".join(voices)
+    yaml_subs["QUALITY"] = QUALITY[a.kind]
     (dst / "studio.yaml").write_text(_fill((dst / "studio.yaml").read_text(encoding="utf-8"), yaml_subs),
                                      encoding="utf-8")
     (dst / "brand" / "brand.yaml").write_text(

@@ -115,6 +115,8 @@ def check(proj) -> Report:
     me, mw = music_issues(proj)
     errs += me
     warns += mw
+    from .gates import validate as gates  # бриф avoid / done_means и правила студии quality: (ROADMAP D4)
+    gates(proj, errs, warns)
     from .kinds import issues as kind_issues  # тип ролика (ROADMAP C1)
     ke, kw = kind_issues(proj, est)
     errs += ke
