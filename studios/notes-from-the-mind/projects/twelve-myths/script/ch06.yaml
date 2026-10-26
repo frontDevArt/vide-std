@@ -1,0 +1,242 @@
+# Глава 6: дело 06 «Power posing changes your hormones» — MYTH (чувство силы — чуть-чуть да). outline.md: ~800 слов.
+# Сверено 2026-10-26: Carney, Cuddy & Yap 2010 (Psych Sci 21(10), 1363–1368) — 42 человека, две позы по минуте
+# (открытые / закрытые), слюна до и после; тестостерон ↑, кортизол ↓, чувство силы ↑, ставка (оставить $2 или
+# кинуть кубик на $4) — чаще. Ranehill et al. 2015 (Psych Sci 26(5), 653–656) — 200 человек (102 м / 98 ж),
+# позы дольше, экспериментатор не знает условия; гормоны и риск — без эффекта, чувство силы — повторилось.
+# Carney 2016 (заявление на сайте Haas) — «I do not believe that 'power pose' effects are real».
+# Metzler & Grèzes 2019 (PeerJ) — многократные позы, гормоны не меняются. Elkjær et al. 2022 (Perspect Psychol
+# Sci 17(1), 276–304) — мета-анализ: небольшой эффект на самочувствие; Cuddy, Schultz & Fosse 2018 (Psych Sci) —
+# p-curve: есть доказательная ценность только для самоотчёта о чувстве силы.
+chapter: ch06
+title: "Case 06 · Power posing"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Two minutes of standing like a superhero | can change your hormones."
+    min_duration: 3
+    params: {number: 6, total: 12, title: "Power posing", subtitle: "case 06 · a pose, two hormones"}
+
+  - id: s02
+    cite: ch06/s03
+    template: lab_exhibit
+    image:
+      - {prompt: "a short cyan superhero cape with a lavender lining hanging on a simple wooden coat hanger", role: subject}
+    lines:
+      - "Maybe you've seen the pose. | Feet apart, | hands on hips, | chin up. | Like a superhero on a rooftop."
+      - "The idea is that holding it for just two minutes, | before a job interview or a big talk, | does something real inside your body."
+      - "More of a hormone linked to confidence. | Less of a hormone linked to stress. | And you walk in feeling, | and acting, | more powerful."
+      - "No training, | no practice. | Just a pose in the bathroom before you go in."
+      - "Some people swear by it before a first date."
+    params:
+      chrome: {number: "case 06", step: 0}
+      file: assets/images/4fa358f1d51e692d.cut.png
+      case: 6
+      labels:
+        - {text: "hands on hips", at: "hands on hips"}
+        - {text: "confidence hormone ↑", at: "confidence"}
+        - {text: "stress hormone ↓", at: "stress", color: accent2}
+
+  - id: s03
+    template: lab_full_number
+    lines:
+      - "It's hard to imagine a cheaper deal."
+      - "Two minutes, | and your own chemistry shifts in your favor."
+      - "If that worked, | every school and every office | should be teaching it."
+    params:
+      value: 2
+      suffix: " min"
+      caption: "of posing, says the claim"
+      sub: "hormones shift, confidence rises"
+      color: accent2
+      at: "Two minutes"
+      source: {label: "THE CLAIM", text: "popular summary of Carney, Cuddy & Yap, 2010", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "So where did this come from?"
+      - "One small lab experiment."
+      - "And then a talk about it | became one of the most watched talks on the internet."
+      - "Tens of millions of views. | A bestselling book. | And the pose went everywhere, | from sales teams to locker rooms."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "one small experiment", at: "small lab"}
+        - {text: "a hit talk", at: "most watched", color: accent2}
+        - {text: "everywhere", at: "everywhere"}
+
+  - id: s05
+    template: lab_crowd
+    lines:
+      - "Here's what that first study actually did."
+      - "It had forty-two people. | That's about one classroom."
+      - "Each person held two poses, | for one minute each."
+      - "Half got open, | expansive poses. | Leaning back, | feet on the desk. | The other half got closed ones. | Arms folded, | shoulders hunched."
+    params:
+      chrome: {step: 1}
+      hero: {value: 42, from: 0, caption: "people", sub: "one experiment", color: accent, at: "forty-two"}
+      study: {authors: "Carney, Cuddy & Yap", where: "Psych Science · 2010 · n = 42", evidence: 1, at: "first study"}
+      crowd: {n: 42, cols: 14, at: "people"}
+      range: null
+      source: {label: "EXPERIMENT", text: "Carney, Cuddy & Yap, 2010 · Psychological Science", at: 0}
+
+  - id: s06
+    template: lab_flow
+    lines:
+      - "Before and after the poses, | everyone spat into a little tube, | so the lab could measure two hormones in their saliva."
+      - "One linked to dominance, | testosterone. | And one linked to stress, | cortisol."
+      - "Then came a small bet. | Keep two dollars, | or roll a die for a chance at four."
+    params:
+      stations:
+        - {icon: clock, title: "Saliva sample", sub: "before and after", at: "spat"}
+        - {icon: brain, title: "Two hormones", sub: "testosterone · cortisol", at: "testosterone"}
+        - {icon: bolt, title: "A small bet", sub: "keep it, or roll a die", at: "bet"}
+      source: {label: "EXPERIMENT", text: "Carney, Cuddy & Yap, 2010 · n = 42", at: 0}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "And the results looked amazing."
+      - "The open posers felt more powerful."
+      - "Their testosterone went up, | and their cortisol went down."
+      - "And more of them took the bet."
+      - "A feeling, | two hormones, | and a real choice, | all from two minutes of posing. | It seemed almost too good to be true."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "AFTER TWO MINUTES", text: "“I feel powerful.”", at: "felt"}
+      cards:
+        - {icon: heart, title: "Felt powerful", sub: "what people said", chip: "↑", chip_color: accent, at: "felt more"}
+        - {icon: bolt, title: "Testosterone", sub: "linked to dominance", chip: "↑", chip_color: accent, at: "testosterone"}
+        - {icon: hourglass, title: "Cortisol", sub: "linked to stress", chip: "↓", chip_color: accent2, at: "cortisol"}
+      source: {label: "EXPERIMENT", text: "Carney, Cuddy & Yap, 2010 · Psychological Science", at: 0}
+
+  - id: s08
+    template: lab_crowd
+    lines:
+      - "So another team ran it again, | much bigger."
+      - "Two hundred people, | almost five times as many."
+      - "The same kind of poses, | held even longer. | And the person running each session | didn't know which pose anyone had been given."
+      - "That last part matters. | It stops anyone from nudging the results | without meaning to."
+    params:
+      chrome: {step: 1}
+      hero: {value: 200, from: 0, caption: "people", sub: "a bigger replication", color: accent, at: "Two hundred"}
+      study: {authors: "Ranehill et al.", where: "Psych Science · 2015 · n = 200", evidence: 2, at: "another team"}
+      crowd: {n: 200, cols: 20, at: "people"}
+      range: null
+      source: {label: "REPLICATION", text: "Ranehill et al., 2015 · Psychological Science", at: 0}
+
+  - id: s09
+    template: lab_versus
+    lines:
+      - "And here's what changed."
+      - "The hormones? | Nothing. | Testosterone didn't move. | Cortisol didn't move."
+      - "The bet? | No difference either. | The one real action in the study | looked the same, | whatever the pose."
+      - "Only one thing held up. | People who struck the open pose | said they felt a little more powerful."
+      - "A feeling, | yes. | Chemistry, | no."
+    params:
+      left:
+        title: "FIRST STUDY · 42"
+        items:
+          - {text: "Testosterone up", at: "hormones"}
+          - {text: "Cortisol down", at: "Testosterone"}
+          - {text: "More bets", at: "bet"}
+      right:
+        title: "BIGGER STUDY · 200"
+        items:
+          - {text: "Hormones: no change", at: "Cortisol didn't"}
+          - {text: "Bets: no difference", at: "No difference"}
+          - {text: "Felt a bit more powerful", at: "little more"}
+      source: {label: "REPLICATION", text: "Ranehill et al., 2015 · vs Carney, Cuddy & Yap, 2010", at: 0}
+      neuron: {mood: surprised, at: "Nothing"}
+
+  - id: s10
+    template: lab_diagram
+    lines:
+      - "Then something rare happened in science."
+      - "The lead author of the original study | posted a public statement, | saying the power pose effects aren't real."
+      - "That almost never happens. | Researchers rarely walk away from their own famous finding, | and this one did, | in plain words."
+      - "Since then, | big reviews have pooled dozens of studies. | Even when people repeated the poses again and again, | their hormones showed no reliable change."
+      - "But a small boost in how people feel | keeps showing up."
+    params:
+      center: {icon: check, title: "What holds up", at: 0}
+      labels:
+        - {text: "the author changed course", at: "public statement"}
+        - {text: "hormones: no", at: "hormones showed", color: accent2}
+        - {text: "feelings: a little", at: "small boost"}
+
+  - id: s11
+    template: lab_diagram
+    lines:
+      - "Here's a way to picture what's left."
+      - "Think of a good stretch before a run."
+      - "You feel looser. | Readier. | But your legs aren't any stronger | than they were a minute ago."
+      - "A big open pose is like that. | It can loosen you up a little. | It doesn't rewire your body."
+      - "Nothing wrong with stretching. | Just don't skip the training because of it."
+    params:
+      center: {icon: target, title: "A stretch, not a workout", at: 0}
+      labels:
+        - {text: "feel looser", at: "looser"}
+        - {text: "not stronger", at: "stronger", color: accent2}
+        - {text: "a nudge, not a rewire", at: "rewire"}
+
+  - id: s12
+    cite: ch06/s03
+    template: lab_exhibit
+    lines:
+      - "So, | does power posing change your hormones?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/4fa358f1d51e692d.cut.png
+      case: 6
+      labels:
+        - {text: "two minutes → hormones?", at: "hormones", color: accent}
+      verdict: {verdict: MYTH, sub: "a pose can nudge *how you feel*", at: "myth"}
+
+  - id: s13
+    template: lab_exhibit
+    image:
+      - {prompt: "a vintage theater spotlight lamp on a tall tripod stand, pointing upward, cyan and lavender", role: subject}
+    lines:
+      - "So why does it still show up in every confidence workshop?"
+      - "Because it's easy. | Two minutes, | free, | and nobody has to change anything hard."
+      - "Because part of it feels true. | Stand tall and you really do feel a little bigger, | so the rest of the claim borrows that feeling."
+      - "And because a talk watched by millions | travels much faster | than a quiet correction in a journal."
+      - "And because it's a story about control. | When you're nervous, | it's comforting to think | you can fix it from the outside in."
+    params:
+      file: assets/images/11c9b0cb93299b9e.cut.png
+      case: 6
+      labels:
+        - {text: "easy and free", at: "easy"}
+        - {text: "part of it feels true", at: "feels true", color: accent2}
+        - {text: "the correction is quiet", at: "quiet correction"}
+        - {text: "a sense of control", at: "control", color: accent2}
+
+  - id: s14
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "If a big posture helps you feel steadier before something scary, | go ahead. | It's harmless."
+      - "Just don't count on it to do the work. | Preparation does. | Practice the first minute of your talk | until you could give it half asleep."
+      - "Because the confidence that lasts | comes from knowing you're ready."
+    params:
+      stations:
+        - {icon: heart, title: "Pose, if it helps", sub: "it's harmless", at: "go ahead"}
+        - {icon: book, title: "Prepare", sub: "practice the opening", at: "Preparation"}
+        - {icon: star, title: "Real confidence", sub: "from being ready", at: "knowing"}
+      source: {label: "REVIEWS", text: "Elkjær et al., 2022 · Cuddy, Schultz & Fosse, 2018", at: 0}
+
+  - id: s15
+    cite: ch06/s03
+    template: lab_docket
+    lines:
+      - "Case six, | closed."
+      - "Next up, | a famous test with a marshmallow, | and the promise that a child's patience | predicts the rest of their life."
+    params:
+      focus: {case: 6, title: "Power posing", at: 0}
+      close: {case: 6, verdict: MYTH, at: "closed"}
+      keep: [docket]
+    hold: 1.0

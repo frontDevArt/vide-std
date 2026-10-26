@@ -1,0 +1,207 @@
+# Глава 3: дело 03 «Birth order shapes your personality» — MYTH. outline.md: ~800 слов.
+# Сверено 2026-10-26: Rohrer, Egloff & Schmukle 2015 (PNAS 112(46)) — три национальные панели (США 5 240,
+# Великобритания 4 489, Германия 10 457 = 20 186), сравнение и между семьями, и внутри одних семей; экстраверсия,
+# эмоциональная стабильность, доброжелательность, добросовестность, воображение — эффекта нет; первенцы чуть выше
+# по измеренному интеллекту и чаще считают себя умными (самооценка интеллекта). Damian & Roberts 2015 (J. Research
+# in Personality) — 377 000 американских школьников (Project Talent), контроль размера семьи, достатка, структуры
+# семьи; интеллект r = .04 (≈ 1 балл IQ), личность в среднем r = .02.
+chapter: ch03
+title: "Case 03 · Birth order shapes you"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Birth order shapes who you are."
+    min_duration: 3
+    params: {number: 3, total: 12, title: "Birth order shapes you", subtitle: "case 03 · oldest, middle, youngest"}
+
+  - id: s02
+    template: lab_exhibit
+    image:
+      - {prompt: "three nesting dolls of different sizes standing in a row from tallest to smallest, painted in cyan, lavender and off-white with simple geometric patterns", role: subject}
+    lines:
+      - "Ask almost any family, | and they'll tell you how it works."
+      - "The oldest is the responsible one. | Serious, | a little bossy, | a born leader."
+      - "The middle child is the peacemaker, | slightly forgotten, | always negotiating."
+      - "And the youngest? | The charming rebel | who somehow gets away with everything."
+      - "There are whole books, | quizzes | and endless videos built on it."
+      - "And you can probably point to someone at your own dinner table | who fits the description perfectly."
+    params:
+      chrome: {number: "case 03", step: 0}
+      file: assets/images/185b0c5a8ffe7366.cut.png
+      case: 3
+      labels:
+        - {text: "oldest: the leader", at: "oldest"}
+        - {text: "middle: the peacemaker", at: "middle", color: accent2}
+        - {text: "youngest: the rebel", at: "youngest"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "The idea is about a century old."
+      - "A famous psychiatrist argued that your place in the family | hands you a role, | and over time | the role becomes your personality."
+      - "And it makes intuitive sense. | Firstborns get their parents all to themselves for a while, | then lose the spotlight. | Later kids are born straight into a crowd."
+      - "It's also flattering. | It gives everyone a neat little story | about why they turned out the way they did."
+    params:
+      center: {icon: people, title: "Your place, your role", at: 0}
+      labels:
+        - {text: "a role in the family", at: "role"}
+        - {text: "first: the spotlight", at: "spotlight"}
+        - {text: "later: a crowd", at: "crowd"}
+        - {text: "a neat story", at: "story"}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "Testing it is harder than it sounds."
+      - "Big families tend to differ from small ones | in money, | in culture, | in all sorts of ways. | So comparing strangers can fool you."
+    params:
+      chrome: {step: 1}
+      center: {icon: people, title: "Hard to test", at: 0}
+      labels:
+        - {text: "big vs small families", at: "Big"}
+        - {text: "money · culture", at: "money"}
+        - {text: "strangers can fool you", at: "strangers", color: accent2}
+
+  - id: s05
+    template: lab_full_number
+    lines:
+      - "So a team of researchers did something smarter, | with more than twenty thousand adults | from big national surveys in three countries: | America, | Britain | and Germany."
+      - "Along with comparing people from different families, | they compared brothers and sisters | inside the same family."
+    params:
+      value: 20
+      prefix: ">"
+      suffix: "K"
+      caption: "adults"
+      sub: "three countries · siblings compared"
+      color: accent
+      at: "twenty"
+      source: {label: "NATIONAL SURVEYS", text: "Rohrer, Egloff & Schmukle, 2015 · PNAS", at: 0}
+
+  - id: s06
+    template: lab_flow
+    lines:
+      - "Then they checked exactly the traits the myth is all about."
+      - "Are older siblings more conscientious, | the organized, | dependable ones?"
+      - "Are later-borns more outgoing, | more agreeable, | more imaginative?"
+      - "Is anyone calmer under stress, | just because of when they arrived?"
+      - "If birth order really shapes personality, | this is where it should show up."
+    params:
+      stations:
+        - {icon: check, title: "Dependable", sub: "conscientiousness", at: "conscientious"}
+        - {icon: people, title: "Outgoing · kind", sub: "extraversion · agreeableness", at: "outgoing"}
+        - {icon: moon, title: "Calm", sub: "emotional stability", at: "calmer"}
+      source: {label: "NATIONAL SURVEYS", text: "Rohrer, Egloff & Schmukle, 2015 · PNAS · n = 20,186", at: 0}
+
+  - id: s07
+    template: lab_versus
+    lines:
+      - "It didn't."
+      - "In all three countries, | the oldest weren't more dependable, | the middle children weren't more agreeable, | and the youngest weren't more outgoing."
+      - "For these core traits, | birth order made essentially no difference, | whether you compared families or siblings."
+      - "Not a small effect hiding in the noise. | Practically nothing."
+    params:
+      left:
+        title: "THEY SAY"
+        items:
+          - {text: "Oldest: dependable", at: 0}
+          - {text: "Middle: agreeable", at: 0}
+          - {text: "Youngest: outgoing", at: 0}
+      right:
+        title: "STUDIES FOUND"
+        items:
+          - {text: "Not more dependable", at: "dependable"}
+          - {text: "Not more agreeable", at: "agreeable"}
+          - {text: "No real difference", at: "essentially"}
+      source: {label: "NATIONAL SURVEYS", text: "Rohrer, Egloff & Schmukle, 2015 · PNAS", at: 0}
+
+  - id: s08
+    template: lab_hero_stack
+    lines:
+      - "There was one small exception."
+      - "Firstborns scored a little higher on intelligence tests, | and were a bit more likely to describe themselves as smart."
+      - "Another study, | with three hundred and seventy-seven thousand American high school students, | found the same kind of pattern."
+      - "The gap in intelligence was about one point on a test. | The links with personality were even smaller."
+      - "Real, | but so small | you would never spot it in an actual family."
+    params:
+      hero: {value: 377, from: 0, caption: "thousand students", sub: "another big study", color: accent, at: "seventy-seven"}
+      claim: null
+      cards:
+        - {icon: check, title: "Test scores", sub: "firstborns slightly higher", chip: "tiny", chip_color: accent, at: "intelligence"}
+        - {icon: chat, title: "“I'm smart”", sub: "firstborns say it more", chip: "self-rated", chip_color: accent, at: "describe"}
+        - {icon: people, title: "Personality", sub: "even smaller links", chip: null, at: "personality"}
+      source: {label: "TWO LARGE STUDIES", text: "Rohrer et al., 2015 · Damian & Roberts, 2015", at: 0}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "So why does the stereotype look so true at home?"
+      - "Because at the dinner table, | you're not really comparing birth order. | You're comparing ages."
+      - "Picture two kids, | ten and six. | Of course the ten-year-old seems more responsible. | That kid is four years further along."
+      - "Same with the bossy firstborn. | Of course the older kid bosses the younger one around. | They're bigger, | they know more, | and they got there first."
+      - "It's like watching two runners in the middle of a race, | and deciding the one in front | is just naturally faster."
+      - "Wait until they're both grown up, | and most of that gap is gone."
+    params:
+      center: {icon: people, title: "Ages, not order", at: "ages"}
+      labels:
+        - {text: "ten vs six", at: "ten"}
+        - {text: "four years ahead", at: "further"}
+        - {text: "same race, different spot", at: "runners", color: accent2}
+        - {text: "grown up: gap gone", at: "grown"}
+
+  - id: s10
+    template: lab_exhibit
+    lines:
+      - "So, | does birth order shape your personality?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/185b0c5a8ffe7366.cut.png
+      case: 3
+      labels:
+        - {text: "does birth order shape you?", at: "birth", color: accent}
+      verdict: {verdict: MYTH, sub: "your family role *isn't who you are*", at: "myth"}
+
+  - id: s11
+    template: lab_exhibit
+    image:
+      - {prompt: "three wooden toy building blocks of different sizes stacked like a small staircase, cyan, lavender and off-white", role: subject}
+    lines:
+      - "So why won't it go away?"
+      - "Partly because family roles feel very real. | Inside a family, | kids often get different jobs, | and those jobs can start to feel like identities."
+      - "But a role at home isn't a personality. | Plenty of people slip right back into theirs at a holiday dinner, | then act completely differently at work."
+      - "The descriptions are also broad enough | that almost anyone can see themselves in them, | a bit like a horoscope."
+      - "Families also love these stories. | They're part of how a family explains itself, | and they're fun to tell."
+      - "And we remember the siblings who fit the script, | and quietly forget the ones who don't."
+    params:
+      file: assets/images/5cec0ab856322e27.cut.png
+      case: 3
+      labels:
+        - {text: "roles stay at home", at: "home"}
+        - {text: "broad as a horoscope", at: "horoscope", color: accent2}
+        - {text: "we remember the fits", at: "remember"}
+
+  - id: s12
+    template: lab_flow
+    lines:
+      - "So the next time someone says, | that's such a middle child thing to do, | try a different question."
+      - "Ask what that person is actually like, | not where they landed in the family line."
+      - "And if you've always felt boxed in by your role as the responsible one, | or the baby, | here's the good news."
+      - "Your brothers and sisters are the people who knew you first. | They don't get to decide who you become."
+      - "The box was never as strong as the story."
+    params:
+      stations:
+        - {icon: question, title: "A different question", sub: "not their place in line", at: "different"}
+        - {icon: person, title: "The actual person", sub: "not the role", at: "actually"}
+        - {icon: check, title: "Not a box", sub: "just a story", at: "never"}
+      source: {label: "NATIONAL SURVEYS", text: "Rohrer et al., 2015 · Damian & Roberts, 2015", at: 0}
+
+  - id: s13
+    template: lab_docket
+    lines:
+      - "Case three, | closed."
+      - "Next, | a myth that's still repeated in classrooms all over the world: | that you learn best | when lessons match your personal learning style."
+    params:
+      focus: {case: 3, title: "Birth order shapes you", at: 0}
+      close: {case: 3, verdict: MYTH, at: "closed"}
+      keep: [docket]

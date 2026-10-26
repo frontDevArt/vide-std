@@ -1,0 +1,228 @@
+# Глава 10: дело 10 «Your attention span is shorter than a goldfish's» — HALF-TRUE (рыбка — NO EVIDENCE). outline.md: ~800 слов.
+# Сверено 2026-10-26: Microsoft Canada, Consumer Insights (2015). Attention Spans — отчёт для маркетологов; график
+# «12 с в 2000, 8 с в 2013, рыбка 9 с» с подписью «Source: Statistic Brain»; собственный опрос (2 000 канадцев) и ЭЭГ
+# (112 человек) этих чисел не дают. BBC More or Less (2017, Simon Maybin): Statistic Brain источников не дал, NCBI/NLM
+# чисел у себя не нашли; Gemma Briggs (Open University): средний «attention span» психологи не меряют, он зависит от задачи.
+# Gee, Stephenson & Wright (1994). Temporal discrimination learning of operant feeding in goldfish. JEAB — золотые
+# рыбки учились жать на рычаг за кормом, который выдавался только в определённый час дня.
+# Nguyen et al. (2025). Feeds, Feelings, and Focus. Psychological Bulletin, 151(9), 1125–1146, doi:10.1037/bul0000498 —
+# 71 исследование, 98 299 участников; больше коротких видео — хуже внимание и тормозной контроль, связь умеренная
+# (внимание r = −.38); корреляции, мало работ учитывали соцсети в целом; авторы просят долгие (лонгитюдные) исследования.
+chapter: ch10
+title: "Case 10 · The goldfish attention span"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Your attention span | is shorter than a goldfish's. | You've heard it. | You might even believe it."
+    min_duration: 3
+    params: {number: 10, total: 12, title: "The goldfish attention span", subtitle: "case 10 · attention and short videos"}
+
+  - id: s02
+    cite: ch10/s03
+    template: lab_exhibit
+    image:
+      - {prompt: "a small round glass fishbowl with clear water and a single orange-gold goldfish, a few cyan pebbles at the bottom, cyan and lavender", role: subject}
+    lines:
+      - "The claim goes like this."
+      - "A goldfish can focus for about nine seconds. | And today's humans? | Just eight."
+      - "Our phones, | our feeds, | and endless short videos | have trained us to lose focus faster than a fish."
+      - "It's in talks, | in articles about kids and screens, | and in plenty of videos like this one."
+    params:
+      chrome: {number: "case 10", step: 0}
+      file: assets/images/fbb58ab4ed253207.cut.png
+      case: 10
+      labels:
+        - {text: "goldfish: 9 seconds", at: "nine seconds"}
+        - {text: "humans: 8 seconds", at: "eight", color: accent2}
+        - {text: "blame the feed", at: "short videos"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "So who timed the goldfish?"
+      - "The numbers became famous through a report for advertisers, | from a big tech company in Canada."
+      - "But the company didn't measure them. | Under the chart, | there was a small credit | to a statistics website."
+      - "When reporters followed that trail, | the website didn't show where the numbers came from. | And the sources it listed | couldn't find them either."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Who timed the fish?", at: 0}
+      labels:
+        - {text: "a report for advertisers", at: "advertisers"}
+        - {text: "credit: a stats website", at: "small credit", color: accent2}
+        - {text: "the trail goes cold", at: "followed"}
+      source: {label: "THE ORIGIN", text: "Microsoft Canada, 2015 · Attention Spans · BBC More or Less, 2017", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "And the goldfish? | It deserves an apology."
+      - "In one lab experiment, | goldfish learned to push a little lever to get food."
+      - "Then the food only came at one hour of the day. | And the fish learned the schedule. | They started gathering at the lever | when it was almost time."
+      - "That's not a creature that forgets everything after nine seconds."
+    params:
+      center: {icon: clock, title: "The fish learned the clock", at: 0}
+      labels:
+        - {text: "push a lever → food", at: "lever"}
+        - {text: "food at one hour only", at: "one hour", color: accent2}
+        - {text: "waiting at the lever", at: "gathering"}
+      source: {label: "STUDY", text: "Gee, Stephenson & Wright, 1994 · J. Exp. Anal. Behav.", at: 0}
+
+  - id: s05
+    cite: ch10/s03
+    template: lab_exhibit
+    lines:
+      - "So, | the eight seconds versus nine seconds?"
+      - "Nobody ever measured it, | for people | or for fish."
+    params:
+      chrome: {step: 2}
+      file: assets/images/fbb58ab4ed253207.cut.png
+      case: 10
+      labels:
+        - {text: "8 vs 9 seconds?", at: "eight seconds", color: accent}
+      verdict: {verdict: NO EVIDENCE, sub: "never measured, *for anyone*", at: "Nobody"}
+
+  - id: s06
+    template: lab_diagram
+    lines:
+      - "There's a deeper problem, too."
+      - "Psychologists don't really think of attention span | as one number you carry around."
+      - "Think about it. | You can lose track of a boring email in seconds, | and then watch a whole film | without checking your phone."
+      - "How long you can focus | depends on the task, | how tired you are, | and how much you care."
+      - "It's a bit like asking how far a person can walk. | Uphill, | in the rain, | carrying shopping? | Or on a sunny beach with a friend?"
+    params:
+      chrome: {step: 1}
+      center: {icon: target, title: "Not one number", at: 0}
+      labels:
+        - {text: "no single 'span'", at: "one number"}
+        - {text: "boring email vs a film", at: "boring email", color: accent2}
+        - {text: "task, tiredness, interest", at: "depends"}
+      source: {label: "EXPERT VIEW", text: "BBC More or Less, 2017 · psychologist Gemma Briggs", at: 0}
+
+  - id: s07
+    template: lab_crowd
+    lines:
+      - "But under the fish story, | there's a real question. | Do short videos hurt our focus?"
+      - "And here, | there's actual research."
+      - "A big review pulled together seventy-one studies, | with almost a hundred thousand people."
+      - "It compared how much short video people watched, | with how well they did on attention and self-control."
+    params:
+      chrome: {step: 1}
+      hero: {value: 98, from: 0, caption: "thousand people", sub: "71 studies, pooled", color: accent, at: "hundred thousand"}
+      study: {authors: "Nguyen et al.", where: "Psychological Bulletin · 2025 · 71 studies", evidence: 4, at: "big review"}
+      crowd: {n: 98299, cols: 40, at: "seventy-one", highlight: [{index: 230, label: "one person", color: accent, at: "compared"}]}
+      range: null
+      source: {label: "META-ANALYSIS", text: "Nguyen et al., 2025 · Psychological Bulletin · n = 98,299", at: 0}
+
+  - id: s08
+    template: lab_versus
+    lines:
+      - "And the link was there."
+      - "People who watched more short videos | tended to have weaker attention, | and a harder time stopping themselves | from acting on impulse."
+      - "Not a tiny link, | and not a huge one. | Somewhere in the middle."
+      - "But look at what these studies actually did. | They mostly took one snapshot, | at one moment in time."
+    params:
+      left:
+        title: "WHAT THEY FOUND"
+        items:
+          - {text: "weaker attention", at: "weaker attention"}
+          - {text: "less self-control", at: "harder time"}
+          - {text: "a moderate link", at: "middle"}
+      right:
+        title: "HOW THEY FOUND IT"
+        items:
+          - {text: "mostly one snapshot", at: "snapshot"}
+          - {text: "not an experiment", at: "one moment"}
+      source: {label: "META-ANALYSIS", text: "Nguyen et al., 2025 · Psychological Bulletin", at: 0}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "And a snapshot can't tell you | which came first."
+      - "Picture a busy café. | The people with the most empty coffee cups | are also the most tired."
+      - "Is the coffee making them tired? | Or are tired people just ordering more coffee?"
+      - "Same here. | Maybe short videos wear down focus. | Or maybe people who already find it hard to focus | reach for short videos more often."
+    params:
+      center: {icon: question, title: "Which came first?", at: 0}
+      labels:
+        - {text: "coffee and tiredness", at: "coffee cups"}
+        - {text: "videos → less focus?", at: "wear down", color: accent2}
+        - {text: "less focus → more videos?", at: "already find"}
+      source: {label: "META-ANALYSIS", text: "Nguyen et al., 2025 · correlational data", at: 0}
+
+  - id: s10
+    template: lab_hero_stack
+    lines:
+      - "The researchers say this themselves."
+      - "Few of the studies separated short videos | from social media in general."
+      - "And to know what causes what, | you need to follow the same people over time."
+      - "So far, | that's mostly still to come."
+      - "Until then, | the honest answer is a short one. | We see a link, | and we don't yet know the cause."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "THE AUTHORS SAY", text: "“Cause and effect: not yet.”", at: "themselves"}
+      cards:
+        - {icon: phone, title: "Short videos", sub: "hard to separate from feeds", chip: "?", chip_color: accent2, at: "separated"}
+        - {icon: hourglass, title: "Over time", sub: "the same people, for years", chip: "needed", chip_color: accent, at: "over time"}
+        - {icon: book, title: "So far", sub: "mostly snapshots", chip: "not yet", chip_color: accent2, at: "still to come"}
+      source: {label: "META-ANALYSIS", text: "Nguyen et al., 2025 · limitations", at: 0}
+
+  - id: s11
+    cite: ch10/s07
+    template: lab_exhibit
+    lines:
+      - "So, | is your attention span shorter than a goldfish's?"
+      - {text: "Verdict: | half true.", voice: {style: 0.35}}
+      - "The goldfish number is made up. | But the link between short videos and weaker focus | is real, | even if nobody knows yet which way it runs."
+    params:
+      chrome: {step: 2}
+      file: assets/images/fbb58ab4ed253207.cut.png
+      case: 10
+      labels:
+        - {text: "worse than a goldfish?", at: "shorter", color: accent}
+      verdict: {verdict: HALF-TRUE, sub: "fish: made up · *the link: real*", at: "half true"}
+
+  - id: s12
+    template: lab_exhibit
+    image:
+      - {prompt: "a small round silver stopwatch lying on its side, with a tiny cyan paper fish clipped to its chain, cyan and lavender", role: subject}
+    lines:
+      - "So why does this one stick around?"
+      - "Because it's funny. | Losing to a goldfish is a great line."
+      - "Because it has precise numbers, | and precise numbers sound measured."
+      - "And because it matches a feeling almost everyone has. | That it's harder to sit with one thing | than it used to be."
+    params:
+      file: assets/images/8fa41c346f72d079.cut.png
+      case: 10
+      labels:
+        - {text: "a great line", at: "great line"}
+        - {text: "precise = sounds measured", at: "precise", color: accent2}
+        - {text: "it matches a feeling", at: "feeling"}
+
+  - id: s13
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "Your focus isn't broken. | It still works, | when the task is worth it."
+      - "If you need to focus, | make it easy for yourself. | Put the phone in another room, | and give the task one honest block of time."
+      - "If you notice you can't stop scrolling, | that's the signal to pay attention to, | not the number of minutes."
+      - "And yes, | this channel makes short videos too. | So when one ends, | it's fine to just stop."
+    params:
+      stations:
+        - {icon: brain, title: "Focus still works", sub: "when the task matters", at: "isn't broken"}
+        - {icon: eye, title: "Notice the pull", sub: "can't stop = the signal", at: "can't stop"}
+        - {icon: check, title: "It's fine to stop", sub: "even our videos", at: "just stop"}
+      source: {label: "STUDIES", text: "Nguyen et al., 2025 · BBC More or Less, 2017", at: 0}
+
+  - id: s14
+    cite: ch10/s07
+    template: lab_docket
+    lines:
+      - "Case ten, | closed."
+      - "Next up, | the idea that putting on a smile | can make you feel happier."
+    params:
+      focus: {case: 10, title: "The goldfish attention span", at: 0}
+      close: {case: 10, verdict: HALF-TRUE, at: "closed"}
+      keep: [docket]
+    hold: 1.0

@@ -1,0 +1,234 @@
+# Глава 1: вступление (доска дел, правила суда, шкала вердиктов) + дело 01 «Venting anger lets it out» — MYTH.
+# outline.md: ~800 слов. Подача: без годов и нагромождения цифр в речи, авторы — в плашках; аналогия — «мышца, а не пар».
+# Сверено 2026-10-26: Bushman 2002 (PSPB) — 600 студентов, эссе разгромил «партнёр», три группы: груша + мысли об
+# обидчике / груша + мысли о фитнесе / без груши; самые злые и агрессивные — первая группа, спокойнее всех — без груши.
+# Kjærvik & Bushman 2024 (Clin. Psychol. Review) — 154 исследования: бокс, бег, велосипед злость не гасят; медленное
+# дыхание, релаксация, медитация, йога, тайм-аут — гасят. Число участников обзора не называем (не сверено).
+chapter: ch01
+title: "Case 01 · Let it out"
+scenes:
+  # ================================================================ вступление
+  - id: s01
+    template: lab_docket
+    voice: {style: 0.3}
+    lines:
+      - "Let your anger out. | Opposites attract. | The middle child is always the peacemaker."
+      - "You've heard all of these, | probably more than once."
+      - "Today, | twelve things almost everyone believes about the mind | go on trial."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "12 cases", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      cases: 12
+      tiles: {at: "heard"}
+      keep: [docket]
+
+  - id: s02
+    template: lab_flow
+    lines:
+      - "The rules of this court are simple."
+      - "First, | the claim, | exactly the way people repeat it."
+      - "Then the evidence. | Not one catchy study, | but what still stands when other researchers check."
+      - "And then, | a verdict."
+    params:
+      stations:
+        - {icon: chat, title: "Claim", sub: "as people say it", at: "claim"}
+        - {icon: flask, title: "Evidence", sub: "what survives checking", at: "evidence"}
+        - {icon: check, title: "Verdict", sub: "one of four", at: "verdict"}
+
+  - id: s03
+    template: lab_hero_stack
+    lines:
+      - "There are only four possible verdicts."
+      - "True | means it holds up, | again and again."
+      - "Half-true | means there's something real in it, | but it's been stretched."
+      - "Myth | means it fell apart | when people looked closely."
+      - "And no evidence | means nobody has really tested it at all."
+    params:
+      hero: {value: 4, from: 0, caption: "verdicts", sub: "the court's scale", color: text, at: "four"}
+      claim: null
+      lines: false
+      source: {label: "COURT RULES", text: "Notes From The Mind · verdict scale", at: 0}
+      cards:
+        - {icon: check, title: "Holds up", sub: "again and again", chip: "TRUE", chip_color: "true", at: "True"}
+        - {icon: question, title: "Stretched", sub: "real core, big claim", chip: "HALF-TRUE", chip_color: half, at: "Half-true"}
+        - {icon: cross, title: "Fell apart", sub: "when people checked", chip: "MYTH", chip_color: myth, at: "Myth"}
+        - {icon: book, title: "Never tested", sub: "no real data", chip: "NO EVIDENCE", chip_color: noev, at: "no evidence"}
+
+  - id: s04
+    template: lab_docket
+    lines:
+      - "And one last rule. | If you believed some of these, | you're in very good company."
+      - "Every myth on this board survives for a reason, | and we'll look at that reason too."
+      - "Case one."
+    params:
+      from_prev: true
+      focus: {case: 1, title: "Venting anger", at: "one#2"}
+
+  # ================================================================ дело 01
+  - id: s05
+    template: lab_chapter
+    lines:
+      - "Let it out."
+    min_duration: 3
+    params: {number: 1, total: 12, title: "Let it out", subtitle: "case 01 · venting anger"}
+
+  - id: s06
+    template: lab_exhibit
+    image:
+      - {prompt: "a heavy deep navy leather punching bag with cyan stitching, hanging on a chain, slightly swinging", role: subject}
+    lines:
+      - "Picture a really bad day."
+      - "Someone cuts you off in traffic, | your boss snaps at you, | and you get home ready to explode."
+      - "The classic advice? | Let it out. | Punch a pillow, | scream in the car, | go hit something."
+    params:
+      chrome: {number: "case 01", step: 0}
+      file: assets/images/fb2fa2b747a73cf3.cut.png
+      case: 1
+      labels:
+        - {text: "ready to explode", at: "explode", color: accent2}
+        - {text: "“let it out”", at: "Let", color: accent}
+        - {text: "hit something", at: "hit", color: accent}
+
+  - id: s07
+    template: lab_diagram
+    lines:
+      - "The idea behind it is old, | and it feels completely natural."
+      - "Anger builds up inside you, | like steam in a pressure cooker."
+      - "If you don't release it, | sooner or later | it blows."
+    params:
+      center: {icon: timer, title: "Pressure cooker", at: 0}
+      labels:
+        - {text: "builds up", at: "builds"}
+        - {text: "release it", at: "release"}
+        - {text: "or it blows", at: "blows"}
+
+  - id: s08
+    template: lab_crowd
+    lines:
+      - "So one researcher decided to test it, | directly."
+      - "He recruited six hundred students | and made every one of them angry, | on purpose."
+      - "Each wrote a short essay, | and got it back from a partner | covered in harsh, insulting comments."
+    params:
+      chrome: {step: 1}
+      hero: {value: 600, from: 0, caption: "students", sub: "one experiment", color: accent, at: "six hundred"}
+      study: {authors: "Brad J. Bushman", where: "PSPB · 2002 · n = 600", evidence: 2, at: "researcher"}
+      crowd: {n: 600, cols: 20, at: "students"}
+      range: null
+      source: {label: "EXPERIMENT", text: "Bushman, 2002 · PSPB", at: 0}
+
+  - id: s09
+    template: lab_flow
+    lines:
+      - "Then they were split into three groups."
+      - "The first group hit a punching bag | while picturing the person who insulted them."
+      - "The second group hit the same bag, | but thought about getting fit."
+      - "And the third group | didn't touch the bag at all. | They just sat quietly for a few minutes."
+    params:
+      stations:
+        - {icon: person, title: "Hit + replay", sub: "think of the insulter", at: "first"}
+        - {icon: timer, title: "Hit + fitness", sub: "think of exercise", at: "second"}
+        - {icon: moon, title: "Sit quietly", sub: "no bag at all", at: "third"}
+      source: {label: "EXPERIMENT", text: "Bushman, 2002 · PSPB · n = 600", at: 0}
+
+  - id: s10
+    template: lab_versus
+    lines:
+      - "Afterwards, | everyone got a chance to get even, | in a quick reaction game | where they could blast their partner with loud, unpleasant noise."
+      - "If venting works, | the people who hit the bag | should be the calmest."
+      - "They weren't."
+      - "The group that hit the bag while replaying the insult | was the angriest, | and the most aggressive."
+      - "The calmest people of all | were the ones who did nothing."
+    params:
+      chrome: {step: 1}
+      left: {title: "IF VENTING WORKS", items: [{text: "Bag hitters calmest", at: "calmest"}]}
+      right:
+        title: "WHAT HAPPENED"
+        items:
+          - {text: "Noise-blast game", at: "blast"}
+          - {text: "Replay group: angriest", at: "angriest"}
+          - {text: "Most noise blasts", at: "aggressive"}
+          - {text: "Quiet group: calmest", at: "nothing"}
+      source: {label: "EXPERIMENT", text: "Bushman, 2002 · PSPB · n = 600", at: 0}
+      neuron: {mood: surprised, at: "weren't"}
+
+  - id: s11
+    template: lab_diagram
+    lines:
+      - "Here's a better way to picture it."
+      - "Anger isn't steam in a pot. | It's more like a muscle."
+      - "Every time you replay the insult | and hit something, | you're not draining the anger. | You're training it."
+    params:
+      center: {icon: person, title: "A muscle, not steam", at: "muscle"}
+      labels:
+        - {text: "replay the insult", at: "replay"}
+        - {text: "not draining", at: "draining"}
+        - {text: "training", at: "training"}
+
+  - id: s12
+    template: lab_hero_stack
+    lines:
+      - "Of course, | that's one experiment. | So what happens when you pull everything together?"
+      - "A big review combined a hundred and fifty-four studies | on what people do when they're angry."
+      - "Things that rev your body up, | like boxing, | running, | or cycling, | didn't reliably calm people down."
+      - "Things that slow your body down did: | slow breathing, | relaxing your muscles, | or simply taking a time-out."
+      - "To be clear, | exercise is great for you in lots of ways. | It's just not an off switch for anger."
+    params:
+      hero: {value: 154, from: 0, caption: "studies", sub: "one big review", color: accent, at: "hundred"}
+      claim: null
+      cards:
+        - {icon: alarm, title: "Rev up", sub: "boxing · running · cycling", chip: "no calmer", chip_color: accent2, at: "boxing"}
+        - {icon: clock, title: "Slow down", sub: "breathing · relaxing", chip: "calmer", chip_color: accent, at: "slow#2"}
+        - {icon: moon, title: "Time-out", sub: "step away first", chip: "calmer", chip_color: accent, at: "time-out"}
+      source: {label: "META-ANALYSIS", text: "Kjærvik & Bushman, 2024 · Clin. Psychol. Review", at: 0}
+
+  - id: s13
+    template: lab_exhibit
+    lines:
+      - "So, | does venting your anger help you let it go?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/fb2fa2b747a73cf3.cut.png
+      case: 1
+      labels:
+        - {text: "help you let it go?", at: "help", color: accent}
+      verdict: {verdict: MYTH, sub: "venting *feeds* the anger", at: "myth"}
+
+  - id: s14
+    template: lab_exhibit
+    image:
+      - {prompt: "a shiny steel pressure cooker with a small puff of steam escaping from the valve", role: subject}
+    lines:
+      - "So why does this one feel so true?"
+      - "Partly because hitting something can feel good, | right in the moment."
+      - "That rush feels like relief, | so we mistake feeling good | for calming down."
+      - "And the pressure cooker is just such an easy picture | that it sounds like common sense."
+    params:
+      file: assets/images/8a951cc3e3a46481.cut.png
+      case: 1
+      labels:
+        - {text: "feels good", at: "good"}
+        - {text: "≠ calming down", at: "calming", color: accent2}
+        - {text: "easy picture", at: "easy"}
+
+  - id: s15
+    template: lab_flow
+    lines:
+      - "So next time you're furious, | try the opposite of a release valve."
+      - "Slow your breathing, | step away for a few minutes, | and let your body come down | before you decide what to do."
+    params:
+      stations:
+        - {icon: clock, title: "Slow breathing", sub: "body comes down", at: "opposite"}
+        - {icon: moon, title: "Step away", sub: "a short time-out", at: "step"}
+        - {icon: check, title: "Then decide", sub: "with a calmer head", at: "decide"}
+      source: {label: "META-ANALYSIS", text: "Kjærvik & Bushman, 2024", at: 0}
+
+  - id: s16
+    template: lab_docket
+    lines:
+      - "Case one, | closed."
+      - "Next up, | a myth about love | that almost every movie gets wrong."
+    params:
+      focus: {case: 1, title: "Venting anger", at: 0}
+      close: {case: 1, verdict: MYTH, at: "closed"}
+      keep: [docket]
+    hold: 0.6

@@ -1,0 +1,222 @@
+# Глава 8: дело 08 «The less you know, the more confident you are» (Dunning–Kruger) — HALF-TRUE. outline.md: ~800 слов.
+# Сверено 2026-10-26: Kruger & Dunning 1999 (JPSP 77(6), 1121–1134) — 4 исследования, студенты, тесты на юмор,
+# грамматику, логику; нижний квартиль в среднем на 12-м перцентиле, а оценил себя на 62-м (абстракт); сильные себя
+# недооценивали; в исследовании 4 короткое обучение логике улучшило самооценку слабых. Кривой «Mount Stupid» в статье
+# нет (графики: оценка vs реальный перцентиль по квартилям) — это интернет-мем. Gignac & Zajenkowski 2020
+# (Intelligence 80, 101449) — 929 взрослых, IQ-тест vs самооценка; связь почти линейна, эффект в основном артефакт.
+# Jansen, Rafferty & Griffiths 2021 (Nature Human Behaviour 5(6), 756–763) — репликация ~4 000 участников в каждом из
+# двух исследований (грамматика, логика), рациональная модель: большая часть картины — априорные ожидания + шум, но
+# слабые хуже понимают, какие ответы у них верны. Dawson & de Meza 2026 (Psychological Review, doi 10.1037/rev0000644,
+# пресс-релиз Bath 27.07.2026) — переанализ больших репликационных наборов: после поправок самые самоуверенные —
+# сильные; одна статья, спор открыт. Svenson 1981 (Acta Psychologica 47, 143–148) — большинство водителей считают себя выше среднего.
+chapter: ch08
+title: "Case 08 · Know less, feel surer"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "The people who know the least | are the most confident of all. | You've seen the graph."
+    min_duration: 3
+    params: {number: 8, total: 12, title: "Know less, feel surer", subtitle: "case 08 · the Dunning–Kruger effect"}
+
+  - id: s02
+    cite: ch08/s03
+    template: lab_exhibit
+    image:
+      - {prompt: "a tall pointed paper cone hat with a small lavender star on the tip", role: subject}
+    lines:
+      - "This one lives all over social media."
+      - "A curve shoots up to a peak called Mount Stupid, | crashes into a valley, | then slowly climbs back up."
+      - "The idea is simple. | The less you know, | the more sure of yourself you are."
+      - "And the people who really know their stuff | are the ones full of doubt."
+      - "It gets shared every time someone confidently gets something wrong online."
+    params:
+      chrome: {number: "case 08", step: 0}
+      file: assets/images/164b2e3ae76c8d93.cut.png
+      case: 8
+      labels:
+        - {text: "Mount Stupid", at: "Mount Stupid"}
+        - {text: "know little → feel sure", at: "more sure", color: accent2}
+        - {text: "know a lot → doubt", at: "full of doubt"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "So where did it come from?"
+      - "It started with a real study | by two psychologists, | David Dunning and Justin Kruger."
+      - "Their paper even had a cheeky title. | Unskilled and unaware of it."
+      - "They gave college students short tests | on grammar, | on logic, | and even on what makes a joke funny."
+      - "Then they asked each student, | how well do you think you did, | compared to everyone else?"
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "grammar", at: "grammar"}
+        - {text: "logic", at: "on logic", color: accent2}
+        - {text: "what's funny", at: "joke funny"}
+      source: {label: "THE STUDY", text: "Kruger & Dunning, 1999 · Journal of Personality and Social Psychology", at: 0}
+
+  - id: s04
+    template: lab_full_number
+    lines:
+      - "The students with the lowest scores | guessed, on average, | that they'd beaten more than half the room."
+      - "In reality, | they'd beaten only about one in eight."
+      - "And the strongest students did the opposite. | They guessed a little lower than they really scored."
+      - "That's the famous finding. | And it's real. | It's right there in the data."
+    params:
+      value: 12
+      from: 62
+      suffix: "th"
+      caption: "percentile, where the weakest really scored"
+      sub: "they guessed the 62nd"
+      color: accent
+      at: "In reality"
+      myth: {value: 62, strike_at: "In reality"}
+      source: {label: "THE STUDY", text: "Kruger & Dunning, 1999 · bottom quarter, average of four studies", at: 0}
+
+  - id: s05
+    template: lab_versus
+    lines:
+      - "But look for that famous curve in the paper, | and you won't find it."
+      - "There's no peak, | no valley, | no Mount Stupid."
+      - "Just two simple lines, | what people guessed, | and what they actually scored."
+      - "And even in those lines, | the weakest students still felt less sure | than the strongest ones. | They just overestimated more."
+      - "The mountain was drawn later, | on the internet."
+    params:
+      left:
+        title: "THE MEME"
+        items:
+          - {text: "A peak of confidence", at: "no peak"}
+          - {text: "A valley of doubt", at: "no valley"}
+          - {text: "Mount Stupid", at: "no Mount"}
+      right:
+        title: "THE PAPER"
+        items:
+          - {text: "Guessed score", at: "guessed"}
+          - {text: "Real score", at: "actually scored"}
+          - {text: "No mountain at all", at: "drawn later"}
+      source: {label: "THE STUDY", text: "Kruger & Dunning, 1999 · figures: guessed vs real percentile", at: 0}
+
+  - id: s06
+    template: lab_diagram
+    lines:
+      - "Now here's where it gets interesting."
+      - "You already know this habit. | Ask a room full of drivers, | and most of them will tell you they're better than average. | Which can't be true for most of them."
+      - "Imagine a whole class takes a tricky test. | And every single student, | no matter how they did, | guesses, | I was probably a bit above average."
+      - "The students at the bottom | now look wildly overconfident. | The students at the top | look humble."
+      - "But nobody's ego did anything. | Everyone just guessed the middle."
+    params:
+      center: {icon: target, title: "Everyone guesses the middle", at: 0}
+      labels:
+        - {text: "\"a bit above average\"", at: "above average"}
+        - {text: "bottom looks cocky", at: "wildly", color: accent2}
+        - {text: "top looks humble", at: "humble"}
+      source: {label: "SURVEY", text: "drivers: Svenson, 1981 · Acta Psychologica", at: "drivers"}
+
+  - id: s07
+    template: lab_crowd
+    lines:
+      - "Add a bit of plain luck on the test, | and that guessing alone | can draw most of the famous pattern."
+      - "One team checked this with nine hundred and twenty-nine adults. | A real intelligence test, | then, how smart do you think you are?"
+      - "Real skill and self-rating | lined up almost in a straight line. | No special blind spot at the bottom."
+      - "In other words, | the people at the bottom weren't especially blind. | They were guessing like everyone else."
+    params:
+      chrome: {step: 1}
+      hero: {value: 929, from: 0, caption: "adults", sub: "test, then self-rating", color: accent, at: "twenty-nine"}
+      study: {authors: "Gignac & Zajenkowski", where: "Intelligence · 2020 · n = 929", evidence: 2, at: "One team"}
+      crowd: {n: 929, cols: 34, at: "adults"}
+      range: null
+      source: {label: "STUDY", text: "Gignac & Zajenkowski, 2020 · Intelligence", at: 0}
+
+  - id: s08
+    template: lab_hero_stack
+    lines:
+      - "But that's not the whole story."
+      - "Another team ran the classic tests again, | with about four thousand people, | and a careful model of how people guess."
+      - "Most of the pattern was that same guessing effect. | But not all of it."
+      - "The weakest performers really were a little worse | at telling which of their own answers were right."
+      - "Think of it like a foggy mirror. | Everyone looks at themselves through some fog. | For the weakest performers, | the fog is just a bit thicker."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "BIG REPLICATION", text: "“Mostly statistics. Not all of it.”", at: "Another team"}
+      cards:
+        - {icon: target, title: "Guessing the middle", sub: "explains most of it", chip: "most", chip_color: accent, at: "same guessing"}
+        - {icon: chart, title: "Luck on the test", sub: "adds to the picture", chip: "+", chip_color: accent, at: "not all"}
+        - {icon: eye, title: "A real blind spot", sub: "small, but there", chip: "small", chip_color: accent2, at: "weakest"}
+      source: {label: "REPLICATION", text: "Jansen, Rafferty & Griffiths, 2021 · Nature Human Behaviour", at: 0}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "And just recently, | a new paper flipped the story around."
+      - "After correcting the math, | it found the most overconfident people | were the most skilled ones."
+      - "One idea is that skilled people have the most to gain | from sounding sure of themselves."
+      - "That's one paper, | and the argument isn't settled. | But it shows how shaky that famous curve really is."
+    params:
+      chrome: {step: 1}
+      center: {icon: bolt, title: "A new twist", at: 0}
+      labels:
+        - {text: "math corrected", at: "correcting"}
+        - {text: "most skilled = most sure?", at: "most skilled", color: accent2}
+        - {text: "one paper, not settled", at: "isn't settled"}
+      source: {label: "NEW PAPER", text: "Dawson & de Meza, 2026 · Psychological Review", at: 0}
+
+  - id: s10
+    cite: ch08/s03
+    template: lab_exhibit
+    lines:
+      - "So, | is it true that the less you know, | the more confident you are?"
+      - {text: "Verdict: | half true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/164b2e3ae76c8d93.cut.png
+      case: 8
+      labels:
+        - {text: "know less → feel surer?", at: "confident", color: accent}
+      verdict: {verdict: HALF-TRUE, sub: "a small blind spot, *not a mountain*", at: "half true"}
+
+  - id: s11
+    template: lab_exhibit
+    image:
+      - {prompt: "a single small snowy mountain peak with a tiny lavender flag planted on the summit", role: subject}
+    lines:
+      - "So why does this one spread so fast?"
+      - "Because it feels true. | We've all met someone loud and wrong."
+      - "Because it comes with a funny picture, | and a name that sounds like science."
+      - "Because the name became a handy insult. | Calling someone Dunning-Kruger | ends an argument without having one."
+      - "And because it's flattering. | It's always about someone else. | Nobody shares that graph thinking, | that's me."
+    params:
+      file: assets/images/0f3fb91fe883e27c.cut.png
+      case: 8
+      labels:
+        - {text: "feels true", at: "feels true"}
+        - {text: "funny picture", at: "funny picture", color: accent2}
+        - {text: "always someone else", at: "someone else"}
+
+  - id: s12
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "Everyone misjudges themselves, | at every skill level. | Not just the people you disagree with."
+      - "The fix isn't doubting everything. | It's feedback. | In the original study, | a short lesson in logic | helped the weakest students | judge themselves better."
+      - "And before you call someone Mount Stupid, | ask how you'd score yourself, | and how you'd know."
+    params:
+      stations:
+        - {icon: eye, title: "Everyone misjudges", sub: "at every skill level", at: "misjudges"}
+        - {icon: check, title: "Get feedback", sub: "check guesses against results", at: "feedback"}
+        - {icon: question, title: "Ask about yourself", sub: "and how you'd know", at: "Mount Stupid"}
+      source: {label: "STUDIES", text: "Kruger & Dunning, 1999 (study 4) · Jansen, Rafferty & Griffiths, 2021", at: 0}
+
+  - id: s13
+    cite: ch08/s03
+    template: lab_docket
+    lines:
+      - "Case eight, | closed."
+      - "If you're enjoying these cases, | a quick subscribe helps the channel more than you'd think."
+      - "Next up, | the magic number where money supposedly stops buying happiness."
+    params:
+      focus: {case: 8, title: "Know less, feel surer", at: 0}
+      close: {case: 8, verdict: HALF-TRUE, at: "closed"}
+      keep: [docket]
+    hold: 1.0

@@ -1,0 +1,209 @@
+# Глава 2: дело 02 «Opposites attract» — MYTH. outline.md: ~800 слов (решение 2026-10-26: дела по ~800 слов).
+# Сверено 2026-10-26: Horwitz, Balbona, Paulich & Keller 2023 (Nature Human Behaviour) — метаанализ 199 исследований
+# (22 черты) + UK Biobank, почти 80 000 пар (133 черты); партнёры похожи по 82–89 % черт, противоположны ~3 % и только
+# в одной части анализа (хронотип, склонность к тревоге, слух); сильнее всего — политика, религия, образование,
+# курение и алкоголь; экстраверсия — «как подбросить монетку» (Horwitz). Montoya, Horton & Kirchner 2008 (JSPR) —
+# 313 исследований: реальное (r = .47) и ощущаемое (r = .39) сходство связаны с симпатией; ощущаемое — во всех типах
+# исследований, включая сложившиеся отношения (вторичные обзоры) — в речи осторожно: "can matter even more".
+chapter: ch02
+title: "Case 02 · Opposites attract"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Opposites attract."
+    min_duration: 3
+    params: {number: 2, total: 12, title: "Opposites attract", subtitle: "case 02 · love & likeness"}
+
+  - id: s02
+    template: lab_exhibit
+    image:
+      - {prompt: "two horseshoe magnets, one cyan and one lavender, facing each other with a small gap and faint curved field lines between them", role: subject}
+    lines:
+      - "You know this couple from a hundred movies."
+      - "She's wild, | he's careful. | One lives for parties, | the other would rather stay home with a book."
+      - "They drive each other crazy, | and by the end, | they can't live without each other."
+      - "It's such a familiar story | that it feels like a law of nature."
+    params:
+      chrome: {number: "case 02", step: 0}
+      file: assets/images/908e1c5e7a778d1e.cut.png
+      case: 2
+      labels:
+        - {text: "wild × careful", at: "wild"}
+        - {text: "party × book", at: "parties", color: accent2}
+        - {text: "“a law of nature”", at: "law"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "And in a way, | it is one. | For magnets."
+      - "Opposite poles really do pull together, | and the phrase borrowed that picture for people."
+      - "There's also an old, | very romantic idea behind it: | that we fall for someone who has what we're missing, | so together we make one whole."
+      - "Shy finds bold. | Messy finds tidy. | Each one completes the other."
+      - "It's a lovely idea. | It's also very easy to check."
+    params:
+      center: {icon: people, title: "Fire and ice", at: 0}
+      labels:
+        - {text: "magnets", at: "magnets"}
+        - {text: "what we're missing", at: "missing"}
+        - {text: "one whole", at: "whole"}
+        - {text: "shy + bold", at: "Shy"}
+
+  - id: s04
+    template: lab_full_number
+    lines:
+      - "So instead of asking people what they believe about love, | a team of researchers looked at who actually ends up together."
+      - "They took almost eighty thousand real couples in Britain, | and added more than a century of earlier studies on partners."
+      - "If opposites really attract, | there should be lots of opposite pairs out there."
+      - "Then they asked a simple question. | Trait by trait, | are partners more alike, | or more different?"
+    params:
+      chrome: {step: 1}
+      value: 80
+      prefix: "≈"
+      suffix: "K"
+      caption: "real couples"
+      sub: "plus a century of earlier studies"
+      color: accent
+      at: "eighty"
+      source: {label: "META-ANALYSIS + BIOBANK", text: "Horwitz, Balbona, Paulich & Keller, 2023 · Nature Human Behaviour", at: 0}
+
+  - id: s05
+    template: lab_diagram
+    lines:
+      - "Across more than a hundred traits, | the answer kept coming back the same."
+      - "For most of them, | partners were more alike than you'd expect by chance."
+      - "The strongest matches were the deep stuff. | Political views. | Religion. | How long you stayed in school."
+      - "The closest match of all was age. | Most people end up with someone born around the same time."
+      - "Even habits lined up. | Heavy drinkers tended to pair with drinkers, | smokers with smokers, | and people who never touch alcohol | with people who don't either."
+    params:
+      center: {icon: people, title: "Mostly alike", at: 0}
+      labels:
+        - {text: "politics", at: "Political"}
+        - {text: "religion", at: "Religion"}
+        - {text: "education", at: "school"}
+        - {text: "drinking · smoking", at: "drinkers"}
+      source: {label: "META-ANALYSIS + BIOBANK", text: "Horwitz et al., 2023 · Nature Human Behaviour", at: 0}
+
+  - id: s06
+    template: lab_full_number
+    lines:
+      - "And the opposites? | They showed up for only about three percent of the traits."
+      - "Even then, | the effect was tiny, | and only in one part of the data. | Things like being a morning person | or a night owl."
+      - "To be fair, | most of these links are modest. | Plenty of happy couples differ in lots of ways."
+      - "But across tens of thousands of couples, | the tilt is clear. | It points toward alike, | not opposite."
+    params:
+      value: 3
+      suffix: "%"
+      caption: "of traits"
+      sub: "where partners tended to differ"
+      color: accent2
+      at: "three"
+      source: {label: "META-ANALYSIS + BIOBANK", text: "Horwitz et al., 2023 · Nature Human Behaviour", at: 0}
+
+  - id: s07
+    template: lab_versus
+    lines:
+      - "What about the classic pairing, | the introvert and the extrovert?"
+      - "Here, | partners weren't opposites. | They just weren't matched at all."
+      - "As one of the researchers put it, | whether an outgoing person ends up with a quiet one | is about like flipping a coin."
+      - "So the famous example | isn't proof that opposites attract. | It's a trait that barely matters for who we pick."
+    params:
+      left:
+        title: "THEY SAY"
+        items:
+          - {text: "Opposites pull together", at: "classic"}
+          - {text: "Introvert + extrovert", at: "introvert"}
+      right:
+        title: "STUDIES FOUND"
+        items:
+          - {text: "Mostly alike", at: "weren't"}
+          - {text: "Extroversion: coin flip", at: "coin"}
+          - {text: "Barely matters", at: "barely"}
+      source: {label: "META-ANALYSIS + BIOBANK", text: "Horwitz et al., 2023 · Nature Human Behaviour", at: 0}
+      neuron: {mood: surprised, at: "coin"}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Here's one way to see why."
+      - "Think of a relationship as a very long road trip | in one shared car."
+      - "You can argue about the music, | or who's a better driver, | and still have a great time."
+      - "But if one of you wants the beach | and the other wants the mountains, | it's going to be a very long drive."
+    params:
+      center: {icon: people, title: "Road trip", at: "road"}
+      labels:
+        - {text: "the music: small stuff", at: "music"}
+        - {text: "the destination: values", at: "beach"}
+        - {text: "same direction", at: "long#2"}
+
+  - id: s09
+    template: lab_hero_stack
+    lines:
+      - "There's one more twist."
+      - "A big review of three hundred and thirteen studies | found that being similar goes with liking someone."
+      - "But simply feeling that you're alike | can matter even more | than how alike you really are."
+      - "Think of the friend who laughs at the same joke | at exactly the same moment you do."
+      - "In other words, | it's not a checklist. | It's the sense that this person gets you."
+    params:
+      hero: {value: 313, from: 0, caption: "studies", sub: "one big review", color: accent, at: "thirteen"}
+      claim: null
+      cards:
+        - {icon: people, title: "Being alike", sub: "goes with liking", chip: "real", chip_color: accent, at: "similar"}
+        - {icon: chat, title: "Feeling alike", sub: "can matter even more", chip: "stronger", chip_color: accent, at: "feeling"}
+        - {icon: check, title: "“Gets you”", sub: "not a checklist", chip: null, at: "gets"}
+      source: {label: "META-ANALYSIS", text: "Montoya, Horton & Kirchner, 2008 · J. Soc. Pers. Relationships", at: 0}
+
+  - id: s10
+    template: lab_exhibit
+    lines:
+      - "So, | do opposites attract?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/908e1c5e7a778d1e.cut.png
+      case: 2
+      labels:
+        - {text: "do opposites attract?", at: "opposites", color: accent}
+      verdict: {verdict: MYTH, sub: "birds of a feather *flock together*", at: "myth"}
+
+  - id: s11
+    template: lab_exhibit
+    image:
+      - {prompt: "two jigsaw puzzle pieces, one cyan and one lavender, about to click together", role: subject}
+    lines:
+      - "So why does it feel so right?"
+      - "Partly because differences are loud. | You notice that your partner is the talker and you're the listener."
+      - "You don't notice the twenty things you quietly agree on, | because agreement doesn't make a story."
+      - "Couples also split the jobs. | One cooks, | the other fixes the shelf. | That looks like opposites, | but it's really teamwork | on top of the same goals."
+      - "And movies need conflict. | Two people who agree on everything | make a very short film."
+    params:
+      file: assets/images/9417262d23b00f07.cut.png
+      case: 2
+      labels:
+        - {text: "differences are loud", at: "loud"}
+        - {text: "agreement is quiet", at: "agreement", color: accent2}
+        - {text: "movies need conflict", at: "conflict"}
+
+  - id: s12
+    template: lab_flow
+    lines:
+      - "So if you're wondering whether someone is right for you, | flip the question."
+      - "Don't ask how different you are. | Ask whether you want the same things, | and live in roughly the same way."
+      - "And if you already love someone who seems your total opposite, | relax. | This is about averages, | not about your couple."
+      - "Small differences in style | can keep things fun. | Big differences in values | usually just mean a long drive."
+    params:
+      stations:
+        - {icon: question, title: "Flip the question", sub: "not how different", at: "flip"}
+        - {icon: people, title: "Same things", sub: "values · habits", at: "same#1"}
+        - {icon: check, title: "Style can differ", sub: "keeps it fun", at: "fun"}
+      source: {label: "META-ANALYSIS + BIOBANK", text: "Horwitz et al., 2023", at: 0}
+
+  - id: s13
+    template: lab_docket
+    lines:
+      - "Case two, | closed."
+      - "Next, | a myth that sits at every family dinner table: | that being the oldest, | the middle, | or the youngest | shaped who you are."
+    params:
+      focus: {case: 2, title: "Opposites attract", at: 0}
+      close: {case: 2, verdict: MYTH, at: "closed"}
+      keep: [docket]
