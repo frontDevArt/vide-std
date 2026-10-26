@@ -1,0 +1,250 @@
+# Глава 12: дело 12 «Group brainstorming gives more ideas» — MYTH + финал (доска закрыта, итог, как проверять факты,
+# вопрос в комментарии). outline.md: ~950 слов.
+# Сверено 2026-10-26: Osborn (Applied Imagination, 1953/1957) — по правилам в группе человек даёт примерно вдвое больше
+# идей (Diehl & Stroebe 1987 цитируют с. 229). Taylor, Berry & Block 1958 (Admin. Sci. Q. 3(1), 23–47) — Йель,
+# 96 студентов: группы по четыре против четырёх по отдельности, идеи сложены, повторы считаются один раз — «номинальные»
+# группы дали почти вдвое больше разных идей; результат многократно повторён. Diehl & Stroebe 1987 (JPSP 53(3),
+# 497–509) — четыре эксперимента: халява, страх оценки, блокировка; Diehl & Stroebe 1991 — блокировка («ждать
+# очереди») объясняет большую часть потери. Mullen, Johnson & Salas 1991 (BASP 12(1), 3–23) — мета-анализ: группы
+# проигрывают, разрыв больше в больших группах и при присутствии экспериментатора. Paulus et al. 1993 (PSPB 19(1),
+# 78–89) — иллюзия групповой продуктивности: в группе люди считают, что сделали больше. Girotra, Terwiesch & Ulrich
+# 2010 (Management Science 56(4), 591–605) — гибрид: сначала поодиночке, потом вместе — больше идей и лучшие идеи лучше.
+# Итог доски: MYTH — 01, 02, 03, 04, 05, 06, 09, 12 (восемь); HALF-TRUE — 07, 08, 10, 11 (четыре); TRUE — ни одного.
+chapter: ch12
+title: "Case 12 · Two heads, more ideas"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Get everyone in one room, | and the ideas will flow."
+    min_duration: 3
+    params: {number: 12, total: 12, title: "Brainstorm together", subtitle: "case 12 · the last case"}
+
+  - id: s02
+    cite: ch12/s04
+    template: lab_exhibit
+    image:
+      - {prompt: "a small square pad of sticky notes, the top note lavender and slightly curled, cyan notes underneath, cyan and lavender", role: subject}
+    lines:
+      - "The claim goes like this."
+      - "If you need ideas, | don't sit alone at your desk. | Get the team together, | grab a whiteboard, | and brainstorm."
+      - "Nobody criticises, | everyone builds on everyone else, | and the group comes up with far more | than the same people would alone."
+      - "It's how offices, | classrooms, | and ad agencies | have looked for ideas for decades."
+    params:
+      chrome: {number: "case 12", step: 0}
+      file: assets/images/e4a5f9f536b371eb.cut.png
+      case: 12
+      labels:
+        - {text: "get the team together", at: "team"}
+        - {text: "build on each other", at: "builds", color: accent2}
+        - {text: "more than alone", at: "far more"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "So where did this come from?"
+      - "From an advertising executive, | the man who coined the word brainstorming."
+      - "He wrote down the rules. | No criticism. | Wild ideas welcome. | Go for quantity."
+      - "And he made a bold promise. | Follow the rules, | and a person in a group | can come up with about twice as many ideas | as on their own."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "an ad executive", at: "advertising"}
+        - {text: "no criticism", at: "No criticism", color: accent2}
+        - {text: "promise: twice the ideas", at: "twice"}
+      source: {label: "BOOK", text: "Osborn · Applied Imagination", at: 0}
+
+  - id: s04
+    template: lab_flow
+    lines:
+      - "It didn't take long for psychologists to test that promise."
+      - "Some students brainstormed in groups of four, | following the rules exactly."
+      - "Other students worked alone, | on the same problems."
+      - "Then the researchers took four of the loners, | pooled their ideas, | and counted any repeats only once. | A group on paper, | that never met."
+      - "If the promise was right, | the real groups should win easily."
+    params:
+      chrome: {step: 1}
+      stations:
+        - {icon: chat, title: "Groups of four", sub: "talking, by the rules", at: "groups of four"}
+        - {icon: person, title: "Alone", sub: "same problems", at: "alone"}
+        - {icon: book, title: "Pooled on paper", sub: "repeats count once", at: "pooled"}
+      source: {label: "EXPERIMENT", text: "Taylor, Berry & Block, 1958 · Admin. Sci. Q.", at: 0}
+
+  - id: s05
+    template: lab_full_number
+    lines:
+      - "They lost. | The people who never met | came up with nearly twice as many different ideas."
+    params:
+      value: 2
+      from: 0
+      caption: "× the ideas, working apart"
+      sub: "pooled loners vs real groups of four"
+      color: accent
+      at: 0
+      source: {label: "EXPERIMENT", text: "Taylor, Berry & Block, 1958 · Admin. Sci. Q.", at: 0}
+
+  - id: s06
+    template: lab_versus
+    lines:
+      - "One study can be a fluke. | So this one was repeated, | again and again."
+      - "A big review of that research found the same thing. | People working apart and pooling their ideas | beat groups talking out loud."
+      - "And the bigger the group, | the bigger the gap."
+    params:
+      left:
+        title: "TOGETHER, OUT LOUD"
+        items:
+          - {text: "fewer ideas", at: "beat"}
+          - {text: "worse as the group grows", at: "bigger the group"}
+      right:
+        title: "APART, THEN POOLED"
+        items:
+          - {text: "more ideas", at: "pooling"}
+          - {text: "repeated again and again", at: "again"}
+      source: {label: "META-ANALYSIS", text: "Mullen, Johnson & Salas, 1991 · Basic Appl. Soc. Psychol.", at: 0}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "So what goes wrong in the room?"
+      - "Researchers tested three suspects."
+      - "Some people coast, | because the group will cover for them."
+      - "Some hold back, | worried their idea sounds stupid."
+      - "But the biggest culprit was simpler. | Waiting for your turn to speak."
+    params:
+      chrome: {step: 1}
+      hero: {value: 3, from: 0, caption: "suspects", sub: "four experiments", color: accent, at: "three"}
+      claim: null
+      cards:
+        - {icon: moon, title: "Coasting", sub: "the group will cover", chip: "some", chip_color: accent2, at: "coast"}
+        - {icon: eye, title: "Holding back", sub: "fear of sounding dumb", chip: "some", chip_color: accent2, at: "hold back"}
+        - {icon: hourglass, title: "Waiting your turn", sub: "the main culprit", chip: "main", chip_color: accent, at: "Waiting"}
+      source: {label: "EXPERIMENTS", text: "Diehl & Stroebe, 1987 · J. Pers. Soc. Psychol.", at: 0}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Picture a dinner party | with one microphone."
+      - "Everyone has something to say, | but only one person can talk at a time."
+      - "While you wait, | your idea fades, | or the conversation moves on, | or you decide it isn't worth it anymore."
+      - "Now multiply that by every person at the table."
+    params:
+      center: {icon: chat, title: "One microphone", at: 0}
+      labels:
+        - {text: "one voice at a time", at: "one person"}
+        - {text: "your idea fades", at: "fades", color: accent2}
+        - {text: "× everyone", at: "multiply"}
+
+  - id: s09
+    cite: ch12/s04
+    template: lab_exhibit
+    lines:
+      - "So, | does a group brainstorm give you more ideas | than the same people working alone?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+      - "Talking it out together | usually gives you fewer ideas, | not more."
+    params:
+      chrome: {step: 2}
+      file: assets/images/e4a5f9f536b371eb.cut.png
+      case: 12
+      labels:
+        - {text: "more ideas together?", at: "more ideas", color: accent}
+      verdict: {verdict: MYTH, sub: "apart, then pooled *wins*", at: "myth"}
+
+  - id: s10
+    template: lab_exhibit
+    image:
+      - {prompt: "a single glowing lightbulb with a cyan glass bulb and lavender base, a few small lavender sparkles around it, cyan and lavender", role: subject}
+    lines:
+      - "So why do we keep doing it?"
+      - "Because it feels amazing. | The room is loud, | the board fills up, | and everyone leaves feeling productive."
+      - "In fact, | people who brainstorm in groups | tend to believe they did better | than they really did."
+      - "And meetings do other jobs too. | They get people on the same page. | That part is real. | It just isn't extra ideas."
+    params:
+      chrome: {step: 1}
+      file: assets/images/b23bddd938518a20.cut.png
+      case: 12
+      labels:
+        - {text: "it feels productive", at: "productive"}
+        - {text: "we overrate it", at: "believe", color: accent2}
+        - {text: "same page: real", at: "same page"}
+      source: {label: "EXPERIMENT", text: "Paulus et al., 1993 · Pers. Soc. Psychol. Bull.", at: 0}
+
+  - id: s11
+    template: lab_flow
+    lines:
+      - "So what works better?"
+      - "Think alone first, | and write your ideas down."
+      - "Then get together, | to combine them, | build on them, | and pick the best ones."
+      - "Teams that worked this way | came up with more ideas, | and better ones too."
+    params:
+      stations:
+        - {icon: person, title: "Alone first", sub: "write ideas down", at: "alone"}
+        - {icon: chat, title: "Then together", sub: "combine and build", at: "together"}
+        - {icon: check, title: "Pick the best", sub: "as a group", at: "pick"}
+      source: {label: "EXPERIMENT", text: "Girotra, Terwiesch & Ulrich, 2010 · Management Science", at: 0}
+
+  - id: s12
+    cite: ch12/s07
+    template: lab_docket
+    lines:
+      - "Case twelve, | closed."
+    params:
+      focus: {case: 12, title: "Brainstorm together", at: 0}
+      close: {case: 12, verdict: MYTH, at: "closed"}
+      keep: [docket]
+    hold: 0.8
+
+  # ================================================================ финал
+  - id: s13
+    template: lab_docket
+    lines:
+      - "And that's the whole board."
+      - "The punching bag. | The middle child. | The power pose. | The goldfish. | The pen between your teeth. | And now, | the brainstorm."
+      - "Twelve cases. | Eight of them, | myths. | Four, | half-true."
+      - "And not one of these famous ideas | survived the evidence | exactly the way people tell it."
+    params:
+      chrome: {number: "12 cases", step: 2}
+      from_prev: true
+      keep: [docket]
+
+  - id: s14
+    template: lab_hero_stack
+    lines:
+      - "So the next time you hear a neat fact about the mind, | here are three questions worth asking."
+      - "Is it one study, | or many?"
+      - "Did it hold up | when other people checked?"
+      - "And how big is the effect, | really? | A nudge, | or a life changer?"
+    params:
+      chrome: {step: 1}
+      hero: {value: 3, from: 0, caption: "questions", sub: "for the next neat fact", color: accent, at: "three"}
+      claim: null
+      cards:
+        - {icon: book, title: "One study or many?", sub: "one is a start", chip: "?", chip_color: accent2, at: "one study"}
+        - {icon: check, title: "Did it hold up?", sub: "when others checked", chip: "?", chip_color: accent2, at: "hold up"}
+        - {icon: chart, title: "How big, really?", sub: "nudge or life changer", chip: "?", chip_color: accent2, at: "how big"}
+      source: {label: "COURT RULES", text: "Notes From The Mind · sources in the description", at: 0}
+
+  - id: s15
+    template: lab_diagram
+    lines:
+      - "And if some of these fooled you, | that's not a flaw. | They fooled teachers, | managers, | and plenty of scientists too."
+      - "Myths survive because they're simple, | useful, | and nice to believe."
+      - "The truth is usually a bit messier. | But it's a lot more interesting."
+    params:
+      center: {icon: brain, title: "Not a flaw", at: 0}
+      labels:
+        - {text: "it fooled the experts too", at: "scientists"}
+        - {text: "simple, useful, nice", at: "simple", color: accent2}
+        - {text: "messier, more interesting", at: "messier"}
+
+  - id: s16
+    template: lab_docket
+    lines:
+      - "Now, | I'm curious."
+      - "Which of these twelve | did you believe the longest? | Tell me in the comments."
+      - "And if you'd like more myths put on trial, | subscribe. | The court is always in session."
+    params:
+      chrome: {step: 2}
+      from_prev: true
+      keep: [docket]
+    hold: 1.5

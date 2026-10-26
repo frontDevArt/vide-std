@@ -1,0 +1,225 @@
+# Глава 9: дело 09 «Money stops buying happiness after $75,000» — MYTH. outline.md: ~800 слов.
+# Сверено 2026-10-26: Kahneman & Deaton 2010 (PNAS 107(38), 16489–16493) — 450 000+ ответов Gallup-Healthways
+# Well-Being Index (ежедневный телефонный опрос 1 000 жителей США, 2008–2009); оценка жизни растёт с log дохода без
+# потолка, эмоциональное благополучие (вопросы о вчерашнем дне) растёт, но дальше ~$75 000 в год не растёт.
+# Killingsworth 2021 (PNAS 118(4), e2016976118) — 1 725 994 замера из приложения у 33 391 работающих взрослых США,
+# «как вы себя чувствуете сейчас»; благополучие растёт линейно с log дохода, наклон выше $80 000 такой же, плато нет.
+# Killingsworth, Kahneman & Mellers 2023 (PNAS 120(10), e2208661120) — состязательное сотрудничество, Mellers — арбитр:
+# плато только у наименее счастливых ~20 % (рост до ~$100 000, дальше нет), у остальных рост, у самых счастливых —
+# ускоряется. Данные корреляционные (опросы, не эксперимент) — это говорим в s09.
+chapter: ch09
+title: "Case 09 · The $75,000 ceiling"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "There's a magic number, | and above it, | money can't make you any happier. | Or so the story goes."
+    min_duration: 3
+    params: {number: 9, total: 12, title: "The $75,000 ceiling", subtitle: "case 09 · money and happiness"}
+
+  - id: s02
+    cite: ch09/s03
+    template: lab_exhibit
+    image:
+      - {prompt: "a neat stack of paper banknotes tied with a lavender paper band, with a small blank paper price tag hanging on a string, cyan and lavender", role: subject}
+    lines:
+      - "You've probably heard this one over dinner."
+      - "Earn about seventy-five thousand dollars a year, | and you've hit the ceiling."
+      - "Past that line, | more money doesn't make your days any happier."
+      - "It's a comforting idea. | The rich aren't really better off, | and the rest of us aren't missing much."
+      - "It comes up every time someone talks about salaries, | raises, | or chasing a bigger paycheck."
+      - "Some companies even used it to decide what a fair salary should be."
+    params:
+      chrome: {number: "case 09", step: 0}
+      file: assets/images/c4aaa55d009c7a4c.cut.png
+      case: 9
+      labels:
+        - {text: "$75,000 = the ceiling", at: "ceiling"}
+        - {text: "more money, same mood", at: "doesn't make", color: accent2}
+        - {text: "the rich aren't better off", at: "rich"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "So where did that number come from?"
+      - "From a real study, | by two Nobel Prize winners."
+      - "They looked at a huge daily phone survey of Americans, | more than four hundred and fifty thousand answers."
+      - "And they asked two very different kinds of questions."
+      - "One was the big picture. | How is your life going, overall?"
+      - "The other was about yesterday. | Did you feel a lot of enjoyment? | A lot of worry? | A lot of stress?"
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "450,000+ answers", at: "four hundred"}
+        - {text: "life overall", at: "big picture", color: accent2}
+        - {text: "yesterday's feelings", at: "yesterday"}
+      source: {label: "THE STUDY", text: "Kahneman & Deaton, 2010 · PNAS · Gallup daily survey", at: 0}
+
+  - id: s04
+    template: lab_versus
+    lines:
+      - "The two kinds of answers told different stories."
+      - "Life overall kept improving with income, | all the way up."
+      - "But the everyday feelings | rose with income, | and then went flat, | at around seventy-five thousand dollars a year."
+      - "So the paper never said money stops mattering. | It said your life rating keeps climbing, | while your daily mood seems to level off."
+      - "Somewhere along the way, | half of that sentence got lost."
+    params:
+      left:
+        title: "LIFE OVERALL"
+        items:
+          - {text: "rises with income", at: "kept improving"}
+          - {text: "no ceiling", at: "all the way"}
+      right:
+        title: "DAILY MOOD"
+        items:
+          - {text: "rises with income", at: "rose with"}
+          - {text: "flat after ~$75k", at: "went flat"}
+      neuron: {mood: surprised, at: "half of that"}
+      source: {label: "THE STUDY", text: "Kahneman & Deaton, 2010 · PNAS", at: 0}
+
+  - id: s05
+    template: lab_full_number
+    lines:
+      - "But one number | took on a life of its own."
+      - "Seventy-five thousand dollars."
+      - "It turned into headlines, | and then into a rule of thumb | for how much is enough."
+      - "Sometimes it was quoted as the exact price of happiness."
+    params:
+      value: 75
+      from: 0
+      prefix: "$"
+      suffix: "K"
+      caption: "a year: the famous 'ceiling'"
+      sub: "for daily mood, in one study"
+      color: accent
+      at: "Seventy-five"
+      source: {label: "THE STUDY", text: "Kahneman & Deaton, 2010 · household income, US", at: 0}
+
+  - id: s06
+    template: lab_crowd
+    lines:
+      - "Then another researcher measured happiness a different way."
+      - "Instead of asking about yesterday, | an app on people's phones | pinged them at random moments."
+      - "How do you feel, | right now?"
+      - "It's the difference between asking someone how their week went, | and catching them in the middle of it."
+      - "He gathered these little check-ins | from over thirty-three thousand working adults."
+      - "And this time, | there was no ceiling. | Happiness kept rising with income, | well past seventy-five thousand."
+    params:
+      chrome: {step: 1}
+      hero: {value: 33, from: 0, caption: "thousand working adults", sub: "1.7 million check-ins", color: accent, at: "thirty-three"}
+      study: {authors: "Killingsworth", where: "PNAS · 2021 · n = 33,391", evidence: 3, at: "another researcher"}
+      crowd: {n: 33391, cols: 40, at: "working adults", highlight: [{index: 210, label: "no ceiling", color: accent, at: "no ceiling"}]}
+      range: null
+      source: {label: "STUDY", text: "Killingsworth, 2021 · PNAS", at: 0}
+
+  - id: s07
+    template: lab_diagram
+    lines:
+      - "But there's a catch in how it rises."
+      - "Picture a raise of ten thousand dollars."
+      - "If you earn twenty thousand a year, | that changes everything. | Rent, | food, | sleeping at night."
+      - "If you earn two hundred thousand, | you might barely notice it."
+      - "So each extra dollar does a little less. | To get the same lift again, | you roughly have to double your income."
+    params:
+      center: {icon: chart, title: "Every doubling counts", at: 0}
+      labels:
+        - {text: "+$10k on $20k: huge", at: "changes everything"}
+        - {text: "+$10k on $200k: barely", at: "barely", color: accent2}
+        - {text: "double it → same lift", at: "double"}
+      source: {label: "STUDY", text: "Killingsworth, 2021 · well-being rises with log income", at: 0}
+
+  - id: s08
+    template: lab_hero_stack
+    lines:
+      - "So, | two studies, | two answers. | What happens next?"
+      - "Something rare. | The rivals teamed up, | brought in a referee, | and went through the data together."
+      - "That kind of teamwork even has a name. | An adversarial collaboration. | It's how a scientific fight is supposed to end."
+      - "And both turned out to be partly right."
+      - "For most people, | happiness kept climbing with income. | For the happiest people, | it climbed even faster."
+      - "But for the unhappiest fifth, | it rose, | and then stalled, | at around a hundred thousand dollars."
+      - "When life hurts for other reasons, | like loss, | or loneliness, | more money only helps so much."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "RIVALS TEAM UP", text: "“Both partly right.”", at: "teamed up"}
+      cards:
+        - {icon: chart, title: "Most people", sub: "keeps rising", chip: "↑", chip_color: accent, at: "most people"}
+        - {icon: star, title: "The happiest", sub: "rises even faster", chip: "↑↑", chip_color: accent, at: "happiest people"}
+        - {icon: heart, title: "The unhappiest fifth", sub: "stalls near $100k", chip: "flat", chip_color: accent2, at: "unhappiest"}
+      source: {label: "JOINT STUDY", text: "Killingsworth, Kahneman & Mellers, 2023 · PNAS", at: 0}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "One honest warning, though."
+      - "These studies compare people who earn different amounts. | Nobody handed anyone a raise | and watched what happened."
+      - "People with more money may also have safer jobs, | better health, | or simply more free time."
+      - "And it can run the other way, too. | People who feel good may just do better at work."
+      - "So it's a strong link, | not a proven recipe."
+    params:
+      center: {icon: eye, title: "A link, not a recipe", at: 0}
+      labels:
+        - {text: "surveys, not experiments", at: "compare"}
+        - {text: "safer jobs, more time", at: "safer jobs", color: accent2}
+        - {text: "strong link", at: "strong link"}
+      source: {label: "JOINT STUDY", text: "Killingsworth, Kahneman & Mellers, 2023 · survey data", at: 0}
+
+  - id: s10
+    cite: ch09/s03
+    template: lab_exhibit
+    lines:
+      - "So, | does money stop buying happiness | after seventy-five thousand dollars a year?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/c4aaa55d009c7a4c.cut.png
+      case: 9
+      labels:
+        - {text: "a ceiling at $75k?", at: "stop buying", color: accent}
+      verdict: {verdict: MYTH, sub: "no ceiling *for most people*", at: "myth"}
+
+  - id: s11
+    template: lab_exhibit
+    image:
+      - {prompt: "a round glass jar filled with coins, with a small lavender heart floating just above the open lid, cyan and lavender", role: subject}
+    lines:
+      - "So why does this one stick around?"
+      - "Because it's one clean number. | Easy to remember, | easy to repeat."
+      - "Because it came from serious scientists, | so it sounds settled."
+      - "Because it travels without its other half, | the part about life overall."
+      - "And because it's comforting. | If money stops working at some point, | then whatever you don't have | doesn't really matter."
+    params:
+      file: assets/images/95a460edee42ffe6.cut.png
+      case: 9
+      labels:
+        - {text: "one clean number", at: "clean number"}
+        - {text: "sounds settled", at: "settled", color: accent2}
+        - {text: "comforting", at: "comforting"}
+
+  - id: s12
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "Money seems to help the most | when it fixes real problems, | like stress about bills, | or having no safety net."
+      - "Past that, | it still helps, | but each extra dollar does a bit less."
+      - "And on a bad day, | the things that matter most | are often free. | Sleep, | the people you're close to, | and time."
+      - "So if you're choosing between more money and more time, | ask which one you're actually short of."
+    params:
+      stations:
+        - {icon: lock, title: "Fix real problems", sub: "bills, a safety net", at: "real problems"}
+        - {icon: chart, title: "Then it still helps", sub: "a little less each time", at: "still helps"}
+        - {icon: heart, title: "The free stuff", sub: "sleep, people, time", at: "free"}
+      source: {label: "STUDIES", text: "Kahneman & Deaton, 2010 · Killingsworth, Kahneman & Mellers, 2023", at: 0}
+
+  - id: s13
+    cite: ch09/s03
+    template: lab_docket
+    lines:
+      - "Case nine, | closed."
+      - "Next up, | your attention span, | and a goldfish | that never actually took the test."
+    params:
+      focus: {case: 9, title: "The $75,000 ceiling", at: 0}
+      close: {case: 9, verdict: MYTH, at: "closed"}
+      keep: [docket]
+    hold: 1.0

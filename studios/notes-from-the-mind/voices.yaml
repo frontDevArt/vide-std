@@ -4,8 +4,8 @@ measured:
 - language: en
   backend: elevenlabs
   voice: f81e9560557a
-  wpm: 182.3
+  wpm: 189.6
   rate: 100.0
-  words: 1148
-  project: fake-discounts
-  date: '2026-10-24'
+  words: 8758
+  project: twelve-myths
+  date: '2026-10-26'

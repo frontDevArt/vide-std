@@ -1,0 +1,194 @@
+# Глава 4: дело 04 «You learn best in your learning style» — MYTH + подписка (≈ 25 %). outline.md: ~800 слов.
+# Сверено 2026-10-26: Pashler, McDaniel, Rohrer & Bjork 2008 (PSPI 9(3), 105–119) — «meshing hypothesis»; честная
+# проверка требует перекрёстного взаимодействия (визуалы лучше с картинками, вербалы — со словами); таких опытов
+# мало, и те, что есть, поддержки не дали. Knoll, Otani, Skeel & Van Horn 2017 (Br J Psychol 108(3), 544–563) —
+# стиль (VVQ) предсказывал, насколько хорошо человек ДУМАЕТ, что запомнил (JOL), но не запоминание; 52 участницы.
+# Newton & Salvi 2020 (Frontiers in Education 5) — 37 исследований, 15 405 педагогов из 18 стран, вера в подгонку
+# под стиль ≈ 89 %, не снижается; объяснение доказательств снижает веру в среднем на 37 %.
+chapter: ch04
+title: "Case 04 · Learning styles"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "You learn best in your own learning style."
+    min_duration: 3
+    params: {number: 4, total: 12, title: "Learning styles", subtitle: "case 04 · visual, auditory, hands-on"}
+
+  - id: s02
+    template: lab_exhibit
+    image:
+      - {prompt: "a pair of over-ear headphones resting on top of a closed hardcover book, cyan and lavender", role: subject}
+    lines:
+      - "You've probably taken the quiz."
+      - "A dozen quick questions, | and then the answer. | You're a visual learner. | Or an auditory one. | Or you learn by doing."
+      - "Visual learners need pictures and charts. | Auditory learners need to hear it. | Hands-on learners need to build something."
+      - "And the promise is simple. | Teach people in their style, | and they'll learn faster | and remember more."
+      - "It's on posters in classrooms, | in teacher training, | in study tips all over the internet."
+    params:
+      chrome: {number: "case 04", step: 0}
+      file: assets/images/92735555f17d9d79.cut.png
+      case: 4
+      labels:
+        - {text: "visual: show me", at: "pictures"}
+        - {text: "auditory: tell me", at: "hear", color: accent2}
+        - {text: "hands-on: let me try", at: "build"}
+
+  - id: s03
+    template: lab_full_number
+    lines:
+      - "And it's not a fringe idea."
+      - "When a review pooled surveys of over fifteen thousand teachers from around the world, | about nine in ten said | lessons should be matched to a student's learning style."
+      - "Among people still training to become teachers, | the number was even higher."
+    params:
+      value: 89
+      suffix: "%"
+      caption: "of teachers believe it"
+      sub: "matching lessons to learning style"
+      color: accent2
+      at: "nine in ten"
+      source: {label: "REVIEW · 37 SURVEYS", text: "Newton & Salvi, 2020 · Frontiers in Education", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "And to be fair, | part of it is true."
+      - "People really do have preferences. | Some of us would rather watch a video, | others would rather read."
+      - "The question is whether matching that preference | actually makes you learn more."
+      - "Because liking something | and learning from it | are not the same thing."
+    params:
+      chrome: {step: 1}
+      center: {icon: brain, title: "Preference ≠ result", at: 0}
+      labels:
+        - {text: "preferences are real", at: "preferences"}
+        - {text: "watch or read", at: "watch", color: accent2}
+        - {text: "but do you learn more?", at: "actually"}
+
+  - id: s05
+    template: lab_flow
+    lines:
+      - "A group of learning researchers looked at exactly that, | and they first spelled out what a fair test would look like."
+      - "Sort people by their style."
+      - "Teach half of each group with pictures, | and half with words."
+      - "Then test everyone the same way."
+      - "If the theory holds, | the visual learners should do best with pictures, | and the verbal learners should do best with words. | Each group wins in its own lane."
+      - "That crossing pattern is the whole point. | Without it, | you're only seeing that some people learn faster than others."
+    params:
+      stations:
+        - {icon: people, title: "Sort by style", sub: "visual · verbal", at: "Sort"}
+        - {icon: book, title: "Teach both ways", sub: "pictures · words", at: "half"}
+        - {icon: check, title: "Same test", sub: "who wins where?", at: "test everyone"}
+      source: {label: "REVIEW", text: "Pashler, McDaniel, Rohrer & Bjork, 2008 · PSPI", at: 0}
+
+  - id: s06
+    template: lab_versus
+    lines:
+      - "When they went looking for studies built like that, | they found surprisingly few."
+      - "And the ones that did test it properly | didn't find the pattern."
+      - "Visual learners didn't learn more from pictures. | Verbal learners didn't learn more from words."
+      - "Their conclusion was blunt. | There was no good evidence | for building lessons around learning styles."
+    params:
+      left:
+        title: "THEY SAY"
+        items:
+          - {text: "Visual: learn from pictures", at: 0}
+          - {text: "Verbal: learn from words", at: 0}
+          - {text: "Match the style", at: 0}
+      right:
+        title: "STUDIES FOUND"
+        items:
+          - {text: "Few proper tests", at: "few"}
+          - {text: "No pattern", at: "pattern"}
+          - {text: "No good evidence", at: "evidence"}
+      source: {label: "REVIEW", text: "Pashler, McDaniel, Rohrer & Bjork, 2008 · PSPI", at: 0}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "Later experiments kept running into the same wall, | and one of them found something revealing."
+      - "People who called themselves visual learners | felt more confident after studying pictures. | Verbal learners felt more confident after studying words."
+      - "But when they were actually tested, | their style didn't predict what they remembered."
+      - "The style changed how learning felt, | not how much they learned."
+      - "In other words, | the style was real as a feeling. | It just wasn't a shortcut."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {text: "“Pictures work for me”", at: "visual learners"}
+      cards:
+        - {icon: star, title: "Felt confident", sub: "in their own style", chip: "yes", chip_color: accent, at: "confident"}
+        - {icon: brain, title: "Remembered more", sub: "in their own style", chip: "no", chip_color: accent2, at: "remembered"}
+        - {icon: eye, title: "Feeling ≠ learning", sub: "the style changed the feeling", chip: null, at: "felt"}
+      source: {label: "EXPERIMENT", text: "Knoll, Otani, Skeel & Van Horn, 2017 · Br J Psychol", at: 0}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Here's a way to picture it."
+      - "Imagine trying to learn the shape of a country | by listening to someone describe it. | Left side bumpy, | top a little flat."
+      - "Nobody does well with that. | Not even the most auditory learner on earth. | You just need the map."
+      - "And learning to pronounce a word from a diagram? | Same problem the other way. | You need to hear it."
+      - "What matters most is the subject, | not the student. | Maps want pictures. | Music wants sound. | Cooking wants your hands."
+    params:
+      center: {icon: target, title: "Match the subject", at: 0}
+      labels:
+        - {text: "a country: show the map", at: "map"}
+        - {text: "a word: say it out loud", at: "pronounce", color: accent2}
+        - {text: "cooking: use your hands", at: "Cooking"}
+
+  - id: s09
+    template: lab_exhibit
+    lines:
+      - "So, | do you learn best in your learning style?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/92735555f17d9d79.cut.png
+      case: 4
+      labels:
+        - {text: "matched to your style?", at: "style", color: accent}
+      verdict: {verdict: MYTH, sub: "a preference *isn't a superpower*", at: "myth"}
+
+  - id: s10
+    template: lab_exhibit
+    image:
+      - {prompt: "three small colored sorting boxes side by side, one cyan, one lavender, one off-white, each with a lid slightly open", role: subject}
+    lines:
+      - "So why is it everywhere?"
+      - "Because it feels true. | Studying your favorite way really does feel smoother, | and that smooth feeling is easy to mistake for learning."
+      - "It's also kind. | Telling a struggling kid, | you just learn differently, | sounds a lot better than, | this is hard for everyone."
+      - "It even feels respectful, | like someone finally sees you as an individual."
+      - "And it sells. | Quizzes, | workshops, | whole programs. | It's easy to sell a sorting hat."
+      - "Once you've been told you're a visual learner, | you start noticing every time pictures help, | and forgetting the times they didn't."
+    params:
+      file: assets/images/f1aa7f0a971a486d.cut.png
+      case: 4
+      labels:
+        - {text: "smooth ≠ learned", at: "smooth"}
+        - {text: "a kind label", at: "kind", color: accent2}
+        - {text: "easy to sell", at: "sells"}
+
+  - id: s11
+    template: lab_flow
+    lines:
+      - "So what actually helps?"
+      - "Mix it up. | Words and pictures together | usually beat either one alone, | for pretty much everyone."
+      - "Test yourself, | instead of just rereading. | Close the book and try to explain it."
+      - "And spread your studying out over days, | rather than cramming it all into one night."
+      - "None of it needs a quiz about your type. | It works for visual learners, | auditory learners, | and everyone in between."
+    params:
+      stations:
+        - {icon: eye, title: "Words + pictures", sub: "together, for everyone", at: "together"}
+        - {icon: question, title: "Test yourself", sub: "don't just reread", at: "Test"}
+        - {icon: clock, title: "Spread it out", sub: "not one long night", at: "spread"}
+      source: {label: "REVIEW", text: "Dunlosky et al., 2013 · PSPI · study techniques", at: 0}
+
+  - id: s12
+    template: lab_docket
+    lines:
+      - "Case four, | closed."
+      - "That's four cases down, | and eight to go. | If you want to see the rest of the docket, | and the cases after this one, | it's worth subscribing."
+      - "Because next up | is a number you've almost certainly heard: | that ninety-three percent of communication | has nothing to do with words."
+    params:
+      focus: {case: 4, title: "Learning styles", at: 0}
+      close: {case: 4, verdict: MYTH, at: "closed"}
+      keep: [docket]

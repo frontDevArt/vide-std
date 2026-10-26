@@ -1,0 +1,201 @@
+# Глава 5: дело 05 «93% of communication is nonverbal» — MYTH. outline.md: ~800 слов.
+# Сверено 2026-10-26: Mehrabian & Wiener 1967 (JPSP 6(1), 109–114, «Decoding of inconsistent communications») —
+# отдельные слова («dear», «terrible», «maybe»…) произнесены тоном симпатии / нейтрально / антипатии, слушатели
+# оценивали чувство говорящего; при конфликте слова и тона побеждал тон. Mehrabian & Ferris 1967 (J Consult Psychol
+# 31(3), 248–252, «Inference of attitudes from nonverbal communication in two channels») — фото лица + записанное
+# слово «maybe»; лицо весило больше голоса примерно 3:2. Отсюда 7 / 38 / 55 — экстраполяция двух опытов про
+# чувства и симпатию при несовпадении каналов. Сам Мехрабиан (Silent Messages, 1971; kaaj.com) предупреждает:
+# если человек не говорит о чувствах и отношении, эти равенства неприменимы.
+chapter: ch05
+title: "Case 05 · The 93% rule"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Ninety-three percent of communication is nonverbal."
+    min_duration: 3
+    params: {number: 5, total: 12, title: "The 93% rule", subtitle: "case 05 · words, tone, face"}
+
+  - id: s02
+    cite: ch05/s06
+    template: lab_exhibit
+    image:
+      - {prompt: "a vintage desk microphone standing next to a small round hand mirror, cyan and lavender", role: subject}
+    lines:
+      - "You've heard this one in a meeting, | or a sales training, | or a talk about body language."
+      - "Only a tiny slice of what you communicate | comes from your words. | The rest is your tone of voice | and your face."
+      - "And it usually comes with a neat little formula. | Seven percent words. | Thirty-eight percent tone. | Fifty-five percent body language."
+      - "The lesson sounds practical. | Stop worrying so much about what you say. | Worry about how you look saying it."
+    params:
+      chrome: {number: "case 05", step: 0}
+      file: assets/images/162eba19526c0f14.cut.png
+      case: 5
+      labels:
+        - {text: "words: 7%", at: "Seven"}
+        - {text: "tone: 38%", at: "Thirty-eight", color: accent2}
+        - {text: "body: 55%", at: "Fifty-five"}
+
+  - id: s03
+    template: lab_full_number
+    lines:
+      - "Just stop and test that against your own life for a second."
+      - "If words carried only seven percent, | you could follow most of a podcast in a language you don't speak."
+      - "You could watch a lecture on mute | and pass the exam."
+      - "And every phone call, | with no face to look at, | would leave you missing more than half the message."
+    params:
+      value: 7
+      suffix: "%"
+      caption: "words, says the rule"
+      sub: "the rest: tone and face"
+      color: accent2
+      at: "seven percent"
+      source: {label: "THE CLAIM", text: "popular summary of Mehrabian, 1971 · Silent Messages", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "So where did the numbers come from?"
+      - "They're real, | in a way. | They trace back to two small experiments | by one psychologist, | back in the sixties."
+      - "And they were small. | A few dozen university students, | listening and looking in a lab."
+      - "But neither experiment was about communication in general. | Both were about something much narrower: | how we read someone's feelings | when their words and their voice don't match."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "two small experiments", at: "two small"}
+        - {text: "not talk in general", at: "general", color: accent2}
+        - {text: "feelings, mixed signals", at: "feelings"}
+
+  - id: s05
+    template: lab_flow
+    lines:
+      - "In the first one, | people listened to recordings of single words."
+      - "Not sentences. | One word at a time, | like dear, | or terrible."
+      - "Each word was spoken in a warm tone, | a neutral tone, | or a cold one. | And sometimes the tone fought the word. | A sweet word, | said coldly."
+      - "Listeners had to guess how the speaker felt. | And when the word and the tone clashed, | the tone won."
+      - "It's a clever test of one specific question: | when two signals conflict, | which one do we trust?"
+    params:
+      stations:
+        - {icon: book, title: "One word", sub: "“dear” · “terrible”", at: "single words"}
+        - {icon: phone, title: "Clashing tone", sub: "warm · neutral · cold", at: "fought"}
+        - {icon: check, title: "Guess the feeling", sub: "the tone won", at: "tone won"}
+      source: {label: "EXPERIMENT", text: "Mehrabian & Wiener, 1967 · JPSP", at: 0}
+
+  - id: s06
+    template: lab_hero_stack
+    lines:
+      - "The second experiment added faces."
+      - "People saw a photo of a face | and heard one recorded word, | maybe, | said in a liking, | neutral, | or disliking tone."
+      - "Again, | the question was simple: | how does this person feel about you?"
+      - "The face counted a bit more than the voice."
+      - "Put the two results together, | do some math, | and you get seven, | thirty-eight, | fifty-five."
+      - "But that math was never about a conversation. | It was about one word, | and one feeling."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "ONE WORD · THREE TONES", text: "“Maybe.”", at: "maybe"}
+      cards:
+        - {icon: eye, title: "Face", sub: "counted the most", chip: "55%", chip_color: accent, at: "face counted"}
+        - {icon: phone, title: "Tone of voice", sub: "close behind", chip: "38%", chip_color: accent2, at: "voice"}
+        - {icon: book, title: "The word", sub: "one word, in a lab", chip: "7%", chip_color: accent, at: "seven"}
+      source: {label: "EXPERIMENT", text: "Mehrabian & Ferris, 1967 · J Consult Psychol", at: 0}
+
+  - id: s07
+    template: lab_versus
+    lines:
+      - "Now look at what the rule claims, | next to what was actually tested."
+      - "The rule says, | all communication. | The studies used single words, | not conversations."
+      - "The rule says, | anything you want to say. | The studies only asked about feelings, | like or dislike."
+      - "And the rule says, | always. | The studies set up a clash on purpose, | words saying one thing | and the voice saying another."
+      - "Nobody in those studies ever had a real conversation."
+    params:
+      left:
+        title: "THE RULE SAYS"
+        items:
+          - {text: "All communication", at: "all communication"}
+          - {text: "Any message", at: "anything"}
+          - {text: "Always", at: "always"}
+      right:
+        title: "THE STUDIES TESTED"
+        items:
+          - {text: "Single words", at: "single words"}
+          - {text: "Only feelings", at: "only asked"}
+          - {text: "Mixed signals, on purpose", at: "clash"}
+      source: {label: "EXPERIMENTS", text: "Mehrabian & Wiener, 1967 · Mehrabian & Ferris, 1967", at: 0}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Here's what that means in real life."
+      - "Imagine a friend says, | I'm fine, | through clenched teeth."
+      - "You don't believe the words. | You believe the teeth. | That's the situation the studies captured, | and there, | the rule makes sense."
+      - "But now imagine someone giving you directions to the train station. | Left at the bakery, | second right."
+      - "Their smile doesn't get you there. | The words do. | Almost all of it."
+      - "Or think about a good novel. | No tone, | no face, | just words on a page. | And it can still make you cry."
+    params:
+      center: {icon: target, title: "Depends on the message", at: 0}
+      labels:
+        - {text: "“I'm fine” + clenched teeth", at: "clenched"}
+        - {text: "tone wins on feelings", at: "believe the teeth", color: accent2}
+        - {text: "directions: words win", at: "words do"}
+
+  - id: s09
+    cite: ch05/s06
+    template: lab_exhibit
+    lines:
+      - "So, | is ninety-three percent of communication nonverbal?"
+      - {text: "Verdict: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/162eba19526c0f14.cut.png
+      case: 5
+      labels:
+        - {text: "93% of everything?", at: "nonverbal", color: accent}
+      verdict: {verdict: MYTH, sub: "tone matters *for feelings*", at: "myth"}
+
+  - id: s10
+    template: lab_exhibit
+    image:
+      - {prompt: "a small chalk-drawn pie chart on a dark slate tablet with three uneven slices, cyan and lavender chalk", role: subject}
+    lines:
+      - "And here's the twist. | The psychologist behind the studies has spent years | saying exactly that."
+      - "He's pointed out that unless someone is talking about their feelings, | his equations simply don't apply."
+      - "So why won't the rule die?"
+      - "Because it's precise. | Ninety-three percent sounds measured. | Most of it is more like a guess."
+      - "Because it holds a grain of truth. | Tone really does matter, | and we've all felt a cold, | thanks, | land wrong."
+      - "It's also flattering. | It promises you can read people like a detective, | from a glance and a pause."
+      - "And because it sells. | It's a great opening slide | for anyone teaching body language."
+    params:
+      file: assets/images/cbd276114a681399.cut.png
+      case: 5
+      labels:
+        - {text: "the author disagrees", at: "exactly that"}
+        - {text: "sounds precise", at: "precise", color: accent2}
+        - {text: "a grain of truth", at: "grain"}
+
+  - id: s11
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "Words carry the content. | If you want someone to understand you, | choose them carefully."
+      - "Tone and face carry the feeling, | especially when the feeling is unclear."
+      - "And when someone's words and their tone don't match, | that's your cue to ask, | instead of picking one and guessing."
+      - "And in writing, | where tone disappears, | say the feeling out loud. | A short, | happy to help, | does the job a smile would."
+    params:
+      stations:
+        - {icon: book, title: "Words: content", sub: "say it clearly", at: "Words carry"}
+        - {icon: eye, title: "Tone + face: feeling", sub: "when it's unclear", at: "Tone and face"}
+        - {icon: question, title: "Mismatch? Ask.", sub: "don't guess", at: "ask"}
+      source: {label: "AUTHOR'S NOTE", text: "Mehrabian, 1971 · Silent Messages", at: 0}
+
+  - id: s12
+    cite: ch05/s03
+    template: lab_docket
+    lines:
+      - "Case five, | closed."
+      - "Next up, | a two-minute trick that's supposed to change your hormones: | standing like a superhero."
+    params:
+      focus: {case: 5, title: "The 93% rule", at: 0}
+      close: {case: 5, verdict: MYTH, at: "closed"}
+      keep: [docket]
+    hold: 1.0

@@ -119,10 +119,55 @@ def _ref_key(ref: str) -> tuple[str, str | None]:
     return _who(first), y.group(1) if y else None
 
 
+def _bare(text: str) -> str:
+    """Фамилия цитаты без подводки: «vs Carney, 2010», «popular summary of Mehrabian, 1971», «drivers: Svenson,
+    1981» → carney / mehrabian / svenson."""
+    m = CITE.match(text)
+    who = re.sub(r"^.*:\s*", "", m["who"] if m else text)
+    return _who(re.sub(r"^(?:[a-z][\w.-]*\s+)+", "", who))
+
+
+def _find(keys: list, text: str, who: str, year: str | None) -> int | None:
+    """Номер полной ссылки для цитаты: фамилия и год; иначе фамилия без подводки; иначе ссылка организации,
+    у которой первое слово — начало имени в цитате («Microsoft Canada, 2015» ↔ «Microsoft Canada, … (2015)»)."""
+    fits = lambda y: y is None or y == year  # noqa: E731
+    for test in (lambda w: w == who, lambda w: w == _bare(text),
+                 lambda w: len(w) >= 3 and _bare(text).startswith(w)):
+        hit = next((i for i, (w, y) in enumerate(keys) if test(w) and fits(y)), None)
+        if hit is not None:
+            return hit
+    return None
+
+
+def short_ref(ref: str) -> str:
+    """Короткая ссылка для описания с пределом: «Автор (год) ссылка», «A & B (год)», «A et al. (год)»;
+    без ссылки — с началом названия, чтобы источник можно было найти."""
+    m = re.match(r"^(?P<au>.+?)\s*\((?P<y>(?:1[89]|20)\d\d)[a-z]?\)\.?\s*(?P<rest>.*)$", ref.strip())
+    if not m:
+        return ref
+    au, rest = m["au"].rstrip(" ,."), m["rest"]
+    first = au.split(",")[0].strip()
+    if "et al" in au:
+        who = f"{first} et al."
+    elif "&" in au:
+        before, after = au.split("&", 1)
+        who = (f"{first} & {after.split(',')[0].strip()}" if before.rstrip(" ,").count(",") <= 1
+               else f"{first} et al.")
+    else:
+        who = first
+    url = re.search(r"https?://\S+", rest)
+    if url:
+        return f"{who} ({m['y']}) {url.group(0).rstrip('.,)')}"
+    title = re.split(r"(?<=[.?!])\s", rest, maxsplit=1)[0].rstrip(".")
+    title = title if len(title) <= 80 else title[:79].rstrip() + "…"
+    return f"{who} ({m['y']}). {title}" if title else f"{who} ({m['y']})"
+
+
 def sources(proj: Project) -> tuple[list[str], list[str]]:
     """(строки источников для описания, цитаты без полной ссылки). Полная ссылка подходит цитате, если совпала
-    фамилия первого автора и год (у ссылки без года — только фамилия). Проект (не нарезка) получает и ссылки,
-    которых нет в сценах: их автор положил в package.sources сам."""
+    фамилия первого автора и год (у ссылки без года — только фамилия; подводка цитаты «vs …», «summary of …»
+    не мешает, см. _find). Проект (не нарезка) получает и ссылки, которых нет в сценах: их автор положил
+    в package.sources сам."""
     refs = list(settings(proj).get("sources") or [])
     if proj.src:  # нарезка: ссылки исходника — запасной пул, в описание только процитированные
         from .cutrefs import read_yaml
@@ -131,7 +176,7 @@ def sources(proj: Project) -> tuple[list[str], list[str]]:
     keys = [_ref_key(r) for r in refs]
     used, lines, missing = set(), [], []
     for text, who, year in citations(proj):
-        hit = next((i for i, (w, y) in enumerate(keys) if w == who and (y is None or y == year)), None)
+        hit = _find(keys, text, who, year)
         if hit is None:
             missing.append(text)
             lines.append(text)
@@ -360,14 +405,20 @@ def build(proj: Project, log=print) -> tuple[list[str], list[str]]:
         text += "\n\nChapters:\n" + "\n".join(f"{tc(t)} {n}" for t, n in chs) if proj.cfg["language"] == "en" \
             else "\n\nГлавы:\n" + "\n".join(f"{tc(t)} {n}" for t, n in chs)
     head_src = "Sources:" if proj.cfg["language"] == "en" else "Источники:"
+    tail = ("\n\n" + " ".join(tags)) if tags else ""
     if srcs and p.title_max:
-        text += f"\n\n{head_src}\n" + "\n".join(f"- {s}" for s in srcs)
+        fmt = pk.get("sources_format") or "auto"
+        full = f"\n\n{head_src}\n" + "\n".join(f"- {s}" for s in srcs)
+        if fmt == "short" or (fmt == "auto" and p.text_max and len((text + full + tail).strip()) > p.text_max):
+            full = f"\n\n{head_src}\n" + "\n".join(f"- {short_ref(s)}" for s in srcs)
+            if fmt == "auto":
+                warns.append(f"полные ссылки не влезают в {p.text_max} символов {p.id} — в описании короткие "
+                             "(«Автор (год) ссылка»); полный список — package.sources")
+        text += full
     elif srcs:  # подпись (TikTok, Instagram — 2200 символов): короткие цитаты сцен одной строкой
         short = [c[0] for c in citations(proj)] or srcs
         text += f"\n\n{head_src} " + "; ".join(short)
-    if tags:
-        text += "\n\n" + " ".join(tags)
-    text = text.strip()
+    text = (text + tail).strip()
     if p.title_max and len(title) > p.title_max:
         errs.append(f"название {len(title)} символов — у {p.id} предел {p.title_max}")
     if p.text_max and len(text) > p.text_max:

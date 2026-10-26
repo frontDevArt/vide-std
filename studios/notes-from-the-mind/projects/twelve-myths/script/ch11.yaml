@@ -1,0 +1,228 @@
+# Глава 11: дело 11 «Smiling makes you happier» — HALF-TRUE. outline.md: ~800 слов.
+# Сверено 2026-10-26: Strack, Martin & Stepper 1988 (JPSP 54(5), 768–777) — ручка в зубах (улыбка) / в губах
+# (без улыбки), оценка смешности комиксов: в зубах — смешнее (разница 0,82 по 10-балльной шкале).
+# Wagenmakers et al. 2016 (Perspect Psychol Sci 11(6), 917–928) — Registered Replication Report, 17 лабораторий,
+# 1 894 человека, разница 0,03 (95% ДИ −0,11…0,16) — эффекта нет. Noah, Schul & Mayo 2018 (JPSP 114(5), 657–664) —
+# в повторе людей снимали на камеру; без камеры эффект появился, с камерой — пропал (одно исследование).
+# Coles, Larsen & Lench 2019 (Psychol Bull 145(6), 610–651) — мета-анализ 138 исследований, 286 эффектов, > 11 000
+# человек: эффект есть, но маленький и непостоянный. Coles et al. 2022, Many Smiles Collaboration (Nat Hum Behav 6,
+# 1731–1742) — 3 878 человек, 19 стран: копировать улыбку с фото и растягивать уголки рта — чуть счастливее;
+# ручка во рту — неубедительно.
+chapter: ch11
+title: "Case 11 · Smile, and you'll feel happy"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Put on a smile, | and you'll start to feel happy."
+    min_duration: 3
+    params: {number: 11, total: 12, title: "Smile your way happy", subtitle: "case 11 · a face that leads the mood"}
+
+  - id: s02
+    cite: ch11/s04
+    template: lab_exhibit
+    image:
+      - {prompt: "a single cyan wooden pencil lying horizontally with tiny tooth marks in the middle, lavender eraser, cyan and lavender", role: subject}
+    lines:
+      - "The claim goes like this."
+      - "Your face doesn't just show your mood. | It can steer it."
+      - "So if you force a smile, | even a fake one, | your brain reads it as a signal | and your mood follows."
+      - "Fake it till you make it, | for feelings."
+      - "It's on posters, | in morning routines, | and in plenty of advice for a bad day."
+    params:
+      chrome: {number: "case 11", step: 0}
+      file: assets/images/23aa2533877379f4.cut.png
+      case: 11
+      labels:
+        - {text: "the face steers the mood", at: "steer"}
+        - {text: "even a fake smile", at: "fake one", color: accent2}
+        - {text: "fake it till you make it", at: "Fake it"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "So where did this come from?"
+      - "The idea is old. | Psychologists have argued for more than a century | that the body can shape an emotion, | not just express it."
+      - "But it became famous because of one clever experiment, | with a pen."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "an old idea", at: "old"}
+        - {text: "body shapes emotion", at: "shape", color: accent2}
+        - {text: "one clever experiment", at: "clever"}
+
+  - id: s04
+    template: lab_flow
+    lines:
+      - "People were told it was a study about holding a pen | without using your hands."
+      - "Some held the pen between their teeth. | Try it. | Your face is pulled into a smile."
+      - "Others held it with their lips. | That makes a smile almost impossible."
+      - "Then everyone rated how funny some cartoons were."
+      - "And the pen-in-teeth group | found the cartoons funnier. | A smile they didn't even know they were making | seemed to change how they felt."
+    params:
+      chrome: {step: 1}
+      stations:
+        - {icon: lock, title: "Pen in the teeth", sub: "a hidden smile", at: "teeth"}
+        - {icon: target, title: "Pen in the lips", sub: "no smile possible", at: "lips"}
+        - {icon: laugh, title: "Rate the cartoons", sub: "teeth group: funnier", at: "funnier"}
+      source: {label: "EXPERIMENT", text: "Strack, Martin & Stepper, 1988 · J. Pers. Soc. Psychol.", at: 0}
+
+  - id: s05
+    template: lab_full_number
+    lines:
+      - "It went into textbooks. | So years later, | researchers decided to check it properly."
+      - "Seventeen labs in different countries | ran the exact same experiment, | with the same steps, | agreed in advance."
+      - "Almost two thousand people in total."
+    params:
+      value: 17
+      from: 0
+      caption: "labs ran the same pen test"
+      sub: "1,894 people, one shared plan"
+      color: accent
+      at: "Seventeen"
+      source: {label: "REPLICATION", text: "Wagenmakers et al., 2016 · Perspect. Psychol. Sci. · n = 1,894", at: 0}
+
+  - id: s06
+    template: lab_versus
+    lines:
+      - "And the result?"
+      - "The cartoons were exactly as funny | with the pen in the teeth | as with the pen in the lips."
+      - "Not a smaller effect. | Basically no difference at all."
+      - "But the story got a twist. | In the big repeat, | people were filmed by a camera."
+      - "A later study tried it both ways. | Without a camera, | the effect came back. | With a camera, | it vanished. | Feeling watched may switch it off."
+    params:
+      left:
+        title: "FIRST STUDY"
+        items:
+          - {text: "teeth: funnier", at: "And the result"}
+      right:
+        title: "17 LABS"
+        items:
+          - {text: "no difference", at: "no difference"}
+          - {text: "but: a camera was on", at: "filmed"}
+          - {text: "camera off: it's back?", at: "came back"}
+      source: {label: "REPLICATIONS", text: "Wagenmakers et al., 2016 · Noah, Schul & Mayo, 2018", at: 0}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "So one study says yes, | a big repeat says no, | and another says it depends."
+      - "This is when a big review helps."
+      - "One team pooled a hundred and thirty-eight studies | where people changed their faces | and then reported how they felt."
+      - "Their answer? | The effect is real. | But it's small, | and it shows up in some studies | much more than in others."
+    params:
+      chrome: {step: 1}
+      hero: {value: 138, from: 0, caption: "studies, pooled", sub: "over 11,000 people", color: accent, at: "hundred and thirty-eight"}
+      claim: null
+      cards:
+        - {icon: check, title: "Real", sub: "faces do touch feelings", chip: "yes", chip_color: accent, at: "is real"}
+        - {icon: chart, title: "Small", sub: "a nudge, not a jump", chip: "↓", chip_color: accent2, at: "small"}
+        - {icon: question, title: "Variable", sub: "strong here, gone there", chip: "?", chip_color: accent2, at: "some studies"}
+      source: {label: "META-ANALYSIS", text: "Coles, Larsen & Lench, 2019 · Psychological Bulletin", at: 0}
+
+  - id: s08
+    template: lab_crowd
+    lines:
+      - "And then the two sides of the argument | did something unusual. | They teamed up."
+      - "Together they ran one more test, | with nearly four thousand people | in nineteen countries."
+      - "This time, | there were three ways to smile. | The pen in the teeth. | Copying a smiling face from a photo. | And simply pulling the corners of your mouth up."
+    params:
+      chrome: {step: 1}
+      hero: {value: 19, from: 0, caption: "countries", sub: "3,878 people, one plan", color: accent, at: "nineteen"}
+      study: {authors: "Coles et al. (Many Smiles)", where: "Nat. Hum. Behav. · 2022 · n = 3,878", evidence: 4, at: "teamed up"}
+      crowd: {n: 3878, cols: 40, at: "four thousand"}
+      range: null
+      source: {label: "MULTI-LAB STUDY", text: "Coles et al., 2022 · Many Smiles Collaboration", at: 0}
+
+  - id: s09
+    template: lab_versus
+    lines:
+      - "The pen? | Still no clear effect."
+      - "But a smile people made on purpose, | copying the photo, | or just lifting their mouth, | made them a little happier."
+      - "Not joyful. | A little. | The kind of change you'd only spot | by asking thousands of people, | not by checking your own mood in the mirror."
+    params:
+      left:
+        title: "PEN IN THE TEETH"
+        items:
+          - {text: "no clear effect", at: "Still no"}
+      right:
+        title: "A SMILE ON PURPOSE"
+        items:
+          - {text: "a little happier", at: "little happier"}
+          - {text: "not joyful", at: "Not joyful"}
+          - {text: "seen only in thousands", at: "thousands"}
+      source: {label: "MULTI-LAB STUDY", text: "Coles et al., 2022 · Nature Human Behaviour", at: 0}
+
+  - id: s10
+    template: lab_diagram
+    lines:
+      - "Here's a way to picture it."
+      - "A smile isn't a light switch for your mood. | It's more like a dimmer, | turned up one small notch."
+      - "In a quiet room, | you might notice the difference. | But if the room is dark, | one notch won't light it up."
+      - "That's why a forced smile on a truly awful day | rarely feels like it's doing much."
+    params:
+      center: {icon: bolt, title: "A dimmer, not a switch", at: 0}
+      labels:
+        - {text: "one small notch", at: "one small notch"}
+        - {text: "quiet room: you notice", at: "quiet room", color: accent2}
+        - {text: "dark room: not enough", at: "dark"}
+
+  - id: s11
+    cite: ch11/s08
+    template: lab_exhibit
+    lines:
+      - "So, | does smiling make you happier?"
+      - {text: "Verdict: | half true.", voice: {style: 0.35}}
+      - "A smile can nudge your mood a little. | But it won't switch a bad mood off, | and the famous pen trick doesn't hold up."
+    params:
+      chrome: {step: 2}
+      file: assets/images/23aa2533877379f4.cut.png
+      case: 11
+      labels:
+        - {text: "smile → happy?", at: "happier", color: accent}
+      verdict: {verdict: HALF-TRUE, sub: "a nudge, *not a switch*", at: "half true"}
+
+  - id: s12
+    template: lab_exhibit
+    image:
+      - {prompt: "a small round hand mirror with a cyan frame and lavender handle, plain reflective glass, nothing reflected, cyan and lavender", role: subject}
+    lines:
+      - "So why does this one live on?"
+      - "Because there's a grain of truth in it, | and that grain carries the rest."
+      - "Because it's free, | and it's always with you."
+      - "And because it's a kind thing to tell someone. | Cheer up, | smile. | It sounds helpful, | even when it isn't what they need."
+    params:
+      chrome: {step: 1}
+      file: assets/images/0dfb130d2de8aba4.cut.png
+      case: 11
+      labels:
+        - {text: "a grain of truth", at: "grain"}
+        - {text: "free, always with you", at: "free", color: accent2}
+        - {text: "it sounds kind", at: "kind thing"}
+
+  - id: s13
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "If smiling helps you on an ordinary day, | go for it. | It costs nothing."
+      - "But a smile on the outside | doesn't fix what's going on inside. | If something is really wrong, | deal with that, | not your face."
+      - "And maybe skip telling other people to smile. | It works a lot less well than you'd think."
+    params:
+      stations:
+        - {icon: heart, title: "Smile, if it helps", sub: "a small, free nudge", at: "go for it"}
+        - {icon: brain, title: "Fix the inside", sub: "not just the face", at: "inside"}
+        - {icon: check, title: "Don't say 'smile!'", sub: "it rarely helps", at: "skip"}
+      source: {label: "STUDIES", text: "Coles, Larsen & Lench, 2019 · Coles et al., 2022", at: 0}
+
+  - id: s14
+    cite: ch11/s08
+    template: lab_docket
+    lines:
+      - "Case eleven, | closed."
+      - "And now, | the last case on the board. | The idea that a group brainstorm | gives you more ideas | than people working alone."
+    params:
+      focus: {case: 11, title: "Smile your way happy", at: 0}
+      close: {case: 11, verdict: HALF-TRUE, at: "closed"}
+      keep: [docket]
+    hold: 1.0

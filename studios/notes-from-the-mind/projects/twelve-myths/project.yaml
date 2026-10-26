@@ -1,0 +1,123 @@
+# Бриф: briefs/twelve-myths.md (Myth on Trial, сборник 12 дел, ~60 мин — ROADMAP F2). Канал Notes From The Mind.
+schema_version: 1
+title: "12 Psychology Myths You Probably Still Believe"
+topic: "Twelve famous 'facts' about the mind — what does the research actually say about each one?"
+audience: >-
+  Взрослые англоязычные зрители канала, без научной подготовки, смотрят долго и целиком. Вынести: многие
+  «общеизвестные» факты о мозге — миф или сильное упрощение; как отличать (одно маленькое исследование ≠ доказано,
+  связь ≠ причина, красиво ≠ правда); не стыдно, что верил — у каждого мифа есть причина жить.
+kind: explainer
+language: en
+format: horizontal
+platform: null
+fps: 30
+target_duration: null     # ~60 минут по речи (~9 300 слов); главы по ~4,5–5 мин
+
+tts:
+  backend: elevenlabs     # голос канала; ключ и голос — только в .env
+  voice: auto             # ELEVENLABS_VOICE_ID
+  rate: 100               # числом (как у канала; auto = повторный платный синтез)
+  rate_range: [95, 115]
+
+pauses:
+  start: 0.45
+  comma: 0.18
+  sentence: 0.40
+  scene: 0.55
+  end: 0.6
+
+style:
+  palette: lab
+  mood: lab               # общее настроение канала (ember и night были у прошлых роликов)
+  font: Inter Display
+
+images:
+  enabled: true
+  style: >-
+    flat vector illustration, single object, centered, isolated on a plain flat light grey background #D9DDE3, limited palette
+    #3DD6F5 cyan, #9B8CFF lavender, #EEF2F8 off-white, #111726 navy, soft rim light, clean shapes,
+    no text, no letters, no numbers, no people's faces
+  budget_usd: 3
+
+music:
+  enabled: true
+  level_db: -14           # под голос ElevenLabs
+  duck: true
+
+sfx:
+  enabled: true
+
+subtitles:
+  enabled: true
+  max_lines: 1
+  size: 36
+
+loudness: -14
+
+avoid:
+  - "медицина и лечение: злость — бытовая, не «управление гневом»; без диагнозов"
+  - "годы и авторы в речи — только в плашке источника и в описании (пожелание пользователя)"
+  - "«science proved»"
+  - "не больше ~7 слов в фокусе: подписи короткие, текст не дублирует озвучку (STYLE §3)"
+
+done_means:
+  - "12 дел — 12 вердиктов штампом; доска дел закрыта в финале"
+  - "каждая цифра в кадре = источник = озвучка"
+  - {final_hold: 1.5}
+
+chapters: [ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch12]
+
+package:
+  description: >-
+    Twelve things almost everyone believes about the mind — from "let your anger out" to "opposites attract" —
+    each one put on trial against the actual research. Some didn't survive. Some are half-true. All of them have a
+    reason they keep spreading. Sources for every case are below.
+  hashtags: [psychology, myths, science, brain, mythbusting]
+  cover: {text: "12 MYTHS?", at: ch12/s13, verdict: none}
+  sources:                # дополняется по главам: «Авторы (год). Название. Журнал. Ссылка»
+    - "Bushman, B. J. (2002). Does venting anger feed or extinguish the flame? Catharsis, rumination, distraction, anger, and aggressive responding. Personality and Social Psychology Bulletin, 28(6), 724–731. https://doi.org/10.1177/0146167202289002"
+    - "Kjærvik, S. L., & Bushman, B. J. (2024). A meta-analytic review of anger management activities that increase or decrease arousal. Clinical Psychology Review, 109."
+    - "Horwitz, T. B., Balbona, J. V., Paulich, K. N., & Keller, M. C. (2023). Evidence of correlations between human partners based on systematic reviews and meta-analyses of 22 traits and UK Biobank analysis of 133 traits. Nature Human Behaviour, 7, 1568–1583. https://doi.org/10.1038/s41562-023-01672-z"
+    - "Montoya, R. M., Horton, R. S., & Kirchner, J. (2008). Is actual similarity necessary for attraction? A meta-analysis of actual and perceived similarity. Journal of Social and Personal Relationships, 25(6), 889–922. https://doi.org/10.1177/0265407508096700"
+    - "Rohrer, J. M., Egloff, B., & Schmukle, S. C. (2015). Examining the effects of birth order on personality. Proceedings of the National Academy of Sciences, 112(46), 14224–14229. https://doi.org/10.1073/pnas.1506451112"
+    - "Damian, R. I., & Roberts, B. W. (2015). The associations of birth order with personality and intelligence in a representative sample of U.S. high school students. Journal of Research in Personality, 58, 96–105."
+    - "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. Psychological Science in the Public Interest, 9(3), 105–119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
+    - "Newton, P. M., & Salvi, A. (2020). How common is belief in the learning styles neuromyth, and does it matter? A pragmatic systematic review. Frontiers in Education, 5, 602451. https://doi.org/10.3389/feduc.2020.602451"
+    - "Knoll, A. R., Otani, H., Skeel, R. L., & Van Horn, K. R. (2017). Learning style, judgments of learning, and learning of verbal and visual information. British Journal of Psychology, 108(3), 544–563. https://doi.org/10.1111/bjop.12214"
+    - "Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students' learning with effective learning techniques. Psychological Science in the Public Interest, 14(1), 4–58. https://doi.org/10.1177/1529100612453266"
+    - "Mehrabian, A., & Wiener, M. (1967). Decoding of inconsistent communications. Journal of Personality and Social Psychology, 6(1), 109–114."
+    - "Mehrabian, A., & Ferris, S. R. (1967). Inference of attitudes from nonverbal communication in two channels. Journal of Consulting Psychology, 31(3), 248–252."
+    - "Mehrabian, A. (1971). Silent Messages. Wadsworth. Author's note on the limits of the 7–38–55 formula: http://www.kaaj.com/psych/smorder.html"
+    - "Carney, D. R., Cuddy, A. J. C., & Yap, A. J. (2010). Power posing: Brief nonverbal displays affect neuroendocrine levels and risk tolerance. Psychological Science, 21(10), 1363–1368. https://doi.org/10.1177/0956797610383437"
+    - "Ranehill, E., Dreber, A., Johannesson, M., Leiberg, S., Sul, S., & Weber, R. A. (2015). Assessing the robustness of power posing: No effect on hormones and risk tolerance in a large sample of men and women. Psychological Science, 26(5), 653–656. https://doi.org/10.1177/0956797614553946"
+    - "Carney, D. R. (2016). My position on \"Power Poses\". https://faculty.haas.berkeley.edu/dana_carney/pdf_my%20position%20on%20power%20poses.pdf"
+    - "Metzler, H., & Grèzes, J. (2019). Repeatedly adopting power postures does not affect hormonal correlates of dominance and affiliative behavior. PeerJ, 7, e6726. https://doi.org/10.7717/peerj.6726"
+    - "Elkjær, E., Mikkelsen, M. B., Michalak, J., Mennin, D. S., & O'Toole, M. S. (2022). Expansive and contractive postures and movement: A systematic review and meta-analysis of the effect of motor displays on affective and behavioral responses. Perspectives on Psychological Science, 17(1), 276–304. https://doi.org/10.1177/1745691620919358"
+    - "Cuddy, A. J. C., Schultz, S. J., & Fosse, N. E. (2018). P-curving a more comprehensive body of research on postural feedback reveals clear evidential value for power-posing effects. Psychological Science, 29(4), 656–666. https://doi.org/10.1177/0956797617746749"
+    - "Shoda, Y., Mischel, W., & Peake, P. K. (1990). Predicting adolescent cognitive and self-regulatory competencies from preschool delay of gratification: Identifying diagnostic conditions. Developmental Psychology, 26(6), 978–986. https://doi.org/10.1037/0012-1649.26.6.978"
+    - "Watts, T. W., Duncan, G. J., & Quan, H. (2018). Revisiting the marshmallow test: A conceptual replication investigating links between early delay of gratification and later outcomes. Psychological Science, 29(7), 1159–1177. https://doi.org/10.1177/0956797618761661"
+    - "Kidd, C., Palmeri, H., & Aslin, R. N. (2013). Rational snacking: Young children's decision-making on the marshmallow task is moderated by beliefs about environmental reliability. Cognition, 126(1), 109–114. https://doi.org/10.1016/j.cognition.2012.08.004"
+    - "Benjamin, D. J., Laibson, D., Mischel, W., Peake, P. K., Shoda, Y., Wellsjo, A. S., & Wilson, N. L. (2020). Predicting mid-life capital formation with pre-school delay of gratification and life-course measures of self-regulation. Journal of Economic Behavior & Organization, 179, 743–756. https://doi.org/10.1016/j.jebo.2020.08.016"
+    - "Kruger, J., & Dunning, D. (1999). Unskilled and unaware of it: How difficulties in recognizing one's own incompetence lead to inflated self-assessments. Journal of Personality and Social Psychology, 77(6), 1121–1134. https://doi.org/10.1037/0022-3514.77.6.1121"
+    - "Svenson, O. (1981). Are we all less risky and more skillful than our fellow drivers? Acta Psychologica, 47(2), 143–148. https://doi.org/10.1016/0001-6918(81)90005-6"
+    - "Gignac, G. E., & Zajenkowski, M. (2020). The Dunning-Kruger effect is (mostly) a statistical artefact: Valid approaches to testing the hypothesis with individual differences data. Intelligence, 80, 101449. https://doi.org/10.1016/j.intell.2020.101449"
+    - "Jansen, R. A., Rafferty, A. N., & Griffiths, T. L. (2021). A rational model of the Dunning–Kruger effect supports insensitivity to evidence in low performers. Nature Human Behaviour, 5, 756–763. https://doi.org/10.1038/s41562-021-01057-0"
+    - "Dawson, C., & de Meza, D. (2026). Psychological Review. https://doi.org/10.1037/rev0000644"
+    - "Kahneman, D., & Deaton, A. (2010). High income improves evaluation of life but not emotional well-being. Proceedings of the National Academy of Sciences, 107(38), 16489–16493. https://doi.org/10.1073/pnas.1011492107"
+    - "Killingsworth, M. A. (2021). Experienced well-being rises with income, even above $75,000 per year. Proceedings of the National Academy of Sciences, 118(4), e2016976118. https://doi.org/10.1073/pnas.2016976118"
+    - "Killingsworth, M. A., Kahneman, D., & Mellers, B. (2023). Income and emotional well-being: A conflict resolved. Proceedings of the National Academy of Sciences, 120(10), e2208661120. https://doi.org/10.1073/pnas.2208661120"
+    - "Nguyen, L., et al. (2025). Feeds, feelings, and focus: A systematic review and meta-analysis examining the cognitive and mental health correlates of short-form video use. Psychological Bulletin, 151(9), 1125–1146. https://doi.org/10.1037/bul0000498"
+    - "Microsoft Canada, Consumer Insights (2015). Attention spans. (Marketing report; the 8- and 9-second figures are credited to the website Statistic Brain, not measured in the report.)"
+    - "BBC Radio 4, More or Less (2017). Is your attention span shorter than a goldfish's? (Simon Maybin; with psychologist Gemma Briggs.)"
+    - "Gee, P., Stephenson, D., & Wright, D. E. (1994). Temporal discrimination learning of operant feeding in goldfish (Carassius auratus). Journal of the Experimental Analysis of Behavior, 62(1), 1–13. https://doi.org/10.1901/jeab.1994.62-1"
+    - "Strack, F., Martin, L. L., & Stepper, S. (1988). Inhibiting and facilitating conditions of the human smile: A nonobtrusive test of the facial feedback hypothesis. Journal of Personality and Social Psychology, 54(5), 768–777. https://doi.org/10.1037/0022-3514.54.5.768"
+    - "Wagenmakers, E.-J., et al. (2016). Registered Replication Report: Strack, Martin, & Stepper (1988). Perspectives on Psychological Science, 11(6), 917–928. https://doi.org/10.1177/1745691616674458"
+    - "Noah, T., Schul, Y., & Mayo, R. (2018). When both the original study and its failed replication are correct: Feeling observed eliminates the facial-feedback effect. Journal of Personality and Social Psychology, 114(5), 657–664. https://doi.org/10.1037/pspa0000121"
+    - "Coles, N. A., Larsen, J. T., & Lench, H. C. (2019). A meta-analysis of the facial feedback literature: Effects of facial feedback on emotional experience are small and variable. Psychological Bulletin, 145(6), 610–651. https://doi.org/10.1037/bul0000194"
+    - "Coles, N. A., et al. (2022). A multi-lab test of the facial feedback hypothesis by the Many Smiles Collaboration. Nature Human Behaviour, 6, 1731–1742. https://doi.org/10.1038/s41562-022-01458-9"
+    - "Osborn, A. F. (1953). Applied Imagination: Principles and Procedures of Creative Thinking. Scribner."
+    - "Taylor, D. W., Berry, P. C., & Block, C. H. (1958). Does group participation when using brainstorming facilitate or inhibit creative thinking? Administrative Science Quarterly, 3(1), 23–47. https://doi.org/10.2307/2390603"
+    - "Diehl, M., & Stroebe, W. (1987). Productivity loss in brainstorming groups: Toward the solution of a riddle. Journal of Personality and Social Psychology, 53(3), 497–509. https://doi.org/10.1037/0022-3514.53.3.497"
+    - "Mullen, B., Johnson, C., & Salas, E. (1991). Productivity loss in brainstorming groups: A meta-analytic integration. Basic and Applied Social Psychology, 12(1), 3–23. https://doi.org/10.1207/s15324834basp1201_1"
+    - "Paulus, P. B., Dzindolet, M. T., Poletes, G., & Camacho, L. M. (1993). Perception of performance in group brainstorming: The illusion of group productivity. Personality and Social Psychology Bulletin, 19(1), 78–89. https://doi.org/10.1177/0146167293191009"
+    - "Girotra, K., Terwiesch, C., & Ulrich, K. T. (2010). Idea generation and the quality of the best idea. Management Science, 56(4), 591–605. https://doi.org/10.1287/mnsc.1090.1144"

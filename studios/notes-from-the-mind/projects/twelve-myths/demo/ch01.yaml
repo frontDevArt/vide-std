@@ -1,0 +1,38 @@
+# Демо стиля 10–15 с (channel/STYLE.md §14) для twelve-myths: метафора «доска дел суда» (12 карточек CASE 01–12,
+# на каждую по ходу ролика падает штамп), настроение lab, новые элементы — lab_docket и lab_exhibit
+# (projects/twelve-myths/templates/case.py): AI-улика стикером. Мотив Myth on Trial — суд. Вердикт MYTH на карточке.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: lab_docket
+    voice: {style: 0.3}
+    lines:
+      - "Twelve things everyone believes about the mind. | Today, | each one goes on trial."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "12 cases", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      cases: 12
+      tiles: {at: "Twelve"}
+      focus: {case: 1, title: "Venting anger", at: "trial"}
+  - id: s02
+    template: lab_exhibit
+    image:
+      - {prompt: "a heavy deep navy leather punching bag with cyan stitching, hanging on a chain, slightly swinging", role: subject}
+    lines:
+      - "Exhibit one: | let your anger out, | and you'll feel better."
+    params:
+      chrome: {step: 1}
+      file: assets/images/fb2fa2b747a73cf3.cut.png
+      case: 1
+      labels:
+        - {text: "“let it out”", at: "anger", color: accent2}
+        - {text: "feel better?", at: "better", color: accent}
+  - id: s03
+    template: lab_docket
+    lines:
+      - {text: "The research says: | myth.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      focus: {case: 1, title: "Venting anger", at: 0}
+      close: {case: 1, verdict: MYTH, at: "myth"}
+    hold: 1.0

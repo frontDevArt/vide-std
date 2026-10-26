@@ -1,0 +1,254 @@
+# Глава 7: дело 07 «The marshmallow test predicts success» — HALF-TRUE. outline.md: ~800 слов.
+# Сверено 2026-10-26: Shoda, Mischel & Peake 1990 (Dev Psych 26(6), 978–986) — дошкольники кампусного садика
+# Стэнфорда (Bing); дольше ждавшие подростками — по оценкам родителей лучше справлялись со стрессом и фрустрацией,
+# внимательнее, выше SAT. Watts, Duncan & Quan 2018 (Psych Sci 29(7), 1159–1177) — 918 детей NICHD SECCYD
+# (10 мест по США); связь с успеваемостью в 15 лет вдвое слабее оригинала, с контролем семьи, ранних способностей и
+# домашней среды — меньше ещё на ~2/3; с поведением в 15 лет — почти ноль. Kidd, Palmeri & Aslin 2013 (Cognition
+# 126(1), 109–114) — 28 детей; надёжный взрослый (обещал мелки и принёс) → ждали ~12 мин, ненадёжный → ~3 мин
+# (≈ в 4 раза). Benjamin et al. 2020 (J Econ Behav Org 179, 743–756) — 113 участников Bing-исследований в конце
+# пятого десятка; предрегистрированный балл ожидания не предсказал 11 мер капитала (сбережения, доход, долги,
+# образование), средняя r ≈ 0,02.
+chapter: ch07
+title: "Case 07 · The marshmallow test"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "One marshmallow now, | or two if you wait. | And that one choice | predicts a child's whole future."
+    min_duration: 3
+    params: {number: 7, total: 12, title: "The marshmallow test", subtitle: "case 07 · a treat and a timer"}
+
+  - id: s02
+    cite: ch07/s03
+    template: lab_exhibit
+    image:
+      - {prompt: "two soft white marshmallows side by side on a small round lavender plate", role: subject}
+    lines:
+      - "You've probably heard this one."
+      - "A four-year-old sits alone at a table. | In front of them, | one marshmallow."
+      - "A grown-up says, | you can eat it now, | or wait until I come back, | and get two."
+      - "Then the grown-up leaves the room, | and the clock starts."
+      - "And the story goes that the kids who waited | grew up to do better at school, | and better in life."
+    params:
+      chrome: {number: "case 07", step: 0}
+      file: assets/images/dae998c4290bbfd3.cut.png
+      case: 7
+      labels:
+        - {text: "one now", at: "one marshmallow"}
+        - {text: "two later", at: "get two", color: accent2}
+        - {text: "waited → did better", at: "better at school"}
+
+  - id: s03
+    template: lab_full_number
+    lines:
+      - "It's such a clean idea."
+      - "One small moment of willpower, | at age four, | tells you who that child will become."
+      - "No wonder parents and teachers fell in love with it."
+    params:
+      value: 2
+      caption: "marshmallows, if you wait"
+      sub: "and a better life, says the claim"
+      color: accent2
+      at: "willpower"
+      source: {label: "THE CLAIM", text: "popular summary of Shoda, Mischel & Peake, 1990", at: 0}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "So where did it come from?"
+      - "Decades ago, | researchers ran this test with children | at one university preschool."
+      - "Years later, | they got back in touch with some of those families."
+      - "And the kids who had waited longer as preschoolers | seemed to be doing better as teenagers."
+      - "That follow-up made headlines, | then books, | then parenting advice everywhere."
+    params:
+      chrome: {step: 1}
+      center: {icon: question, title: "Where's it from?", at: 0}
+      labels:
+        - {text: "one preschool", at: "university preschool"}
+        - {text: "followed up years later", at: "Years later", color: accent2}
+        - {text: "advice everywhere", at: "parenting advice"}
+
+  - id: s05
+    template: lab_flow
+    lines:
+      - "Here's how the test worked."
+      - "A child picks a favorite treat. | The grown-up leaves. | And at any moment, | the child can ring a little bell | to end the wait, | and eat just the one."
+      - "Some kids covered their eyes. | Some sang to themselves. | Some licked the marshmallow | and carefully put it back."
+    params:
+      stations:
+        - {icon: star, title: "Pick a treat", sub: "one now, two later", at: "favorite treat"}
+        - {icon: hourglass, title: "Wait alone", sub: "the grown-up leaves", at: "leaves"}
+        - {icon: bell, title: "Ring the bell", sub: "and eat just one", at: "bell"}
+      source: {label: "EXPERIMENT", text: "Shoda, Mischel & Peake, 1990 · Developmental Psychology", at: 0}
+
+  - id: s06
+    template: lab_hero_stack
+    lines:
+      - "And the follow-up looked impressive."
+      - "Kids who waited longer | were later described by their parents | as better at handling stress, | and better at paying attention."
+      - "They also scored higher on the big college entrance exam."
+      - "But there was a catch. | These were mostly the children of professors and students | at one elite university. | A very particular slice of kids."
+    params:
+      chrome: {step: 1}
+      hero: null
+      claim: {label: "YEARS LATER", text: "“The waiters did better.”", at: "follow-up"}
+      cards:
+        - {icon: heart, title: "Handling stress", sub: "as parents saw it", chip: "↑", chip_color: accent, at: "handling stress"}
+        - {icon: eye, title: "Paying attention", sub: "as parents saw it", chip: "↑", chip_color: accent, at: "attention"}
+        - {icon: chart, title: "Test scores", sub: "college entrance exam", chip: "↑", chip_color: accent, at: "scored higher"}
+      source: {label: "FOLLOW-UP", text: "Shoda, Mischel & Peake, 1990 · Developmental Psychology", at: 0}
+
+  - id: s07
+    template: lab_crowd
+    lines:
+      - "So another team tried it again, | with a much bigger and more ordinary group."
+      - "Nine hundred and eighteen children, | from many different places, | and all kinds of homes."
+      - "They took the same kind of waiting test at age four, | and the team checked how they were doing at fifteen."
+    params:
+      chrome: {step: 1}
+      hero: {value: 918, from: 0, caption: "children", sub: "a bigger replication", color: accent, at: "eighteen"}
+      study: {authors: "Watts, Duncan & Quan", where: "Psych Science · 2018 · n = 918", evidence: 2, at: "another team"}
+      crowd: {n: 918, cols: 34, at: "children"}
+      range: null
+      source: {label: "REPLICATION", text: "Watts, Duncan & Quan, 2018 · Psychological Science", at: 0}
+
+  - id: s08
+    template: lab_versus
+    lines:
+      - "Here's what they found."
+      - "Waiting did go with better school results. | So the link is real. | But it was only about half as strong | as in the original study."
+      - "Then they asked a harder question. | What if the waiting and the grades | both come from something else?"
+      - "Like the family's money, | the child's early language and thinking skills, | and what life at home looks like."
+      - "Once they took those into account, | about two thirds of the link disappeared."
+      - "And for behavior at fifteen, | the waiting told them almost nothing."
+    params:
+      left:
+        title: "ONE PRESCHOOL"
+        items:
+          - {text: "Strong link to scores", at: "school results"}
+          - {text: "Waiting = willpower", at: "harder question"}
+          - {text: "Better teen behavior", at: "behavior"}
+      right:
+        title: "BIGGER STUDY · 918"
+        items:
+          - {text: "Link half as strong", at: "half as strong"}
+          - {text: "2/3 explained by home", at: "two thirds"}
+          - {text: "Behavior: almost nothing", at: "almost nothing"}
+      source: {label: "REPLICATION", text: "Watts, Duncan & Quan, 2018 · vs Shoda, Mischel & Peake, 1990", at: 0}
+
+  - id: s09
+    template: lab_diagram
+    lines:
+      - "There's another twist."
+      - "In one small experiment, | before the marshmallow, | a grown-up promised the kids some better crayons. | Then either kept that promise, | or came back empty-handed."
+    params:
+      chrome: {step: 1}
+      center: {icon: lock, title: "A promise first", at: 0}
+      labels:
+        - {text: "better crayons, promised", at: "crayons"}
+        - {text: "promise kept", at: "kept"}
+        - {text: "came back empty-handed", at: "empty-handed", color: accent2}
+      source: {label: "EXPERIMENT", text: "Kidd, Palmeri & Aslin, 2013 · Cognition", at: 0}
+
+  - id: s10
+    template: lab_full_number
+    lines:
+      - "The kids whose grown-up kept the promise | waited about four times longer."
+      - "Same age, | same marshmallow. | The only difference was whether waiting seemed worth it."
+    params:
+      value: 4
+      suffix: "×"
+      caption: "longer wait, when the promise was kept"
+      sub: "one small experiment"
+      color: accent
+      at: "four times"
+      source: {label: "EXPERIMENT", text: "Kidd, Palmeri & Aslin, 2013 · Cognition", at: 0}
+
+  - id: s11
+    template: lab_diagram
+    lines:
+      - "Here's a way to think about it."
+      - "Imagine a friend says, | wait here, | I'll be back with pizza."
+      - "If that friend always shows up, | you wait. | If they flake on you half the time, | you grab something from the fridge."
+      - "That's not weak willpower. | That's good sense."
+      - "And a child from a home where there isn't always enough, | or where plans often fall through, | learns the same lesson. | Take the treat while it's there."
+    params:
+      center: {icon: clock, title: "Is waiting worth it?", at: 0}
+      labels:
+        - {text: "they show up → wait", at: "always shows"}
+        - {text: "they flake → eat now", at: "flake", color: accent2}
+        - {text: "good sense, not weakness", at: "good sense"}
+
+  - id: s12
+    template: lab_crowd
+    lines:
+      - "And one more check."
+      - "Researchers found a hundred and thirteen of the original preschoolers, | now in their late forties."
+      - "They looked at savings, | income, | debt, | and education."
+      - "The marshmallow score from age four | predicted none of it."
+    params:
+      chrome: {step: 1}
+      hero: {value: 113, from: 0, caption: "original kids", sub: "now in their late forties", color: accent2, at: "thirteen"}
+      study: {authors: "Benjamin et al.", where: "J Econ Behav Org · 2020 · n = 113", evidence: 2, at: "one more check"}
+      crowd: {n: 113, cols: 15, at: "preschoolers"}
+      range: null
+      source: {label: "FOLLOW-UP", text: "Benjamin et al., 2020 · Journal of Economic Behavior & Organization", at: 0}
+
+  - id: s13
+    cite: ch07/s03
+    template: lab_exhibit
+    lines:
+      - "So, | does the marshmallow test predict a child's success?"
+      - {text: "Verdict: | half true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 2}
+      file: assets/images/dae998c4290bbfd3.cut.png
+      case: 7
+      labels:
+        - {text: "one test → a whole life?", at: "success", color: accent}
+      verdict: {verdict: HALF-TRUE, sub: "a small link, *mostly about home*", at: "half true"}
+
+  - id: s14
+    template: lab_exhibit
+    image:
+      - {prompt: "a small cyan trophy cup standing on a lavender pedestal base", role: subject}
+    lines:
+      - "So why won't this story go away?"
+      - "Because it's adorable. | Videos of kids wrestling with a marshmallow | are impossible not to watch."
+      - "Because it's simple. | One test, | one choice, | one future."
+      - "Because it flatters something we already want to believe, | that success is mostly about self-control."
+      - "And because part of it is true. | Patience does help. | The test just measures a lot more than patience."
+    params:
+      file: assets/images/784031be7f5c8b70.cut.png
+      case: 7
+      labels:
+        - {text: "adorable", at: "adorable"}
+        - {text: "simple", at: "simple", color: accent2}
+        - {text: "success = self-control?", at: "self-control"}
+        - {text: "part of it is true", at: "part of it", color: accent2}
+
+  - id: s15
+    template: lab_flow
+    lines:
+      - "So what's worth keeping?"
+      - "If you, | or your kid, | would have eaten that marshmallow, | relax. | One afternoon at age four | doesn't write anyone's future."
+      - "Patience grows when waiting actually pays off. | So keep your promises, | even the small ones."
+      - "And when you hear that one quick test predicts a whole life, | ask what else it might be measuring."
+    params:
+      stations:
+        - {icon: heart, title: "Relax", sub: "one afternoon isn't a life", at: "relax"}
+        - {icon: check, title: "Keep promises", sub: "so waiting pays off", at: "promises"}
+        - {icon: question, title: "Ask what it measures", sub: "patience, or home?", at: "measuring"}
+      source: {label: "STUDIES", text: "Watts, Duncan & Quan, 2018 · Kidd, Palmeri & Aslin, 2013", at: 0}
+
+  - id: s16
+    cite: ch07/s03
+    template: lab_docket
+    lines:
+      - "Case seven, | closed."
+      - "Next up, | the famous idea that the people who know the least | are the most confident of all."
+    params:
+      focus: {case: 7, title: "The marshmallow test", at: 0}
+      close: {case: 7, verdict: HALF-TRUE, at: "closed"}
+      keep: [docket]
+    hold: 1.0
