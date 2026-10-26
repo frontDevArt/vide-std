@@ -1,0 +1,16 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: youtube
+  url: https://www.youtube.com/watch?v=QORGpuW5Gww
+  date: 2026-10-26 15:30
+  version: null
+  file: twelve-myths.mp4
+  sha1: e202fead7786
+  duration: 3062.93
+  note: 'YouTube API: public'
+  via: api
+  privacy: public
+  video_id: QORGpuW5Gww
+  ai_label: true
+  ai_confirmed: true
