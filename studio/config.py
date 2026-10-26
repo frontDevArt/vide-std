@@ -56,6 +56,8 @@ SCHEMA = {
         "title": F((str,), doc="название на площадке (иначе title)"),
         "description": F((str,), doc="текст описания / подписи (иначе topic)"),
         "sources": F((list,), doc="полные ссылки на источники; в описание идут те, что процитированы в сценах"),
+        "sources_format": F((str,), doc="auto | full | short: «Автор (год) ссылка»; auto — короткие, "
+                                        "если полные не влезают в предел описания площадки"),
         "hashtags": F((list,), doc="хэштеги для подписи (TikTok, Reels, Shorts — до предела площадки)"),
         "cover": F((dict,), doc="обложка: {at: секунды | chNN/sNN, text: ≤ 3 слов, verdict: auto | TRUE | … | none}"),
         "by_output": F((dict,), doc="поверх для выхода: {tiktok: {title, description, hashtags, cover}}"),

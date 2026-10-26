@@ -57,6 +57,31 @@ def test_citations_and_sources(tmp_path):
     assert lines[4] == "Unused, A. (2001). Extra."  # длинный ролик: ссылку автора не теряем
 
 
+def test_sources_match_through_lead_in(tmp_path):
+    refs = ["Carney, D. R., Cuddy, A. J. C., & Yap, A. J. (2010). Power posing. Psych Sci.",
+            "Svenson, O. (1981). Are we all less risky. Acta Psychologica.",
+            "Microsoft Canada, Consumer Insights (2015). Attention spans."]
+    scenes = [{"id": f"s0{i}", "template": "statement", "lines": ["Line."],
+               "params": {"text": "x", "source": {"text": t}}}
+              for i, t in enumerate(["popular summary of Carney, Cuddy & Yap, 2010 · vs Carney, Cuddy & Yap, 2010",
+                                     "drivers: Svenson, 1981", "Microsoft Canada, 2015"], 1)]
+    proj = _proj(tmp_path / "p", scenes, package={"sources": refs})
+    assert package.sources(proj) == (refs, [])  # подводка и имя организации не мешают, без дублей
+
+
+def test_short_ref():
+    assert package.short_ref("Bushman, B. J. (2002). Does venting. PSPB, 28. https://doi.org/10.1/x.") \
+        == "Bushman (2002) https://doi.org/10.1/x"
+    assert package.short_ref("Kruger, J., & Dunning, D. (1999). Unskilled. JPSP. https://doi.org/10.2/y") \
+        == "Kruger & Dunning (1999) https://doi.org/10.2/y"
+    assert package.short_ref("Ranehill, E., Dreber, A., & Weber, R. A. (2015). Robustness. https://doi.org/z") \
+        == "Ranehill et al. (2015) https://doi.org/z"
+    assert package.short_ref("Coles, N. A., et al. (2022). Many Smiles. https://doi.org/w") == "Coles et al. (2022) https://doi.org/w"
+    assert package.short_ref("Osborn, A. F. (1953). Applied Imagination: Principles. Scribner.") \
+        == "Osborn (1953). Applied Imagination: Principles"
+    assert package.short_ref("YouGov. Habits survey.") == "YouGov. Habits survey."  # без года — как есть
+
+
 def test_cut_sources_only_cited(tmp_path):
     proj = _proj(tmp_path / "p", SCENES[:1], package={"sources": REFS})
     proj.src = tmp_path / "src"  # нарезка: только процитированные, ссылки исходника — запасной пул
@@ -148,6 +173,17 @@ def test_package_errors(built, capsys):
     errs, _ = package.build(yt, log=lambda *_: None)
     assert any("предел 100" in e for e in errs)
     assert "❌ название 101" in (built.root / "output" / "p" / "youtube.checklist.md").read_text(encoding="utf-8")
+
+
+def test_long_sources_go_short(built):
+    yt = built.output("youtube")
+    many = [f"Author{i}, A., & Other, B. (2001). A rather long title of the paper number {i}. Some Journal, 1(2), "
+            f"3–4. https://doi.org/10.1000/{i:04d}" for i in range(60)]
+    yt.cfg["package"] = dict(yt.cfg["package"], sources=many)
+    errs, warns = package.build(yt, log=lambda *_: None)
+    _, text = package.texts(yt)
+    assert not errs and len(text) <= 5000 and "- Author7 & Other (2001) https://doi.org/10.1000/0007" in text
+    assert any("короткие" in w for w in warns)
 
 
 def test_project_without_deliverables_copies_final(tmp_path):
