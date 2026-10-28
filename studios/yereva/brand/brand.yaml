@@ -1,0 +1,31 @@
+# Бренд-кит студии "Yereva" (ROADMAP A2). Формат и «свой стиль по референсу» — docs/BRAND.md.
+# Референс — логотип (прототип Gemini 2026-10-28, перерисован кодом: logo/make_logo.py → logo/out/).
+# Цвета логотипа сняты пипеткой: синий #2266ED, почти чёрный #1A1A18. Фон роликов — тёмный, как logo-light.
+name: "Yereva"
+base: neon                 # встроенная палитра-основа: neon | calm | lab (недостающие ключи — отсюда)
+palette:                   # роль → #RRGGBB; good/warn/bad не совпадают с акцентами
+  bg: "#1A1A18"            # фон = «чернила» логотипа
+  bg_top: "#242422"
+  bg_bot: "#121211"
+  surface: "#262624"       # карточки, панели
+  text: "#FFFFFF"
+  dim: "#9C9C97"
+  accent: "#2266ED"        # синий логотипа
+  accent2: "#7FA8FF"       # светлый синий: читается на тёмном мелким кеглем
+  good: "#34C77B"
+  warn: "#F5B83D"
+  bad: "#F0524F"
+  neutral: "#9C9C97"
+  ink: "#1A1A18"
+fonts:                     # в Outfit (надпись логотипа) нет кириллицы — в роликах Manrope, тот же геометрический гротеск
+  head: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
+  num: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
+logo: {light: logo-light.png, dark: logo-dark.png}   # light — для тёмного фона; копии logo/out/
+background: gradient       # lab | gradient | solid | {type: image, file: photo.jpg, dim: 0.45}
+camera: false
+subs: tiktok               # karaoke | plate | tiktok (крупные, для вертикали)
+shape: {radius: 20, line: 3}   # геометрия логотипа: строгие грани, небольшой радиус
+cta: {text: Написать в директ, url: "@yereva.am"}
+voice:
+  tone: уверенный, спокойный, на «вы»; без жаргона SMM и обещаний «вирусности» — заявки и цифры

@@ -1,0 +1,51 @@
+# Бриф ролика. Фаза 1 заполняет этот файл. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS).
+schema_version: 1        # версия схемы project.yaml; файлы без неё — старые, грузятся миграцией в памяти
+title: "Yereva style demo"
+topic: "Yereva style demo"
+audience: TODO            # для кого ролик, что зритель должен вынести
+kind: explainer           # тип ролика (python -m studio kinds): explainer | short-hook | promo | music | slideshow | listicle | …
+                          #   задаёт голос (music/slideshow — без голоса), пределы длительности, поля brief: и проверки QA
+# brief: {}               # поля брифа по типу: short-hook {hook}, promo {product, price, cta}, listicle {count}, …
+language: ru              # язык озвучки и текста: ru | en | ... (studio/lang.py). Голос auto берётся отсюда
+format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square 1080×1080
+platform: null            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
+                          #   validate сверит формат и длительность, qa — файл по профилю площадки; null — без площадки
+fps: 30
+target_duration: null     # секунды, если длительность должна быть ТОЧНОЙ (Shorts/Reels); null — по речи
+
+tts:
+  backend: piper        # голос студии (studio.yaml voices.ru)
+                          #   | fake (тон вместо речи — только тесты/черновики) | none (ролик без голоса: music, slideshow)
+  voice: ru_RU-ruslan-medium
+                          #   en: slt | en-US-GuyNeural | en_US-lessac-medium
+  rate: auto              # auto — подбор под target_duration; ДЛЯ ДЛИННЫХ РОЛИКОВ ЗАФИКСИРУЙТЕ ЧИСЛО после 1-й главы
+  rate_range: [98, 125]   # что считаем естественным темпом
+
+pauses:                   # секунды
+  start: 0.45             # тишина в начале ролика
+  comma: 0.18             # после строки, оканчивающейся на , : ; —
+  sentence: 0.40          # после строки, оканчивающейся на . ! ?
+  scene: 0.55             # между сценами
+  end: 0.6                # в конце ролика
+
+style:
+  palette: neon           # neon | calm | lab  (studio/gfx.py: PALETTES)
+  # mood: lab             # только lab: lab | night | ember | deep | orchid (channel/STYLE.md §14)
+  # overrides: {accent2: "#F78FB3"}   # HEX поверх настроения: glow_cool, glow_warm, accent2
+  font: Inter Display
+
+music:
+  enabled: true
+  level_db: -13           # уровень подложки; QA требует, чтобы музыка была на 14–28 LU тише голоса
+  duck: true              # приглушать музыку под голосом
+  # sync: beat               # склейки сцен в долю трека (bar — в сильную долю); kind: music — включено (ROADMAP C3)
+  # file: drive.mp3           # свой трек: путь от папки проекта или имя в brand/music/ студии (будет зациклен)
+  # by_chapter: {ch02: calm.mp3}   # свой трек на главу, стык — кроссфейд (crossfade: 2.0)
+
+subtitles:
+  enabled: true
+  max_lines: 2
+
+loudness: -16             # LUFS итога (YouTube/соцсети: -14…-16)
+
+chapters: []              # порядок глав: [ch01, ch02, ...] -> файлы script/ch01.yaml ...

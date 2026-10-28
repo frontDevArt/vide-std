@@ -1,0 +1,11 @@
+# Замеры темпа голосов студии (ROADMAP A3) — пишет `python -m studio voice`, руками не править.
+# voice — хэш ID голоса (studio/voices.py). validate новых проектов считает слова по wpm отсюда.
+measured:
+- language: ru
+  backend: piper
+  voice: 2dce0a8db652
+  wpm: 151.3
+  rate: 105.0
+  words: 23
+  project: yereva-style-demo
+  date: '2026-10-28'

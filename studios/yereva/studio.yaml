@@ -1,0 +1,26 @@
+# Студия "Yereva" (ROADMAP A1, создана `python -m studio new-studio`, мастер — /new-studio).
+# Правила — CLAUDE.md рядом; бренд-кит — brand/brand.yaml (docs/BRAND.md).
+# Секреты (ключ и голос ElevenLabs) — только в .env студии: studios/yereva/.env (корневой .env — запасной).
+name: "Yereva"
+kind: brand             # youtube | brand | client
+languages: [ru]
+platforms: [instagram-reels, tiktok]   # площадки: профили — python -m studio platforms (studio/platforms.py)
+
+# Настройки проекта по умолчанию: умолчания движка → defaults → project.yaml (project.yaml главнее).
+# Схема — как у project.yaml (studio/config.py). Голос и модель входят в ключ кэша TTS — менять осознанно.
+defaults:
+  language: ru
+  format: vertical
+  style:
+    brand: brand           # бренд-кит brand/brand.yaml (ROADMAP A2)
+  # images: {enabled: true, style: "…", budget_usd: 3}   # AI-картинки сцен (ROADMAP C5, docs/IMAGES.md), платно
+
+# Голос студии по языку проекта: DEFAULTS → defaults → voices[язык] → project.yaml (ROADMAP A3, docs/TTS.md).
+# env:ИМЯ — значение из .env студии (в git и чат не попадает). rate — числом после первого ролика.
+voices:
+  ru: {backend: piper, voice: ru_RU-ruslan-medium}   # офлайн; edge ru-RU-DmitryNeural 2026-10-28 вис (сеть)
+max_accents: 2             # переопределений голоса (voice: сцен/строк) на ролик без ⚠️
+
+# Ворота качества (ROADMAP D4, studio/gates.py): правила для всех проектов студии, к ним — avoid / done_means
+# проекта (одноимённое правило проекта главнее, `false` — выключить). Строка — пункт чек-листа «глазами» в qa.
+quality: {done_means: [{logo_in_final: true}, {cta_in_final: true}]}
