@@ -11,7 +11,11 @@ from ..project import load, resolve_project
 
 def add(sp):
     q = project_parser(sp, "clean", "чистка кэшей build/ (рендер, микс, финал)")
-    q.add_argument("--keep-final", action="store_true", help="оставить build/final/ (MP4 и субтитры)")
+    q.description = ("Чистка кэшей build/: рендер, главы, микс, финал, TTS вне таймлайна (платный — никогда). У проекта "
+                     "с deliverables — build/<выход>/ каждого, общая build/ и финалы выходов output/<slug>/<выход>.*; "
+                     "версии сдачи vN/ и архивы не трогает.")
+    q.add_argument("--keep-final", action="store_true",
+                   help="оставить финалы: build/final/ (MP4 и субтитры), у выходов — и output/<slug>/<выход>.*")
     q.add_argument("--older-than", metavar="30d", help="только если проект не меняли столько (h/d/w); без проекта — все такие")
     q.add_argument("--dry-run", action="store_true", help="только отчёт, ничего не удалять")
 

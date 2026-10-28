@@ -4,6 +4,10 @@
 Строки TTS, которых в таймлайне нет (старые версии текста), удаляются — кроме платного синтеза (elevenlabs):
 там кэш дороже места. `keep_final` оставляет `build/final/` (без черновика) и `mix/levels.json` — по нему qa
 проверяет громкость. Рендер после чистки — заново (`render`), это и есть цена места.
+
+Проект с выходами (ROADMAP B3): `build/<выход>/` каждого, общая `build/{render,chapters,mix,final}` (проект собирали
+и до `deliverables`) и финалы выходов `output/<slug>/<выход>.*` — с `keep_final` они остаются; версии сдачи `vN/`
+и архивы не трогаются.
 """
 from __future__ import annotations
 
@@ -62,6 +66,8 @@ def targets(proj: Project, keep_final=False):
         fin = o.output_dir()
         if o.out and not keep_final and fin.exists():
             out += [("финал", p) for p in sorted(fin.glob(f"{o.out}.*"))]
+    if proj.outputs:  # собирали и до deliverables: общая build/{render,chapters,mix,final} выходам не видна
+        out += _build_targets(proj, keep_final)
     b = proj.root / "build"
     used = _tts_used(proj)
     if used is not None and proj.cfg["tts"]["backend"] not in PAID and (b / "tts").exists():
