@@ -28,9 +28,9 @@ scenes:
     template: media.logo_sting
     lines: ["Будьте на виду."]
     min_duration: 2.3
-    params: {tagline: "Будьте *на виду*"}
+    params: {tagline: "Будьте *на виду*", plate: light}
   - id: s05
     template: cta_end
     lines: ["Напишите нам в директ."]
     min_duration: 3
-    params: {title: "Напишите *нам*", button: "Написать в директ", done: "Ждём вас", handle: "@yereva.am", at: 0}
+    params: {title: "Напишите *нам*", button: "Написать в директ", done: "Ждём вас", handle: "@yereva.am", at: 0, plate: light}

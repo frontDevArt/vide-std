@@ -19,6 +19,20 @@ def _lum(rgb):
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
+def plate(logo, style, u):
+    """Белая карточка под логотипом (радиус бренда) и мягкая тень под ней цветом низа фона — логотип в цветах фона
+    (синий на синем) не сливается с ним. Логотип — вариант для светлого фона."""
+    pad = int(max(logo.width, logo.height) * 0.16)
+    w, h = logo.width + 2 * pad, logo.height + 2 * pad
+    r = int(style.shape.get("radius", 28) * 1.6 * u)
+    card = G.rrect((w, h), r, (255, 255, 255, 255))
+    card.alpha_composite(logo, (pad, pad))
+    blur = max(2, int(34 * u))
+    sh = Image.new("RGBA", (w + 4 * blur, h + 4 * blur), (0, 0, 0, 0))
+    sh.alpha_composite(G.rrect((w, h), r, style.col("bg_bot", 230)), (2 * blur, 2 * blur))
+    return card, sh.filter(ImageFilter.GaussianBlur(blur))
+
+
 @template("logo_sting",
           doc="Логотип-«стинг» (интро/аутро бренда): логотип выпрыгивает пружиной, за ним расходится свечение, по нему "
               "проходит блик, снизу — слоган. Логотип — file или из бренд-кита (light на тёмном фоне, dark на "
@@ -30,6 +44,8 @@ def _lum(rgb):
                             NUM),
                   "at": P(0.0, "когда логотип появляется: бит | '1.5s' | слово озвучки", AT),
                   "glow": P(True, "свечение за логотипом цветом accent"),
+                  "plate": P(None, "light — логотип для светлого фона на белой карточке с тенью (свечение выключается): "
+                                   "логотип в цветах фона не сливается с ним", str),
                   "exit": P(None, "cut | fade (по умолчанию fade, у последней сцены — cut)", str)},
           beats="логотип — с `at` (по умолчанию сразу), блик — через 0,5 с, слоган — через 0,8 с")
 class LogoSting(MediaTemplate):
@@ -38,7 +54,10 @@ class LogoSting(MediaTemplate):
         a = self.area
         size = self.p.get("size") or (0.8 if self.vert else 0.4)
         mw, mh = int(a.w * float(size)), int(a.h * 0.42)
-        logo = self._logo_image()
+        card = self.p.get("plate") == "light"
+        if card:  # логотип с полями карточки (+32 %): по ширине — в прежних пределах, по высоте — до 0,48 зоны
+            mw, mh = int(mw * 0.72), int(a.h * 0.36)
+        logo = self._logo_image(light_bg=card)
         if logo is not None:
             k = min(mw / logo.width, mh / logo.height)
             self.logo = logo.resize((max(1, int(logo.width * k)), max(1, int(logo.height * k))), Image.LANCZOS)
@@ -46,21 +65,25 @@ class LogoSting(MediaTemplate):
             name = self.p.get("text") or (self.style.brand or {}).get("name")
             self.logo = (G.text_sprite(name, int(130 * self.u * (1 if self.vert else 1.15)), "black", "text", maxw=mw)
                          if name else Image.new("RGBA", (1, 1), (0, 0, 0, 0)))  # нечего показать — только слоган
+        if card:
+            self.logo, self.shadow = plate(self.logo, self.style, self.u)
+        else:
+            self.shadow = None
         self.halo = G.glowify(Image.new("RGBA", self.logo.size, (0, 0, 0, 0)), "accent", 40 * self.u, 1.0,
-                              mask=self.logo.getchannel("A")) if self.p.get("glow", True) else None
+                              mask=self.logo.getchannel("A")) if self.p.get("glow", True) and not card else None
         self.tag = (G.text_sprite(self.p["tagline"], int(50 * self.u * (1 if self.vert else 1.1)), "semibold", "text",
                                   maxw=int(a.w * 0.9)) if self.p.get("tagline") else None)
         self.t0 = self.at(self.p.get("at", 0.0), 0.0)
         self.cy = a.cy - (self.tag.height * 0.6 if self.tag is not None else 0)
         self.ring = None
 
-    def _logo_image(self):
+    def _logo_image(self, light_bg=False):
         f = self.p.get("file")
         if f:
             return MD.image(self.src(f))
         kit = (self.style.brand or {}).get("logo") or {}
         bg = self.style.pal.get("bg", self.style.pal.get("bg_top", (0, 0, 0)))
-        want = ("light", "dark") if _lum(bg) < 128 else ("dark", "light")
+        want = ("light", "dark") if _lum(bg) < 128 and not light_bg else ("dark", "light")
         for k in want:
             if kit.get(k):
                 return MD.image(brand_path(kit[k]))
@@ -92,6 +115,8 @@ class LogoSting(MediaTemplate):
             pulse = eo(prog(x, 0.05, 0.9))
             blitc(img, self.halo, cx, self.cy, a * lerp(0.0, 0.9, pulse) * (1 - 0.35 * prog(x, 0.9, 2.0)),
                   sc * lerp(0.8, 1.08, pulse))
+        if self.shadow is not None:
+            blitc(img, self.shadow, cx, self.cy + 22 * self.u * sc, a * 0.9, sc)
         blitc(img, self.logo, cx, self.cy, a, sc)
         ks = prog(x, 0.5, 1.15)
         if 0 < ks < 1:

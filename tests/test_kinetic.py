@@ -115,3 +115,22 @@ def test_wipe_covers_the_cut(tmp_path):
     assert set(_wipe(st, 0.0, dur=0.5).getdata()) == {red}         # короткая сцена — без шторки
     mid = _wipe(st, 1.9)
     assert red in set(mid.getdata()) and st.col("accent") in set(mid.getdata())  # наезжает: видна полоса акцента
+
+
+# ------------------------------------------------------------------ логотип на карточке (plate: light)
+def test_logo_plate_uses_dark_logo_on_white_card(tmp_path):
+    """Логотип в цветах фона сливается с ним: plate: light — вариант для светлого фона на белой карточке, без свечения."""
+    d = _kit(tmp_path, palette={"bg": "#0F1F4B"}, logo={"light": "light.png", "dark": "dark.png"})
+    Image.new("RGBA", (40, 20), (255, 255, 255, 255)).save(d / "light.png")
+    Image.new("RGBA", (40, 20), (26, 26, 24, 255)).save(d / "dark.png")
+    st = Style.from_cfg({"kit": brand.load(d)})
+    ctx = {"W": 540, "H": 960, "fps": 30, "style": st}
+    scene = {"params": {"plate": "light"}, "dur": 2.0, "beats": [], "words": [], "first": False, "last": True}
+    tpl = REGISTRY.get("media.logo_sting")(ctx, scene, {})
+    tpl.setup()
+    assert tpl.halo is None and tpl.shadow is not None
+    assert tpl.logo.getpixel((2, tpl.logo.height // 2)) == (255, 255, 255, 255)        # поле карточки — белое
+    assert tpl.logo.getpixel((tpl.logo.width // 2, tpl.logo.height // 2))[:3] == (26, 26, 24)  # в центре — тёмный логотип
+    cta = REGISTRY.get("cta_end")(ctx, dict(scene, params={"plate": "light", "title": "Hi", "button": "Go"}), {})
+    cta.setup()
+    assert cta.logo.getpixel((cta.logo.width // 2, cta.logo.height // 2))[:3] == (26, 26, 24)

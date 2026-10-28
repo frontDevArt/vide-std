@@ -11,6 +11,7 @@ from ... import media as MD
 from ...brand import path as brand_path
 from ...gfx import blit, blitc, eio, eo, eob, lerp, prog
 from ..media.base import kb_curve, window
+from ..media.brand import plate
 from ..registry import AT, P, template
 from .base import Ink, KitTemplate, circle
 
@@ -110,6 +111,7 @@ class LowerThird(KitTemplate):
                   "button": P("Подписаться", "текст кнопки"), "done": P(None, "текст кнопки после клика", str),
                   "handle": P(None, "ник канала или сайт под кнопкой", str),
                   "logo": P(None, "логотип (assets/…); нет — из бренд-кита, если он есть", str),
+                  "plate": P(None, "light — логотип кита для светлого фона на белой карточке (как у logo_sting)", str),
                   "next": P(0, "мест под «смотрите дальше» (0–2): рамки конечной заставки", int),
                   "next_label": P("Смотрите дальше", "подпись рамок «смотрите дальше»"),
                   "at": P(0, "появление: бит | '1.5s' | слово озвучки", AT),
@@ -166,15 +168,22 @@ class CtaEnd(KitTemplate):
 
     def _logo(self, mw, mh):
         f = self.p.get("logo")
-        img = None
+        img, card = None, False
         if f:
             img = MD.image(AS.path(self.roots, f))
-        elif self.style.brand and (self.style.brand.get("logo") or {}).get("light"):
-            img = MD.image(brand_path(self.style.brand["logo"]["light"]))
+        else:
+            kit = (self.style.brand or {}).get("logo") or {}
+            card = self.p.get("plate") == "light"
+            v = kit.get("dark") if card and kit.get("dark") else kit.get("light")
+            if v:
+                img = MD.image(brand_path(v))
         if img is None:
             return None
+        if card:
+            mw, mh = int(mw * 0.72), int(mh * 0.72)
         k = min(mw / img.width, mh / img.height)
-        return img.resize((max(1, int(img.width * k)), max(1, int(img.height * k))), Image.LANCZOS)
+        img = img.resize((max(1, int(img.width * k)), max(1, int(img.height * k))), Image.LANCZOS)
+        return plate(img, self.style, self.u)[0] if card else img
 
     def _button(self, text, fill, color, f):
         tx = G.text_sprite(str(text), f, "black", color)
