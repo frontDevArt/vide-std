@@ -18,9 +18,10 @@ palette:                   # роль → #RRGGBB; good/warn/bad не совпа
   bad: "#F0524F"
   neutral: "#7F8DB0"        # не ближе к accent2: вердикт «нет данных» должен отличаться
   ink: "#0F1F4B"
-fonts:                     # в Outfit (надпись логотипа) нет кириллицы — в роликах Manrope, тот же геометрический гротеск
-  head: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
-  num: {file: Manrope-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-Manrope.txt)}
+fonts:                     # Montserrat — выбор пользователя 2026-10-28 из пяти (геометрия как у надписи логотипа Outfit,
+                           # в котором нет кириллицы); файл с github.com/google/fonts (ofl/montserrat)
+  head: {file: Montserrat-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-montserrat.txt)}
+  num: {file: Montserrat-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-montserrat.txt)}
   mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
 logo: {light: logo-light.png, dark: logo-dark.png}   # light — для тёмного фона; копии logo/out/
 background: gradient       # lab | gradient | solid | {type: image, file: photo.jpg, dim: 0.45}

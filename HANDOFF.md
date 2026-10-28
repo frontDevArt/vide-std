@@ -12,7 +12,7 @@
 | Название Yereva (арм. «երևալ» — появляться, становиться видимым), проверка ников | ✅ |
 | Логотип: перерисован кодом из прототипа Gemini — `studios/yereva/brand/logo/` | ✅ утверждён пользователем |
 | Студия `studios/yereva/`: `studio.yaml`, бренд-кит `brand/brand.yaml`, правила и рубрики `CLAUDE.md` | ✅ |
-| **Демо стиля** `studios/yereva/projects/yereva-style/demo/ch01.yaml` (16 с) | ⏳ **не утверждено**, открыт выбор шрифта (§2) |
+| **Демо стиля** `studios/yereva/projects/yereva-style/demo/ch01.yaml` (16 с) | ⏳ **ждёт «да»** — все замечания учтены (§2) |
 | Студия клиента №1 (недвижимость, `--kind client`) | ⬜ нет данных клиента |
 
 Решения пользователя по студии (не менять без него): тип `brand`, язык ru, площадки `instagram-reels` + `tiktok`,
@@ -76,11 +76,13 @@ Windows: перед командами студии — `PYTHONUTF8=1` (без �
   - `kit.map`: параметр `pin_scale` (крупные булавки для вертикали).
 - Демо теперь 16 с, 5 сцен: карта → «вас нет» → кинетический текст → логотип → призыв.
 
-**Открыто — шрифт.** «Буквы не нравятся» (сейчас Manrope). Пользователю показан лист пяти шрифтов на синем:
-Manrope, Unbounded, Montserrat, Onest, Geologica (последние три — OFL с github.com/google/fonts, скачивались во
-временную папку, в репозитории их нет). Когда выберет: файл и `OFL.txt` → `studios/yereva/brand/fonts/`,
-в `brand.yaml` `fonts.head` и `fonts.num` на него (`license: OFL-1.1 (brand/fonts/OFL-….txt)`), пересобрать демо.
-Совет Claude был — Montserrat (геометрия как у надписи логотипа) или Unbounded (самый «рилсовый», но широкий).
+**Шрифт выбран — Montserrat** (2026-10-28, из пяти на листе: Manrope, Unbounded, Montserrat, Onest, Geologica):
+`studios/yereva/brand/fonts/Montserrat-VF.ttf` + `OFL-montserrat.txt` (github.com/google/fonts, ofl/montserrat),
+`fonts.head` и `fonts.num` в `brand.yaml`. Montserrat шире Manrope: в `kinetic` для коротких фраз-ударов
+ставить `lines_max: 4`, чтобы фраза не делилась на страницы.
+
+**Открыто — только «да» по демо** (16 с, QA ✅): карта → «Вас среди них *нет.*» → кинетический текст →
+логотип → призыв, тёмно-синий фон, шторки, живой фон, Montserrat.
 Порядок проверки любых правок: `python -m studio demo yereva-style --no-render` → `voice yereva-style-demo` →
 `stills yereva-style-demo` → **посмотреть PNG** → `demo yereva-style` → показать MP4 и ждать «да».
 Цифр в демо нет и не будет: своих кейсов у агентства ещё нет, выдуманные запрещены (`studios/yereva/CLAUDE.md`).

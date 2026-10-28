@@ -19,7 +19,7 @@ scenes:
     template: kinetic
     lines: ["Вас среди них нет."]
     min_duration: 1.8
-    params: {text: "Вас среди них *нет.*", size: 118, lines_max: 3}
+    params: {text: "Вас среди них *нет.*", size: 118, lines_max: 4}
   - id: s03
     template: kinetic
     lines: ["Ролики, реклама и карты — | чтобы клиенты находили именно вас."]
