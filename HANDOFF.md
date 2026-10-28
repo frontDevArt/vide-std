@@ -1,0 +1,105 @@
+# Передача работы: G1, студия агентства Yereva
+
+Записано 2026-10-28 на рабочей машине, продолжение — на домашней. Ветка — **`stage-G`** (origin). Агент: прочитай
+этот файл целиком, затем корневой `CLAUDE.md`, `studios/yereva/CLAUDE.md` и `docs/agency/README.md`. Когда G1
+закроется, этот файл удалить (история — в `docs/history/SESSION_LOG.md`, запись «2026-10-28 — G1 (начало)»).
+
+## Где остановились
+Задача — ROADMAP G1 «Студии агентства и клиента» (`docs/ROADMAP.md`, этап G, пометка «В работе»).
+
+| Шаг | Статус |
+|---|---|
+| Название Yereva (арм. «երևալ» — появляться, становиться видимым), проверка ников | ✅ |
+| Логотип: перерисован кодом из прототипа Gemini — `studios/yereva/brand/logo/` | ✅ утверждён пользователем |
+| Студия `studios/yereva/`: `studio.yaml`, бренд-кит `brand/brand.yaml`, правила и рубрики `CLAUDE.md` | ✅ |
+| **Демо стиля** `studios/yereva/projects/yereva-style/demo/ch01.yaml` (13,5 с, QA ✅) | ⏳ **не утверждено** |
+| Студия клиента №1 (недвижимость, `--kind client`) | ⬜ нет данных клиента |
+
+Решения пользователя по студии (не менять без него): тип `brand`, язык ru, площадки `instagram-reels` + `tiktok`,
+вертикаль; основатель в кадре **не появляется**; цвета — только синий `#2266ED` и почти чёрный `#1A1A18`.
+Решения, принятые Claude (можно поменять одной строкой, если пользователь скажет): тон — на «вы»
+(`voice.tone` в `brand.yaml`); голос — piper `ru_RU-ruslan-medium` (`studio.yaml` → `voices.ru` и
+`tts` в `projects/yereva-style/project.yaml`), потому что edge `ru-RU-DmitryNeural` 2026-10-28 вис на любой фразе.
+
+## 1. Подготовка домашней машины (делает человек или агент)
+Windows: перед командами студии — `PYTHONUTF8=1` (без него падает на кириллице, piper виснет).
+
+1. Несохранённая работа: `git status`. Есть изменения — закоммитить или `git stash`, потом дальше.
+2. Ветки:
+   ```bash
+   git fetch origin
+   git checkout master
+   git pull --ff-only
+   git checkout stage-G
+   git pull --ff-only
+   ```
+3. Окружение:
+   ```bash
+   pip install -r requirements.txt
+   python -m studio doctor
+   ```
+   В выводе должна быть строка ✅ `TTS [ru] piper`. Голоса piper в git не хранятся (`tools/piper-voices/`):
+   нет `ru_RU-ruslan-medium` — поставить по `docs/TTS.md`. Нет никакого рабочего голоса — сказать пользователю
+   и остановиться (железное правило).
+4. Чистка кэшей всех роликов (на этой машине их много, в том числе часовой `twelve-myths`). Сначала отчёт:
+   ```bash
+   python -m studio --studio notes-from-the-mind clean --older-than 1h --dry-run
+   python -m studio --studio default clean --older-than 1h --dry-run
+   ```
+   Показать отчёт пользователю, затем те же команды без `--dry-run`. Что важно:
+   - платную озвучку (ElevenLabs) `clean` **не удаляет никогда** — перерендер потом бесплатный (у `twelve-myths`
+     ~50 тыс. символов озвучки, на тарифе столько нет — её терять нельзя);
+   - удаляются рендер сцен, микс и финалы `build/final/`; оставить MP4 — `--keep-final` (спросить пользователя);
+     версии сдачи `output/<slug>/vN/` не трогаются;
+   - `--studio yereva` чистить не нужно: там только демо.
+5. Демо Yereva в git не попадает (`*-demo` в `.gitignore`) — собрать заново:
+   ```bash
+   python -m studio demo yereva-style
+   ```
+   Результат: `studios/yereva/projects/yereva-style-demo/build/final/yereva-style-demo.mp4`, QA — все ✅.
+6. Логотип перегенерировать нужно только при правке: `pip install fonttools`, затем
+   `python studios/yereva/brand/logo/make_logo.py` (готовые SVG и PNG уже в git, `out/`).
+
+## 2. Открытое решение: начало демо
+Пользователь: начало «хорошее, но слабоватое, то ли короткое». Причина — «Вас ищут» абстрактная фраза на пустом
+фоне, в первую секунду нет события. Предложено (пользователь ещё не ответил) начать с карты:
+
+```yaml
+  - id: s01
+    template: map            # kit.map: точечная сетка, булавки по lat/lon
+    lines: ["Человек ищет в Ереване агентство недвижимости. | Находит три. | Вас среди них нет."]
+    min_duration: 4.5
+    params:
+      pins:
+        - {lat: 40.2066, lon: 44.5031, label: "Арабкир"}
+        - {lat: 40.1811, lon: 44.5136, label: "Кентрон"}
+        - {lat: 40.2275, lon: 44.4853, label: "Давташен"}
+      first_beat: 1          # по булавке на бит «Находит три»…
+      color: accent
+```
+Остальные сцены — как сейчас (список «Чтобы вас нашли», `media.logo_sting` со слоганом «Будьте *на виду*»,
+`cta_end` «Напишите нам в директ»). Ролик станет ~15–16 с. Порядок: правка `demo/ch01.yaml` →
+`python -m studio demo yereva-style --no-render` → `validate yereva-style-demo` → `voice` → `stills` →
+**посмотреть PNG** (карта читается? булавки в безопасной зоне?) → `demo yereva-style` → показать MP4 и ждать «да».
+Цифр в демо нет и не будет: своих кейсов у агентства ещё нет, выдуманные запрещены (`studios/yereva/CLAUDE.md`).
+
+## 3. После «да» по демо
+1. В `studios/yereva/CLAUDE.md` — дата утверждения и путь к демо (строка «утверждён демо … — TODO дата»).
+2. Строка в `docs/history/SESSION_LOG.md`.
+3. Коммит в `stage-G`; push — `git push origin stage-G`.
+
+## 4. Вторая половина G1: студия клиента №1
+`/new-studio` с `--kind client --lang ru --platforms instagram-reels,tiktok,instagram-feed`. Форматы —
+`docs/agency/CASE.md` §5, досье — `docs/agency/SMM_TEAM.md`. Нужно от пользователя (спросить **одним** сообщением):
+название бренда клиента и id, логотип файлом, цвета (HEX или скриншоты сайта/Instagram — пипеткой), шрифт с
+лицензией (если есть), одна реальная деталь для демо (район, тип объекта; цифры о клиенте не выдумывать).
+Согласие клиента быть кейсом — `docs/agency/CASE.md` §1 (что можно показывать, что нельзя).
+
+G1 готов, когда обе студии в `python -m studio studios` и у каждой утверждённое демо 10–15 с. Тогда — отметка
+`[x]` с абзацем *Сделано:* в `docs/ROADMAP.md`, `pytest` и `python -m studio selftest` (оба ✅), коммит «G1: …» в
+`stage-G`, этот файл удалить. Merge в `master` — только в конце этапа G и с согласия пользователя.
+
+## 5. Задачи пользователя (не агента)
+- Занять `@yereva.am` в Instagram и TikTok и домен `yereva.am` — на 2026-10-28 свободны, ник уже стоит в роликах.
+- Проверить товарный знак «Yereva», класс 35, на aipa.am — отсюда реестр не открылся.
+- Данные клиента №1 (п. 4).
