@@ -20,6 +20,9 @@
   (при уже установленном — удалить `tools/rhvoice` и запустить снова).
 - edge: `ru-RU-DmitryNeural` (мужской), `ru-RU-SvetlanaNeural` (женский).
 - piper: `ru_RU-dmitri-medium`, `ru_RU-denis-medium`, `ru_RU-ruslan-medium` (файлы `<имя>.onnx` + `.onnx.json`).
+  Установка: `pip install piper-tts`, модели — `huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/<голос>/medium/`.
+  Windows: onnxruntime 1.31.1 падает (segfault) уже на `import` — piper молчит с пустой ошибкой;
+  `pip install onnxruntime==1.20.1` чинит (2026-10-28, домашняя машина).
 
 Голоса (en):
 - rhvoice: `slt` (женский), `bdl`, `alan` — сборка: `VOICES="aleksandr-hq slt" LANGUAGES="Russian English" bash tools/setup_rhvoice.sh`.
