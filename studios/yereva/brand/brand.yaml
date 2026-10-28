@@ -25,6 +25,7 @@ fonts:                     # в Outfit (надпись логотипа) нет 
 logo: {light: logo-light.png, dark: logo-dark.png}   # light — для тёмного фона; копии logo/out/
 background: gradient       # lab | gradient | solid | {type: image, file: photo.jpg, dim: 0.45}
 camera: false
+motion: {transition: wipe, bg: 2.5}   # шторка между сценами, пятна фона в 2,5 раза живее (выбор 2026-10-28: «мало motion»)
 subs: tiktok               # karaoke | plate | tiktok (крупные, для вертикали)
 shape: {radius: 20, line: 3}   # геометрия логотипа: строгие грани, небольшой радиус
 cta: {text: Написать в директ, url: "@yereva.am"}

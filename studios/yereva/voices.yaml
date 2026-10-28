@@ -4,8 +4,8 @@ measured:
 - language: ru
   backend: piper
   voice: 2dce0a8db652
-  wpm: 151.3
+  wpm: 148.4
   rate: 105.0
-  words: 23
+  words: 28
   project: yereva-style-demo
   date: '2026-10-28'
