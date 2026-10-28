@@ -655,6 +655,7 @@ python -m studio clean --older-than 30d [--keep-final]          # все про�
 | главы | `build/chapters/` | если собирались с `--chapters` |
 | микс | всё в `build/mix/` (включая петлю) | с `--keep-final` остаётся `levels.json` |
 | финал | `build/final/*` | с `--keep-final` остаются MP4 и субтитры, черновик удаляется всегда |
+| выходы (`deliverables`) | всё выше в `build/<выход>/` и в общей `build/`; финалы `output/<slug>/<выход>.*` | с `--keep-final` финалы остаются; версии `vN/` и zip — никогда |
 | TTS вне таймлайна | строки озвучки старых версий текста | **у ElevenLabs не трогается никогда** — кэш дороже места |
 | логи build/ | старые `build/*.log` (до появления `logs/`) | — |
 

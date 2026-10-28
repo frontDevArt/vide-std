@@ -63,6 +63,41 @@ def test_dry_run(tmp_path):
     assert _left(proj) == before
 
 
+def _deliverables(root, outs=("youtube", "tiktok")):
+    p = root / "project.yaml"
+    p.write_text(p.read_text(encoding="utf-8").rstrip("\n") + f"\ndeliverables: [{', '.join(outs)}]\n", encoding="utf-8")
+    return root
+
+
+def test_deliverables_flat_build(tmp_path):
+    """Проект с выходами собирали и до `deliverables`: кэши в общей build/{render,chapters,mix,final} — тоже зона clean
+    (2026-10-28: fake-discounts, «освобождено 0.0 МБ» при 786 МБ таких кэшей). Таймлайнов выходов нет — TTS не трогаем."""
+    proj = _fill(_deliverables(make_gallery(tmp_path / "g", "horizontal")))
+    assert proj.outputs == ["youtube", "tiktok"]
+    freed = clean.clean(proj, log=lambda *_: None)
+    assert _left(proj) == ["timeline.json", "tts/old.wav", "tts/old.words.json", "tts/used.wav", "tts/used.words.json",
+                           "voice_calibration.json"]
+    assert freed == 1000 + 10 + 300 + 400 + 1000 + 200 + 500 + 20 + 2000 + 5 + 5 + 700 + 7
+
+
+def test_deliverables_keep_final(tmp_path):
+    """--keep-final у проекта с выходами: остаются общий build/final/ и финалы выходов output/<slug>/<выход>.*;
+    без флага уходят и они, а версии сдачи (vN/) и архивы — никогда."""
+    proj = _fill(_deliverables(make_gallery(tmp_path / "g", "horizontal")))
+    fin = proj.output("youtube").output_dir()
+    for rel in ("youtube.mp4", "youtube.srt", "tiktok.mp4", "v1/youtube.mp4", "g-v1.zip"):
+        (fin / rel).parent.mkdir(parents=True, exist_ok=True)
+        (fin / rel).write_bytes(b"x" * 50)
+    clean.clean(proj, keep_final=True, log=lambda *_: None)
+    left = set(_left(proj))
+    assert {"final/gallery.mp4", "final/gallery.srt", "final/gallery.vtt", "mix/levels.json"} <= left
+    assert not left & {"final/gallery.draft.mp4", "render/ch01/s01.mp4", "chapters/ch01.mp4", "mix/voice.wav"}
+    assert sorted(p.name for p in fin.iterdir()) == ["g-v1.zip", "tiktok.mp4", "v1", "youtube.mp4", "youtube.srt"]
+    clean.clean(proj, log=lambda *_: None)
+    assert "final/gallery.mp4" not in _left(proj)
+    assert sorted(p.name for p in fin.iterdir()) == ["g-v1.zip", "v1"]
+
+
 def test_age():
     assert clean.parse_age("30d") == 30 * 86400
     assert clean.parse_age("12h") == 12 * 3600
