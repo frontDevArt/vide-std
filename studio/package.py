@@ -99,13 +99,13 @@ def _who(s: str) -> str:
 
 
 def citations(proj: Project) -> list[tuple[str, str, str | None]]:
-    """Цитаты из сцен по порядку: [(текст, фамилия, год)] без повторов. В `source.text` части через «·»;
-    цитата — часть вида «Автор(ы), год», остальное (журнал, выборка) пропускается."""
+    """Цитаты из сцен по порядку: [(текст, фамилия, год)] без повторов. В `source.text` части через «·» или «→»
+    (оригинал → репликация); цитата — часть вида «Автор(ы), год», остальное (журнал, выборка) пропускается."""
     out, seen = [], set()
     for _, ch in proj.chapters:
         for sc in ch.get("scenes") or []:
             src = (sc.get("params") or {}).get("source")
-            for part in str((src or {}).get("text") or "").split("·") if isinstance(src, dict) else ():
+            for part in re.split(r"[·→]", str((src or {}).get("text") or "")) if isinstance(src, dict) else ():
                 m = CITE.match(part)
                 if m and (k := (_who(m["who"]), m["year"])) not in seen:
                     seen.add(k)

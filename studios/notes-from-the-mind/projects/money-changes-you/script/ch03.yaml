@@ -1,0 +1,209 @@
+# Глава 3: «Cross-examination» — репликации. Exhibit B: Klein et al. 2014 (Many Labs 1, Social Psychology: 36 выборок,
+# 6 344 участника; прайминг валютой не воспроизвёлся), Rohrer, Pashler & Harris 2015 (JEP: General, серия крупных
+# повторов прайминга деньгами — эффекта нет; число экспериментов в речи не называем), Vadillo, Hardwicke & Shanks 2016
+# (избирательная публикация). Exhibit A: Trautmann, van de Kuilen & Zeckhauser 2013 (Perspectives on Psych. Science 8(5),
+# нидерландская панель — «сложная мозаика», нет простой связи), Korndörfer, Egloff & Schmukle 2015 (PLOS ONE, 8 исследований,
+# высший класс щедрее), Côté, House & Willer 2015 → Schmukle, Korndörfer & Egloff 2019 (PNAS; модерации неравенством нет на
+# 3 наборах: США, Германия, 30 стран), Jung, Smeets, Stoop & Vosgerau 2023 (JEP: General 152(5), 2 преререгистрированные
+# полевые репликации Piff; в Беркли — в 2,5 раза больше наблюдений; связи нет). Подвердикт MYTH, подписка, мост к ch04.
+# Сверено 2026-10-29: абстракт Many Labs (36 samples, 6,344), библиография Trautmann (PoPS 8(5) 487–497), Jung (UvA, Tilburg).
+# n выборок Jung не называем (полный текст не открыт); Trautmann — без «богатые честнее», только «нет одной картины».
+chapter: ch03
+title: "Cross-examination"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Chapter three. | Cross-examination."
+    min_duration: 3
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 1}
+      number: 3
+      total: 6
+      title: "Cross-examination"
+      subtitle: "the retrials"
+
+  - id: s02
+    template: lab_flow
+    lines:
+      - "In science, | a cross-examination has a name: | replication."
+      - "Another team takes the same method | and runs it again, | ideally on far more people."
+      - "And the best teams write down their plan in advance, | so nobody can move the goalposts later."
+      - "If an effect is real, | it should survive that."
+    params:
+      stations:
+        - {icon: book, title: "Same method", sub: "run it again", at: "method"}
+        - {icon: people, title: "More people", sub: "far bigger samples", at: "far"}
+        - {icon: check, title: "Plan first", sub: "registered in advance", at: "plan"}
+
+  # ================================================================ Exhibit B: прайминг деньгами
+  - id: s03
+    template: lab_crowd
+    lines:
+      - "Start with Exhibit B: | the idea that just thinking about money | makes you colder."
+      - "In one of the biggest replication projects of its time, | thirty-six samples, | from labs around the world, | re-ran a set of classic findings."
+      - "One of them was a money-priming effect: | a faint image of cash | in the background of a screen, | which was supposed to shift people's views."
+      - "Together, | the labs tested more than six thousand people. | The money effect | didn't show up."
+    params:
+      hero: {value: 6344, from: 0, caption: "participants", sub: "36 samples", color: accent, at: "six thousand"}
+      study: {authors: "Klein et al. · Many Labs 1", where: "Social Psychology · 2014 · 36 samples", evidence: 3, at: "biggest"}
+      crowd: {n: 36, cols: 12, at: "thirty-six"}
+      range: null
+      source: {label: "REPLICATION", text: "Klein et al., 2014 · Many Labs 1", at: "biggest"}
+
+  - id: s04
+    template: lab_versus
+    lines:
+      - "And it wasn't a one-off."
+      - "Another team ran a series of large replications | of money-priming studies."
+      - "Same kind of reminders, | far more people. | Again, | nothing."
+    params:
+      left:
+        title: "ORIGINAL STUDIES"
+        items:
+          - {text: "money cue, colder", at: "series"}
+          - {text: "small samples", at: "reminders"}
+      right:
+        title: "REPLICATIONS"
+        items:
+          - {text: "far more people", at: "far"}
+          - {text: "no effect", at: "nothing"}
+      source: {label: "REPLICATION", text: "Rohrer, Pashler & Harris, 2015 · JEP: General", at: "series"}
+
+  - id: s05
+    template: lab_diagram
+    lines:
+      - "Then a third group looked across the whole field of money-priming research."
+      - "The published results looked lopsided: | exactly what you'd expect | when the experiments that work get printed, | and the ones that don't | stay in a drawer."
+      - "That doesn't mean anyone cheated. | It means the original picture | was brighter than the evidence."
+    params:
+      center: {icon: book, title: "The file drawer", at: "field"}
+      labels:
+        - {text: "hits get printed", at: "printed"}
+        - {text: "misses stay hidden", at: "drawer"}
+        - {text: "picture too bright", at: "brighter"}
+      source: {label: "REVIEW", text: "Vadillo, Hardwicke & Shanks, 2016", at: "field"}
+
+  # ================================================================ Exhibit A: класс и честность
+  - id: s06
+    template: lab_diagram
+    lines:
+      - "Now, | Exhibit A. | Are better-off people really more likely to bend the rules?"
+      - "A team in the Netherlands | put that question to a large national panel: | real adults, not students, | with their income, | wealth, | and education on record."
+      - "Their answer: | there's no single pattern."
+      - "Depending on the situation, | and on whether you measure status by money or by schooling, | the better-off sometimes behaved worse, | and sometimes better."
+    params:
+      center: {icon: people, title: "Dutch panel", at: "panel"}
+      labels:
+        - {text: "real adults", at: "adults"}
+        - {text: "income · wealth · schooling", at: "income"}
+        - {text: "no single pattern", at: "single"}
+      source: {label: "EXHIBIT A · RETRIAL", text: "Trautmann et al., 2013 · Perspectives on Psych. Science", at: "panel"}
+
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "Then a German team went bigger."
+      - "Eight studies, | on large samples built to mirror whole populations."
+      - "If the prosecution were right, | higher class should mean less giving. | It went the other way."
+      - "Better-off people were more likely to donate, | gave a bigger share of their income, | volunteered more, | and were more helpful and trusting."
+      - "Not one of the eight studies | found the link the headlines promised."
+      - "The authors' explanation for the earlier results: | small samples, | mostly students."
+    params:
+      claim: {label: "THE RETRIAL", text: "“Higher class, *more giving*.”", at: "other", qmark: false}
+      hero: {value: 8, from: 0, caption: "studies", sub: "large samples", color: accent, at: "Eight"}
+      cards:
+        - {icon: money, title: "Donate more", sub: "bigger share", at: "donate"}
+        - {icon: person, title: "Volunteer", sub: "more often", at: "volunteered"}
+        - {icon: people, title: "Trust more", sub: "and help", at: "trusting"}
+      source: {label: "EXHIBIT A · RETRIAL", text: "Korndörfer, Egloff & Schmukle, 2015 · PLOS ONE", at: "Eight"}
+
+  - id: s08
+    template: lab_versus
+    lines:
+      - "There was one more twist."
+      - "An American team found that the rich were less generous, | but only in places | where the gap between rich and poor was widest."
+      - "A neat idea: | maybe it isn't the money, | but the setting."
+      - "So the German team checked it | on three large data sets, | from the United States, | Germany, | and thirty countries. | The twist didn't hold."
+    params:
+      left:
+        title: "THE TWIST"
+        items:
+          - {text: "rich, less generous", at: "generous"}
+          - {text: "only where gaps are wide", at: "widest"}
+      right:
+        title: "THREE BIG DATA SETS"
+        items:
+          - {text: "US · Germany · 30 countries", at: "thirty"}
+          - {text: "twist didn't hold", at: "hold"}
+      source: {label: "PNAS", text: "Côté et al., 2015 → Schmukle et al., 2019", at: "American"}
+
+  - id: s09
+    template: lab_flow
+    lines:
+      - "And the cars? | The famous street studies | got a retrial of their own."
+      - "A team from the Netherlands | repeated both field studies, | with their plan registered in advance."
+      - "At the original Berkeley spot, | they watched about two and a half times as many drivers."
+      - "Pricier cars | were no more likely | to cut in, | or to drive past a waiting pedestrian."
+    params:
+      stations:
+        - {icon: wheel, title: "Same streets", sub: "both field studies", at: "repeated"}
+        - {icon: check, title: "Plan first", sub: "registered in advance", at: "registered"}
+        - {icon: cross, title: "No link", sub: "pricey cars, same manners", at: "Pricier"}
+      source: {label: "FIELD REPLICATION", text: "Jung et al., 2023 · JEP: General", at: "repeated"}
+
+  # ================================================================ подвердикт
+  - id: s10
+    template: lab_versus
+    voice: {style: 0.3}
+    lines:
+      - "So, | the first count: | do money and status make people meaner?"
+      - "The headline studies said yes. | The bigger, | stricter retrials | mostly found nothing, | and some found the opposite."
+    params:
+      left:
+        title: "HEADLINE STUDIES"
+        items:
+          - {text: "small samples", at: "headline"}
+          - {text: "“yes, meaner”", at: "yes"}
+      right:
+        title: "BIGGER RETRIALS"
+        items:
+          - {text: "plans registered first", at: "stricter"}
+          - {text: "mostly nothing", at: "nothing"}
+          - {text: "some: the opposite", at: "opposite"}
+
+  - id: s10b
+    template: lab_verdict
+    voice: {style: 0.3}
+    lines:
+      - "On this count, | the verdict is clear."
+    params:
+      verdict: {verdict: MYTH, sub: "“the rich are meaner” · *not replicated*", at: "verdict"}
+
+  # ================================================================ пульт: обвинение не подтвердилось → мост к ch04
+  - id: s11
+    template: lab_mixer
+    lines:
+      - "Back on our mixing desk, | the prosecution's prediction falls apart."
+      - "Push income up, | and agreeableness doesn't crash."
+      - "But a dropped charge | isn't the same as no effect at all."
+    params:
+      mixer: {at: "desk", x: 1060, values: {INCOME: 0.82, O: 0.64, C: 0.42, E: 0.7, A: 0.22, N: 0.36}}
+      focus:
+        - {ch: A, at: "agreeableness"}
+      moves:
+        - {ch: A, to: 0.55, at: "crash"}
+      keep: [mixer]
+
+  - id: s12
+    template: lab_mixer
+    lines:
+      - "Those experiments compared different people at one moment. | They never followed the same person | as their income changed."
+      - "For that, | you need years of data | on the very same people."
+      - "If you like watching famous findings face a cross-examination, | subscribe to Notes From The Mind. | Next, | we open the biggest dataset on money and personality | ever put together."
+    params:
+      mixer: {from_prev: true, x: 1060}
+      focus:
+        - {ch: INCOME, at: "income"}
+        - {ch: X, at: "subscribe"}
+    hold: 0.4

@@ -1,0 +1,138 @@
+# Глава 6: «Why the myth lives» + итог HALF-TRUE, вопрос, финал. Сверено 2026-10-29:
+# - Denissen, Bleidorn, Hennecke, Luhmann, Orth, Specht & Zimmermann 2018 (Psychological Science 29(1), онлайн 2017;
+#   пресс-релиз APS): SOEP, N = 8 458; соответствие профиля Big Five требованиям профессии связано с более высоким доходом,
+#   сильнее всего по экстраверсии, доброжелательности и открытости; «больше черты, чем нужно работе» — доход ниже.
+#   «Больше месячной зарплаты в год» в пресс-релизе НЕ подтверждено → в речи без суммы, только качественно.
+# - Li et al. 2026 — обратная стрелка той же силы (ch04); ограничения: наблюдательные данные, самоотчёт, только богатые
+#   западные страны (США, Германия, Нидерланды, Норвегия, Австралия), неучтённые события жизни.
+# - Роль ≠ черта и «истории запоминаются» — рассуждение без цифр (источник не нужен; без реальных людей).
+chapter: ch06
+title: "Why the myth lives"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Chapter six. | So why is everyone so sure?"
+    min_duration: 3
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 2}
+      number: 6
+      total: 6
+      title: "Why the myth lives"
+      subtitle: "and the final verdict"
+
+  - id: s02
+    template: lab_diagram
+    lines:
+      - "If money barely moves the sliders, | the belief has to come from somewhere."
+      - "There are at least three good suspects. | Who ends up with the money, | what the money comes with, | and which stories we remember."
+    params:
+      center: {icon: question, title: "Why we believe it", at: "belief"}
+      labels:
+        - {text: "who gets the money", at: "Who"}
+        - {text: "what comes with it", at: "comes"}
+        - {text: "which stories stick", at: "stories"}
+
+  # ================================================================ подозреваемый 1: отбор
+  - id: s03
+    template: lab_flow
+    lines:
+      - "Suspect one: | the arrow that points the other way."
+      - "Remember the big panel? | More conscientious, | calmer people | tended to earn more later on."
+      - "And a study of more than eight thousand German workers | found something similar about fit. | People whose personality matched what their job demanded | tended to earn more."
+      - "So when you meet a well-paid, | organized, | unflappable person, | money may not have made them that way. | That may be how they got the money."
+    params:
+      stations:
+        - {icon: person, title: "Who you are", sub: "reliable, calm", at: "conscientious"}
+        - {icon: wheel, title: "Job fit", sub: "personality matches job", at: "matched"}
+        - {icon: money, title: "Higher pay", sub: "comes after", at: "earn#2"}
+      source: {label: "STUDY", text: "Denissen et al., 2018 · Psych. Science · N = 8,458 · Li et al., 2026", at: "eight"}
+
+  # ================================================================ подозреваемый 2: роль ≠ черта
+  - id: s04
+    template: lab_versus
+    lines:
+      - "Suspect two: | the money rarely arrives alone."
+      - "Your friend's promotion came with a new title, | a fuller calendar, | new people to manage, | and less time for you."
+      - "So they act differently. | They talk like a boss in meetings, | and they cancel on Friday drinks."
+      - "But that's a new role, | not a new personality. | Put them back with old friends on a holiday, | and the same person often shows up."
+    params:
+      left:
+        title: "WHAT YOU SEE"
+        items:
+          - {text: "new title, new calendar", at: "title"}
+          - {text: "acts like a boss", at: "boss"}
+      right:
+        title: "WHAT CHANGED"
+        items:
+          - {text: "the role", at: "role"}
+          - {text: "not the person", at: "same"}
+
+  # ================================================================ подозреваемый 3: истории
+  - id: s05
+    template: lab_diagram
+    lines:
+      - "Suspect three: | the stories."
+      - "The friend who got rich and turned cold | is a story you tell for years. | The friend who got rich and stayed exactly the same | isn't a story at all."
+      - "Add a few small, | catchy experiments about mean drivers in expensive cars, | and the belief feels like common sense."
+    params:
+      center: {icon: chat, title: "Stories we retell", at: "stories"}
+      labels:
+        - {text: "“got rich, turned cold”", at: "cold"}
+        - {text: "stayed the same: no story", at: "same"}
+        - {text: "+ catchy experiments", at: "catchy"}
+
+  # ================================================================ оговорки
+  - id: s06
+    template: lab_flow
+    lines:
+      - "Before the verdict, | some honest limits on the evidence."
+      - "The panel data only watch people. | They can show what tends to follow a raise, | not prove the raise caused it."
+      - "Personality was self-reported, | in short questionnaires."
+      - "Every country in the panel was wealthy and Western. | And life events nobody measured, | like a move or a new baby, | could hide in the numbers."
+    params:
+      stations:
+        - {icon: chart, title: "Observation", sub: "not an experiment", at: "watch"}
+        - {icon: check, title: "Self-report", sub: "short questionnaires", at: "self-reported"}
+        - {icon: house, title: "Wealthy, Western", sub: "5 countries only", at: "Western"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · limitations", at: "limits"}
+
+  # ================================================================ вопрос зрителю
+  - id: s07
+    template: lab_mixer
+    lines:
+      - "Now I'd like to hear from you."
+      - "Did a raise or a new job ever change how you act, | or just how other people see you? | Tell me in the comments."
+    params:
+      mixer: {at: "hear", x: 1060, values: {INCOME: 0.82, O: 0.64, C: 0.426, E: 0.699, A: 0.549, N: 0.357}}
+      focus:
+        - {ch: INCOME, at: "raise"}
+        - {ch: X, at: "comments"}
+      keep: [mixer]
+
+  # ================================================================ итоговый вердикт
+  - id: s08
+    template: lab_verdict
+    voice: {style: 0.3}
+    lines:
+      - "So, | does money change you? | Here's the verdict."
+      - "Half true. | The rich are meaner: | that part is a myth. | But personality does shift after a raise. | Just by a hair, | for a year or two, | and in both directions."
+    params:
+      verdict: {verdict: HALF-TRUE, sub: "a real shift · *tiny*, temporary, two-way", at: "verdict"}
+
+  # ================================================================ финал на пульте
+  - id: s09
+    template: lab_mixer
+    lines:
+      - "Back on the desk, | the master fader is all the way up, | and the other five have barely moved."
+      - "Money mostly reveals and rewards | who you already are. | It barely rewrites it."
+      - "So, | did a raise ever change you? | Let me know below, | and I'll see you in the next case."
+    params:
+      mixer: {at: "desk", x: 1060, values: {INCOME: 0.82, O: 0.64, C: 0.426, E: 0.699, A: 0.549, N: 0.357}}
+      focus:
+        - {ch: INCOME, at: "master"}
+        - {ch: X, at: "five"}
+        - {ch: C, at: "rewards"}
+        - {ch: X, at: "rewrites"}
+    min_duration: 8
+    hold: 0.9

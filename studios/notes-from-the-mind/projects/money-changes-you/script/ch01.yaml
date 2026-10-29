@@ -1,0 +1,229 @@
+# Глава 1: холодное открытие (расчётный лист + пульт) + «The claim»: откуда уверенность, что такое личность (Big Five),
+# как это проверить. outline.md: ~800 слов. Подача: без годов в речи, авторы — в плашках; аналогия — «пульт с фейдерами».
+# Сверено 2026-10-29: Roberts, Walton & Viechtbauer 2006 (Psych. Bulletin 132(1)) — 92 лонгитюдных выборки, возраст 10–101;
+# личность меняется с возрастом постепенно, сильнее всего — рост добросовестности; эмоциональная стабильность растёт
+# (Bleidorn et al. 2022 — устойчиво). Li et al. 2026 (Psych. Bulletin, doi:10.1037/bul0000526) — 11 панелей, 5 стран
+# (США, Германия, Нидерланды, Норвегия, Австралия), до 134 515 человек, 4–20 лет наблюдения.
+chapter: ch01
+title: "The claim"
+scenes:
+  # ================================================================ холодное открытие
+  - id: s01
+    template: lab_mixer
+    voice: {style: 0.3}
+    lines:
+      - "They say money changes people."
+      - "A friend gets a big promotion, | and a year later | you barely recognize them."
+      - "So picture your own raise. | Twenty percent, | overnight."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      slip:
+        title: "PAYSLIP"
+        at: "say"
+        rows:
+          - {text: "base pay", value: "100%", at: "money"}
+          - {text: "raise", value: "+20%", at: "Twenty", color: accent}
+      mixer: {at: "promotion", x: 1250}
+      moves:
+        - {ch: INCOME, to: 0.82, at: "Twenty"}
+        - {ch: C, to: 0.506, at: "overnight"}
+        - {ch: A, to: 0.497, at: "overnight"}
+      keep: [mixer]
+
+  - id: s02
+    template: lab_mixer
+    lines:
+      - "Would the person behind that paycheck | change too?"
+      - "Would you get colder? | More careful? | Less fun at parties?"
+      - "That's the question on trial today."
+      - "We'll hear the famous experiments, | the people who tried to repeat them, | and one of the biggest datasets on money and personality ever put together."
+    params:
+      mixer: {from_prev: true, x: 1060}
+      focus:
+        - {ch: A, at: "colder"}
+        - {ch: C, at: "careful"}
+        - {ch: E, at: "parties"}
+        - {ch: X, at: "trial"}
+
+  # ================================================================ глава 1
+  - id: s03
+    template: lab_chapter
+    lines:
+      - "Chapter one. | The claim."
+    min_duration: 3
+    params: {number: 1, total: 6, title: "The claim", subtitle: "money changes people"}
+
+  - id: s04
+    template: lab_versus
+    lines:
+      - "The claim comes in a few flavors."
+      - "Money makes you selfish. | Success goes to your head. | Rich people stop caring about everyone else."
+      - "And then there's the hopeful version. | Once you stop worrying about rent, | you finally relax | and become a nicer person."
+    params:
+      left:
+        title: "THE DARK VERSION"
+        items:
+          - {text: "money makes you selfish", at: "selfish"}
+          - {text: "success goes to your head", at: "head"}
+          - {text: "the rich stop caring", at: "caring"}
+      right:
+        title: "THE HOPEFUL VERSION"
+        items:
+          - {text: "no rent stress", at: "rent"}
+          - {text: "calmer, nicer you", at: "relax"}
+
+  - id: s05
+    template: lab_diagram
+    lines:
+      - "Either way, | it's easy to see why we believe it."
+      - "Stories of sudden wealth are vivid, | and vivid stories stick."
+      - "A new job title comes with a new role, | new colleagues, | and new expectations."
+      - "And other people start treating you differently, | which can look a lot like you changing."
+    params:
+      center: {icon: receipt, title: "Money changes people", at: "believe"}
+      labels:
+        - {text: "vivid stories", at: "vivid"}
+        - {text: "a new role", at: "role"}
+        - {text: "new colleagues", at: "colleagues"}
+        - {text: "others act differently", at: "treating"}
+
+  # ================================================================ что такое личность
+  - id: s06
+    template: lab_mixer
+    lines:
+      - "But to put this claim on trial, | we need to pin down what personality actually is."
+      - "Most psychologists use a model called the Big Five."
+      - "Think of it as a mixing desk | with five sliders."
+      - "Openness: | how curious you are about new ideas and experiences."
+      - "Conscientiousness: | how organized, | careful and reliable you are."
+    params:
+      mixer: {at: "mixing", x: 1060, values: {INCOME: 0.3}}
+      focus:
+        - {ch: O, at: "Openness"}
+        - {ch: C, at: "Conscientiousness"}
+      keep: [mixer]
+
+  - id: s07
+    template: lab_mixer
+    lines:
+      - "Extraversion: | how much you seek out people and excitement."
+      - "Agreeableness: | how warm, | trusting and cooperative you are."
+      - "The fifth slider is often called neuroticism, | how easily you get anxious or upset."
+      - "Its flip side is emotional stability, | and that's the name we'll use here."
+      - "Everyone runs their own mix."
+    params:
+      mixer: {from_prev: true, x: 1060}
+      focus:
+        - {ch: E, at: "Extraversion"}
+        - {ch: A, at: "Agreeableness"}
+        - {ch: N, at: "neuroticism"}
+        - {ch: X, at: "Everyone"}
+      source: {label: "MODEL", text: "the Big Five · O C E A N", at: "Extraversion"}
+      moves:
+        - {ch: O, to: 0.64, at: "Everyone"}
+        - {ch: C, to: 0.42, at: "Everyone"}
+        - {ch: E, to: 0.7, at: "Everyone"}
+        - {ch: A, to: 0.55, at: "Everyone"}
+        - {ch: N, to: 0.36, at: "Everyone"}
+    hold: 1.0
+
+  - id: s07b
+    template: lab_hero_stack
+    lines:
+      - "How do you read someone's sliders? | Mostly, | you ask them."
+      - "People rate statements about themselves, | like: | I see myself as someone who does a thorough job."
+      - "Agree strongly, | and your conscientiousness slider goes up."
+      - "It's not a perfect method, | and that will matter later. | But the same questions, | asked the same way, | let researchers compare people across years."
+    params:
+      claim: {label: "QUESTIONNAIRE ITEM", text: "“I see myself as someone who does a *thorough job*.”", at: "statements", qmark: false}
+      hero: {value: 5, from: 1, caption: "agree strongly", sub: "on a 1–5 scale", color: accent, at: "Agree"}
+      cards:
+        - {icon: person, title: "Self-report", sub: "you rate yourself", at: "ask"}
+        - {icon: chart, title: "Same questions", sub: "same wording", at: "same#1"}
+        - {icon: clock, title: "Across years", sub: "comparable over time", at: "years"}
+      source: {label: "INVENTORY", text: "Big Five Inventory · John & Srivastava, 1999", at: "statements"}
+
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "And here's the part that matters for our trial. | The sliders aren't welded in place."
+      - "Big reviews of studies that followed people for years | find that most of us slowly become more conscientious, | and calmer, | as we get older."
+      - "It happens gradually, | over years and decades. | Not overnight."
+    params:
+      center: {icon: person, title: "Personality drifts", at: "welded"}
+      labels:
+        - {text: "more organized", at: "conscientious"}
+        - {text: "calmer", at: "calmer"}
+        - {text: "slowly, over decades", at: "decades"}
+      source: {label: "META-ANALYSIS", text: "Roberts et al., 2006 · 92 samples", at: "reviews"}
+
+  # ================================================================ как это проверить
+  - id: s09
+    template: lab_versus
+    lines:
+      - "So personality can move. | The real question is | whether money is one of the things that moves it."
+      - "And you can't settle that with stories."
+      - "For every friend who got rich and turned cold, | there's one who didn't change at all. | We just don't tell those stories."
+    params:
+      chrome: {step: 0}
+      left:
+        title: "STORIES"
+        items:
+          - {text: "rich and turned cold", at: "cold"}
+      right:
+        title: "MISSING STORIES"
+        items:
+          - {text: "rich and the same", at: "didn't"}
+          - {text: "nobody tells these", at: "tell"}
+
+  - id: s10
+    template: lab_flow
+    lines:
+      - "What you need is a panel study."
+      - "Researchers measure the same people's personality, | then track their income, | and come back to measure them again, | year after year."
+      - "Then they can ask: | when someone's pay goes up, | does their personality shift afterwards?"
+    params:
+      stations:
+        - {icon: person, title: "Measure", sub: "personality today", at: "personality"}
+        - {icon: receipt, title: "Track", sub: "income over time", at: "income"}
+        - {icon: chart, title: "Measure again", sub: "year after year", at: "again"}
+
+  - id: s11
+    template: lab_diagram
+    lines:
+      - "There's a catch, though."
+      - "Arrows can point both ways."
+      - "Maybe money changes your personality. | Or maybe certain personalities | are simply better at earning money."
+      - "A good panel study can test both directions | at the same time."
+    params:
+      center: {icon: question, title: "Which way?", at: "catch"}
+      labels:
+        - {text: "money → you", at: "changes"}
+        - {text: "you → money", at: "earning"}
+        - {text: "test both", at: "both#2"}
+
+  - id: s12
+    template: lab_full_number
+    lines:
+      - "And that's exactly what a new analysis did. | Eleven panels, | five countries, | following working adults | for up to twenty years."
+    params:
+      value: 20
+      from: 0
+      caption: "years of tracking"
+      sub: "11 panels · 5 countries"
+      at: "twenty"
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · Psychological Bulletin", at: "analysis"}
+
+  - id: s13
+    template: lab_flow
+    lines:
+      - "We'll get to its answer. | But first, | a fair trial hears the prosecution."
+      - "Two famous lines of experiments | made the idea that money makes people meaner | sound like settled science."
+      - "Then we'll cross-examine them, | and finally open the big panel."
+      - "Exhibit A."
+    params:
+      stations:
+        - {icon: flask, title: "Exhibit A", sub: "the famous experiments", at: "prosecution"}
+        - {icon: check, title: "Cross-examine", sub: "who repeated them", at: "cross-examine"}
+        - {icon: chart, title: "The big panel", sub: "eleven panels", at: "panel"}
+    hold: 0.4
