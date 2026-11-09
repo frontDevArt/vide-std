@@ -2,6 +2,14 @@
 # voice — хэш ID голоса (studio/voices.py). validate новых проектов считает слова по wpm отсюда.
 measured:
 - language: ru
+  backend: elevenlabs
+  voice: 848d5c1805bc
+  wpm: 154.3
+  rate: 110.0
+  words: 103
+  project: claude-limits
+  date: '2026-11-09'
+- language: ru
   backend: piper
   voice: 2dce0a8db652
   wpm: 170.2
