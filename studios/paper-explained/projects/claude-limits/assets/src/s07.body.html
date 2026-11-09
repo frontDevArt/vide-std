@@ -1,0 +1,69 @@
+<!-- s07 — PonyTail: «Таблетка вторая — Понитейл. | Клод пишет как самый ленивый сеньор: | только нужный код. |
+     В тестах авторов — | на сорок пять процентов меньше выходных токенов.»
+     Идея: лекарство — меньше лишнего. «PONYTAIL» поперёк круга, перед ним — аптечный флакон (ч/б вырезка):
+     b0: ярлык «таблетка № 2», круг, заголовок, флакон; b1: полоска кода; b2: лишние строки зачёркнуты;
+     со слова «сорок» — «−45 %» терракотой и источник. -->
+<style>
+  .code { width: 480px; padding: 22px 26px 18px; box-sizing: border-box; font-family: PTMono; font-size: 23px; line-height: 36px; }
+  .code .ln { position: relative; white-space: pre; }
+  .code .ln > s { position: absolute; left: -6px; right: 4px; top: 16px; height: 7px; background: var(--terra-dk); border-radius: 4px;
+                  transform-origin: 0 50%; mix-blend-mode: multiply; animation: strike .3s ease-out var(--d) both; }
+  @keyframes strike { from { transform: scaleX(0) rotate(-.6deg); } to { transform: scaleX(1) rotate(-.6deg); } }
+  .kw { color: var(--terra-dk); }
+  .num { font-family: Oswald; font-weight: 700; font-size: 136px; line-height: .85; color: var(--terra); letter-spacing: -3px; mix-blend-mode: multiply; }
+  .src { font-family: PTSerif; font-style: italic; font-size: 22px; line-height: 1.3; color: var(--dim); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Таблетка № 2</div>
+  <div class="cross" style="left: 680px; top: 120px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 560px; width: 80px; height: 80px; --d: calc(var(--b0) + .4s)"></div>
+  <div class="disc" style="left: 120px; top: 190px; width: 540px; height: 540px; --d: calc(var(--b0) + .1s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <circle class="draw" pathLength="1" cx="390" cy="460" r="300" style="--d: calc(var(--b0) + .3s); --dur: .7s"/>
+    <path class="draw thin" pathLength="1" d="M20 300 L 220 380" style="--d: calc(var(--b0) + .5s)"/>
+  </svg>
+
+  <!-- заголовок за флаконом -->
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 388px; font-size: 180px; color: var(--navy); --d: calc(var(--b0) + .15s)">PonyTail</div>
+
+  <!-- флакон: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <div class="abs drop sticker" style="left: 300px; top: 262px; width: 180px; height: 270px; --r: 6deg; --d: calc(var(--b0) + .35s)" data-boil>
+    <svg viewBox="0 0 240 360" width="180" height="270">
+      <defs>
+        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
+        <pattern id="ridge" width="12" height="70" patternUnits="userSpaceOnUse"><rect width="12" height="70" fill="#ece8e0"/><rect x="8" width="3" height="70" fill="#9f988e"/></pattern>
+        <linearGradient id="glassb" x1="0" x2="1"><stop offset="0" stop-color="#2a2623"/><stop offset=".28" stop-color="#6e6862"/><stop offset=".55" stop-color="#3a3531"/><stop offset="1" stop-color="#191614"/></linearGradient>
+      </defs>
+      <rect x="44" y="64" width="152" height="24" fill="#2b2724" stroke="#141210" stroke-width="3"/>
+      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#glassb)" stroke="#141210" stroke-width="4"/>
+      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#ht)" opacity=".28"/>
+      <rect x="30" y="104" width="13" height="226" rx="6" fill="#fff" opacity=".3"/>
+      <rect x="22" y="2" width="196" height="68" rx="10" fill="url(#ridge)" stroke="#141210" stroke-width="4"/>
+      <rect x="34" y="150" width="172" height="146" fill="#f3efe6" stroke="#141210" stroke-width="2"/>
+      <rect x="34" y="150" width="172" height="146" fill="url(#ht)" opacity=".08"/>
+      <text x="120" y="196" text-anchor="middle" font-family="PTMono" font-size="25" font-weight="700" fill="#141210">PONYTAIL</text>
+      <line x1="50" y1="212" x2="190" y2="212" stroke="#141210" stroke-width="2"/>
+      <text x="120" y="244" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">по 1 перед</text>
+      <text x="120" y="270" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">кодом</text>
+    </svg>
+  </div>
+
+  <!-- полоска кода -->
+  <div class="abs slideL" style="left: 0; top: 640px; --r: -2deg; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="sheet code" data-torn="tb" data-depth="8">
+      <div class="ln appear" style="--d: calc(var(--b1) + .25s)"><span class="kw">def</span> get_user(id):</div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .37s)">  cache = LRUCache(1000)<s style="--d: calc(var(--b2) + .00s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .49s)">  check = Validator()<s style="--d: calc(var(--b2) + .18s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .61s)">  retry = Retry(3)<s style="--d: calc(var(--b2) + .36s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .73s)">  return db.get(id)</div>
+    </div></div>
+  </div>
+
+  <!-- цифра и источник -->
+  <div class="abs pop" style="left: 440px; top: 672px; --r: -3deg" data-at="сорок" data-boil>
+    <div class="num">−45%</div>
+    <div class="label" style="margin-top: 8px">выходных токенов</div>
+  </div>
+  <div class="abs src appear" style="left: 0; top: 900px; width: 780px" data-at="сорок:0.3">Источник: бенчмарк авторов PonyTail (github.com/DietrichGebert/ponytail),
+    39 задач, Claude Code + Opus 5.5, окт. 2026; медиана к запуску без плагина.</div>
+</div>

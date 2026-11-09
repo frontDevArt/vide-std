@@ -1,0 +1,71 @@
+<!-- s01 — крючок: «Вы платите за Клода. | Так почему лимит кончается к обеду?»
+     Идея: оплачено, а времени нет. Заголовок «ЛИМИТ» поперёк круга, перед ним — песочные часы (ч/б вырезка):
+     b0: круг, кольца, квитанция «оплачено»; b1: заголовок, часы падают, песок уходит; к «обеду» — пометка и штамп. -->
+<style>
+  .sand-top { transform-box: fill-box; transform-origin: 50% 100%; animation: sandTop var(--clk) linear var(--b1) both; }
+  .sand-bot { transform-box: fill-box; transform-origin: 50% 100%; animation: sandBot var(--clk) linear var(--b1) both; }
+  @keyframes sandTop { from { transform: scaleY(1); } to { transform: scaleY(.18); } }
+  @keyframes sandBot { from { transform: scaleY(.55); } to { transform: scaleY(1); } }
+  :root { --clk: calc(var(--e1) - var(--b1)); }
+  .receipt { width: 330px; padding: 16px 22px 18px; box-sizing: border-box; }
+  .receipt .row { display: flex; font-family: PTMono; font-size: 23px; margin-bottom: 6px; }
+  .receipt .row i { flex: 1; border-bottom: 3px dotted rgba(20,18,16,.45); margin: 0 8px 7px; }
+  .chip { padding: 10px 18px 8px; font-family: PTMono; font-size: 25px; color: var(--navy); }
+</style>
+<div class="stage">
+  <div class="dot" style="left: 24px; top: 520px; width: 96px; height: 96px; --d: calc(var(--b0) + .35s)"></div>
+  <div class="dot" style="left: 680px; top: 250px; width: 60px; height: 60px; --d: calc(var(--b0) + .45s)"></div>
+  <div class="cross" style="left: 640px; top: 820px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="cross" style="left: 30px; top: 230px; --d: calc(var(--b0) + .4s)"></div>
+  <div class="disc" style="left: 100px; top: 230px; width: 580px; height: 580px; --d: var(--b0)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <circle class="draw" pathLength="1" cx="390" cy="520" r="330" style="--d: calc(var(--b0) + .2s); --dur: .7s"/>
+    <circle class="draw" pathLength="1" cx="390" cy="520" r="365" style="--d: calc(var(--b0) + .35s); --dur: .7s"/>
+    <path class="draw thin" pathLength="1" d="M30 860 L 330 640" style="--d: calc(var(--b0) + .5s)"/>
+    <path class="draw thin" pathLength="1" d="M750 120 L 520 330" style="--d: calc(var(--b0) + .55s)"/>
+  </svg>
+
+  <!-- квитанция -->
+  <div class="abs slideL" style="left: 0; top: 30px; --r: -3deg; --d: calc(var(--b0) + .15s)" data-boil>
+    <div class="shadow"><div class="tanp receipt" data-torn="tb" data-depth="7">
+      <div class="row"><b>ПОДПИСКА</b><i></i><span>CLAUDE</span></div>
+      <div class="row"><b>СТАТУС</b><i></i><span>ОК</span></div>
+    </div></div>
+    <div class="stamp" style="left: 120px; top: 70px; font-size: 40px; color: var(--blue); border-color: var(--blue); --r: -8deg; --d: calc(var(--b0) + .6s)">Оплачено</div>
+  </div>
+
+  <!-- заголовок за часами -->
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 362px; font-size: 262px; --d: var(--b1)">Лимит</div>
+
+  <!-- песочные часы: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <div class="abs drop sticker" style="left: 273px; top: 300px; width: 234px; height: 360px; --r: 4deg; --d: calc(var(--b1) + .2s)" data-boil>
+    <svg viewBox="0 0 260 400" width="234" height="360">
+      <defs>
+        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
+        <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#c9c4bb"/><stop offset=".3" stop-color="#f6f3ec"/><stop offset="1" stop-color="#a9a299"/></linearGradient>
+        <linearGradient id="wood" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c544d"/><stop offset="1" stop-color="#221e1b"/></linearGradient>
+        <clipPath id="gl"><path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z"/></clipPath>
+      </defs>
+      <rect x="14" y="30" width="15" height="340" fill="#35302c"/><rect x="231" y="30" width="15" height="340" fill="#35302c"/>
+      <path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z" fill="url(#glass)"/>
+      <g clip-path="url(#gl)">
+        <path class="sand-top" d="M48 92 Q130 116 212 92 L 138 200 L 122 200 Z" fill="#3a3531"/>
+        <path class="sand-bot" d="M40 366 Q130 236 220 366 Z" fill="#3a3531"/>
+        <rect x="128" y="198" width="4" height="160" fill="#3a3531"/>
+        <rect x="0" y="0" width="260" height="400" fill="url(#ht)" opacity=".22"/>
+        <rect x="150" y="0" width="110" height="400" fill="url(#ht)" opacity=".35"/>
+      </g>
+      <path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z" fill="none" stroke="#141210" stroke-width="5"/>
+      <path d="M62 60 C64 110 96 150 110 176" stroke="#fff" stroke-width="7" fill="none" opacity=".75" stroke-linecap="round"/>
+      <rect x="0" y="0" width="260" height="36" rx="6" fill="url(#wood)" stroke="#141210" stroke-width="4"/>
+      <rect x="0" y="364" width="260" height="36" rx="6" fill="url(#wood)" stroke="#141210" stroke-width="4"/>
+      <path d="M12 14 H 248 M 18 24 H 200 M 12 378 H 240 M 30 388 H 250" stroke="#0e0c0b" stroke-width="2" opacity=".55"/>
+    </svg>
+  </div>
+
+  <!-- к «обеду»: выноска и штамп -->
+  <svg class="ink" width="780" height="960"><path class="draw" data-at="обеду" pathLength="1" stroke="#30353C" stroke-width="2.4" fill="none"
+       style="--dur: .3s" d="M505 610 L 560 690 L 640 690"/></svg>
+  <div class="abs pop sheet chip shadow" style="left: 455px; top: 690px; --r: 2deg" data-at="обеду:0.15" data-boil>к обеду — пусто</div>
+  <div class="stamp" data-at="обеду:0.4" style="left: 40px; top: 760px; font-size: 58px; --r: -9deg">Исчерпан</div>
+</div>

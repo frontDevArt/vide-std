@@ -1,0 +1,38 @@
+# Бета «лимиты Claude → Graphify и PonyTail». Сейчас — 3 пробных кадра стиля (s01, s06, s07);
+# остальные сцены (s02–s05, s08) — после утверждения кадров. Разбор стиля — docs/reference/VOX_STYLE.md.
+# Тело сцены — страница web.html (бумага, вырезки, маркер, нитка; движение «на двойках» 12 к/с — внутри страницы),
+# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md; пока сеть не отдаёт файлы — SVG-заглушки кодом), заголовок, круг и линии — кодом.
+chapter: ch01
+title: "Почему кончаются лимиты"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Вы платите за Клода."
+      - "Так почему лимит кончается к обеду?"
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - prompt: "a vintage hourglass with almost all the sand already in the lower bulb, front view"
+        role: subject
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Таблетка первая — Графифай."
+      - "Он один раз рисует карту проекта: | что с чем связано."
+      - "И Клод спрашивает карту, | а не читает всё подряд."
+    params: {file: assets/s06-graphify.html, fade: false}
+    image:
+      - prompt: "a vintage brass pocket compass, open, seen from above"
+        role: subject
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Таблетка вторая — Понитейл."
+      - "Клод пишет как самый ленивый сеньор: | только нужный код."
+      - "В тестах авторов — | на сорок пять процентов меньше выходных токенов."
+    params: {file: assets/s07-ponytail.html, fade: false}
+    image:
+      - prompt: "a vintage glass pharmacy pill bottle with a plain blank label, front view"
+        role: subject

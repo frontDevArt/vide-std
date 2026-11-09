@@ -1,0 +1,79 @@
+<!-- s06 — Graphify: «Таблетка первая — Графифай. | Он один раз рисует карту проекта: | что с чем связано. |
+     И Клод спрашивает карту, | а не читает всё подряд.»
+     Идея: карта вместо чтения. «GRAPHIFY» поперёк круга, перед ним — компас (ч/б вырезка); вокруг — файлы-фишки.
+     b0: ярлык «таблетка № 1», круг, заголовок, компас; b1: фишки файлов; b2: линии связей;
+     b3: вопрос Клода и маршрут терракотой; b4: лишние фишки гаснут. -->
+<style>
+  .node { position: absolute; width: 190px; height: 66px; display: flex; align-items: center; justify-content: center;
+          font-family: PTMono; font-size: 28px; }
+  .node .bg { position: absolute; inset: 0; }
+  .node span { position: relative; }
+  .hot { position: absolute; inset: 0; background: var(--grain), var(--terra); animation: appear .01s linear var(--d) both; }
+  .ht { animation: hotTxt .01s linear var(--d) both; }
+  @keyframes hotTxt { from { color: var(--ink); } to { color: var(--paper-hi); } }
+  .q { padding: 12px 20px 10px; font-family: PTMono; font-size: 25px; color: var(--paper-hi); background: var(--navy); }
+  .dim-later { animation: drop .5s cubic-bezier(.2,.8,.3,1.15) var(--d) both, fadeTo .4s linear var(--b4) forwards; --to: .3; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Таблетка № 1</div>
+  <div class="cross" style="left: 690px; top: 300px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 40px; top: 360px; width: 70px; height: 70px; --d: calc(var(--b0) + .4s)"></div>
+  <div class="disc" style="left: 110px; top: 240px; width: 560px; height: 560px; --d: calc(var(--b0) + .1s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <circle class="draw" pathLength="1" cx="390" cy="520" r="315" style="--d: calc(var(--b0) + .3s); --dur: .7s"/>
+    <circle class="draw" pathLength="1" cx="390" cy="520" r="350" style="--d: calc(var(--b0) + .45s); --dur: .7s"/>
+  </svg>
+
+  <!-- связи: от компаса к файлам и между файлами -->
+  <svg class="ink" width="780" height="960"><g stroke="#141210" stroke-width="2.4" opacity=".75">
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .00s); --dur: .3s" d="M390 520 L 115 200"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .10s); --dur: .3s" d="M390 520 L 665 200"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .20s); --dur: .3s" d="M390 520 L 95 640"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .30s); --dur: .3s" d="M390 520 L 685 640"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .40s); --dur: .3s" d="M390 520 L 165 880"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .50s); --dur: .3s" d="M390 520 L 615 880"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .60s); --dur: .3s" d="M115 200 Q 60 420 95 640"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b2) + .70s); --dur: .3s" d="M685 640 Q 700 780 615 880"/>
+  </g>
+  <!-- маршрут ответа -->
+  <g stroke="#C46557" stroke-width="12" fill="none">
+    <path class="draw" pathLength="1" style="--d: calc(var(--b3) + .35s); --dur: .3s" d="M390 520 L 115 200"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--b3) + .55s); --dur: .3s" d="M390 520 L 685 640"/>
+  </g></svg>
+
+  <!-- заголовок за компасом -->
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 446px; font-size: 182px; --d: calc(var(--b0) + .15s)">Graphify</div>
+
+  <!-- компас: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <div class="abs drop sticker" style="left: 297px; top: 412px; width: 186px; height: 215px; --r: -8deg; --d: calc(var(--b0) + .35s)" data-boil>
+    <svg viewBox="0 0 260 300" width="186" height="215">
+      <defs>
+        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
+        <radialGradient id="metal" cx=".35" cy=".3"><stop offset="0" stop-color="#8a837b"/><stop offset=".6" stop-color="#3f3935"/><stop offset="1" stop-color="#1c1917"/></radialGradient>
+      </defs>
+      <circle cx="130" cy="26" r="19" fill="none" stroke="#2a2522" stroke-width="9"/>
+      <rect x="118" y="40" width="24" height="28" rx="4" fill="#3a3430" stroke="#141210" stroke-width="3"/>
+      <circle cx="130" cy="170" r="124" fill="url(#metal)" stroke="#141210" stroke-width="5"/>
+      <circle cx="130" cy="170" r="124" fill="url(#ht)" opacity=".3"/>
+      <circle cx="130" cy="170" r="100" fill="#f2eee5" stroke="#141210" stroke-width="3"/>
+      <circle cx="130" cy="170" r="90" fill="none" stroke="#141210" stroke-width="12" stroke-dasharray="2 13.7"/>
+      <circle cx="130" cy="170" r="66" fill="none" stroke="#141210" stroke-width="1.5" opacity=".5"/>
+      <polygon points="130,86 146,170 114,170" fill="#141210"/>
+      <polygon points="130,254 146,170 114,170" fill="#9a938a" stroke="#141210" stroke-width="2"/>
+      <circle cx="130" cy="170" r="11" fill="#2a2522" stroke="#f2eee5" stroke-width="3"/>
+      <path d="M150 90 a 84 84 0 0 1 56 60" fill="none" stroke="#fff" stroke-width="6" opacity=".6" stroke-linecap="round"/>
+      <rect x="130" y="40" width="130" height="260" fill="url(#ht)" opacity=".12"/>
+    </svg>
+  </div>
+
+  <!-- файлы-фишки (центры: концы линий) -->
+  <div class="node drop" style="left: 20px; top: 167px; --r: -3deg; --d: calc(var(--b1) + .00s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><div class="hot" style="--d: calc(var(--b3) + .5s)"></div><span class="ht" style="--d: calc(var(--b3) + .5s)">auth.py</span></div>
+  <div class="node drop dim-later" style="left: 570px; top: 167px; --r: 2deg; --d: calc(var(--b1) + .15s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><span>ui.tsx</span></div>
+  <div class="node drop dim-later" style="left: 0; top: 607px; --r: 3deg; --d: calc(var(--b1) + .30s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><span>utils.py</span></div>
+  <div class="node drop" style="left: 590px; top: 607px; --r: -2deg; --d: calc(var(--b1) + .45s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><div class="hot" style="--d: calc(var(--b3) + .7s)"></div><span class="ht" style="--d: calc(var(--b3) + .7s)">api.py</span></div>
+  <div class="node drop dim-later" style="left: 70px; top: 847px; --r: 2deg; --d: calc(var(--b1) + .60s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><span>db.py</span></div>
+  <div class="node drop dim-later" style="left: 520px; top: 847px; --r: -3deg; --d: calc(var(--b1) + .75s)" data-boil><div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><span>tests.py</span></div>
+
+  <!-- вопрос Клода -->
+  <div class="abs drop shadow" style="left: 330px; top: 12px; --r: 1.5deg; --d: var(--b3)" data-boil><div class="q">Claude: где проверка входа?</div></div>
+</div>
