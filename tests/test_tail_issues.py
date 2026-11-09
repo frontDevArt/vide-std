@@ -2,7 +2,7 @@
 тишины (ElevenLabs с контекстом соседних строк) и смычка «т» в конце слова, которую ловить нельзя."""
 import numpy as np
 
-from studio import tts as T
+from studio import qa, tts as T
 
 SR = T.SR
 RNG = np.random.default_rng(7)
@@ -44,3 +44,11 @@ def test_final_stop_release_is_not_bleed():
 
 def test_short_line_is_skipped():
     assert T.tail_issues(_tone(0.05)) == []
+
+
+def test_min_gap_by_seam():
+    # тишина до следующей фразы: склейка сцен > конец предложения > запятая/тире (0,26 с после точки — мало)
+    assert qa.min_gap("Клод не помнит чат.", scene_cut=True) == qa.MIN_GAP["scene"]
+    assert qa.min_gap("Клод не помнит чат.", scene_cut=False) == qa.MIN_GAP["sentence"] > 0.26
+    assert qa.min_gap("И Клод спрашивает карту,", scene_cut=False) == qa.MIN_GAP["comma"]
+    assert qa.min_gap("В тестах авторов —", scene_cut=False) == qa.MIN_GAP["comma"]

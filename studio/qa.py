@@ -107,7 +107,8 @@ def run(proj: Project, log=print, fast=False):
         elif seams:
             warn("WARN", "Стыки речи: фразы не обрываются", seams)
         else:
-            chk(True, "Стыки речи: фразы не обрываются", f"{len(lines)} фраз: хвосты затухают, тишина до следующей ≥ 0,2 c")
+            chk(True, "Стыки речи: фразы не обрываются", f"{len(lines)} фраз: хвосты затухают, паузы не встык "
+                "(≥ 0,3 c между предложениями, ≥ 0,45 — между сценами)")
     else:
         for n in ("Слова не обрезаны", "Темп естественный", "Стыки речи: фразы не обрываются"):
             skip(n, "нет речи")
@@ -209,9 +210,21 @@ def run(proj: Project, log=print, fast=False):
     return ok
 
 
+# Тишина до следующей фразы не короче (с): после запятой/двоеточия/тире, после предложения, на склейке сцен.
+# Ниже — следующая фраза «наезжает» (claude-limits 2026-11-09: 0,26 / 0,51 с звучали как обрыв).
+MIN_GAP = {"comma": 0.12, "sentence": 0.3, "scene": 0.45}
+
+
+def min_gap(text, scene_cut):
+    """Нужная тишина после строки text: склейка сцен — scene, строка на , : ; — — comma, иначе sentence."""
+    if scene_cut:
+        return MIN_GAP["scene"]
+    return MIN_GAP["comma"] if text.rstrip()[-1:] in ",:;—–-" else MIN_GAP["sentence"]
+
+
 def _seams(proj, tl):
     """Стыки речи (2026-11-09, обрывы ElevenLabs на склейках): хвост каждой фразы (tts.tail_issues — оборвана или
-    с чужим началом) и тишина от конца её звука до следующей фразы. '' — чисто, иначе причины с решением;
+    с чужим началом) и тишина от конца её звука до следующей фразы (min_gap). '' — чисто, иначе причины с решением;
     None — у fake/none проверять нечего (тон, а не речь)."""
     from . import tts as T
     if proj.cfg["tts"]["backend"] in ("fake", "none"):
@@ -230,8 +243,9 @@ def _seams(proj, tl):
         bleed += [name] if "bleed" in iss else []
         if i + 1 < len(rows):
             gap = rows[i + 1][1] - (t0 + len(x) / T.SR)
-            if gap < 0.2:
-                tight.append(f"{name} → {gap:.2f} c")
+            need = min_gap(L["text"], rows[i + 1][0] != sid)
+            if gap < need - 0.01:
+                tight.append(f"{name} → {gap:.2f} c (нужно ≥ {need:.2f})")
     out = []
     if bleed:
         out.append(f"в конце чужой звук (начало следующей фразы) — {len(bleed)}: {'; '.join(bleed[:4])}"
@@ -240,7 +254,8 @@ def _seams(proj, tl):
         out.append(f"оборваны, не затухают — {len(clip)}: {'; '.join(clip[:4])}. Пересинтез этих строк "
                    "(кэш до среза хвоста −60 dB) или context: false")
     if tight:
-        out.append(f"следующая фраза почти встык — {len(tight)}: {'; '.join(tight[:4])}. pauses.sentence / scene больше")
+        out.append(f"следующая фраза почти встык — {len(tight)}: {'; '.join(tight[:4])}. "
+                   "pauses.sentence ≥ 0,35 / scene ≥ 0,5 (как в шаблоне)")
     return " | ".join(out)
 
 
