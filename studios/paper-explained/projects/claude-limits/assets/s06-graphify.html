@@ -52,6 +52,12 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
 /* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
 .sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
                    drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
 
 /* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
 .shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
@@ -141,26 +147,9 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   <!-- заголовок за компасом -->
   <div class="title" style="left: 0; right: 0; text-align: center; top: 446px; font-size: 182px; --d: calc(var(--b0) + .15s)">Graphify</div>
 
-  <!-- компас: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <!-- компас: ч/б вырезка Kie (assets/images/283aca453243fb7e.cut.png, brand/PROMPTS.md) -->
   <div class="abs drop sticker" style="left: 297px; top: 412px; width: 186px; height: 215px; --r: -8deg; --d: calc(var(--b0) + .35s)" data-boil>
-    <svg viewBox="0 0 260 300" width="186" height="215">
-      <defs>
-        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
-        <radialGradient id="metal" cx=".35" cy=".3"><stop offset="0" stop-color="#8a837b"/><stop offset=".6" stop-color="#3f3935"/><stop offset="1" stop-color="#1c1917"/></radialGradient>
-      </defs>
-      <circle cx="130" cy="26" r="19" fill="none" stroke="#2a2522" stroke-width="9"/>
-      <rect x="118" y="40" width="24" height="28" rx="4" fill="#3a3430" stroke="#141210" stroke-width="3"/>
-      <circle cx="130" cy="170" r="124" fill="url(#metal)" stroke="#141210" stroke-width="5"/>
-      <circle cx="130" cy="170" r="124" fill="url(#ht)" opacity=".3"/>
-      <circle cx="130" cy="170" r="100" fill="#f2eee5" stroke="#141210" stroke-width="3"/>
-      <circle cx="130" cy="170" r="90" fill="none" stroke="#141210" stroke-width="12" stroke-dasharray="2 13.7"/>
-      <circle cx="130" cy="170" r="66" fill="none" stroke="#141210" stroke-width="1.5" opacity=".5"/>
-      <polygon points="130,86 146,170 114,170" fill="#141210"/>
-      <polygon points="130,254 146,170 114,170" fill="#9a938a" stroke="#141210" stroke-width="2"/>
-      <circle cx="130" cy="170" r="11" fill="#2a2522" stroke="#f2eee5" stroke-width="3"/>
-      <path d="M150 90 a 84 84 0 0 1 56 60" fill="none" stroke="#fff" stroke-width="6" opacity=".6" stroke-linecap="round"/>
-      <rect x="130" y="40" width="130" height="260" fill="url(#ht)" opacity=".12"/>
-    </svg>
+    <img src="images/283aca453243fb7e.cut.png" alt="" style="position: absolute; left: -49.4px; top: -33.0px; width: 278.5px; height: 278.5px">
   </div>
 
   <!-- файлы-фишки (центры: концы линий) -->

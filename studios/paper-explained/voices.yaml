@@ -4,7 +4,7 @@ measured:
 - language: ru
   backend: piper
   voice: 2dce0a8db652
-  wpm: 169.2
+  wpm: 165.8
   rate: 98.0
   words: 54
   project: claude-limits

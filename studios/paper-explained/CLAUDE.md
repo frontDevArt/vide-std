@@ -56,6 +56,8 @@
   3. В `assets/src/sNN.body.html` SVG-заглушку внутри `.sticker` заменить на `<img src="images/<ключ>.cut.png">`
      → `python studios/paper-explained/projects/claude-limits/assets/src/build.py`.
   4. `voice` → `stills` (посмотреть PNG) → `render` (в фоне) → `assemble` → `qa`.
+  Шаги 2–3 сделаны дома 2026-11-09 (36 кр, $0.18): вырезки в `assets/images/`, заглушки заменены; этикетка флакона
+  s07 пустая — надпись `.kie-label` кодом поверх неё.
 - **В git:** только входы — сценарий, `project.yaml`, бренд-кит, шрифты, `assets/src/` и собранные страницы,
   `templates/`. Видео, аудио и кэши (`build/`, `qa/`, `logs/`, `output/`) не пушим — `.gitignore`; каждая машина
   пересобирает их сама (голос piper `ruslan` есть на обеих). Картинки Kie (`assets/images/`) — платные входы, не
