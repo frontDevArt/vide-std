@@ -1,0 +1,110 @@
+<!-- s04 — «А мы — «Этажи Ереван», | международное агентство недвижимости, — | будем рядом | и поможем сделать правильный выбор!»
+     жалюзи открывают белый кадр; логотип etagi.com падает и прорисовывается контуром; уезжает наверх; глобус-каркас
+     с красными точками; фото команды выезжает картой; галочка на «выбор»; выход — пролёт в красный знак -->
+<style>
+  #bg { background: #FFFFFF; }
+  .stripes { background: repeating-linear-gradient(-18deg, #F3F3F5 0 26px, #FFFFFF 26px 64px); }
+  .logoBox { position: absolute; transform-origin: 50% 0; }
+  .logoBox svg { width: 100%; height: 100%; overflow: visible; }
+  .globe { position: absolute; }
+  .globe svg { width: 100%; height: 100%; overflow: visible; }
+  .dot { position: absolute; width: 22px; height: 22px; margin: -11px; border-radius: 50%; background: #FF4242;
+         box-shadow: 0 0 0 8px rgba(255,66,66,.22); }
+  .tcard { position: absolute; border-radius: 28px; overflow: hidden; border: 7px solid #FF4242;
+           box-shadow: 0 30px 70px rgba(0,0,0,.28); background: #ddd; }
+  .badge { position: absolute; border-radius: 50%; background: #FF4242; box-shadow: 0 14px 30px rgba(255,66,66,.45); }
+  .badge svg { width: 100%; height: 100%; }
+</style>
+<div class="logoBox" id="lg">{{logo}}</div>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  const str = FX.el('div', 'full bleed stripes', bg);
+  FX.on(t => set(str, { x: -t * 40 }));
+  str.style.width = '130%'; str.style.left = '-15%';
+
+  // логотип: большой по центру → наверх
+  const lg = FX.$('#lg');
+  const LA = FX.box({ tall: [0.03, 0.28, 0.97, 0.46], sq: [0.08, 0.3, 0.92, 0.48], wide: [0.15, 0.28, 0.85, 0.54] });
+  const LB = FX.box({ tall: [0.2, 0.0, 0.8, 0.075], sq: [0.27, 0.0, 0.73, 0.085], wide: [0.0, 0.0, 0.3, 0.1] });
+  const lh = LA.w * 43 / 237;
+  Object.assign(lg.style, { left: LA.x + 'px', top: (LA.y + (LA.h - lh) / 2) + 'px', width: LA.w + 'px', height: lh + 'px' });
+  FX.logo(lg.querySelector('svg'), 0.18);
+  const tUp = FX.b(1) - 0.2;
+  FX.on(t => {
+    const k = E.io3(span(t, tUp, tUp + 0.6)), s = lerp(1, LB.w / LA.w, k);
+    const y0 = LA.y + (LA.h - lh) / 2;
+    set(lg, { x: lerp(0, (LB.x + LB.w / 2) - (LA.x + LA.w / 2), k), y: lerp(0, LB.y - y0, k), s });
+  });
+
+  // фраза 1 — под логотипом
+  FX.captions(document.body, {
+    box: { tall: [0, 0.5, 1, 0.72], sq: [0, 0.52, 1, 0.76], wide: [0.05, 0.6, 0.95, 0.88] },
+    groups: [[0, 0]], end: FX.b(1) - 0.05, ink: true, shadow: false, accent: ['этажи', 'ереван'],
+    size: { tall: 104, sq: 104, wide: 120 },
+  });
+  // фразы 2–4 — под логотипом наверху
+  FX.captions(document.body, {
+    box: { tall: [0, 0.1, 1, 0.33], sq: [0, 0.11, 1, 0.35], wide: [0, 0.16, 0.55, 0.84] },
+    groups: [[1, 1], [2, 2], [3, 3]], ink: true, shadow: false, accent: ['международное', 'рядом', 'правильный', 'выбор'],
+    align: FX.L === 'wide' ? 'left' : 'center', size: { tall: 96, sq: 92, wide: 112 },
+  });
+
+  // глобус: меридианы крутятся, точки — города
+  const gb = FX.box({ tall: [0.2, 0.37, 0.8, 0.7], sq: [0.3, 0.38, 0.7, 0.8], wide: [0.64, 0.18, 0.96, 0.8] });
+  const gs = Math.min(gb.w, gb.h);
+  const globe = FX.el('div', 'globe', document.body, FX.icon.globe('#191919'));
+  Object.assign(globe.style, { left: (gb.x + (gb.w - gs) / 2) + 'px', top: (gb.y + (gb.h - gs) / 2) + 'px', width: gs + 'px', height: gs + 'px' });
+  const gm = globe.querySelector('.gm'), gm2 = globe.querySelector('.gm2');
+  globe.querySelectorAll('circle,ellipse,path').forEach(e => e.setAttribute('stroke-width', '2.4'));
+  const dots = [[0.3, 0.32], [0.62, 0.4], [0.48, 0.62], [0.72, 0.66], [0.38, 0.5]].map(([x, y]) => {
+    const d = FX.el('div', 'dot', globe); d.style.left = (x * 100) + '%'; d.style.top = (y * 100) + '%'; return d;
+  });
+  const tG = FX.w('международное') - 0.1, tGo = FX.w('будем') - 0.05;
+  FX.on(t => {
+    const k = span(t, tG, tG + 0.5), ko = span(t, tGo, tGo + 0.3);
+    set(globe, { s: lerp(0.3, 1, E.back2(k)) * (1 - 0.3 * ko), o: span(t, tG, tG + 0.1) * (1 - ko), r: lerp(-30, 0, E.out3(k)) });
+    const ph = (t - tG) * 2.2;
+    gm.setAttribute('rx', (Math.abs(Math.cos(ph)) * 44).toFixed(2));
+    gm2.setAttribute('rx', (Math.abs(Math.cos(ph + 1.1)) * 44).toFixed(2));
+    dots.forEach((d, i) => { const kd = span(t, tG + 0.35 + i * 0.12, tG + 0.6 + i * 0.12); set(d, { s: E.back2(kd), o: kd > 0 ? 1 : 0 }); });
+  });
+
+  // фото команды
+  const pb = FX.box({ tall: [0.05, 0.36, 0.95, 1.0], sq: [0.2, 0.37, 0.8, 1.0], wide: [0.6, 0.0, 1.0, 1.0] });
+  const card = FX.el('div', 'tcard', document.body);
+  Object.assign(card.style, { left: pb.x + 'px', top: pb.y + 'px', width: pb.w + 'px', height: pb.h + 'px' });
+  const ph = FX.photo(card, '{{img:s04}}');
+  ph.img.style.objectPosition = '50% 62%';
+  const tP = FX.w('будем') - 0.15;
+  FX.kb(ph, tP, FX.D, { s: 1.18 }, { s: 1.04 });
+  FX.on(t => {
+    const k = span(t, tP, tP + 0.7);
+    set(card, { persp: 1600, rx: lerp(28, 0, E.out3(k)), y: lerp(pb.h * 0.6, 0, E.out4(k)), o: span(t, tP, tP + 0.12) });
+  });
+  // галочка «правильный выбор»
+  const bs = Math.min(pb.w, pb.h) * 0.26;
+  const badge = FX.el('div', 'badge', document.body, FX.icon.check('#fff', 13));
+  Object.assign(badge.style, { width: bs + 'px', height: bs + 'px', left: (pb.x + pb.w - bs * 0.95) + 'px', top: (pb.y - bs * 0.25 + (FX.L === 'wide' ? bs * 0.4 : 0)) + 'px' });
+  const ck = badge.querySelector('.ck');
+  FX.init(() => { ck.L = ck.getTotalLength(); ck.style.strokeDasharray = ck.L; });
+  const tV = FX.w('выбор') - 0.1;
+  FX.on(t => {
+    const k = span(t, tV, tV + 0.45);
+    set(badge, { s: E.back2(k), r: lerp(-40, 0, E.out3(k)), o: k > 0 ? 1 : 0 });
+    ck.style.strokeDashoffset = ((ck.L || 100) * (1 - E.out3(span(t, tV + 0.15, tV + 0.45)))).toFixed(1);
+  });
+
+  // выход: пролёт в красный знак
+  const fly = FX.el('div', 'full bleed', FX.$('#tr'));
+  fly.style.background = '#FF4242'; fly.style.zIndex = 80;
+  FX.on(t => {
+    const k = E.inExpo(span(t, FX.D - 0.34, FX.D - 0.06));
+    fly.style.clipPath = FX.houseClip(Wd / 2, Hd / 2, 40 + k * Math.max(Wd, Hd) * 5);
+    set(fly, { o: t > FX.D - 0.34 ? 1 : 0 });
+  });
+
+  FX.blindsIn(['#FF4242', '#191919'], 7, 0.5);
+})();
+</script>

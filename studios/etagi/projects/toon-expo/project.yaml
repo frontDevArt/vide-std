@@ -1,0 +1,69 @@
+# Бриф ролика (фаза 1, 2026-11-01). Сквозные решения — outline.md.
+schema_version: 1
+title: "Тун Экспо 13–15 ноября: Etagi Yerevan поможет выбрать недвижимость — бесплатно"
+topic: "Тун Экспо: Etagi Yerevan поможет выбрать недвижимость"
+audience: >-
+  Русскоязычные покупатели недвижимости в Армении (жители Еревана, релоканты, инвесторы), которые думают о покупке
+  квартиры. Должны вынести: 13–15 ноября — выставка «Тун Экспо», Etagi Yerevan бесплатно сопровождает на ней и до
+  покупки; написать прямо сейчас.
+kind: promo
+brief:
+  product: "Бесплатное сопровождение Etagi Yerevan на выставке недвижимости «Тун Экспо» (13–15 ноября, Меридиан Экспо, Ереван) и до покупки"
+  price: "бесплатно"
+  cta: "Напишите нам прямо сейчас"
+language: ru
+format: vertical
+platform: instagram-reels
+# Instagram Reels и TikTok — 9:16; Facebook — горизонтально 16:9 (просьба пользователя 2026-11-01): профиля facebook
+# в студии нет, горизонтальный выход — youtube (поля 4 %, субтитры вшиты всё равно), файл для Facebook — youtube.mp4
+deliverables: [instagram-reels, tiktok, youtube]
+fps: 30
+target_duration: 47.5     # было 41,3 (30–40 с); +сцена каналов связи s09 (просьба 2026-11-01) и новый голос Artspace; уточнить после voice
+
+tts:
+  backend: elevenlabs
+  voice: auto             # голос студии: env:ELEVENLABS_VOICE_ID из studios/etagi/.env (Artspace — Engaging, Warm and Pleasant, библиотека ElevenLabs; с 2026-11-01, до этого Ivan)
+  rate: 100               # ElevenLabs — только числом; дубль на 106 вышел длиннее (разброс модели), 100 — естественнее
+  rate_range: [98, 125]
+
+pauses:
+  start: 0.25
+  comma: 0.12
+  sentence: 0.22
+  scene: 0.2
+  end: 0.35
+
+music:
+  enabled: true
+  file: toon-drive.wav    # brand/music студии: код make_track.py, CC0
+  # sync: beat           # нет запаса на 8 склеек в долю (нужно ~2 с) — склейки по речи
+  bpm: 124
+  level_db: -17           # было −18: с голосом Artspace разница вышла 28,0 LU (край нормы QA). Трек плотный (RMS −6,5 dB): −12 давал музыку всего на 9,4 LU тише голоса, норма QA 14–28
+  duck: true
+
+sfx: {enabled: true, level_db: 6}   # шорохи шторок и удары — заметнее, чем в объяснялках
+
+subtitles:
+  enabled: true           # сцены webfx рисуют речь сами (speech_on_screen): в кадр не идут, .srt/.vtt — есть
+  max_lines: 2
+
+images:
+  enabled: true
+  model: nano-banana-2
+  resolution: 2K
+  budget_usd: 1
+  style: >-
+    photorealistic premium real-estate advertising photography, modern Yerevan Armenia, warm natural daylight,
+    clean composition, white and charcoal tones with small vivid red (#FF4242) accents, shallow depth of field,
+    no text, no letters, no logos, no watermarks
+
+
+loudness: -14
+
+done_means:
+  - {logo_in_final: false}   # логотип рисует сама HTML-сцена s10 (белая карточка), проверяется глазами — строкой ниже
+  - "Финал s10: логотип etagi.com на белой карточке, телефон +374 55 556556, кнопка «Написать нам» — читаются; s09 — каналы Instagram, Facebook, WhatsApp, телефон"
+  - "Сказано всё из текста клиента: Тун Экспо 13–15 ноября в Ереване, Etagi рядом, три пункта помощи, бесплатно, призыв"
+  - {final_hold: 1.5}
+
+chapters: [ch01]

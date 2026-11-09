@@ -1,0 +1,33 @@
+# Бренд-кит студии "Etagi Yerevan" (ROADMAP A2). Формат и «свой стиль по референсу» — docs/BRAND.md.
+# Референс — логотип клиента etagi.svg (прислан пользователем 2026-11-01, logo/make_logo.py → logo-*.png).
+# Цвета логотипа — из SVG: красный знак #FF4242, надпись #191919. Ролики: красный / белый / чёрный (решение пользователя
+# 2026-11-01). Знак — «скат крыши»: косой срез — мотив шторок и плашек.
+name: "Etagi Yerevan"
+base: neon
+palette:
+  bg: "#0D0D0E"            # почти чёрный
+  bg_top: "#1A1A1C"
+  bg_bot: "#070707"
+  surface: "#1C1C1F"
+  text: "#FFFFFF"
+  dim: "#B5B5BC"
+  accent: "#FF4242"        # красный знака
+  accent2: "#FF8C8C"
+  good: "#38C97A"
+  warn: "#F5B83D"
+  bad: "#A970FF"           # «плохо» не красное: красный — цвет бренда
+  neutral: "#8E8E96"
+  ink: "#191919"           # надпись логотипа
+fonts:
+  head: {file: Montserrat-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-montserrat.txt)}
+  num: {file: Unbounded-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-unbounded.txt)}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
+logo: {light: logo-light.png, dark: logo-dark.png}   # light — белая надпись для тёмного фона; dark — исходник
+background: gradient
+camera: false
+motion: {bg: 2.0}
+subs: tiktok
+shape: {radius: 18, line: 3}
+cta: {text: Напишите нам, url: "+374 55 556556"}    # телефон — с am.etagi.com (2026-11-01)
+voice:
+  tone: уверенный, тёплый, на «вы»; без давления и гарантий — помощь и выбор

@@ -1,0 +1,83 @@
+<!-- s08 — «И самое главное — | наша помощь | абсолютно бесплатна!»
+     разрыв ритма: красный кадр, вращаются лучи, всплывают «скаты»; «АБСОЛЮТНО», затем штамп «БЕСПЛАТНО!» падает
+     с тряской кадра, ударной волной и искрами; выход — косая шторка (белая, чёрная) -->
+<style>
+  #bg { background: #FF4242; }
+  .rays { position: absolute; left: 50%; top: 50%; width: 300vmax; height: 300vmax; margin: -150vmax 0 0 -150vmax;
+          background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.13) 0deg 9deg, rgba(255,255,255,0) 9deg 22.5deg); }
+  .roof { position: absolute; opacity: .22; }
+  .roof svg { width: 100%; height: 100%; }
+  .abs-line { position: absolute; display: flex; justify-content: center; align-items: center; font-weight: 900;
+              color: #fff; letter-spacing: .14em; }
+  .stamp { position: absolute; display: flex; align-items: center; justify-content: center; }
+  .stamp b { display: block; background: #191919; color: #fff; font-family: Unb, Mont; font-weight: 800;
+             padding: .12em .42em .16em; border-radius: .14em; box-shadow: 0 .18em .5em rgba(80,0,0,.45);
+             outline: .07em solid #fff; outline-offset: .06em; letter-spacing: -.01em; white-space: nowrap; }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  const sbx = FX.box({ tall: [0.0, 0.62, 1.0, 0.82], sq: [0.0, 0.6, 1.0, 0.84], wide: [0.08, 0.58, 0.92, 0.9] });
+  const rays = FX.el('div', 'rays bleed', bg);
+  rays.style.left = (sbx.x + sbx.w / 2) + 'px'; rays.style.top = (sbx.y + sbx.h / 2) + 'px';
+  FX.on(t => set(rays, { r: t * 18, s: 1 + 0.05 * Math.sin(t * 3) }));
+  // всплывающие «скаты»
+  const R = FX.rng(11);
+  const roofs = Array.from({ length: 12 }, () => {
+    const r = FX.el('div', 'roof bleed', bg, FX.icon.house('#FFFFFF'));
+    const s = 40 + R() * 110;
+    Object.assign(r.style, { width: s + 'px', height: s + 'px', left: (R() * Wd) + 'px', top: (Hd * (0.3 + R() * 0.8)) + 'px' });
+    r.v = 80 + R() * 160; r.ph = R() * 6; r.rs = (R() - 0.5) * 60;
+    return r;
+  });
+  FX.on(t => roofs.forEach(r => set(r, { y: -r.v * t, r: r.rs * t, x: 20 * Math.sin(t * 1.5 + r.ph) })));
+
+  // тряска от удара штампа
+  const tS = FX.w('бесплатна') - 0.04;
+  const shake = t => {
+    const d = t - tS;
+    if (d < 0 || d > 0.45) return [0, 0];
+    const a = 26 * Math.exp(-d * 9), Rr = FX.rng(Math.floor(t * 30) + 101);
+    return [(Rr() - 0.5) * 2 * a, (Rr() - 0.5) * 2 * a];
+  };
+
+  const cap = FX.captions(document.body, {
+    box: { tall: [0, 0.04, 1, 0.42], sq: [0, 0.02, 1, 0.4], wide: [0.04, 0.04, 0.96, 0.4] },
+    groups: [[0, 0], [1, 1]], out: false, accent: ['главное', 'помощь'], size: { tall: 118, sq: 118, wide: 132 },
+  });
+  cap.cap.querySelectorAll('.cm').forEach(m => m.style.background = '#191919');
+
+  // «АБСОЛЮТНО»
+  const ab = FX.box({ tall: [0, 0.47, 1, 0.57], sq: [0, 0.45, 1, 0.56], wide: [0, 0.43, 1, 0.55] });
+  const abs = FX.el('div', 'abs-line', document.body, 'АБСОЛЮТНО');
+  Object.assign(abs.style, { left: ab.x + 'px', top: ab.y + 'px', width: ab.w + 'px', height: ab.h + 'px', fontSize: Math.min(ab.h * 0.8, ab.w / 10) + 'px' });
+  const tA = FX.w('абсолютно') - 0.06;
+  // штамп «БЕСПЛАТНО!»
+  const st = FX.el('div', 'stamp', document.body, '<b>БЕСПЛАТНО!</b>');
+  Object.assign(st.style, { left: sbx.x + 'px', top: sbx.y + 'px', width: sbx.w + 'px', height: sbx.h + 'px' });
+  FX.init(() => {
+    let fs = Math.min(sbx.h * 0.55, 200);
+    const b = st.firstChild;
+    for (let i = 0; i < 30; i++) { b.style.fontSize = fs + 'px'; if (b.offsetWidth <= sbx.w * 0.8 && b.offsetHeight <= sbx.h * 0.8) break; fs *= 0.95; }
+  });
+  FX.on(t => {
+    const [sx, sy] = shake(t);
+    const ka = span(t, tA, tA + 0.3);
+    set(abs, { x: sx * 0.6, y: sy * 0.6 + lerp(30, 0, E.out3(ka)), o: ka, sx: lerp(1.6, 1, E.out3(ka)) });
+    const k = span(t, tS - 0.1, tS + 0.08);
+    set(st, { x: sx, y: sy, s: lerp(3.2, 1, E.in2(k)) * (1 + 0.05 * Math.sin(Math.PI * span(t, tS + 0.08, tS + 0.3))),
+              r: lerp(-14, -5, E.out3(k)), o: span(t, tS - 0.1, tS - 0.04) });
+    set(cap.cap, { x: sx * 0.4, y: sy * 0.4 });
+  });
+  // удар штампа: вспышка, ударные волны и лучи-штрихи, затем мерцающие искры вокруг (вместо конфетти)
+  FX.init(() => {
+    const b = st.firstChild, w = b.offsetWidth, h = b.offsetHeight;
+    const cx = sbx.x + sbx.w / 2, cy = sbx.y + sbx.h / 2;
+    FX.burst(FX.$('#bg'), tS + 0.02, cx, cy, { x: cx - w / 2, y: cy - h / 2, w, h }, { n: 22, seed: 5, sparks: 8 });
+    document.body.appendChild(st);               // штамп поверх волн
+  });
+
+  FX.slantOut(['#FFFFFF', '#0D0D0E'], 0.4, 1);
+})();
+</script>

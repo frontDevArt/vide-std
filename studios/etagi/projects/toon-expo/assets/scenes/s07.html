@@ -1,0 +1,617 @@
+<!doctype html><html><head><meta charset="utf-8"><style>/* Общие стили сцен toon-expo. Вёрстка — в «пикселях 1080» (короткая сторона кадра = 1080 CSS px). */
+@font-face { font-family: Mont; src: url('../fonts/Montserrat-VF.ttf'); font-weight: 100 900; }
+@font-face { font-family: Unb; src: url('../fonts/Unbounded-VF.ttf'); font-weight: 200 900; }
+:root { --red: #FF4242; --red2: #E0262B; --ink: #191919; --black: #0D0D0E; --white: #FFFFFF; --grey: #B5B5BC; }
+html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+body { width: 100vw; height: 100vh; font-family: Mont, sans-serif; color: var(--white);
+       -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+.full { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+#bg { position: absolute; inset: 0; overflow: hidden; }
+#stage { position: absolute; }
+#tr { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 50; }
+.abs { position: absolute; }
+.sz .bleed { visibility: hidden !important; }   /* проверка безопасной зоны видит только то, что поверх */
+/* мягкие тени — не вёрстка (как порог ALPHA студии): при проверке зоны их нет */
+.sz *, .sz *::before, .sz *::after { box-shadow: none !important; text-shadow: none !important; }
+.preload { position: absolute; left: -9999px; top: 0; font-size: 20px; }
+.photo { position: absolute; overflow: hidden; }
+.photo img { position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; object-fit: cover;
+             transform: translate(-50%, -50%); }
+.shade-b { background: linear-gradient(180deg, rgba(13,13,14,0) 0%, rgba(13,13,14,.55) 55%, rgba(13,13,14,.92) 100%); }
+.shade-t { background: linear-gradient(0deg, rgba(13,13,14,0) 0%, rgba(13,13,14,.6) 60%, rgba(13,13,14,.9) 100%); }
+.vignette { background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%); }
+.grain { opacity: .07; mix-blend-mode: overlay;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0 1px, transparent 1px 3px); }
+
+/* кинетический текст */
+.cap { position: absolute; display: flex; flex-direction: column; justify-content: center; }
+.capg { position: absolute; left: 0; right: 0; display: flex; flex-wrap: wrap; justify-content: center;
+        align-content: center; column-gap: .26em; row-gap: .02em; font-weight: 900; line-height: 1.04;
+        text-transform: uppercase; letter-spacing: -.01em; }
+.cap.left .capg { justify-content: flex-start; }
+.cw { position: relative; display: inline-block; white-space: nowrap; transform-origin: 50% 80%; }
+.cw .cm { position: absolute; left: -.12em; right: -.12em; top: .06em; bottom: .02em; background: var(--red);
+          transform-origin: 0 50%; z-index: -1; border-radius: .06em; }
+.cw.acc { color: var(--white); }
+.cw .ct { position: relative; }
+.ink .capg { color: var(--ink); }
+.ink .cw.acc { color: var(--white); }
+.txtshadow .capg { text-shadow: 0 .04em .18em rgba(0,0,0,.55); }
+
+/* шторки */
+.pan { position: absolute; top: -20%; height: 140%; }
+.bar { position: absolute; left: -5%; width: 110%; }
+.chip { display: inline-flex; align-items: center; gap: .45em; padding: .42em .9em; border-radius: 999px;
+        font-weight: 800; white-space: nowrap; }
+.card { position: absolute; border-radius: 22px; overflow: hidden; background: #fff; }
+.num { font-family: Unb, Mont, sans-serif; font-weight: 800; }
+
+/* ряд чек-листа */
+.crow { position: absolute; }
+.cbox { position: absolute; left: 0; top: 0; background: #FF4242; border-radius: 16%; box-shadow: 0 10px 26px rgba(255,66,66,.4); }
+.cbox svg { width: 100%; height: 100%; }
+.clab { position: absolute; top: 0; height: 100%; display: flex; align-items: center; gap: .3em; font-weight: 900; color: #fff; }
+.clab span { color: #8E8E96; font-weight: 700; }
+.seg { position: absolute; background: rgba(255,255,255,.16); border-radius: 99px; overflow: hidden; }
+.seg i { position: absolute; inset: 0; background: #FF4242; transform-origin: 0 50%; }
+.pcard { position: absolute; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,.5); background: #222; }
+.tag { position: absolute; display: inline-flex; align-items: center; gap: .4em; background: #fff; color: #191919;
+       font-weight: 800; border-radius: 999px; padding: .35em .8em .35em .5em; box-shadow: 0 10px 24px rgba(0,0,0,.35); white-space: nowrap; }
+.tag svg { width: 1.2em; height: 1.2em; }
+/* TOON EXPO — латиницей и в цветах организатора: тёмно-синий #16334F и бирюзовый #077390 */
+.tn { color: #16334F; font-weight: 900; }
+.te { color: #077390; font-weight: 900; }
+.toonpill { background: #077390; color: #fff; font-weight: 900; padding: .1em .45em; border-radius: .3em; letter-spacing: .02em; }
+.tcard2 { position: absolute; background: #fff; border-radius: 34px; box-shadow: 0 30px 70px rgba(0,0,0,.5); overflow: hidden;
+          display: flex; align-items: center; justify-content: center; }
+.tcard2 svg { width: 84%; height: 84%; overflow: visible; }
+.tcard2 .shine { position: absolute; top: -20%; bottom: -20%; width: 30%;
+                 background: linear-gradient(90deg, rgba(255,255,255,0), rgba(7,115,144,.16), rgba(255,255,255,0)); }
+</style></head><body><div id="bg" class="bleed"></div><div id="tr"></div><div class="preload"><span style="font-family:Mont;font-weight:900">ПРОБА шрифта 0123</span><span style="font-family:Mont;font-weight:600">проба</span><span style="font-family:Unb;font-weight:800">13 14 15</span></div><script>/* FX — движок анимации сцен toon-expo (страница webfx: время виртуальное, кадр = window.seek(t)).
+   Всё детерминировано: ни таймеров, ни Date.now — только t сцены. Сцена описывает элементы и вешает
+   обновления FX.on(fn(t)); вёрстка — от безопасной зоны площадки (SCENE.safe) и её формы:
+   html.L-tall (TikTok 9:16, узкая высокая зона), L-sq (Reels 9:16 — зона почти квадрат), L-wide (16:9). */
+(function () {
+  const S = window.SCENE;
+  const FX = (window.FX = {});
+  const clamp = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x);
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const span = (t, a, b) => (b <= a ? (t >= b ? 1 : 0) : clamp((t - a) / (b - a)));
+  const E = {
+    lin: k => k,
+    in2: k => k * k, out2: k => 1 - (1 - k) * (1 - k), io2: k => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2),
+    in3: k => k * k * k, out3: k => 1 - Math.pow(1 - k, 3), io3: k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2),
+    out4: k => 1 - Math.pow(1 - k, 4), out5: k => 1 - Math.pow(1 - k, 5),
+    inExpo: k => (k <= 0 ? 0 : Math.pow(2, 10 * k - 10)), outExpo: k => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k)),
+    ioExpo: k => (k <= 0 ? 0 : k >= 1 ? 1 : k < 0.5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2),
+    back: k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+    back2: k => { const c1 = 2.8, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); },
+    spring: k => (k >= 1 ? 1 : 1 - Math.exp(-6.5 * k) * Math.cos(11 * k)),
+    elastic: k => (k <= 0 ? 0 : k >= 1 ? 1 : Math.pow(2, -10 * k) * Math.sin(((k * 10 - 0.75) * 2 * Math.PI) / 3) + 1),
+  };
+  Object.assign(FX, { S, clamp, lerp, span, E });
+  FX.D = S.dur;
+  FX.W = S.W; FX.H = S.H;
+  FX.k = (t, a, b, e = 'out3') => E[e](span(t, a, b));      // прогресс отрезка с кривой
+
+  // ---------- стили
+  FX.set = function (el, p) {
+    if (!el) return;
+    let tr = '';
+    if (p.persp) tr += `perspective(${p.persp}px) `;
+    tr += `translate3d(${(p.x || 0).toFixed(2)}px,${(p.y || 0).toFixed(2)}px,${(p.z || 0).toFixed(2)}px)`;
+    if (p.rx) tr += ` rotateX(${p.rx.toFixed(3)}deg)`;
+    if (p.ry) tr += ` rotateY(${p.ry.toFixed(3)}deg)`;
+    if (p.r) tr += ` rotate(${p.r.toFixed(3)}deg)`;
+    if (p.skx) tr += ` skewX(${p.skx}deg)`;
+    if (p.sky) tr += ` skewY(${p.sky}deg)`;
+    const s = p.s == null ? 1 : p.s;
+    const sx = (p.sx == null ? 1 : p.sx) * s, sy = (p.sy == null ? 1 : p.sy) * s;
+    if (sx !== 1 || sy !== 1) tr += ` scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
+    el.style.transform = tr;
+    if (p.o != null) { el.style.opacity = clamp(p.o).toFixed(3); el.style.visibility = p.o <= 0.001 ? 'hidden' : ''; }  // '' — наследует: скрытый родитель скрывает детей
+    if (p.blur != null) el.style.filter = p.blur > 0.05 ? `blur(${p.blur.toFixed(2)}px)` : 'none';
+    if (p.clip != null) el.style.clipPath = p.clip;
+  };
+  FX.$ = (sel, root = document) => root.querySelector(sel);
+  FX.$$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  FX.el = function (tag, cls, parent, html) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    (parent || document.body).appendChild(e);
+    return e;
+  };
+
+  // ---------- раскладка: безопасная зона и её форма
+  // рабочая зона = безопасная минус запас на плашки акцента (.12em), пружины и дрожь: вёрстка не трогает поля
+  const sf = S.safe, pw = (sf.x1 - sf.x0) * 0.035, ph = (sf.y1 - sf.y0) * 0.018;
+  FX.stage = { x0: sf.x0 + pw, y0: sf.y0 + ph, x1: sf.x1 - pw, y1: sf.y1 - ph, w: sf.x1 - sf.x0 - 2 * pw, h: sf.y1 - sf.y0 - 2 * ph };
+  const asp = FX.stage.w / FX.stage.h;
+  FX.L = asp > 1.3 ? 'wide' : asp < 0.75 ? 'tall' : 'sq';
+  document.documentElement.classList.add('L-' + FX.L, S.W > S.H ? 'h' : 'v');
+  FX.pick = o => (o && typeof o === 'object' && !Array.isArray(o) ? (o[FX.L] ?? o.v ?? o.sq ?? o.tall ?? o.wide) : o);
+  // рамка в долях зоны (x0, y0, x1, y1) → px кадра; значения вне 0..1 — за пределами зоны (только для .bleed)
+  FX.box = function (b) {
+    b = FX.pick(b);
+    const st = FX.stage;
+    return { x: st.x0 + b[0] * st.w, y: st.y0 + b[1] * st.h, w: (b[2] - b[0]) * st.w, h: (b[3] - b[1]) * st.h };
+  };
+  FX.place = function (el, b) {
+    const r = FX.box(b);
+    Object.assign(el.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+    return r;
+  };
+
+  // ---------- слова и биты озвучки
+  const norm = w => w.toLowerCase().replace(/[.,!?:;«»"—–()]/g, '').replace(/ё/g, 'е').trim();
+  FX.words = (S.words || []).map((w, i) => ({ ...w, i, n: norm(w.w), txt: w.w.replace(/[«»"]/g, '') }))
+    .filter(w => w.n.length);
+  FX.w = function (key, nth = 1, def = 0) {          // начало слова озвучки (по началу слова, без регистра)
+    key = norm(key);
+    let c = 0;
+    for (const w of FX.words) if (w.n.startsWith(key) && ++c === nth) return w.t0;
+    return def;
+  };
+  FX.we = function (key, nth = 1, def = 0) {
+    key = norm(key);
+    let c = 0;
+    for (const w of FX.words) if (w.n.startsWith(key) && ++c === nth) return w.t1;
+    return def;
+  };
+  // биты — по настоящим словам: границы битов в timeline (оценка по паузам) расходятся с таймкодами ElevenLabs
+  // до ~1 с, поэтому слова раздаются битам по порядку, по числу слов в тексте бита
+  const ntok = s => (s.match(/[0-9A-Za-zА-Яа-яЁё]+/g) || []).length;
+  let wi = 0;
+  FX.beats = S.beats.map(b => {
+    const ws = FX.words.slice(wi, wi + ntok(b.text)); wi += ws.length;
+    return ws.length ? { t0: ws[0].t0, t1: ws[ws.length - 1].t1, ws } : { t0: b.t0, t1: b.t1, ws };
+  });
+  FX.b = (i, def = 0) => (FX.beats[i] ? FX.beats[i].t0 : def);
+  FX.be = (i, def = FX.D) => (FX.beats[i] ? FX.beats[i].t1 : def);
+  FX.speechEnd = FX.words.length ? FX.words[FX.words.length - 1].t1 : FX.D;
+
+  // ---------- псевдослучай (сид)
+  FX.rng = function (seed) {
+    let a = seed >>> 0;
+    return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  };
+
+  // ---------- цикл
+  const fns = [], inits = [];
+  FX.on = fn => fns.push(fn);
+  FX.init = fn => inits.push(fn);
+  let ready = false;
+  window.seek = async function (t) {
+    if (!ready) {
+      ready = true;
+      try { await document.fonts.load('900 100px Mont'); await document.fonts.load('800 100px Unb'); } catch (e) {}
+      await document.fonts.ready;
+      for (const f of inits) f();
+    }
+    for (const f of fns) f(t);
+  };
+
+  // ---------- фото с медленным наездом (Ken Burns): el — .photo с <img>
+  FX.photo = function (parent, src, cls = '', box = null) {
+    const d = FX.el('div', 'photo ' + cls, parent);
+    const im = FX.el('img', '', d);
+    im.src = src;
+    if (box) FX.place(d, box); else Object.assign(d.style, { left: 0, top: 0, width: '100%', height: '100%' });
+    d.img = im;
+    return d;
+  };
+  FX.kb = function (ph, t0, t1, from, to, ease = 'io2') {
+    FX.on(t => {
+      const k = E[ease](span(t, t0, t1));
+      const p = {};
+      for (const key of Object.keys(from)) p[key] = lerp(from[key], to[key], k);
+      FX.set(ph.img, { ...p, x: p.x || 0, y: p.y || 0 });
+      ph.img.style.transform = `translate(-50%,-50%) ` + ph.img.style.transform;
+    });
+  };
+
+  // ---------- кинетический текст: слова озвучки по битам
+  // opts: {box, accent: [ключи слов], size, align: 'center'|'left', ink: true — тёмный текст, groups: [[i0, i1]]
+  //        (номера битов: группа = биты i0..i1), hold: [номер группы, до t] — держать, out: false — без ухода последней}
+  FX.captions = function (parent, opts) {
+    const cap = FX.el('div', 'cap' + (opts.align === 'left' ? ' left' : '') + (opts.ink ? ' ink' : '') +
+      (opts.shadow === false ? '' : ' txtshadow'), parent);
+    const r = FX.place(cap, opts.box);
+    const acc = (opts.accent || []).map(norm);
+    const groups = (opts.groups || FX.beats.map((_, i) => [i, i])).map(([a, b]) => ({
+      a, b, t0: FX.b(a) - 0.05, t1: FX.be(b), ws: FX.beats.slice(a, b + 1).flatMap(x => x.ws) }));
+    groups.forEach((g, gi) => {
+      g.el = FX.el('div', 'capg', cap);
+      g.el.style.top = '0'; g.el.style.bottom = '0';
+      if (opts.valign === 'top') g.el.style.alignContent = 'flex-start';
+      if (opts.valign === 'bottom') g.el.style.alignContent = 'flex-end';
+      g.spans = g.ws.map(w => {
+        const sp = FX.el('span', 'cw', g.el);
+        const isAcc = acc.some(a => w.n.startsWith(a));
+        if (isAcc) { sp.classList.add('acc'); sp.mk = FX.el('span', 'cm', sp); }
+        sp.ct = FX.el('span', 'ct', sp, w.txt.replace(/—/g, ''));
+        sp.w = w; sp.acc = isAcc;
+        return sp;
+      });
+      g.next = groups[gi + 1];
+    });
+    // кегль: самое длинное слово группы влезает по ширине, группа — по высоте рамки
+    FX.init(() => {
+      for (const g of groups) {
+        let fs = FX.pick(opts.size) || 110;
+        g.el.style.bottom = 'auto';                 // высота по содержимому — на время замера
+        for (let it = 0; it < 30; it++) {
+          g.el.style.fontSize = fs + 'px';
+          const wmax = Math.max(0, ...g.spans.map(s => s.offsetWidth));
+          if (wmax <= r.w * 0.92 && g.el.offsetHeight <= r.h) break;   // запас: пружина акцента ×1,06 и плашка .12em
+          fs *= 0.95;
+        }
+        g.el.style.bottom = '0';
+        g.fs = fs;
+      }
+    });
+    const last = groups.length - 1;
+    FX.on(t => {
+      groups.forEach((g, gi) => {
+        const end = gi < last ? groups[gi + 1].t0 : (opts.end != null ? opts.end : opts.out === false ? 1e9 : FX.D + 1);
+        const holdTo = opts.hold && opts.hold[0] === gi ? opts.hold[1] : end;
+        const outA = Math.max(end, holdTo) - 0.02;
+        const vis = t >= g.t0 - 0.1 && t < outA + 0.3;
+        g.el.style.display = vis ? 'flex' : 'none';
+        if (!vis) return;
+        g.spans.forEach((sp, si) => {
+          const a = sp.w.t0 - 0.07;
+          const k = span(t, a, a + 0.34);
+          const ko = span(t, outA + si * 0.018, outA + si * 0.018 + 0.16);
+          const y = lerp(0.62, 0, E.back(k)) * g.fs - ko * 0.5 * g.fs;
+          const rx = lerp(-75, 0, E.out3(k));
+          const o = span(t, a, a + 0.1) * (1 - ko);
+          FX.set(sp, { y, rx, persp: 600, o, s: sp.acc ? 1 + 0.06 * Math.sin(Math.PI * span(t, a + 0.08, a + 0.4)) : 1 });
+          if (sp.mk) FX.set(sp.mk, { sx: E.out4(span(t, a + 0.05, a + 0.3)) });
+        });
+      });
+    });
+    return { cap, groups, rect: r };
+  };
+
+  // ---------- переходы: кадр на склейке закрыт одной шторкой в обеих сценах
+  // slant — косые полосы (наклон ската крыши Etagi), цвета по порядку; dir 1 — слева направо
+  const TR = () => FX.$('#tr') || FX.el('div', '', document.body);
+  function slantPanels(colors) {
+    const root = TR();
+    const W = S.W, H = S.H;
+    return colors.map((c, i) => {
+      const p = FX.el('div', 'pan bleed', root);
+      Object.assign(p.style, { background: c, width: (W * 1.9) + 'px', left: (-W * 0.45) + 'px', zIndex: 60 + i });
+      return p;
+    });
+  }
+  FX.slantOut = function (colors = ['#FF4242', '#0D0D0E'], dur = 0.42, dir = 1) {
+    const ps = slantPanels(colors), W = S.W, D = FX.D;
+    FX.on(t => ps.forEach((p, i) => {
+      const a = D - dur + i * 0.07, k = E.in3(span(t, a, D - 0.0));
+      FX.set(p, { x: dir * lerp(-W * 1.75, 0, k), skx: -18 * dir, o: t >= a ? 1 : 0 });
+    }));
+  };
+  FX.slantIn = function (colors = ['#FF4242', '#0D0D0E'], dur = 0.42, dir = 1) {
+    const ps = slantPanels(colors), W = S.W;
+    FX.on(t => ps.forEach((p, i) => {
+      const n = ps.length - 1 - i;              // верхняя (последняя) уходит первой
+      const a = n * 0.07, k = E.out3(span(t, a, dur));
+      FX.set(p, { x: dir * lerp(0, W * 1.75, k), skx: -18 * dir, o: k >= 1 ? 0 : 1 });
+    }));
+  };
+  // blinds — полосы жалюзи, чередуют направление
+  function blindBars(n, colors) {
+    const root = TR(), H = S.H;
+    return Array.from({ length: n }, (_, i) => {
+      const b = FX.el('div', 'bar bleed', root);
+      Object.assign(b.style, { top: (i * H / n - 1) + 'px', height: (H / n + 2) + 'px', background: colors[i % colors.length], zIndex: 60 });
+      return b;
+    });
+  }
+  FX.blindsOut = function (colors = ['#FF4242', '#0D0D0E'], n = 7, dur = 0.45) {
+    const bs = blindBars(n, colors), W = S.W, D = FX.D;
+    FX.on(t => bs.forEach((b, i) => {
+      const a = D - dur + i * (dur * 0.5 / n), k = E.out3(span(t, a, a + dur * 0.5));
+      FX.set(b, { x: (i % 2 ? 1 : -1) * lerp(W * 1.1, 0, k), o: t >= a ? 1 : 0 });
+    }));
+  };
+  FX.blindsIn = function (colors = ['#FF4242', '#0D0D0E'], n = 7, dur = 0.5) {
+    const bs = blindBars(n, colors), W = S.W;
+    FX.on(t => bs.forEach((b, i) => {
+      const a = i * (dur * 0.5 / n), k = E.in3(span(t, a, a + dur * 0.5));
+      FX.set(b, { x: (i % 2 ? -1 : 1) * lerp(0, W * 1.1, k), o: k >= 1 ? 0 : 1 });
+    }));
+  };
+  // сплошной цвет на стыке (вспышка): out — набегает к концу сцены, in — сходит в начале
+  FX.flashOut = function (color = '#FFFFFF', dur = 0.22) {
+    const f = FX.el('div', 'full bleed', TR());
+    f.style.background = color; f.style.zIndex = 70;
+    FX.on(t => FX.set(f, { o: E.in2(span(t, FX.D - dur, FX.D - 0.01)) }));
+  };
+  FX.flashIn = function (color = '#FFFFFF', dur = 0.3) {
+    const f = FX.el('div', 'full bleed', TR());
+    f.style.background = color; f.style.zIndex = 70;
+    FX.on(t => FX.set(f, { o: 1 - E.out2(span(t, 0.0, dur)) }));
+  };
+
+  // ---------- конфетти: квадратики и «скаты» бренда, физика от t0
+  FX.confetti = function (parent, t0, n = 70, seed = 7, cx = 0.5, cy = 0.5, colors = ['#FF4242', '#FFFFFF', '#191919']) {
+    const R = FX.rng(seed), W = S.W, H = S.H;
+    const ps = Array.from({ length: n }, (_, i) => {
+      const e = FX.el('div', 'abs bleed', parent);
+      const sz = 10 + R() * 22;
+      Object.assign(e.style, { width: sz + 'px', height: (sz * (0.45 + R() * 0.6)) + 'px', background: colors[i % colors.length],
+        left: (cx * W) + 'px', top: (cy * H) + 'px', borderRadius: (R() < 0.3 ? 50 : 3) + '%' });
+      const ang = R() * Math.PI * 2, sp = 900 + R() * 1700;
+      return { e, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 900, vr: (R() - 0.5) * 1400, r0: R() * 360, rx: R() * 360 };
+    });
+    FX.on(t => {
+      const dt = t - t0;
+      ps.forEach(p => {
+        if (dt < 0) { FX.set(p.e, { o: 0 }); return; }
+        const drag = 1 - Math.exp(-dt * 2.2);
+        const x = p.vx / 2.2 * drag, y = p.vy / 2.2 * drag + 900 * dt * dt * 0.9;
+        FX.set(p.e, { x, y, r: p.r0 + p.vr * dt, rx: p.rx + 400 * dt, persp: 800, o: 1 - span(dt, 2.2, 3.0) });
+      });
+    });
+  };
+
+  // ---------- логотип etagi.com (inline SVG): знак падает, надпись прорисовывается контуром и заливается
+  FX.logo = function (svg, t0, opts = {}) {
+    const paths = Array.from(svg.querySelectorAll('path'));
+    const mark = paths.find(p => /FF4242/i.test(p.getAttribute('fill')));
+    const letters = paths.filter(p => p !== mark);
+    const ink = opts.ink || '#191919';
+    letters.forEach(p => { p.setAttribute('fill', ink); p.setAttribute('stroke', ink); p.setAttribute('stroke-width', '0.9'); });
+    FX.init(() => letters.forEach(p => { p.L = p.getTotalLength(); p.style.strokeDasharray = p.L; }));
+    FX.on(t => {
+      const km = span(t, t0, t0 + 0.5);
+      mark.style.transformBox = 'fill-box'; mark.style.transformOrigin = '50% 100%';
+      mark.style.transform = `translateY(${lerp(-30, 0, E.out3(km)).toFixed(2)}px) scale(${lerp(0.2, 1, E.back2(km)).toFixed(3)})`;
+      mark.style.opacity = span(t, t0, t0 + 0.08);
+      letters.forEach((p, i) => {
+        const a = t0 + 0.22 + i * 0.045, k = span(t, a, a + 0.5);
+        p.style.strokeDashoffset = ((p.L || 100) * (1 - E.out3(k))).toFixed(2);
+        p.style.fillOpacity = E.out2(span(t, a + 0.3, a + 0.6)).toFixed(3);
+        p.style.opacity = t >= a ? 1 : 0;
+      });
+    });
+  };
+
+  // ---------- удар без конфетти: вспышка, две ударные волны, лучи-штрихи от центра и мерцающие искры вокруг рамки
+  // cx, cy — центр удара (px), box — рамка, вокруг которой мерцают искры (px: x, y, w, h)
+  FX.burst = function (parent, t0, cx, cy, box, opts = {}) {
+    const R = FX.rng(opts.seed || 3), c = opts.color || '#FFFFFF', n = opts.n || 20;
+    const root = FX.el('div', 'abs bleed', parent);     // эффект под обрез — не вёрстка
+    Object.assign(root.style, { left: cx + 'px', top: cy + 'px', width: 0, height: 0 });
+    const fl = FX.el('div', 'abs', root);
+    const fr = Math.max(box.w, box.h) * 0.9;
+    Object.assign(fl.style, { left: -fr + 'px', top: -fr + 'px', width: 2 * fr + 'px', height: 2 * fr + 'px', borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 65%)' });
+    const rings = [0, 1].map(i => {
+      const r = FX.el('div', 'abs', root), d = box.h * 0.9;
+      Object.assign(r.style, { left: -d / 2 + 'px', top: -d / 2 + 'px', width: d + 'px', height: d + 'px', borderRadius: '50%',
+        border: (i ? 6 : 12) + 'px solid ' + c });
+      return r;
+    });
+    const rays = Array.from({ length: n }, (_, i) => {
+      const e = FX.el('div', 'abs', root);
+      const a = (i / n) * 360 + (R() - 0.5) * 10, len = box.h * (0.6 + R() * 0.7), th = 12 + R() * 10;
+      Object.assign(e.style, { left: 0, top: -th / 2 + 'px', width: len + 'px', height: th + 'px', borderRadius: th + 'px',
+        background: c, transformOrigin: '0 50%' });
+      return { e, a, len, r0: Math.min(box.w, box.h * 1.6) * (0.3 + R() * 0.1), r1: Math.max(box.w * 0.62, box.h * 1.4) * (0.85 + R() * 0.35), d: R() * 0.06 };
+    });
+    const sp = Array.from({ length: opts.sparks || 7 }, (_, i) => {   // искры ✦ по краю рамки
+      const e = FX.el('div', 'abs bleed', parent, `<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="M50 0C54 38 62 46 100 50C62 54 54 62 50 100C46 62 38 54 0 50C38 46 46 38 50 0Z" fill="${c}"/></svg>`);
+      const s = 56 + R() * 50, side = i % 2, u = R();
+      const x = box.x + (side ? box.w * (0.04 + u * 0.92) : (i % 4 < 2 ? -s * 0.2 : box.w + s * 0.2 - s)),
+            y = box.y + (side ? (i % 4 === 1 ? -s * 0.9 : box.h - s * 0.1) : box.h * (0.1 + u * 0.8) - s / 2);
+      Object.assign(e.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px' });
+      return { e, ph: R() * 6.28, sp: 4 + R() * 3, d: 0.15 + i * 0.07 };
+    });
+    FX.on(t => {
+      const dt = t - t0;
+      FX.set(fl, { s: lerp(0.3, 1.2, E.out3(span(dt, 0, 0.35))), o: dt < 0 ? 0 : 1 - span(dt, 0.04, 0.4) });
+      rings.forEach((r, i) => {
+        const k = span(dt, i * 0.1, i * 0.1 + 1.0);
+        FX.set(r, { s: lerp(0.5, 2.6 + i * 0.6, E.out3(k)), o: dt < i * 0.08 ? 0 : (1 - k) * 0.9 });
+      });
+      rays.forEach(p => {
+        const k = E.out4(span(dt, p.d, p.d + 0.8));
+        const rr = lerp(p.r0, p.r1, k), sc = lerp(1, 0.05, E.in2(span(dt, p.d + 0.15, p.d + 0.95)));
+        p.e.style.opacity = dt < p.d ? 0 : 1;
+        p.e.style.transform = `translate(${(Math.cos(p.a * Math.PI / 180) * rr).toFixed(1)}px,${(Math.sin(p.a * Math.PI / 180) * rr).toFixed(1)}px) rotate(${p.a.toFixed(1)}deg) scaleX(${sc.toFixed(3)})`;
+      });
+      sp.forEach(s => {
+        const k = E.back2(span(dt, s.d, s.d + 0.35));
+        const tw = 0.75 + 0.25 * Math.sin((t - t0) * s.sp + s.ph);
+        FX.set(s.e, { s: k * tw, r: (t - t0) * 40 + s.ph * 20, o: dt < s.d ? 0 : 0.95 });
+      });
+    });
+  };
+
+  // ---------- логотип TOON Real Estate Expo (inline SVG): знак-дома растут снизу, надписи открываются слева
+  FX.toonLogo = function (svg, t0) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const uid = 'tl' + Math.floor(Math.random() * 1e6);
+    const defs = document.createElementNS(NS, 'defs');
+    const clip = (id, x, y, w, h) => {
+      const cp = document.createElementNS(NS, 'clipPath'); cp.id = uid + id;
+      const r = document.createElementNS(NS, 'rect');
+      [['x', x], ['y', y], ['width', w], ['height', h]].forEach(([k, v]) => r.setAttribute(k, v));
+      cp.appendChild(r); defs.appendChild(cp); return r;
+    };
+    svg.insertBefore(defs, svg.firstChild);
+    const mark = svg.querySelector('#mark'), re = svg.querySelector('#real-estate'), ex = svg.querySelector('#expo');
+    [mark, re, ex].forEach(p => p.removeAttribute('id'));
+    const cm = clip('m', 60, 40, 860, 690), cr = clip('r', 150, 720, 680, 100), ce = clip('e', 350, 825, 270, 90);
+    mark.setAttribute('clip-path', `url(#${uid}m)`); re.setAttribute('clip-path', `url(#${uid}r)`); ex.setAttribute('clip-path', `url(#${uid}e)`);
+    const line = document.createElementNS(NS, 'rect');                 // светящаяся кромка подъёма
+    line.setAttribute('x', 80); line.setAttribute('width', 820); line.setAttribute('height', 6); line.setAttribute('fill', '#2FB4D6');
+    svg.appendChild(line);
+    FX.on(t => {
+      const km = E.io3(span(t, t0, t0 + 0.8));
+      const y = lerp(730, 40, km);
+      cm.setAttribute('y', y.toFixed(1)); cm.setAttribute('height', (730 - y).toFixed(1));
+      line.setAttribute('y', (y - 3).toFixed(1));
+      line.style.opacity = km > 0 && km < 1 ? (1 - km) * 0.9 + 0.1 : 0;
+      mark.style.transformBox = 'fill-box'; mark.style.transformOrigin = '50% 100%';
+      mark.style.transform = `scaleY(${lerp(0.9, 1, E.back(span(t, t0, t0 + 0.9))).toFixed(3)})`;
+      const kr = E.out3(span(t, t0 + 0.55, t0 + 0.95));
+      cr.setAttribute('width', (680 * kr).toFixed(1));
+      const ke = E.out3(span(t, t0 + 0.75, t0 + 1.1));
+      ce.setAttribute('width', (270 * ke).toFixed(1));
+      ex.style.transformBox = 'fill-box'; ex.style.transformOrigin = '50% 50%';
+      ex.style.transform = `translateY(${lerp(24, 0, ke).toFixed(1)}px)`;
+      ex.style.letterSpacing = 0;
+    });
+  };
+
+  // ---------- ряд чек-листа: красный чекбокс с галочкой, «0N / 03», три сегмента прогресса
+  FX.checkRow = function (n, opts = {}) {
+    const rb = FX.box(opts.box || { tall: [0, 0, 1, 0.07], sq: [0, 0, 1, 0.085], wide: [0, 0, 0.56, 0.1] });
+    const s = rb.h, t0 = opts.t0 == null ? 0.08 : opts.t0;
+    const row = FX.el('div', 'crow', document.body);
+    Object.assign(row.style, { left: rb.x + 'px', top: rb.y + 'px', width: rb.w + 'px', height: s + 'px' });
+    const cb = FX.el('div', 'cbox', row, FX.icon.check('#fff', 15));
+    Object.assign(cb.style, { width: s + 'px', height: s + 'px' });
+    const ck = cb.querySelector('.ck');
+    const lab = FX.el('div', 'clab', row, `<b>0${n}</b><span>/ 03</span>`);
+    Object.assign(lab.style, { left: (s * 1.28) + 'px', fontSize: (s * 0.56) + 'px' });
+    const x0 = s * 4.3, gap = s * 0.22, sw = (rb.w - x0 - 2 * gap) / 3;
+    const segs = [0, 1, 2].map(i => {
+      const g = FX.el('div', 'seg', row, '<i></i>');
+      Object.assign(g.style, { left: (x0 + i * (sw + gap)) + 'px', width: sw + 'px', top: (s * 0.42) + 'px', height: (s * 0.16) + 'px' });
+      return g;
+    });
+    FX.init(() => { ck.L = ck.getTotalLength(); ck.style.strokeDasharray = ck.L; });
+    FX.on(t => {
+      if (!opts.noPop) { const k = span(t, t0, t0 + 0.4); set(cb, { s: E.back2(k), r: lerp(-90, 0, E.out3(k)), o: k > 0 ? 1 : 0 }); }
+      else set(cb, { o: t >= t0 ? 1 : 0 });
+      ck.style.strokeDashoffset = ((ck.L || 100) * (1 - E.out3(span(t, t0 + 0.2, t0 + 0.5)))).toFixed(1);
+      const kl = span(t, t0 + 0.12, t0 + 0.45);
+      set(lab, { x: lerp(-30, 0, E.out3(kl)), o: kl });
+      segs.forEach((g, i) => {
+        const f = i < n - 1 ? 1 : i === n - 1 ? E.io2(span(t, t0 + 0.2, t0 + 0.8)) : 0;
+        set(g.firstChild, { sx: f });
+        set(g, { o: span(t, t0 + 0.1 + i * 0.05, t0 + 0.3 + i * 0.05) });
+      });
+    });
+    return { row, cb: { x: rb.x, y: rb.y, w: s, h: s } };
+  };
+  const set = FX.set;
+
+  // ---------- иконки (SVG-строки, белые/красные)
+  FX.icon = {
+    check: (c = '#fff', w = 14) => `<svg viewBox="0 0 100 100"><path class="ck" d="M18 54 L42 76 L84 26" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    pin: (c = '#FF4242') => `<svg viewBox="0 0 100 100"><path d="M50 6c-19 0-33 14-33 32 0 24 33 56 33 56s33-32 33-56C83 20 69 6 50 6z" fill="${c}"/><circle cx="50" cy="38" r="12" fill="#fff"/></svg>`,
+    phone: (c = '#fff') => `<svg viewBox="0 0 100 100"><path d="M30 10l14 22-9 9c5 11 14 20 25 25l9-9 22 14-6 17c-35 1-73-37-72-72z" fill="${c}"/></svg>`,
+    globe: (c = '#fff') => `<svg viewBox="0 0 100 100" fill="none" stroke="${c}" stroke-width="3"><circle cx="50" cy="50" r="44"/><ellipse class="gm" cx="50" cy="50" rx="20" ry="44"/><ellipse class="gm2" cx="50" cy="50" rx="36" ry="44"/><path d="M6 50h88M14 28h72M14 72h72"/></svg>`,
+    key: (c = '#fff') => `<svg viewBox="0 0 100 100"><circle cx="30" cy="50" r="20" fill="none" stroke="${c}" stroke-width="9"/><path d="M50 50h42M80 50v14M68 50v10" stroke="${c}" stroke-width="9" stroke-linecap="round"/></svg>`,
+    house: (c = '#FF4242') => `<svg viewBox="0 0 32.2 32.2"><path d="M32.1136 32.0038H0V10.8477L32.1136 0.110229V32.0038Z" fill="${c}"/></svg>`,
+    // каналы связи: белые глифы на кругах цветов площадок (небольшие, рядом с подписью — не «чужие логотипы крупно»)
+    ig: () => `<svg viewBox="0 0 100 100"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FEDA75"/><stop offset=".35" stop-color="#FA7E1E"/><stop offset=".6" stop-color="#D62976"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#igg)"/><rect x="25" y="25" width="50" height="50" rx="15" fill="none" stroke="#fff" stroke-width="7"/><circle cx="50" cy="50" r="12" fill="none" stroke="#fff" stroke-width="7"/><circle cx="64.5" cy="35.5" r="4" fill="#fff"/></svg>`,
+    fb: () => `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#1877F2"/><path d="M55 82V54h10l2-12H55v-8c0-4 1.5-6.5 7-6.5h6V17c-1.5-.2-5-.5-9-.5-9.5 0-15.5 6-15.5 16.5V42H33v12h10.5v28z" fill="#fff"/></svg>`,
+    wa: () => `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#25D366"/><path d="M50 21a28 28 0 0 0-24 42l-4 15 15-4a28 28 0 1 0 13-53z" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/><path d="M40 35l5 8-3 3c2 5 6 9 11 11l3-3 8 5-2 6c-13 0-27-14-27-27z" fill="#fff"/></svg>`,
+    tel: () => `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#FF4242"/><g transform="translate(22 22) scale(.56)"><path d="M30 10l14 22-9 9c5 11 14 20 25 25l9-9 22 14-6 17c-35 1-73-37-72-72z" fill="#fff"/></g></svg>`,
+    chat: (c = '#fff') => `<svg viewBox="0 0 100 100"><path d="M14 18h72a8 8 0 0 1 8 8v40a8 8 0 0 1-8 8H44L24 90V74H14a8 8 0 0 1-8-8V26a8 8 0 0 1 8-8z" fill="${c}"/></svg>`,
+  };
+  // форма знака (скат крыши) для clip-path: точки в долях
+  FX.houseClip = (cx, cy, s) => {     // центр и размер (px) знака
+    const P = [[0, 0.3369], [1, 0.0034], [1, 1], [0, 1]].map(([x, y]) => `${(cx + (x - 0.5) * s).toFixed(1)}px ${(cy + (y - 0.62) * s).toFixed(1)}px`);
+    return `polygon(${P.join(',')})`;
+  };
+})();
+</script>
+<!-- s07 — «Проконсультируем | и проведём через все этапы — | от выбора до покупки.»
+     ☑ 03; шкала этапов Выбор → Просмотр → Сделка → Ключи (узлы — на «проведём…этапы», красная линия — «от выбора
+     до покупки»); фото: ключи на красном брелоке; выход — красная вспышка -->
+<style>
+  #bg { background: #0D0D0E; }
+  .glow { background: radial-gradient(circle at 20% 90%, rgba(255,66,66,.3), rgba(255,66,66,0) 50%); }
+  .steps { position: absolute; }
+  .st-line { position: absolute; height: 8px; border-radius: 4px; background: rgba(255,255,255,.18); overflow: hidden; }
+  .st-line i { position: absolute; inset: 0; background: #FF4242; transform-origin: 0 50%; }
+  .node { position: absolute; border-radius: 50%; background: #1C1C1F; border: 5px solid rgba(255,255,255,.45);
+          display: flex; align-items: center; justify-content: center; font-family: Unb, Mont; font-weight: 800; color: #fff; }
+  .node.on { background: #FF4242; border-color: #FF4242; }
+  .nl { position: absolute; transform: translateX(-50%); font-weight: 800; color: #fff; white-space: nowrap; letter-spacing: .02em; }
+  .kbadge { position: absolute; border-radius: 50%; background: #FF4242; box-shadow: 0 14px 30px rgba(255,66,66,.45); }
+  .kbadge svg { width: 100%; height: 100%; }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  FX.el('div', 'full bleed glow', FX.$('#bg'));
+  FX.checkRow(3, { t0: 0.12 });
+
+  // фото ключей
+  const pb = FX.box({ tall: [0.06, 0.52, 0.94, 1.0], sq: [0.2, 0.54, 0.8, 1.0], wide: [0.6, 0.0, 1.0, 1.0] });
+  const card = FX.el('div', 'pcard', document.body);
+  Object.assign(card.style, { left: pb.x + 'px', top: pb.y + 'px', width: pb.w + 'px', height: pb.h + 'px' });
+  const ph = FX.photo(card, '../images/b218913cbbc2cba8.png');
+  ph.img.style.objectPosition = FX.L === 'wide' ? '55% 50%' : '60% 48%';
+  FX.kb(ph, 0.3, FX.D, { s: 1.08, x: 0 }, { s: 1.24, x: -30 });
+  FX.on(t => {
+    const k = span(t, 0.3, 0.95);
+    set(card, { persp: 1500, rx: lerp(-30, 0, E.out3(k)), y: lerp(pb.h * 0.5, 0, E.out4(k)), o: span(t, 0.3, 0.4) });
+  });
+  const bs = Math.min(pb.w, pb.h) * 0.22;
+  const kb = FX.el('div', 'kbadge', document.body, FX.icon.key('#fff'));
+  Object.assign(kb.style, { padding: (bs * 0.17) + 'px', width: bs + 'px', height: bs + 'px', left: (pb.x + pb.w - bs * 1.1) + 'px', top: (pb.y + pb.h - bs * 1.15) + 'px' });
+  const tK = FX.w('покупки') - 0.05;
+  FX.on(t => { const k = span(t, tK, tK + 0.45); set(kb, { s: E.back2(k), r: lerp(-120, 0, E.out3(k)), o: k > 0 ? 1 : 0 }); });
+
+  // шкала этапов
+  const sb = FX.box({ tall: [0.02, 0.33, 0.98, 0.49], sq: [0.04, 0.34, 0.96, 0.51], wide: [0.0, 0.64, 0.55, 0.88] });
+  const names = ['ВЫБОР', 'ПРОСМОТР', 'СДЕЛКА', 'КЛЮЧИ'];
+  const ns = Math.min(sb.h * 0.52, sb.w / 7.5), padX = ns * 0.75;
+  const cy = sb.y + ns / 2 + 4;
+  const xs = names.map((_, i) => sb.x + padX + i * (sb.w - 2 * padX) / 3);
+  const line = FX.el('div', 'st-line', document.body, '<i></i>');
+  Object.assign(line.style, { left: xs[0] + 'px', top: (cy - 4) + 'px', width: (xs[3] - xs[0]) + 'px' });
+  const nodes = names.map((nm, i) => {
+    const n = FX.el('div', 'node', document.body, String(i + 1));
+    Object.assign(n.style, { left: (xs[i] - ns / 2) + 'px', top: (cy - ns / 2) + 'px', width: ns + 'px', height: ns + 'px', fontSize: (ns * 0.4) + 'px' });
+    n.lb = FX.el('div', 'nl', document.body, nm);
+    Object.assign(n.lb.style, { left: xs[i] + 'px', top: (cy + ns * 0.62) + 'px', fontSize: Math.min(ns * 0.36, (sb.w / 4) / 7.2) + 'px' });
+    return n;
+  });
+  const tA = FX.w('проведём') - 0.05, tZ = FX.w('этапы') + 0.1;
+  const tF0 = FX.w('выбора') - 0.05, tF1 = FX.w('покупки') + 0.25;
+  FX.on(t => {
+    set(line, { o: span(t, tA, tA + 0.2), sx: E.out3(span(t, tA, tZ)) });
+    line.style.transformOrigin = '0 50%';
+    const f = E.io2(span(t, tF0, tF1));
+    set(line.firstChild, { sx: f });
+    nodes.forEach((n, i) => {
+      const a = lerp(tA, tZ, i / 3), k = span(t, a, a + 0.4);
+      const lit = f * 3 >= i - 0.02 && t >= tF0;
+      n.classList.toggle('on', lit);
+      const kp = lit ? span(t, tF0 + (tF1 - tF0) * i / 3, tF0 + (tF1 - tF0) * i / 3 + 0.3) : 0;
+      set(n, { s: E.back2(k) * (1 + 0.22 * Math.sin(Math.PI * kp)), o: k > 0 ? 1 : 0 });
+      set(n.lb, { o: span(t, a + 0.1, a + 0.35), y: lerp(14, 0, E.out3(span(t, a + 0.1, a + 0.4))) });
+      n.lb.style.transform = `translateX(-50%) ${n.lb.style.transform}`;
+    });
+  });
+
+  FX.captions(document.body, {
+    box: { tall: [0, 0.085, 1, 0.31], sq: [0, 0.1, 1, 0.32], wide: [0, 0.13, 0.56, 0.6] },
+    align: FX.L === 'wide' ? 'left' : 'center', accent: ['проконсультируем', 'этапы', 'покупки'],
+    size: { tall: 96, sq: 92, wide: 108 },
+  });
+
+  FX.slantIn(['#191919', '#FF4242'], 0.4, -1);
+  // вспышка к склейке: полный цвет уже на последнем кадре сцены (FX.flashOut доходит лишь до ~80 %)
+  const flash = FX.el('div', 'full bleed', FX.$('#tr'));
+  flash.style.background = '#FF4242'; flash.style.zIndex = 70;
+  FX.on(t => FX.set(flash, { o: FX.E.in2(FX.span(t, FX.D - 0.28, FX.D - 0.045)) }));
+})();
+</script>
+
+</body></html>

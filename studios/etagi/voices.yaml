@@ -1,0 +1,19 @@
+# Замеры темпа голосов студии (ROADMAP A3) — пишет `python -m studio voice`, руками не править.
+# voice — хэш ID голоса (studio/voices.py). validate новых проектов считает слова по wpm отсюда.
+measured:
+- language: ru
+  backend: elevenlabs
+  voice: 7652b49dbf3b
+  wpm: 130.2
+  rate: 100.0
+  words: 81
+  project: toon-expo
+  date: '2026-11-01'
+- language: ru
+  backend: elevenlabs
+  voice: 848d5c1805bc
+  wpm: 126.9
+  rate: 100.0
+  words: 88
+  project: toon-expo
+  date: '2026-11-01'

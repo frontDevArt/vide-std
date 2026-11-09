@@ -161,7 +161,7 @@ def run(proj: Project, log=print, fast=False):
                   "Субтитры не мелькают (>0.55 c)", "Каждая фраза имеет субтитр в момент начала"):
             skip(n, no_subs)
     else:
-        _check_subs(proj, chk, subs, lines)
+        _check_subs(proj, chk, subs, lines, drawn_subs(proj))
 
     # --- вёрстка: контент сцены в полях кадра (P1.10; с ROADMAP B2 — ❌)
     from .safezone import qa_check
@@ -202,16 +202,33 @@ def run(proj: Project, log=print, fast=False):
     return ok
 
 
-def _check_subs(proj, chk, subs, lines):
+def drawn_subs(proj):
+    """Субтитры, которые рисуются в кадре: у сцен, чей шаблон рисует речь сам (`speech_on_screen` — kit.kinetic,
+    проектные), их в кадре нет (render.frame) — остаются только в .srt/.vtt. Признак — у экземпляра шаблона, как в
+    render.frame: проектный шаблон может решать по params сцены."""
+    from .render import make_template, prepare
+    tl, ctx = prepare(proj)
+    return [(s["start"] + c["t0"], s["start"] + c["t1"], c["lines"]) for s in tl["scenes"]
+            if s["subs"] and not getattr(make_template(ctx, s), "speech_on_screen", False) for c in s["subs"]]
+
+
+def _check_subs(proj, chk, subs, lines, drawn=None):
+    """subs — все субтитры (файл .srt/.vtt): наложение и покрытие фраз; drawn — те, что рисуются в кадре
+    (None — все): ширина строк и мелькание — только у них."""
+    drawn = subs if drawn is None else drawn
     f = G.font(S.font_size(proj), "bold")
     maxw = S.max_width(proj)
     ml = int(proj.cfg["subtitles"].get("max_lines", 2))
-    bad = [c for c in subs if not c[2] or len(c[2]) > ml or max(f.getlength(l) for l in c[2]) > maxw]
-    chk(not bad, f"Субтитры: не больше {ml} строк и влезают по ширине", f"{len(subs)} шт." + (f"; плохие: {bad[:3]}" if bad else ""))
+    name = f"Субтитры: не больше {ml} строк и влезают по ширине"
+    if subs and not drawn:
+        chk(True, name, "в кадр не рисуются: речь рисуют сами сцены (speech_on_screen), субтитры — в .srt/.vtt")
+    else:
+        bad = [c for c in drawn if not c[2] or len(c[2]) > ml or max(f.getlength(l) for l in c[2]) > maxw]
+        chk(not bad, name, f"{len(drawn)} шт." + (f"; плохие: {bad[:3]}" if bad else ""))
     ov = [i for i in range(len(subs) - 1) if subs[i][1] > subs[i + 1][0] + 1e-3]
     chk(not ov, "Субтитры не накладываются друг на друга")
-    short = [c for c in subs if c[1] - c[0] < 0.55]
-    chk(len(short) <= max(1, len(subs) // 10), "Субтитры не мелькают (>0.55 c)", f"коротких: {len(short)}")
+    short = [c for c in drawn if c[1] - c[0] < 0.55]
+    chk(len(short) <= max(1, len(drawn) // 10), "Субтитры не мелькают (>0.55 c)", f"коротких: {len(short)}")
     coverage = []
     for (a0, a1, txt, _) in lines:
         cov = any(c[0] <= a0 + 0.15 and c[1] >= a0 + 0.15 for c in subs)

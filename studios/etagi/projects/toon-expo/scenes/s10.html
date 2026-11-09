@@ -1,0 +1,113 @@
+<!-- s10 — «Мы поможем найти | недвижимость вашей мечты!» (+ финал 1,6 с)
+     закатный ЖК; ряд каналов связи (Instagram, Facebook, WhatsApp, телефон); белая карточка — логотип etagi.com
+     прорисовывается; телефон, сайт, кнопка «НАПИСАТЬ НАМ» с пульсом и касанием; внизу — даты, TOON EXPO и место -->
+<style>
+  #bg { background: #0D0D0E; }
+  .chs { position: absolute; display: flex; align-items: center; gap: 4%; }
+  .chs i { display: block; border-radius: 50%; box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+  .chs svg { width: 100%; height: 100%; display: block; }
+  .bubble { position: absolute; display: flex; align-items: center; gap: .5em; background: #fff; color: #191919;
+            border-radius: 1.1em 1.1em .25em 1.1em; padding: .5em .9em; font-weight: 700; box-shadow: 0 16px 40px rgba(0,0,0,.4);
+            transform-origin: 100% 100%; white-space: nowrap; }
+  .bubble .dots i { display: inline-block; width: .38em; height: .38em; margin: 0 .09em; border-radius: 50%; background: #8E8E96; }
+  .bubble .snd { width: 1.4em; height: 1.4em; border-radius: 50%; background: #FF4242; display: flex; align-items: center; justify-content: center; }
+  .bubble .snd svg { width: 62%; height: 62%; }
+  .lcard { position: absolute; background: #fff; border-radius: 30px; box-shadow: 0 30px 70px rgba(0,0,0,.5);
+           display: flex; align-items: center; justify-content: center; }
+  .lcard svg { width: 82%; height: auto; overflow: visible; }
+  .line { position: absolute; display: flex; align-items: center; justify-content: center; gap: .45em; color: #fff;
+          font-weight: 800; white-space: nowrap; }
+  .line .ic { width: 1.25em; height: 1.25em; border-radius: 50%; background: #FF4242; padding: .22em; display: flex; }
+  .line .ic svg { width: 100%; height: 100%; }
+  .btn { position: absolute; display: flex; align-items: center; justify-content: center; background: #FF4242; color: #fff;
+         font-weight: 900; border-radius: 999px; letter-spacing: .06em; box-shadow: 0 16px 40px rgba(255,66,66,.45); }
+  .ripple { position: absolute; border-radius: 999px; border: 5px solid #FF4242; }
+  .finger { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,.85);
+            box-shadow: 0 0 0 10px rgba(255,255,255,.25); }
+  .info { position: absolute; display: flex; align-items: center; justify-content: center; gap: .6em; color: #fff;
+          font-weight: 700; white-space: nowrap; }
+  .info b { background: #FF4242; color: #fff; font-weight: 900; padding: .1em .45em; border-radius: .3em; }
+</style>
+<div class="lcard" id="lc">{{logo}}</div>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const L = FX.L;
+  const bg = FX.$('#bg');
+  const ph = FX.photo(bg, '../photos/dusk-tower.jpg', 'bleed');
+  ph.img.style.objectPosition = L === 'wide' ? '50% 50%' : '40% 50%';
+  FX.kb(ph, 0, FX.D, { s: 1.14, x: 30 }, { s: 1.0, x: -30 });
+  const sh = FX.el('div', 'full bleed', bg);
+  sh.style.background = 'linear-gradient(180deg, rgba(13,13,14,.82) 0%, rgba(13,13,14,.45) 45%, rgba(13,13,14,.88) 100%)';
+
+  const tEnd = FX.speechEnd;
+  // фраза 1 и 2–3
+  FX.captions(document.body, {
+    box: { tall: [0, 0.0, 1, 0.22], sq: [0, 0.0, 1, 0.24], wide: [0, 0.04, 0.56, 0.44] },
+    groups: [[0, 1]], out: false, accent: ['мечты'],
+    align: L === 'wide' ? 'left' : 'center', size: { tall: 92, sq: 88, wide: 104 },
+  });
+
+  // ряд каналов связи — напоминание с прошлой сцены
+  const bb = FX.box({ tall: [0.1, 0.235, 0.9, 0.315], sq: [0.2, 0.255, 0.8, 0.34], wide: [0.0, 0.5, 0.5, 0.64] });
+  const chs = FX.el('div', 'chs', document.body, ['ig', 'fb', 'wa', 'tel'].map(k => `<i>${FX.icon[k]()}</i>`).join(''));
+  Object.assign(chs.style, { left: bb.x + 'px', top: bb.y + 'px', width: bb.w + 'px', height: bb.h + 'px',
+    justifyContent: L === 'wide' ? 'flex-start' : 'center' });
+  const ics = FX.$$('i', chs);
+  ics.forEach(i => { i.style.width = i.style.height = (Math.min(bb.h, bb.w / 5.2)) + 'px'; });
+  FX.on(t => ics.forEach((i, n) => { const k = span(t, 0.3 + n * 0.08, 0.7 + n * 0.08); set(i, { s: E.back2(k), r: lerp(-60, 0, E.out3(k)), o: k > 0 ? 1 : 0 }); }));
+
+  // карточка с логотипом
+  const cb = FX.box({ tall: [0.04, 0.35, 0.96, 0.55], sq: [0.14, 0.37, 0.86, 0.55], wide: [0.6, 0.06, 1.0, 0.4] });
+  const lc = FX.$('#lc');
+  Object.assign(lc.style, { left: cb.x + 'px', top: cb.y + 'px', width: cb.w + 'px', height: cb.h + 'px' });
+  const tC = Math.max(0.4, FX.w('поможем') + 0.1);
+  FX.logo(lc.querySelector('svg'), tC + 0.25);
+  FX.on(t => { const k = span(t, tC, tC + 0.55); set(lc, { persp: 1400, rx: lerp(80, 0, E.out3(k)), s: lerp(0.8, 1, E.back(k)), o: span(t, tC, tC + 0.1) }); });
+
+  // телефон и сайт
+  const pbx = FX.box({ tall: [0, 0.58, 1, 0.65], sq: [0, 0.585, 1, 0.665], wide: [0.6, 0.45, 1.0, 0.55] });
+  const sbx = FX.box({ tall: [0, 0.66, 1, 0.71], sq: [0, 0.675, 1, 0.73], wide: [0.6, 0.56, 1.0, 0.63] });
+  const pl = FX.el('div', 'line', document.body, `<span class="ic">${FX.icon.phone('#fff')}</span><span>+374 55 556556</span>`);
+  Object.assign(pl.style, { left: pbx.x + 'px', top: pbx.y + 'px', width: pbx.w + 'px', height: pbx.h + 'px', fontSize: Math.min(pbx.h * 0.62, pbx.w / 10.5) + 'px' });
+  const sl = FX.el('div', 'line', document.body, '<span>am.etagi.com</span>');
+  Object.assign(sl.style, { left: sbx.x + 'px', top: sbx.y + 'px', width: sbx.w + 'px', height: sbx.h + 'px', fontSize: Math.min(sbx.h * 0.6, sbx.w / 12) + 'px', fontWeight: 600, color: '#E6E6EA' });
+  const tP = Math.max(tC + 0.4, FX.w('недвижимость') - 0.1);
+  FX.on(t => {
+    const k = span(t, tP, tP + 0.45), k2 = span(t, tP + 0.15, tP + 0.6);
+    set(pl, { o: k, y: lerp(30, 0, E.back(k)) });
+    set(sl, { o: k2, y: lerp(30, 0, E.back(k2)) });
+  });
+
+  // кнопка «НАПИСАТЬ НАМ» и касание
+  const btb = FX.box({ tall: [0.12, 0.76, 0.88, 0.85], sq: [0.24, 0.765, 0.76, 0.865], wide: [0.64, 0.68, 0.96, 0.8] });
+  const btn = FX.el('div', 'btn', document.body, 'НАПИСАТЬ НАМ');
+  Object.assign(btn.style, { left: btb.x + 'px', top: btb.y + 'px', width: btb.w + 'px', height: btb.h + 'px', fontSize: Math.min(btb.h * 0.4, btb.w / 9.5) + 'px' });
+  const rip = FX.el('div', 'ripple', document.body);
+  Object.assign(rip.style, { left: btb.x + 'px', top: btb.y + 'px', width: btb.w + 'px', height: btb.h + 'px' });
+  const fin = FX.el('div', 'finger', document.body);
+  const tBt = FX.w('мечты') - 0.1, tTap = tEnd + 0.55;
+  FX.on(t => {
+    const k = span(t, tBt, tBt + 0.45);
+    const pulse = 1 + 0.045 * Math.sin(Math.max(0, t - tBt - 0.45) * 7);
+    const press = 1 - 0.08 * Math.sin(Math.PI * span(t, tTap, tTap + 0.25));
+    set(btn, { s: E.back2(k) * pulse * press, o: k > 0 ? 1 : 0 });
+    const kr = span(t, tTap + 0.05, tTap + 0.7);
+    set(rip, { sx: lerp(1, 1.18, E.out3(kr)), sy: lerp(1, 1.6, E.out3(kr)), o: kr > 0 && kr < 1 ? 1 - kr : 0 });
+    const kf = span(t, tTap - 0.45, tTap), kfo = span(t, tTap + 0.3, tTap + 0.6);
+    fin.style.left = (btb.x + btb.w * 0.7 - 45) + 'px';
+    fin.style.top = (btb.y + btb.h * 0.5 - 45) + 'px';
+    set(fin, { x: lerp(btb.w * 0.25, 0, E.out3(kf)), y: lerp(btb.h * 1.4, 0, E.out3(kf)), s: kf >= 1 ? 1 - 0.2 * Math.sin(Math.PI * span(t, tTap, tTap + 0.25)) : 1, o: span(t, tTap - 0.45, tTap - 0.3) * (1 - kfo) });
+  });
+
+  // даты и место
+  const ib = FX.box({ tall: [0, 0.9, 1, 0.97], sq: [0, 0.905, 1, 0.985], wide: [0.0, 0.84, 0.56, 0.95] });
+  const info = FX.el('div', 'info', document.body, '<b>13–15 НОЯБРЯ</b><span>·</span><span class="toonpill">TOON EXPO</span><span>·</span><span>МЕРИДИАН ЭКСПО</span>');
+  Object.assign(info.style, { left: ib.x + 'px', top: ib.y + 'px', width: ib.w + 'px', height: ib.h + 'px',
+    fontSize: Math.min(ib.h * 0.46, ib.w / 31) + 'px', justifyContent: L === 'wide' ? 'flex-start' : 'center' });
+  const tI = tP + 0.3;
+  FX.on(t => { const k = span(t, tI, tI + 0.5); set(info, { o: k, y: lerp(24, 0, E.out3(k)) }); });
+
+  FX.slantIn(['#FF4242', '#0D0D0E'], 0.42, 1);
+})();
+</script>

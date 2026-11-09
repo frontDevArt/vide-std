@@ -98,6 +98,15 @@ def test_chunks_split_long_beat(proj):
     assert c[0]["t0"] == 0.95 and c[0]["t1"] < c[1]["t0"] + 0.1 and c[-1]["t1"] <= 9.0
 
 
+def test_chunks_word_wider_than_line(proj):
+    # etagi toon-expo, TikTok: крупные субтитры в узкой зоне — «недвижимость» шире строки; было lines=None и
+    # падение write_srt («can only join an iterable»), стало — слово строкой как есть
+    long = "x" * 50  # 50 символов > 43
+    c = subs.chunks_for_scene(proj, {"beats": [_beat(0, f"buy {long} now", 0.0, 2.0)], "dur": 3.0})
+    assert all(x["lines"] for x in c), c
+    assert " ".join(" ".join(x["lines"]) for x in c) == f"buy {long} now"
+
+
 def test_srt_timestamp():
     assert subs._ts(0) == "00:00:00,000"
     assert subs._ts(3725.0464) == "01:02:05,046"

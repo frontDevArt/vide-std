@@ -1,0 +1,87 @@
+<!-- s02 — «Тогда не пропустите | главное событие ноября!»
+     вход — белая вспышка; красный кадр, бегущая обводка «НОЯБРЬ», глитч на «пропустите», календарь ноября в 3D
+     (13–15 обведены); выход — косая шторка (чёрная, затем красная) -->
+<style>
+  #bg { background: #FF4242; }
+  .mq { position: absolute; left: -40%; width: 180%; white-space: nowrap; font-family: Unb, Mont; font-weight: 800;
+        color: transparent; -webkit-text-stroke: 3px rgba(255,255,255,.34); line-height: 1; }
+  .cal { position: absolute; background: #fff; border-radius: 26px; box-shadow: 0 30px 60px rgba(80,0,0,.35);
+         overflow: hidden; transform-origin: 50% 0; }
+  .cal .hd { background: #191919; color: #fff; font-weight: 900; display: flex; align-items: center;
+             justify-content: space-between; padding: 0 6%; letter-spacing: .04em; }
+  .cal .hd .ring { width: .5em; height: .5em; border-radius: 50%; background: #FF4242; }
+  .cal .gr { display: grid; grid-template-columns: repeat(7, 1fr); padding: 3% 4% 4%; row-gap: 2%; }
+  .cal .gr div { text-align: center; color: #191919; font-weight: 700; position: relative; }
+  .cal .gr .dn { color: #9a9aa2; font-weight: 800; }
+  .cal .gr .hl { color: #fff; }
+  .cal .gr .hl i { position: absolute; left: 50%; top: 50%; width: 1.9em; height: 1.9em; margin: -.95em 0 0 -.95em;
+                   border-radius: 50%; background: #FF4242; z-index: -1; }
+  .glitch .capg { }
+  .acc-black .cw .cm { background: #191919; }
+</style>
+<div id="mqs" class="full bleed"></div>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const mqs = FX.$('#mqs');
+  mqs.style.transform = 'rotate(-12deg)';
+  const rows = 7, fs = Math.max(Wd, Hd) / 7.2;
+  const mrows = Array.from({ length: rows }, (_, i) => {
+    const r = FX.el('div', 'mq bleed', mqs, Array(8).fill('НОЯБРЬ ').join('• '));
+    r.style.top = (-Hd * 0.25 + i * fs * 1.12 * (Hd / Wd > 1 ? 1.45 : 1)) + 'px';
+    r.style.fontSize = fs + 'px';
+    return r;
+  });
+  FX.on(t => mrows.forEach((r, i) => set(r, { x: (i % 2 ? 1 : -1) * (t * 260 + 120 * E.out3(span(t, 0, 0.6))) })));
+
+  // календарь
+  const cal = FX.el('div', 'cal', document.body);
+  const cb = FX.place(cal, { tall: [0.08, 0.5, 0.92, 0.98], sq: [0.22, 0.5, 0.78, 1.0], wide: [0.6, 0.06, 0.98, 0.94] });
+  const u = cb.w / 14;
+  cal.style.fontSize = u + 'px';
+  const hd = FX.el('div', 'hd', cal, '<span class="ring"></span><span>НОЯБРЬ</span><span class="ring"></span>');
+  hd.style.height = (cb.h * 0.17) + 'px'; hd.style.fontSize = (u * 1.5) + 'px';
+  const gr = FX.el('div', 'gr', cal);
+  gr.style.height = (cb.h * 0.83) + 'px'; gr.style.fontSize = (u * 1.05) + 'px';
+  ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'].forEach(d => FX.el('div', 'dn', gr, d));
+  const cells = [];
+  for (let i = 0; i < 6; i++) FX.el('div', '', gr, '');           // 1 ноября 2026 — воскресенье
+  for (let d = 1; d <= 30; d++) {
+    const c = FX.el('div', d >= 13 && d <= 15 ? 'hl' : '', gr, (d >= 13 && d <= 15 ? '<i></i>' : '') + d);
+    cells.push(c);
+  }
+  const tIn = FX.w('главное') - 0.1, tHl = FX.w('ноября') - 0.05;
+  FX.on(t => {
+    const k = span(t, tIn, tIn + 0.7);
+    set(cal, { persp: 1400, rx: lerp(-95, 0, E.spring(k)), o: span(t, tIn, tIn + 0.12), y: lerp(-40, 0, E.out3(k)) });
+    cells.forEach((c, i) => {
+      const d = i + 1;
+      if (d >= 13 && d <= 15) {
+        const kk = span(t, tHl + (d - 13) * 0.09, tHl + (d - 13) * 0.09 + 0.35);
+        set(c.firstChild, { s: E.back2(kk), o: kk > 0 ? 1 : 0 });
+        c.style.color = kk > 0.3 ? '#fff' : '#191919';
+        set(c, { s: 1 + 0.25 * Math.sin(Math.PI * kk) });
+      }
+    });
+  });
+
+  const cap = FX.captions(document.body, {
+    box: { tall: [0, 0.0, 1, 0.46], sq: [0, 0.0, 1, 0.46], wide: [0, 0.08, 0.56, 0.92] },
+    align: FX.L === 'wide' ? 'left' : 'center', accent: ['пропустите', 'ноября'],
+    size: { tall: 118, sq: 120, wide: 140 },
+  });
+  cap.cap.classList.add('acc-black');
+  // глитч на «пропустите»: дрожь и цветной сдвиг
+  const tg = FX.w('пропустите');
+  FX.on(t => {
+    const g = span(t, tg + 0.05, tg + 0.45);
+    const on = g > 0 && g < 1;
+    const R = FX.rng(Math.floor(t * 30) + 3);
+    cap.groups[0].el.style.textShadow = on ? `${(R() * 14 - 7).toFixed(1)}px 0 0 #00E5FF, ${(R() * 14 - 7).toFixed(1)}px 0 0 #191919` : 'none';
+    set(cap.cap, { x: on ? (R() - 0.5) * 22 : 0, y: on ? (R() - 0.5) * 10 : 0 });
+  });
+
+  FX.flashIn('#FFFFFF', 0.3);
+  FX.slantOut(['#191919', '#FF4242'], 0.42, 1);
+})();
+</script>

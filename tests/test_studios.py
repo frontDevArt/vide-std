@@ -128,7 +128,8 @@ def test_studios_warns_on_bad_kind(base, capsys):
 # находится по slug без --studio, конфиг из studio.yaml не меняет его project.yaml)
 
 def test_repo_has_two_studios(capsys):
-    assert [w.id for w in workspace.studios()][:2] == ["default", "notes-from-the-mind"]
+    ids = [w.id for w in workspace.studios()]   # студий больше двух (yereva, etagi): default — первой, канал — среди них
+    assert ids[0] == "default" and "notes-from-the-mind" in ids
     assert cli.main(["studios"]) == 0
     out = capsys.readouterr().out
     assert "notes-from-the-mind" in out and "fake-discounts" in out

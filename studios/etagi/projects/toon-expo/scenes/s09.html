@@ -1,0 +1,103 @@
+<!-- s09 — «Напишите нам прямо сейчас — | в Инстаграм, | Фейсбук | или Ватсап! / Или просто позвоните!»
+     ночной Ереван; сообщение «Хочу на TOON EXPO!» печатается и отправляется; каналы связи выезжают строками
+     на своих словах (Instagram, Facebook, WhatsApp), на «позвоните» — красная строка с телефоном и звонком;
+     выход — косая шторка (красная, чёрная) -->
+<style>
+  #bg { background: #0D0D0E; }
+  .bubble { position: absolute; display: flex; align-items: center; gap: .5em; background: #fff; color: #191919;
+            border-radius: 1.1em 1.1em .25em 1.1em; padding: .5em .9em; font-weight: 700; box-shadow: 0 16px 40px rgba(0,0,0,.4);
+            transform-origin: 100% 100%; white-space: nowrap; }
+  .bubble .dots i { display: inline-block; width: .38em; height: .38em; margin: 0 .09em; border-radius: 50%; background: #8E8E96; }
+  .bubble .snd { width: 1.4em; height: 1.4em; border-radius: 50%; background: #FF4242; display: flex; align-items: center; justify-content: center; }
+  .bubble .snd svg { width: 62%; height: 62%; }
+  .ch { position: absolute; display: flex; align-items: center; gap: .55em; padding: 0 .7em 0 .35em; border-radius: 999px;
+        background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.28); backdrop-filter: blur(8px);
+        color: #fff; font-weight: 800; white-space: nowrap; box-shadow: 0 16px 40px rgba(0,0,0,.35); transform-origin: 0 50%; }
+  .ch i { display: block; flex: none; border-radius: 50%; }
+  .ch svg { width: 100%; height: 100%; display: block; }
+  .ch.call { background: #FF4242; border-color: #FF4242; box-shadow: 0 16px 44px rgba(255,66,66,.5); font-family: Unb, Mont; }
+  .ch.call i { box-shadow: 0 0 0 .12em rgba(255,255,255,.9); }
+  .ring { position: absolute; border-radius: 999px; border: 5px solid #FF4242; }
+  .glow { background: radial-gradient(circle at 85% 80%, rgba(255,66,66,.32), rgba(255,66,66,0) 55%); }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const L = FX.L;
+  const bg = FX.$('#bg');
+  const ph = FX.photo(bg, '../photos/night-aerial.jpg', 'bleed');
+  FX.kb(ph, 0, FX.D, { s: 1.18, x: -20 }, { s: 1.04, x: 20 });
+  const sh = FX.el('div', 'full bleed', bg);
+  sh.style.background = 'linear-gradient(180deg, rgba(13,13,14,.85) 0%, rgba(13,13,14,.62) 45%, rgba(13,13,14,.9) 100%)';
+  const glow = FX.el('div', 'full bleed glow', bg);
+  FX.on(t => set(glow, { s: 1 + 0.05 * Math.sin(t * 1.6) }));
+
+  // «Напишите нам прямо сейчас» → «Или просто позвоните!»
+  FX.captions(document.body, {
+    box: { tall: [0, 0.0, 1, 0.2], sq: [0, 0.0, 1, 0.22], wide: [0, 0.04, 0.56, 0.44] },
+    groups: [[0, 0], [4, 4]], out: false, accent: ['сейчас', 'позвоните'],
+    align: L === 'wide' ? 'left' : 'center', size: { tall: 92, sq: 88, wide: 104 },
+  });
+
+  // сообщение
+  const bb = FX.box({ tall: [0.04, 0.22, 0.96, 0.29], sq: [0.12, 0.24, 0.88, 0.32], wide: [0.0, 0.5, 0.5, 0.62] });
+  const bub = FX.el('div', 'bubble', document.body,
+    '<span class="dots"><i></i><i></i><i></i></span><span class="msg">Хочу на <b class="tn">TOON</b> <b class="te">EXPO</b>!</span><span class="snd">' +
+    '<svg viewBox="0 0 100 100"><path d="M14 50 L86 16 L66 86 L50 58 Z" fill="#fff"/></svg></span>');
+  bub.style.fontSize = Math.min(bb.h * 0.42, bb.w / 13) + 'px';
+  const dots = FX.$$('.dots i', bub), msg = FX.$('.msg', bub), dwrap = FX.$('.dots', bub);
+  FX.init(() => {
+    bub.style.left = (bb.x + (L === 'wide' ? 0 : (bb.w - bub.offsetWidth) / 2)) + 'px';
+    bub.style.top = (bb.y + (bb.h - bub.offsetHeight) / 2) + 'px';
+  });
+  const tB = 0.3, tM = Math.min(1.0, FX.w('инстаграм') - 0.2);
+  FX.on(t => {
+    const k = span(t, tB, tB + 0.4);
+    set(bub, { s: E.back2(k), o: k > 0 ? 1 : 0, y: lerp(30, 0, E.out3(k)) });
+    const typing = t < tM;
+    dwrap.style.display = typing ? 'inline-block' : 'none';
+    msg.style.display = typing ? 'none' : 'inline';
+    dots.forEach((d, i) => set(d, { y: -7 * Math.max(0, Math.sin((t * 9) - i * 0.9)) }));
+    if (!typing) set(msg, { o: span(t, tM, tM + 0.15), x: lerp(-12, 0, E.out3(span(t, tM, tM + 0.3))) });
+  });
+
+  // каналы связи: строки выезжают на своих словах
+  const rb = FX.box({ tall: [0.08, 0.34, 0.92, 0.94], sq: [0.16, 0.36, 0.84, 0.98], wide: [0.58, 0.06, 0.97, 0.94] });
+  const items = [
+    { k: 'ig', txt: 'Instagram', w: 'инстаграм' },
+    { k: 'fb', txt: 'Facebook', w: 'фейсбук' },
+    { k: 'wa', txt: 'WhatsApp', w: 'ватсап' },
+    { k: 'tel', txt: '+374 55 556556', w: 'позвоните', call: true },
+  ];
+  const rh = rb.h / 4, h = rh * 0.74;
+  const rows = items.map((it, n) => {
+    const r = FX.el('div', 'ch' + (it.call ? ' call' : ''), document.body, `<i>${FX.icon[it.k]()}</i><span>${it.txt}</span>`);
+    Object.assign(r.style, { left: rb.x + 'px', top: (rb.y + n * rh + (rh - h) / 2) + 'px', height: h + 'px',
+      fontSize: Math.min(h * 0.4, rb.w / (it.call ? 11.5 : 9)) + 'px' });
+    const ic = FX.$('i', r); ic.style.width = ic.style.height = (h * 0.78) + 'px';
+    r.ic = ic; r.t0 = FX.w(it.w, 1, 1 + n * 0.5) - 0.12; r.call = it.call;
+    return r;
+  });
+  FX.init(() => rows.forEach(r => {           // строки по центру зоны (в 16:9 — слева в своей колонке)
+    r.style.left = (L !== 'wide' ? rb.x + (rb.w - r.offsetWidth) / 2 : rb.x + Math.min(0, rb.w - r.offsetWidth)) + 'px';
+  }));
+  const call = rows[3];
+  const ring = FX.el('div', 'ring bleed', document.body);   // волна звонка — эффект, не вёрстка
+  FX.init(() => Object.assign(ring.style, { left: call.style.left, top: call.style.top, width: call.offsetWidth + 'px', height: call.offsetHeight + 'px' }));
+  FX.on(t => {
+    rows.forEach(r => {
+      const k = span(t, r.t0, r.t0 + 0.5);
+      set(r, { persp: 1200, ry: lerp(60, 0, E.out3(k)), x: lerp(rb.w * 0.25, 0, E.back(k)), o: span(t, r.t0, r.t0 + 0.12),
+               s: r.call ? 1 + 0.04 * Math.sin(Math.max(0, t - r.t0 - 0.5) * 7) : 1 });
+      const ki = span(t, r.t0 + 0.08, r.t0 + 0.5);
+      set(r.ic, { s: E.back2(ki), r: r.call ? 14 * Math.sin((t - r.t0) * 38) * Math.exp(-Math.max(0, t - r.t0 - 0.4) * 2.5) * (t > r.t0 + 0.4 ? 1 : 0)
+                                          : lerp(-90, 0, E.out3(ki)) });
+    });
+    const kr = span(t, call.t0 + 0.45, call.t0 + 1.1);
+    set(ring, { sx: lerp(1, 1.12, E.out3(kr)), sy: lerp(1, 1.5, E.out3(kr)), o: kr > 0 && kr < 1 ? 1 - kr : 0 });
+  });
+
+  FX.slantIn(['#FFFFFF', '#0D0D0E'], 0.42, 1);
+  FX.slantOut(['#FF4242', '#0D0D0E'], 0.4, 1);
+})();
+</script>

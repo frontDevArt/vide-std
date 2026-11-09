@@ -108,6 +108,8 @@ voice → render → assemble → qa → сравнение с `tests/golden/`, 
 `new … --studio <id>`). Настройки проекта: умолчания движка (`studio/config.py`) → `defaults:` из `studio.yaml` → `project.yaml`.
 - **Notes From The Mind** (англоязычный YouTube-канал, психология: мифы под проверкой) — `studios/notes-from-the-mind/`,
   правила канала — `studios/notes-from-the-mind/CLAUDE.md`. Темы, брифы и ролики канала — только там.
+- **Etagi Yerevan** (агентство недвижимости, ролики на русском; Reels/TikTok 9:16 + Facebook 16:9) —
+  `studios/etagi/`, правила — `studios/etagi/CLAUDE.md`.
 - **SMM-агентство (Ереван)** — студия как цех агентства: первый клиент — продажа недвижимости, ролики на русском.
   Стратегия, решения пользователя, кейс, команда агентов, радар — `docs/agency/` (**прочитать перед работой с агентством
   и его клиентами**); разработка — ROADMAP, этап G.
