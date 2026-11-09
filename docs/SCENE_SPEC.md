@@ -151,7 +151,10 @@ Chromium (playwright, не входит в requirements: `pip install playwright
 - биты: `--b0`…`--bN` (начала, `s`), `--e0`… (концы), `SCENE.beats` (с текстом), слова — `SCENE.words`;
 - стиль ролика: цвета палитры `--c-<имя>` (`--c-accent`, `--c-text`, …), шрифт `var(--font)` (файлы стиля), данные —
   `SCENE.vars` и `--v-<имя>` из `params.vars`;
-- сеть закрыта (только `file:`/`data:`); в ключе кэша — сам `.html`: CSS, JS, картинки — внутри него, иначе `render --force`.
+- сеть закрыта (только `file:`/`data:`); в ключе кэша — сам `.html`: CSS, JS, картинки — внутри него, иначе `render --force`;
+- звуки под движение (необязательно): `window.sfx = () => [[t, имя], …]` — время сцены, имена из `studio/sfx.py`
+  (бумажные: `paper`, `slide`, `flick`, `stamp`, `marker`); `assemble` кладёт их в дорожку голоса, громкость —
+  `sfx.level_db`. Пример — старты CSS-анимаций по имени: `studios/paper-explained/projects/claude-limits/assets/src/common.js`.
 Цена — в 3–6 раз дороже кадра PIL (замеры и когда что брать — `ROADMAP.md`, C6). В фикстурах галереи и golden шаблона
 нет (кадр зависит от сборки Chromium), тест — `tests/test_web_html.py`.
 

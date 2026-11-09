@@ -1,6 +1,8 @@
 """Звуки появления (channel/STYLE.md, раздел 10): pop, tick, whoosh, swish, thud, riser — синтез numpy, свои
-(лицензия — assets/sfx/LICENSES.md). Шаблоны отдают события `sfx_events()` -> [(t_локальное, имя)];
-дорожка собирается по таймлайну и кладётся на −28…−32 dB относительно голоса.
+(лицензия — assets/sfx/LICENSES.md). Бумажные — для коллажа (web.html, Paper Explained): paper (лист ложится),
+slide (лист едет), flick (щелчок бумаги), stamp (удар штампа), marker (штрих маркера).
+Шаблоны отдают события `sfx_events()` -> [(t_локальное, имя)]; дорожка собирается по таймлайну и кладётся
+на −28…−32 dB относительно голоса (`sfx.level_db` — сдвиг, например без музыки).
 """
 from __future__ import annotations
 
@@ -8,7 +10,8 @@ import numpy as np
 
 SR = 48000
 # уровень события относительно среднего уровня речи (dB), STYLE §10: −28…−32
-LEVEL = {"pop": -30, "tick": -32, "swish": -30, "whoosh": -28, "riser": -30, "thud": -34}
+LEVEL = {"pop": -30, "tick": -32, "swish": -30, "whoosh": -28, "riser": -30, "thud": -34,
+         "paper": -28, "slide": -30, "flick": -31, "stamp": -25, "marker": -32}
 
 
 def _env(n, a, rel):
@@ -67,6 +70,22 @@ def make(name):
         n = int(SR * 0.45)
         y = _sweep(150, 48, 0.45) * _env(n, 0.004, 0.35)
         y[: int(SR * 0.15)] += 0.3 * _bandnoise(0.15, 300, 300, 0.4, 4) * _env(int(SR * 0.15), 0.002, 0.1)
+    elif name == "paper":  # лист ложится: сухой шорох + мягкий низ
+        n = int(SR * 0.14)
+        y = _bandnoise(0.14, 2600, 1800, 0.9, 11) * _env(n, 0.003, 0.09)
+        y += 0.5 * _sweep(140, 70, 0.14) * _env(n, 0.002, 0.06)
+    elif name == "slide":  # лист едет по бумаге
+        y = _bandnoise(0.32, 1400, 3800, 0.9, 12) * _env(int(SR * 0.32), 0.06, 0.22)
+    elif name == "flick":  # короткий щелчок бумаги
+        y = _bandnoise(0.07, 4500, 4500, 0.7, 13) * _env(int(SR * 0.07), 0.001, 0.035)
+    elif name == "stamp":  # резиновый штамп: глухой удар + щелчок
+        n = int(SR * 0.3)
+        y = _sweep(110, 45, 0.3) * _env(n, 0.002, 0.18)
+        y += 1.2 * _bandnoise(0.3, 1800, 900, 0.5, 14) * _env(n, 0.001, 0.03)
+    elif name == "marker":  # штрих маркера: шорох с дрожанием
+        n = int(SR * 0.34)
+        wob = 0.6 + 0.4 * np.sin(2 * np.pi * 22 * np.arange(n) / SR)
+        y = _bandnoise(0.34, 3200, 2600, 1.5, 15) * wob.astype(np.float32) * _env(n, 0.03, 0.26)
     else:
         return np.zeros(1, np.float32)
     y = y.astype(np.float32)
