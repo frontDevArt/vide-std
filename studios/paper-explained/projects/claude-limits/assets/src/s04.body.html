@@ -1,0 +1,50 @@
+<!-- s04 — код: «В коде ещё хуже: | Клод открывает файл за файлом — | и всё в одну кучу.»
+     Идея: картотека вываливается в кучу. Слева внизу — картотека (ч/б вырезка), из ящика вылетают файлы-фишки
+     (те же имена, что на карте в s06) и ложатся кучей справа; заголовок «КУЧА» — за ней.
+     b0: ярлык, картотека; b1: файлы по одному; b2: заголовок, куча обводится терракотой. -->
+<style>
+  .file { position: absolute; width: 190px; height: 58px; display: flex; align-items: center; justify-content: center;
+          font-family: PTMono; font-size: 26px; }
+  .file .bg { position: absolute; inset: 0; }
+  .file span { position: relative; }
+  .fly { animation: fly .4s cubic-bezier(.25,.8,.35,1.08) var(--d) both; }
+  @keyframes fly { 0% { transform: translate(var(--fx), var(--fy)) scale(.35) rotate(0deg); opacity: 0; }
+                   30% { opacity: 1; } 100% { transform: translate(0, 0) scale(1) rotate(var(--r)); opacity: 1; } }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">В коде ещё хуже</div>
+  <div class="cross" style="left: 20px; top: 330px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 120px; top: 420px; width: 90px; height: 90px; --d: calc(var(--b0) + .4s)"></div>
+
+  <div class="title" style="right: 0; top: 236px; font-size: 250px; --d: var(--b2)">Куча</div>
+
+  <!-- картотека -->
+  <div class="abs drop sticker" style="left: 0; top: 590px; width: 300px; height: 334px; --r: -3deg; --d: calc(var(--b0) + .15s)" data-boil>
+    <img data-cut="9045a5d4bc2f8818" data-box="300 334">
+  </div>
+
+  <!-- файлы: вылетают из ящика (~120, 660) и ложатся снизу вверх -->
+  <div id="pile"></div>
+  <script>
+    (function () {
+      const F = [['auth.py', 360, 846, -4], ['ui.tsx', 556, 836, 5], ['utils.py', 440, 780, 3], ['api.py', 580, 766, -6],
+                 ['db.py', 372, 708, -2], ['tests.py', 540, 696, 7], ['README.md', 446, 636, -5], ['package.json', 350, 572, 4],
+                 ['config.yaml', 548, 560, -3], ['styles.css', 440, 500, 6], ['server.ts', 566, 436, -4], ['index.html', 392, 424, 2]];
+      const pile = document.getElementById('pile');
+      F.forEach(([name, x, y, r], i) => {
+        const el = document.createElement('div');
+        el.className = 'file fly';
+        el.style.cssText = `left: ${x}px; top: ${y}px; --r: ${r}deg; --fx: ${120 - x - 95}px; --fy: ${660 - y - 29}px; ` +
+                           `--d: calc(var(--b1) + ${(i * 0.15).toFixed(2)}s)`;
+        el.dataset.boil = '';
+        el.innerHTML = `<div class="bg shadow"><div class="sheet" style="width:100%;height:100%"></div></div><span>${name}</span>`;
+        pile.appendChild(el);
+      });
+    })();
+  </script>
+
+  <!-- вся куча — в одно -->
+  <svg class="ink" width="780" height="960"><path class="draw" data-at="кучу:0.1" pathLength="1" stroke="#C46557" stroke-width="7"
+       fill="none" stroke-linecap="round" style="--dur: .5s"
+       d="M560 392 C 760 380, 800 640, 772 800 C 748 930, 520 948, 380 930 C 300 918, 316 700, 330 560 C 344 440, 420 398, 560 392"/></svg>
+</div>

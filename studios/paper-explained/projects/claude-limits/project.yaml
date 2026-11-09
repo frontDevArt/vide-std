@@ -12,7 +12,7 @@ format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square
 platform: youtube-shorts            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
                           #   validate сверит формат и длительность, qa — файл по профилю площадки; null — без площадки
 fps: 30
-target_duration: 24.0     # пробные кадры (3 сцены из 8); бета 40–45 с — вернуть 43
+target_duration: 45.0     # бета 8 сцен (40–45 с); 43 не влезает без темпа выше rate_range
 
 tts:
   backend: piper       # `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)

@@ -1,0 +1,32 @@
+<!-- s05 — тезис: «Лимит съедают не вопросы. | Его съедает чтение.»
+     Идея: очки на слове. Наверху «ВОПРОСЫ» с вопросами-фишками — зачёркнуто; ниже на горчичной рваной полосе
+     огромное «ЧТЕНИЕ», на него ложатся очки (ч/б вырезка); под ним — из чего это чтение (s02 и s04).
+     b0: ярлык, вопросы-фишки, «ВОПРОСЫ» со слова, зачёркивание; b1: полоса, «ЧТЕНИЕ», очки, подпись. -->
+<style>
+  .q { width: 74px; height: 86px; display: flex; align-items: center; justify-content: center; font-family: Oswald; font-weight: 700;
+       font-size: 64px; color: var(--navy); }
+  .strike { position: absolute; left: 30px; right: 30px; top: 200px; height: 14px; background: var(--terra-dk); border-radius: 7px;
+            transform-origin: 0 50%; mix-blend-mode: multiply; animation: strike .35s ease-out var(--d) both; }
+  @keyframes strike { from { transform: scaleX(0) rotate(-2deg); } to { transform: scaleX(1) rotate(-2deg); } }
+  .band { width: 800px; height: 300px; background: var(--grain), var(--mustard); }
+  .chip { padding: 8px 18px 6px; font-family: PTMono; font-size: 25px; color: var(--navy); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Кто съедает лимит</div>
+  <div class="abs pop sheet q shadow" style="left: 40px; top: 110px; --r: -8deg; --d: calc(var(--b0) + .25s)" data-boil>?</div>
+  <div class="abs pop tanp q shadow" style="left: 640px; top: 96px; --r: 6deg; --d: calc(var(--b0) + .4s)" data-boil>?</div>
+  <div class="abs pop sheet q shadow" style="left: 616px; top: 330px; --r: -4deg; --d: calc(var(--b0) + .55s)" data-boil>?</div>
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 150px; font-size: 168px; color: var(--navy)" data-at="вопросы">Вопросы</div>
+  <div class="strike" data-at="вопросы:0.35"></div>
+
+  <!-- чтение -->
+  <div class="abs slideL" style="left: -10px; top: 440px; --r: -2deg; --d: var(--b1)">
+    <div class="shadow"><div class="band" data-torn="tb" data-depth="12"></div></div>
+  </div>
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 548px; font-size: 226px; --d: calc(var(--b1) + .15s)">Чтение</div>
+  <div class="abs drop sticker" style="left: 160px; top: 418px; width: 460px; height: 228px; --r: -5deg" data-at="чтение" data-boil>
+    <img data-cut="027ce47b341f3feb" data-box="460 228">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 150px; top: 800px; --r: 1.5deg" data-at="чтение:0.4" data-boil>весь чат + все файлы</div>
+  <div class="cross" style="left: 680px; top: 820px; --d: calc(var(--b1) + .3s)"></div>
+</div>
