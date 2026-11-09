@@ -1,0 +1,14 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7706281014808661268
+  date: 2026-11-10 01:16
+  version: null
+  file: claude-limits.mp4
+  sha1: e0128103ec8c
+  duration: 49.0
+  note: 'Первый ролик канала «На бумаге» (@nabumage.tv); загрузил пользователь вручную
+    через TikTok Studio, ссылка от него. Запись внесена вручную: площадка проекта
+    — youtube-shorts, QA по её профилю PASS, кадр под интерфейс TikTok проверен глазами
+    по qa/final_frames.png.'
