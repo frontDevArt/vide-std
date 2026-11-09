@@ -101,8 +101,15 @@ def run(proj: Project, log=print, fast=False):
         lo, hi = proj.cfg["tts"].get("rate_range", [98, 125])
         chk(lo - 1 <= tl["rate"] <= hi + 1, "Темп естественный",
             f"rate {tl['rate']:.0f} (диапазон {lo}–{hi}); {tl['wpm_speech']} слов/мин в речи")
+        seams = _seams(proj, tl)
+        if seams is None:
+            skip("Стыки речи: фразы не обрываются", "голос fake — тон, а не речь")
+        elif seams:
+            warn("WARN", "Стыки речи: фразы не обрываются", seams)
+        else:
+            chk(True, "Стыки речи: фразы не обрываются", f"{len(lines)} фраз: хвосты затухают, тишина до следующей ≥ 0,2 c")
     else:
-        for n in ("Слова не обрезаны", "Темп естественный"):
+        for n in ("Слова не обрезаны", "Темп естественный", "Стыки речи: фразы не обрываются"):
             skip(n, "нет речи")
     md = proj.build / "mix"
     I, pk = loudness(final)
@@ -200,6 +207,41 @@ def run(proj: Project, log=print, fast=False):
                 fh.write(f"- [ ] {'Избегать' if sec == 'avoid' else 'Готово, если'}: {txt}\n")
     log(("ВСЁ ОК" if ok else "ЕСТЬ ПРОБЛЕМЫ") + f" -> {proj.qa_dir / 'report.md'}")
     return ok
+
+
+def _seams(proj, tl):
+    """Стыки речи (2026-11-09, обрывы ElevenLabs на склейках): хвост каждой фразы (tts.tail_issues — оборвана или
+    с чужим началом) и тишина от конца её звука до следующей фразы. '' — чисто, иначе причины с решением;
+    None — у fake/none проверять нечего (тон, а не речь)."""
+    from . import tts as T
+    if proj.cfg["tts"]["backend"] in ("fake", "none"):
+        return None
+    cache = proj.bdir("tts")
+    rows = [(s["id"], s["start"] + L["t0"], L) for s in tl["scenes"] for L in s["lines"]]
+    clip, bleed, tight = [], [], []
+    for i, (sid, t0, L) in enumerate(rows):
+        p = cache / L["wav"]
+        if not p.exists():
+            continue
+        x = T.read_wav(p)
+        name = f"{sid} «…{L['text'][-24:]}»"
+        iss = T.tail_issues(x)
+        clip += [name] if "clip" in iss else []
+        bleed += [name] if "bleed" in iss else []
+        if i + 1 < len(rows):
+            gap = rows[i + 1][1] - (t0 + len(x) / T.SR)
+            if gap < 0.2:
+                tight.append(f"{name} → {gap:.2f} c")
+    out = []
+    if bleed:
+        out.append(f"в конце чужой звук (начало следующей фразы) — {len(bleed)}: {'; '.join(bleed[:4])}"
+                   + (". ElevenLabs: tts.context: false" if proj.cfg["tts"]["backend"] == "elevenlabs" else ""))
+    if clip:
+        out.append(f"оборваны, не затухают — {len(clip)}: {'; '.join(clip[:4])}. Пересинтез этих строк "
+                   "(кэш до среза хвоста −60 dB) или context: false")
+    if tight:
+        out.append(f"следующая фраза почти встык — {len(tight)}: {'; '.join(tight[:4])}. pauses.sentence / scene больше")
+    return " | ".join(out)
 
 
 def drawn_subs(proj):

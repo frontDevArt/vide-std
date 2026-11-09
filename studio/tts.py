@@ -32,9 +32,12 @@ from . import workspace
 from .workspace import load_env  # noqa: F401 — tts.load_env: старое имя
 
 SR = 48000
+# Хвост режется глубже начала (−60 против −45 dB) и гаснет 50 мс: естественное затухание фразы ElevenLabs идёт
+# −20 → −45 → −72 dBFS за ~0,2 с; срез на −45 и 20 мс давали щелчок конца на тишине (без музыки — слышно, 2026-11-09).
+# Начало — как было: от него считаются таймкоды слов (_lead_silence).
 TRIM = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
-        "silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
-        "afade=t=in:d=0.008,areverse,afade=t=in:d=0.02,areverse")
+        "silenceremove=start_periods=1:start_threshold=-60dB,areverse,"
+        "afade=t=in:d=0.008,areverse,afade=t=in:d=0.05,areverse")
 
 
 class TTSUnavailable(RuntimeError):
@@ -389,6 +392,41 @@ def write_wav(path, x: np.ndarray, channels=1):
 def duration(path) -> float:
     with wave.open(str(path), "rb") as w:
         return w.getnframes() / w.getframerate()
+
+
+def tail_issues(x: np.ndarray) -> list[str]:
+    """Хвост фразы после синтеза (qa «Стыки речи»): [] — чисто, иначе причины.
+    'clip' — файл кончается, а звук не стих: последние 10 мс громче −40 dB от уровня фразы (после TRIM
+    естественный конец уходит ниже −45; обрезанный на полуслове — и после гашения 50 мс около −20);
+    'bleed' — в последних 0,6 с пауза ≥ 80 мс почти цифровой тишины (тише −55 dB), а после неё до самого конца —
+    короткий звук ≤ 0,25 с: чужое начало (ElevenLabs с контекстом соседних строк начинает следующую фразу).
+    Смычка «т» в конце слова — 20–60 мс на −35…−49 dB, её это не задевает."""
+    hop = int(SR * 0.01)
+    n = len(x) // hop
+    if n < 12:
+        return []
+    act = x[np.abs(x) > 1e-3]
+    ref = float(np.sqrt(np.mean(act.astype(np.float64) ** 2))) if len(act) else 0.0
+    if ref <= 0:
+        return []
+    rms = np.sqrt(np.mean(x[: n * hop].astype(np.float64).reshape(n, hop) ** 2, axis=1))
+    db = 20 * np.log10(rms / ref + 1e-9)
+    out = []
+    if db[n - 1] > -40:
+        out.append("clip")
+    j = n - 1
+    while j >= n - 5 and db[j] < -55:  # гашение конца (TRIM, до 50 мс) — звук может быть внутри него
+        j -= 1
+    if db[j] >= -55:
+        s = j
+        while s >= 0 and db[s] >= -55:  # звук у конца
+            s -= 1
+        k = s
+        while k >= 0 and db[k] < -55:  # пауза перед ним
+            k -= 1
+        if k >= 0 and (j - s) * 0.01 <= 0.25 and (s - k) * 0.01 >= 0.08 and (n - k) * 0.01 <= 0.6:
+            out.append("bleed")
+    return out
 
 
 def silences(x: np.ndarray, min_len=0.06, rel_db=-34.0):
