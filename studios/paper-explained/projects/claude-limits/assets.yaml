@@ -1,0 +1,5 @@
+# Происхождение файлов проекта (docs/SCENE_SPEC.md, «Фото, видео, логотип»).
+assets:
+  - {file: assets/s01-hook.html, source: "своя вёрстка студии, собрана assets/src/build.py", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s06-graphify.html, source: "своя вёрстка студии, собрана assets/src/build.py", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s07-ponytail.html, source: "своя вёрстка студии, собрана assets/src/build.py", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}

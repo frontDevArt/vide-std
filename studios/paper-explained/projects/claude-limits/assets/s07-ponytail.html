@@ -1,0 +1,265 @@
+<!doctype html>
+<!-- Собрано assets/src/build.py из common.css, s07.body.html, common.js — правьте исходники. -->
+<html><head><meta charset="utf-8"><style>
+/* Paper Explained — общий вид сцен web.html (референс 2: редакционный коллаж «Global Icon / Global Impact»).
+   Слои снизу вверх: бумага (кит) → геометрия (круг, кольца, линии, кресты) → огромный заголовок → главный предмет
+   (ч/б вырезка с белой кромкой) → 2–5 вспомогательных элементов → тени. Подписи — common.js.
+   Сцена верстается в .stage 780×1380 (common.js вписывает её в безопасную зону): картинка — 0…960, подписи — ниже.
+   Время — шагом 1/12 с («на двойках», common.js): анимации пишутся обычными CSS @keyframes. */
+@font-face { font-family: Oswald; src: url('../../../brand/fonts/Oswald-VF.ttf'); font-weight: 200 700; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: PTMono; src: url('../../../brand/fonts/PTMono-Regular.ttf'); }
+
+:root {
+  --b0: 0s; --b1: 1.6s; --b2: 3.2s; --b3: 4.8s; --b4: 6.4s; --e0: 1.4s; --e1: 3s; --e2: 4.6s; --e3: 6.2s; --e4: 8s;
+  /* палитра — пипеткой по референсу (brand/brand.yaml) */
+  --ink: #141210; --paper: #F6F0E2; --paper-hi: #FBF8EF; --tan: #DCCDB0; --terra: #C46557; --terra-dk: #A9503F;
+  --blue: #5B7684; --navy: #30353C; --mustard: #E0C377; --dim: #7D766C; --olive: #6F8A4E;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .15  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grunge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -3 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+html, body { margin: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+body { color: var(--ink); font-family: Oswald, sans-serif; -webkit-font-smoothing: antialiased; }
+.stage { position: absolute; left: 150px; top: 150px; width: 780px; height: 1380px; transform-origin: 0 0; }
+.abs { position: absolute; }
+svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* ── геометрия ── */
+.disc { position: absolute; border-radius: 50%; background: var(--grain), var(--terra);
+        animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+.disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: multiply;
+               background: radial-gradient(circle, rgba(0,0,0,.30) 1.6px, transparent 2.2px) 0 0 / 9px 9px;
+               -webkit-mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%);
+               mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%); }
+.dot { position: absolute; border-radius: 50%; background: var(--grain), var(--tan); animation: pop .4s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both; }
+.rings circle, .thin { fill: none; stroke: var(--ink); stroke-width: 1.6; opacity: .38; }
+.cross { position: absolute; width: 70px; height: 70px; opacity: .45; animation: appear .01s linear var(--d, 0s) both; }
+.cross::before, .cross::after { content: ''; position: absolute; background: var(--ink); }
+.cross::before { left: 0; right: 0; top: 50%; height: 1.6px; } .cross::after { top: 0; bottom: 0; left: 50%; width: 1.6px; }
+.halftone { background-image: radial-gradient(rgba(20, 18, 16, .55) 1.5px, transparent 2px); background-size: 8px 8px; }
+
+/* ── заголовок: огромный, узкий, печатный; за предметом ── */
+.title { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .8;
+         letter-spacing: -2px; color: var(--ink); white-space: nowrap; mix-blend-mode: multiply;
+         animation: rise .5s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise { 0% { transform: translateY(60px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+.kicker { position: absolute; font-family: PTMono; font-size: 26px; letter-spacing: 6px; text-transform: uppercase;
+          color: var(--paper-hi); background: var(--navy); padding: 8px 18px 6px;
+          animation: slideL .45s cubic-bezier(.2,.8,.3,1.1) var(--d, 0s) both; }
+.label { font-family: PTMono; font-size: 24px; color: var(--navy); }
+
+/* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
+.sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
+                   drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+
+/* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
+.shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
+.sheet { background: var(--grain), var(--paper-hi); }
+.tanp { background: var(--grain), var(--tan); }
+.stamp { position: absolute; border: 6px solid var(--terra-dk); color: var(--terra-dk); padding: 4px 16px 0;
+         font-family: Oswald; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-radius: 6px;
+         -webkit-mask-image: var(--grunge); mask-image: var(--grunge); mix-blend-mode: multiply;
+         animation: slam .42s cubic-bezier(.2, .7, .3, 1.2) var(--d, 0s) both; }
+@keyframes slam { 0% { transform: rotate(var(--r, -12deg)) scale(2.4); opacity: 0; }
+                  60% { opacity: .95; } 100% { transform: rotate(var(--r, -12deg)) scale(1); opacity: .92; } }
+
+/* линии: путь с pathLength="1" рисуется от 0 до 1 */
+.draw { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+        animation: draw var(--dur, .6s) ease-in-out var(--d, 0s) both; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* появления (пружина видна шагами 12 к/с) */
+.drop  { animation: drop .5s cubic-bezier(.2, .8, .3, 1.15) var(--d, 0s) both; }
+@keyframes drop { 0% { transform: translateY(-90px) rotate(calc(var(--r, 0deg) - 6deg)); opacity: 0; }
+                  45% { opacity: 1; } 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideL { animation: slideL .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideL { 0% { transform: translateX(-160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideR { animation: slideR .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideR { 0% { transform: translateX(160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.pop { animation: pop .4s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+@keyframes pop { 0% { transform: rotate(var(--r, 0deg)) scale(.2); opacity: 0; }
+                 100% { transform: rotate(var(--r, 0deg)) scale(1); opacity: 1; } }
+.appear { animation: appear .01s linear var(--d, 0s) both; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+.fadeTo { animation: fadeTo .4s linear var(--d, 0s) both; }
+@keyframes fadeTo { from { opacity: 1; } to { opacity: var(--to, .35); } }
+
+/* ── подписи (common.js): под картинкой сцены, краской; звучащее слово — приглушённым жёлтым ── */
+.caps { position: absolute; left: 0; right: 0; top: 985px; height: 230px; display: flex; align-items: center; justify-content: center; }
+.chunk { font-family: Oswald; font-weight: 600; font-size: 70px; line-height: 1.12; text-align: center; color: var(--ink); max-width: 760px; }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, var(--mustard) 2% 98%, transparent 99%);
+              background-repeat: no-repeat; background-position: 0 62%; background-size: 0% 74%; padding: 0 .08em; margin: 0 -.08em;
+              mix-blend-mode: multiply; }
+
+</style></head><body>
+<!-- s07 — PonyTail: «Таблетка вторая — Понитейл. | Клод пишет как самый ленивый сеньор: | только нужный код. |
+     В тестах авторов — | на сорок пять процентов меньше выходных токенов.»
+     Идея: лекарство — меньше лишнего. «PONYTAIL» поперёк круга, перед ним — аптечный флакон (ч/б вырезка):
+     b0: ярлык «таблетка № 2», круг, заголовок, флакон; b1: полоска кода; b2: лишние строки зачёркнуты;
+     со слова «сорок» — «−45 %» терракотой и источник. -->
+<style>
+  .code { width: 480px; padding: 22px 26px 18px; box-sizing: border-box; font-family: PTMono; font-size: 23px; line-height: 36px; }
+  .code .ln { position: relative; white-space: pre; }
+  .code .ln > s { position: absolute; left: -6px; right: 4px; top: 16px; height: 7px; background: var(--terra-dk); border-radius: 4px;
+                  transform-origin: 0 50%; mix-blend-mode: multiply; animation: strike .3s ease-out var(--d) both; }
+  @keyframes strike { from { transform: scaleX(0) rotate(-.6deg); } to { transform: scaleX(1) rotate(-.6deg); } }
+  .kw { color: var(--terra-dk); }
+  .num { font-family: Oswald; font-weight: 700; font-size: 136px; line-height: .85; color: var(--terra); letter-spacing: -3px; mix-blend-mode: multiply; }
+  .src { font-family: PTSerif; font-style: italic; font-size: 22px; line-height: 1.3; color: var(--dim); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Таблетка № 2</div>
+  <div class="cross" style="left: 680px; top: 120px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 560px; width: 80px; height: 80px; --d: calc(var(--b0) + .4s)"></div>
+  <div class="disc" style="left: 120px; top: 190px; width: 540px; height: 540px; --d: calc(var(--b0) + .1s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <circle class="draw" pathLength="1" cx="390" cy="460" r="300" style="--d: calc(var(--b0) + .3s); --dur: .7s"/>
+    <path class="draw thin" pathLength="1" d="M20 300 L 220 380" style="--d: calc(var(--b0) + .5s)"/>
+  </svg>
+
+  <!-- заголовок за флаконом -->
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 388px; font-size: 180px; color: var(--navy); --d: calc(var(--b0) + .15s)">PonyTail</div>
+
+  <!-- флакон: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <div class="abs drop sticker" style="left: 300px; top: 262px; width: 180px; height: 270px; --r: 6deg; --d: calc(var(--b0) + .35s)" data-boil>
+    <svg viewBox="0 0 240 360" width="180" height="270">
+      <defs>
+        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
+        <pattern id="ridge" width="12" height="70" patternUnits="userSpaceOnUse"><rect width="12" height="70" fill="#ece8e0"/><rect x="8" width="3" height="70" fill="#9f988e"/></pattern>
+        <linearGradient id="glassb" x1="0" x2="1"><stop offset="0" stop-color="#2a2623"/><stop offset=".28" stop-color="#6e6862"/><stop offset=".55" stop-color="#3a3531"/><stop offset="1" stop-color="#191614"/></linearGradient>
+      </defs>
+      <rect x="44" y="64" width="152" height="24" fill="#2b2724" stroke="#141210" stroke-width="3"/>
+      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#glassb)" stroke="#141210" stroke-width="4"/>
+      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#ht)" opacity=".28"/>
+      <rect x="30" y="104" width="13" height="226" rx="6" fill="#fff" opacity=".3"/>
+      <rect x="22" y="2" width="196" height="68" rx="10" fill="url(#ridge)" stroke="#141210" stroke-width="4"/>
+      <rect x="34" y="150" width="172" height="146" fill="#f3efe6" stroke="#141210" stroke-width="2"/>
+      <rect x="34" y="150" width="172" height="146" fill="url(#ht)" opacity=".08"/>
+      <text x="120" y="196" text-anchor="middle" font-family="PTMono" font-size="25" font-weight="700" fill="#141210">PONYTAIL</text>
+      <line x1="50" y1="212" x2="190" y2="212" stroke="#141210" stroke-width="2"/>
+      <text x="120" y="244" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">по 1 перед</text>
+      <text x="120" y="270" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">кодом</text>
+    </svg>
+  </div>
+
+  <!-- полоска кода -->
+  <div class="abs slideL" style="left: 0; top: 640px; --r: -2deg; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="sheet code" data-torn="tb" data-depth="8">
+      <div class="ln appear" style="--d: calc(var(--b1) + .25s)"><span class="kw">def</span> get_user(id):</div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .37s)">  cache = LRUCache(1000)<s style="--d: calc(var(--b2) + .00s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .49s)">  check = Validator()<s style="--d: calc(var(--b2) + .18s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .61s)">  retry = Retry(3)<s style="--d: calc(var(--b2) + .36s)"></s></div>
+      <div class="ln appear" style="--d: calc(var(--b1) + .73s)">  return db.get(id)</div>
+    </div></div>
+  </div>
+
+  <!-- цифра и источник -->
+  <div class="abs pop" style="left: 440px; top: 672px; --r: -3deg" data-at="сорок" data-boil>
+    <div class="num">−45%</div>
+    <div class="label" style="margin-top: 8px">выходных токенов</div>
+  </div>
+  <div class="abs src appear" style="left: 0; top: 900px; width: 780px" data-at="сорок:0.3">Источник: бенчмарк авторов PonyTail (github.com/DietrichGebert/ponytail),
+    39 задач, Claude Code + Opus 5.5, окт. 2026; медиана к запуску без плагина.</div>
+</div>
+
+<script>
+// Paper Explained — общий ход сцены web.html.
+// 1) .stage 780×960 вписывается в рабочую зону кадра (SCENE.area, CSS px) по центру.
+// 2) Рваные края: data-torn="tb" (верх/низ), "lr", "all" — clip-path многоугольником с зазубринами (сид — номер элемента).
+// 3) Время «на двойках»: студия зовёт window.seek(t), мы ставим всем анимациям t, округлённое вниз до 1/12 с, а свой
+//    обход анимаций студии гасим (document.getAnimations → []). Без студии (просмотр в браузере) всё идёт как обычно.
+// 4) «Кипение» бумаги: элементы с data-boil чуть дрожат раз в 1/6 с (translate/rotate не мешают transform анимаций).
+// 5) Подписи (шаблон paper_page): слова озвучки кусками по 1–2 строки внизу сцены, звучащее слово — под маркером.
+(function () {
+  const S = window.SCENE || { W: 1080, H: 1920, area: { x0: 151, y0: 154, x1: 929, y1: 1536 } };
+  const a = S.area, aw = a.x1 - a.x0, ah = a.y1 - a.y0;
+  const st = document.querySelector('.stage');
+  const k = Math.min(aw / 780, ah / 1380) * 0.96;  // запас 4 %: тени, скотч и «кипение» не выходят за зону
+  st.style.left = (a.x0 + (aw - 780 * k) / 2) + 'px';
+  st.style.top = (a.y0 + (ah - 1380 * k) / 2) + 'px';
+  st.style.transform = 'scale(' + k + ')';
+
+  // подписи: куски не длиннее CAP символов, граница — и на смене бита
+  const CAP = 30, Wd = S.words || [], bt = (S.beats || []).map(b => b.t0);
+  const beatOf = (t) => bt.reduce((i, b0, j) => (t >= b0 - 1e-3 ? j : i), 0);
+  // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
+  const byBeat = [];
+  Wd.forEach((w, i) => { const b = beatOf(w.t0); (byBeat[b] = byBeat[b] || []).push(i); });
+  const chunks = [];
+  byBeat.forEach((ids, b) => {
+    if (!ids) return;
+    const len = ids.reduce((s, i) => s + Wd[i].w.length + 1, -1), n = Math.ceil(len / CAP), goal = len / n;
+    const first = chunks.length;  // первый кусок этого бита
+    let c = null, acc = 0;
+    ids.forEach(i => {
+      const made = chunks.length - first;  // кусков бита уже начато
+      if (!c || (made < n && acc >= goal * made - 2)) { c = { beat: b, idx: [], text: '' }; chunks.push(c); }
+      c.idx.push(i); c.text = c.text ? c.text + ' ' + Wd[i].w : Wd[i].w; acc += Wd[i].w.length + 1;
+    });
+  });
+  const caps = document.createElement('div'); caps.className = 'caps'; st.appendChild(caps);
+  chunks.forEach(c => {
+    c.el = document.createElement('div'); c.el.className = 'chunk';
+    c.spans = c.idx.map(i => { const s = document.createElement('span'); s.textContent = Wd[i].w; c.el.appendChild(s);
+                                c.el.appendChild(document.createTextNode(' ')); return s; });
+    caps.appendChild(c.el);
+  });
+  function captions(t) {
+    let cur = -1;
+    chunks.forEach((c, j) => { if (t >= Wd[c.idx[0]].t0 - 0.05) cur = j; });
+    chunks.forEach((c, j) => {
+      c.el.style.display = j === cur ? 'block' : 'none';
+      if (j !== cur) return;
+      c.idx.forEach((i, n) => {
+        const w = Wd[i], next = Wd[i + 1];
+        const on = t >= w.t0 - 0.02 && (!next || t < next.t0 - 0.02 || n === c.idx.length - 1 && t < w.t1 + 0.4);
+        const p = Math.max(0, Math.min(1, (t - w.t0 + 0.02) / 0.14));
+        c.spans[n].style.backgroundSize = on ? (p * 100).toFixed(1) + '% 74%' : '0% 74%';
+      });
+    });
+  }
+
+  function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  document.querySelectorAll('[data-torn]').forEach((el, i) => {
+    const r = rng(9173 + i * 101), sides = el.dataset.torn, depth = +(el.dataset.depth || 7);
+    const step = 2.2, pts = [];
+    const j = (on) => (on ? r() * depth : 0);
+    const top = /t|all/.test(sides), bot = /b|all/.test(sides), lft = /l|all/.test(sides), rgt = /r|all/.test(sides);
+    for (let x = 0; x <= 100; x += step) pts.push([x, j(top) * 100 / el.offsetHeight]);
+    for (let y = 0; y <= 100; y += step * el.offsetWidth / el.offsetHeight) pts.push([100 - j(rgt) * 100 / el.offsetWidth, y]);
+    for (let x = 100; x >= 0; x -= step) pts.push([x, 100 - j(bot) * 100 / el.offsetHeight]);
+    for (let y = 100; y >= 0; y -= step * el.offsetWidth / el.offsetHeight) pts.push([j(lft) * 100 / el.offsetWidth, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%').join(',') + ')';
+  });
+
+  // data-at="слово[:сдвиг]" — элемент стартует со слова озвучки (SCENE.words, первое совпадение по началу слова)
+  const words = (S.words || []).map(w => ({ w: w.w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), t: w.t0 }));
+  document.querySelectorAll('[data-at]').forEach(el => {
+    const [word, off] = el.dataset.at.split(':');
+    const hit = words.find(x => x.w.startsWith(word.toLowerCase()));
+    if (hit) el.style.setProperty('--d', (hit.t + (+off || 0)).toFixed(3) + 's');
+  });
+
+  const FPS2 = 12;
+  const all = document.getAnimations.bind(document);
+  document.getAnimations = () => [];
+  const boil = Array.from(document.querySelectorAll('[data-boil]'));
+  window.seek = (t) => {
+    captions(t);  // подписи — по точному времени речи, не шагом
+    const q = Math.floor(t * FPS2 + 1e-4) / FPS2;
+    for (const an of all()) { an.pause(); an.currentTime = q * 1000; }
+    const n = Math.floor(t * 6);
+    boil.forEach((el, i) => {
+      const r = rng(n * 7919 + i * 131 + 1); const amp = +(el.dataset.boil || 1);
+      el.style.translate = ((r() - .5) * 1.4 * amp).toFixed(2) + 'px ' + ((r() - .5) * 1.4 * amp).toFixed(2) + 'px';
+      el.style.rotate = ((r() - .5) * .35 * amp).toFixed(3) + 'deg';
+    });
+  };
+})();
+
+</script>
+</body></html>

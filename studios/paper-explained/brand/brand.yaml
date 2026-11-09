@@ -1,0 +1,32 @@
+# Бренд-кит студии "Paper Explained" (ROADMAP A2, docs/BRAND.md).
+# Жанр — редакционный бумажный коллаж «в духе Vox» (разбор — docs/reference/VOX_STYLE.md, раздел «Референс 2»).
+# Палитра — пипеткой (PIL) по скриншотам референса пользователя 2026-11-09 (коллаж «Global Icon / Global Impact»):
+# кремовая бумага, краска, терракотовый круг, приглушённый синий, беж; фирменные цвета/шрифты/логотип Vox не берём.
+name: "Paper Explained"
+base: lab                  # основа для недостающих ключей (bg2, half, myth…); цвета ниже её перекрывают
+palette:                   # роль → #RRGGBB; good/warn/bad не совпадают с акцентами
+  bg: "#F6F0E2"            # бумага (медиана трёх скриншотов: F7EFDC, F6F1E5, F3EEE5)
+  bg_top: "#F7F1E4"
+  bg_bot: "#EFE7D6"
+  surface: "#DCCDB0"       # беж: бумажные фигуры, карта (D4C8AB / DFD3B4 / E1D3B6)
+  text: "#141210"          # краска заголовков и вырезок
+  dim: "#7D766C"           # подписи, источник (тёплый серый, B7AF9F → темнее для читаемости)
+  accent: "#C46557"        # терракотовый круг (C66757, C56558, CA685B)
+  accent2: "#5B7684"       # приглушённый синий (глобус: 5B7684, 5B7983)
+  # тёмно-синий заголовков #30353C — роли в ките нет, живёт в common.css страниц (--navy)
+  good: "#6F8A4E"          # оливковый
+  warn: "#E0C377"          # приглушённый жёлтый (редкий акцент референса)
+  bad: "#7A2E28"           # тёмная охра-кровь, темнее круга
+  neutral: "#9A9389"
+  ink: "#141210"
+fonts:                     # файлы — brand/fonts/ (Google Fonts, OFL; скачаны 2026-11-09)
+  head: {file: Oswald-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-oswald.txt)}       # узкий жирный гротеск, заголовки
+  num: {file: Oswald-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-oswald.txt)}
+  mono: {file: PTMono-Regular.ttf, license: OFL-1.1 (brand/fonts/OFL-ptmono.txt)}  # «машинка», код
+# Ещё в brand/fonts/ (для страниц web.html): PT Serif (OFL-ptserif.txt) — подписи, Caveat (OFL-caveat.txt) — пометки рукой.
+background: {type: image, file: paper.jpg, dim: 0}   # бумага кодом: brand/make_paper.py (детерминированно, CC0)
+camera: false
+subs: tiktok               # сцены paper_page рисуют подписи сами (краска + маркер); это — для шаблонов движка
+shape: {radius: 4, line: 3} # бумага — почти без скруглений
+voice:
+  tone: "спокойный, любопытный, разговорный — «давайте разберёмся», без хайпа и крика"
