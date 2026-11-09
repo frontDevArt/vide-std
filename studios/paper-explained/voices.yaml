@@ -4,7 +4,7 @@ measured:
 - language: ru
   backend: elevenlabs
   voice: 848d5c1805bc
-  wpm: 154.3
+  wpm: 156.1
   rate: 110.0
   words: 103
   project: claude-limits

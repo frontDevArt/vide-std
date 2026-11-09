@@ -173,11 +173,17 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   st.style.transform = 'scale(' + k + ')';
 
   // подписи: куски не длиннее CAP символов, граница — и на смене бита
-  const CAP = 30, Wd = S.words || [], bt = (S.beats || []).map(b => b.t0);
-  const beatOf = (t) => bt.reduce((i, b0, j) => (t >= b0 - 1e-3 ? j : i), 0);
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
   // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
   const byBeat = [];
-  Wd.forEach((w, i) => { const b = beatOf(w.t0); (byBeat[b] = byBeat[b] || []).push(i); });
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
   const chunks = [];
   byBeat.forEach((ids, b) => {
     if (!ids) return;

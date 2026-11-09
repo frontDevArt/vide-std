@@ -12,7 +12,7 @@ format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square
 platform: youtube-shorts            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
                           #   validate сверит формат и длительность, qa — файл по профилю площадки; null — без площадки
 fps: 30
-target_duration: 48.0     # бета 8 сцен, ElevenLabs Artspace темп 110: речь до 47,0 с + финальный кадр ~1 с (пользователь: ~48–50 с, 2026-11-09)
+target_duration: 49.0     # бета 8 сцен, ElevenLabs Artspace темп 110, без контекста: речь до ~47,5 с + финальный постер со штампом ~1,5 с (пользователь: ~48–50 с, 2026-11-09)
 
 tts:
   backend: elevenlabs  # с 2026-11-09 (было piper ruslan, темп 109); `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
@@ -21,12 +21,14 @@ tts:
                           #   en: slt | en-US-GuyNeural | en_US-lessac-medium
   rate: 110               # ElevenLabs — только числом (auto синтезировал бы несколько раз — деньги)
   rate_range: [98, 125]   # что считаем естественным темпом
+  context: false          # без соседних строк в запросе: с ними ElevenLabs читал строку как середину речи —
+                          #   без конца предложения и с началом следующей фразы в хвосте (обрыв на стыках, 2026-11-09)
 
 pauses:                   # секунды
-  start: 0.3              # тишина в начале ролика (ElevenLabs держит паузы в речи сам — короче, чем у piper)
-  comma: 0.14             # после строки, оканчивающейся на , : ; —
-  sentence: 0.26          # после строки, оканчивающейся на . ! ?
-  scene: 0.3              # между сценами
+  start: 0.3              # тишина в начале ролика
+  comma: 0.18             # после строки, оканчивающейся на , : ; —
+  sentence: 0.42          # после строки, оканчивающейся на . ! ?
+  scene: 0.6              # между сценами
   end: 0.5                # в конце ролика
 
 style:
