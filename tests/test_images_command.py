@@ -48,8 +48,9 @@ def test_fake_generates_registers_and_caches(tmp_path, capsys, monkeypatch):
     assert calls == [] and "в кэше 3, сделать 0" in out and "assets.yaml: +0" in out
 
 
-def _kie(monkeypatch, balance=(1000.0, 963.04)):
+def _kie(monkeypatch, balance=(1000.0, 963.04), blocked=()):
     monkeypatch.setenv("KIE_API_KEY", "sk-secret-123")
+    monkeypatch.setattr(imagegen, "kie_hosts_blocked", lambda: list(blocked))  # сеть не трогаем
     bal = list(balance)
     calls = {"balance": 0, "gen": []}
 
@@ -187,3 +188,56 @@ def test_register_rewrites_when_assets_not_last(tmp_path):
     n = imagegen.register(proj, [{"file": "assets/images/k.png", "source": "s", "license": "l"}])
     data = yaml.safe_load((root / "assets.yaml").read_text(encoding="utf-8"))
     assert n == 1 and data["note"] == "x" and [e["file"] for e in data["assets"]] == ["a.png", "assets/images/k.png"]
+
+
+# ---------------------------------------------------------------- хост файлов Kie закрыт сетью (pending.json, --defer)
+HOST = "tempfile.aiquickdraw.com"
+
+
+def _gen_download_blocked(calls):
+    def gen(proj, job, ws=None):
+        calls["gen"].append((job.step, job.model))
+        imagegen._pending_set(proj, job, {"task": f"t{len(calls['gen'])}", "model": job.model,
+                                          "date": imagegen._today().isoformat()})
+        raise imagegen.ResultPending("не скачать результат Kie https://tempfile.example/x.png: reset")
+    return gen
+
+
+def test_kie_blocked_host_stops_before_paying(tmp_path, capsys, monkeypatch):
+    calls = _kie(monkeypatch, blocked=[HOST])
+    assert cli.main(["images", str(_root(tmp_path, "kie")), "--yes"]) == 3
+    out = capsys.readouterr().out
+    assert HOST in out and "--defer" in out and "не списаны" in out
+    assert calls == {"balance": 0, "gen": []}
+
+
+def test_kie_defer_pays_queues_and_skips_dependents(tmp_path, capsys, monkeypatch):
+    calls = _kie(monkeypatch, blocked=[HOST])
+    monkeypatch.setattr(imagegen, "generate", _gen_download_blocked(calls))
+    root = _root(tmp_path, "kie", image=[SCENE, {"prompt": "same, lamp on", "role": "state_b"}, {"prompt": "a tree"}])
+    assert cli.main(["images", str(root), "--yes", "--defer"]) == 2
+    out = capsys.readouterr().out
+    assert [s for s, _ in calls["gen"]] == ["image", "image"]  # раскладка и state_b ждут свою картинку
+    assert out.count("оплачено, файл не скачан") == 2 and out.count("ждёт") == 2 and "pending.json" in out
+    assert "Картинки готовы" not in out and calls["balance"] == 2
+    assert len(imagegen.pending(project.load(root))) == 2
+
+
+def test_kie_download_failure_without_defer_stops_at_first(tmp_path, capsys, monkeypatch):
+    calls = _kie(monkeypatch)  # проба хоста прошла, а скачивание оборвалось
+    monkeypatch.setattr(imagegen, "generate", _gen_download_blocked(calls))
+    root = _root(tmp_path, "kie", image=[{"prompt": "a room"}, {"prompt": "a tree"}])
+    assert cli.main(["images", str(root), "--yes"]) == 2
+    assert len(calls["gen"]) == 1 and "без оплаты" in capsys.readouterr().out  # вторую не оплачиваем вслепую
+
+
+def test_kie_pending_download_needs_no_yes(tmp_path, capsys, monkeypatch):
+    calls = _kie(monkeypatch)
+    root = _root(tmp_path, "kie", image={"prompt": "a room"})
+    proj = project.load(root)
+    job, = imagegen.plan(proj)
+    imagegen._pending_set(proj, job, {"task": "t9", "model": job.model, "date": imagegen._today().isoformat()})
+    assert cli.main(["images", str(root)]) == 0  # докачка оплаченного — не платная генерация
+    out = capsys.readouterr().out
+    assert "оплачено" in out and "t9" in out and "Смета" not in out and "Картинки готовы" in out
+    assert calls == {"balance": 0, "gen": [("image", "nano-banana-2")]}

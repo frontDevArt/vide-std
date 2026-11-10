@@ -15,6 +15,8 @@ python -m studio new "<тема>" [--slug x] [--kind promo] [--format vertical|h
 python -m studio kinds                     # типы роликов: explainer, short-hook, promo, music (без голоса), listicle…
 python -m studio validate <проект>         # проверка сценария
 python -m studio images   <проект> [--yes] # картинки сцен (images.enabled): смета → --yes — платная генерация (kie), кэш, assets.yaml
+#   хост файлов Kie закрыт сетью → стоп до оплаты; --yes --defer — оплатить здесь, скачать позже повтором images из
+#   открытой сети (assets/images/pending.json, 14 дней, без повторной оплаты; docs/IMAGES.md)
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
 python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера
