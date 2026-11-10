@@ -68,6 +68,17 @@ def test_layer_follows_beats(proj, browser):
     assert tpl.layer(1.0).size == (tpl.W, tpl.H)
 
 
+def test_page_sfx_events(proj, browser, tmp_path):
+    # звуки под движение: страница объявляет window.sfx → события сцены; без window.sfx — пусто, Chromium не нужен
+    s, tpl = _scene(proj, "s02")  # rich.html — без window.sfx
+    assert tpl.sfx_events() == []
+    page = tmp_path / "sfx.html"
+    page.write_text("<html><body><script>window.sfx = () => [[0.5, 'paper'], [1.25, 'stamp']];</script></body></html>",
+                    encoding="utf-8")
+    tpl.file, tpl.key = page, (str(page), "sfx", tpl.W, tpl.H)
+    assert tpl.sfx_events() == [(0.5, "paper"), (1.25, "stamp")]
+
+
 def test_virtual_time_is_deterministic(proj, browser):
     s, tpl = _scene(proj, "s02")
     t = s["beats"][1]["t0"] + 0.4

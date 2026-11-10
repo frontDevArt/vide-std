@@ -49,6 +49,12 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
 /* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
 .sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
                    drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
 
 /* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
 .shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }

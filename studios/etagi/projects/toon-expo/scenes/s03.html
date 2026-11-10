@@ -1,0 +1,104 @@
+<!-- s03 — «Тринадцатого, | четырнадцатого | и пятнадцатого ноября | в Ереване пройдёт «Тун Экспо» — | выставка недвижимости!»
+     карточки-даты переворачиваются на словах, «НОЯБРЯ»; затем уезжают наверх, речь — по центру, булавка
+     «Меридиан Экспо»; на «Тун Экспо» — логотип выставки (TOON Real Estate Expo) на белой карточке вместо слов; фон — зал прошлой выставки; выход — жалюзи -->
+<style>
+  #bg { background: #0D0D0E; }
+  .dates { position: absolute; transform-origin: 50% 0; }
+  .dc { position: absolute; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 24px 50px rgba(0,0,0,.45);
+        transform-origin: 50% 0; }
+  .dc .tab { position: absolute; left: 0; right: 0; top: 0; background: #FF4242; }
+  .dc .tab::before, .dc .tab::after { content: ''; position: absolute; top: 30%; width: 10%; height: 40%; border-radius: 50%; background: #fff; }
+  .dc .tab::before { left: 22%; } .dc .tab::after { right: 22%; }
+  .dc .n { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;
+           font-family: Unb, Mont; font-weight: 800; color: #191919; letter-spacing: -.03em; }
+  .lbl { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+  .lbl span { background: #FF4242; color: #fff; font-weight: 900; padding: .06em .5em; letter-spacing: .12em; transform-origin: 0 50%; }
+  .chip { position: absolute; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.35); color: #fff;
+          backdrop-filter: blur(6px); }
+  .chip svg { width: 1.25em; height: 1.25em; }
+  .sky { position: absolute; }
+  .sky path { fill: none; stroke: #FF4242; stroke-width: 4; stroke-linejoin: round; }
+</style>
+<div class="tcard2" id="tc">{{toon}}<div class="shine"></div></div>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  const ph = FX.photo(bg, '../photos/expo-hall.jpg', 'bleed');
+  ph.img.style.filter = 'grayscale(1) contrast(1.1) brightness(.75)';
+  FX.kb(ph, 0, FX.D, { s: 1.25, x: -30 }, { s: 1.08, x: 30 });
+  const tint = FX.el('div', 'full bleed', bg);
+  tint.style.background = 'linear-gradient(160deg, rgba(255,66,66,.55), rgba(13,13,14,.85) 60%)';
+  tint.style.mixBlendMode = 'multiply';
+  const dark = FX.el('div', 'full bleed', bg);
+  dark.style.background = 'rgba(13,13,14,.45)';
+
+  // даты
+  const A = FX.box({ tall: [0.0, 0.16, 1, 0.5], sq: [0.06, 0.08, 0.94, 0.52], wide: [0.12, 0.1, 0.88, 0.66] });
+  const B = FX.box({ tall: [0.18, 0.0, 0.82, 0.14], sq: [0.27, 0.0, 0.73, 0.17], wide: [0.33, 0.0, 0.67, 0.22] });
+  const box = FX.el('div', 'dates', document.body);
+  Object.assign(box.style, { left: A.x + 'px', top: A.y + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const gap = A.w * 0.05, cw = (A.w - 2 * gap) / 3, ch = Math.min(A.h * 0.74, cw * 1.18);
+  const cards = ['13', '14', '15'].map((n, i) => {
+    const c = FX.el('div', 'dc', box);
+    Object.assign(c.style, { left: (i * (cw + gap)) + 'px', top: '0px', width: cw + 'px', height: ch + 'px' });
+    const tab = FX.el('div', 'tab', c); tab.style.height = (ch * 0.2) + 'px';
+    const nn = FX.el('div', 'n', c, n); nn.style.top = (ch * 0.2) + 'px'; nn.style.fontSize = (cw * 0.5) + 'px';
+    return c;
+  });
+  const lbl = FX.el('div', 'lbl', box, '<span>НОЯБРЯ</span>');
+  lbl.style.top = (ch + A.h * 0.05) + 'px'; lbl.style.fontSize = (Math.min(A.h * 0.16, cw * 0.32)) + 'px';
+  const tc = ['тринадцатого', 'четырнадцатого', 'пятнадцатого'].map(w => FX.w(w) - 0.06);
+  const tN = FX.w('ноября') - 0.05, tUp = FX.b(3) - 0.25;
+  FX.on(t => {
+    cards.forEach((c, i) => {
+      const k = span(t, tc[i], tc[i] + 0.6);
+      set(c, { persp: 900, rx: lerp(-110, 0, E.spring(k)), o: span(t, tc[i], tc[i] + 0.08), y: lerp(-60, 0, E.out3(k)) });
+    });
+    const kl = E.out4(span(t, tN, tN + 0.35));
+    set(lbl.firstChild, { sx: kl, o: kl > 0 ? 1 : 0 });
+    const ku = E.io3(span(t, tUp, tUp + 0.55));
+    const s = lerp(1, B.w / A.w, ku);
+    set(box, { x: lerp(0, (B.x + B.w / 2) - (A.x + A.w / 2), ku) + (A.w / 2) * (1 - s) * 0,
+               y: lerp(0, B.y - A.y, ku), s });
+    box.style.transformOrigin = '50% 0';
+  });
+
+  // булавка «Меридиан Экспо»
+  const chip = FX.el('div', 'chip', document.body, FX.icon.pin() + '<span>МЕРИДИАН ЭКСПО · ЕРЕВАН</span>');
+  const cbx = FX.box({ tall: [0, 0.885, 1, 0.95], sq: [0, 0.885, 1, 0.97], wide: [0, 0.86, 1, 0.97] });
+  chip.style.fontSize = Math.min(cbx.h * 0.45, cbx.w / 17) + 'px';
+  chip.style.top = cbx.y + 'px';
+  FX.init(() => { chip.style.left = (cbx.x + (cbx.w - chip.offsetWidth) / 2) + 'px'; });
+  const tE = FX.w('ереване') - 0.05;
+  FX.on(t => { const k = span(t, tE, tE + 0.45); set(chip, { y: lerp(40, 0, E.back(k)), o: span(t, tE, tE + 0.15) }); });
+
+  // логотип выставки вместо слов «Тун Экспо»: белая карточка, дома знака растут снизу (замена силуэта новостроек)
+  const tcb = FX.box({ tall: [0.12, 0.43, 0.88, 0.86], sq: [0.3, 0.47, 0.7, 0.86], wide: [0.62, 0.25, 0.98, 0.84] });
+  const tcard = FX.$('#tc');
+  const side = Math.min(tcb.w, tcb.h);
+  Object.assign(tcard.style, { left: (tcb.x + (tcb.w - side) / 2) + 'px', top: (tcb.y + (tcb.h - side) / 2) + 'px', width: side + 'px', height: side + 'px' });
+  const shine = FX.$('.shine', tcard);
+  const tT = FX.w('тун') - 0.12;
+  FX.toonLogo(tcard.querySelector('svg'), tT + 0.15);
+  FX.on(t => {
+    const k = span(t, tT, tT + 0.55);
+    set(tcard, { persp: 1400, ry: lerp(-70, 0, E.out3(k)), s: lerp(0.6, 1, E.back(k)) * (1 + 0.012 * Math.sin((t - tT) * 2.2)),
+                 y: 8 * Math.sin((t - tT) * 1.6), o: span(t, tT, tT + 0.12) });
+    const ks = span(t, tT + 1.15, tT + 1.9);
+    shine.style.left = lerp(-40, 130, E.io2(ks)) + '%';
+    shine.style.transform = 'skewX(-18deg)';
+  });
+
+  const cap = FX.captions(document.body, {
+    box: { tall: [0, 0.16, 1, 0.41], sq: [0, 0.215, 1, 0.45], wide: [0.0, 0.25, 0.58, 0.84] },
+    groups: [[3, 3], [4, 4]], accent: ['выставка'], size: { tall: 112, sq: 112, wide: 128 },
+    align: FX.L === 'wide' ? 'left' : 'center',
+  });
+  // «Тун Экспо» в кадре — логотипом, не словами
+  cap.groups.forEach(g => g.spans.forEach(sp => { if (/^(тун|экспо)/.test(sp.w.n)) sp.style.display = 'none'; }));
+
+  FX.slantIn(['#191919', '#FF4242'], 0.42, 1);
+  FX.blindsOut(['#FF4242', '#191919'], 7, 0.46);
+})();
+</script>

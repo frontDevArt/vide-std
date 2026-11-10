@@ -1,0 +1,10 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7706388111839743252
+  date: 2026-11-10 08:04
+  version: null
+  file: fable-52.mp4
+  sha1: 74027b904e36
+  duration: 86.97

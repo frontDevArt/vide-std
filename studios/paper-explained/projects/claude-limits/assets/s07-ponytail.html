@@ -52,6 +52,12 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
 /* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
 .sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
                    drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
 
 /* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
 .shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
@@ -123,26 +129,10 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   <!-- заголовок за флаконом -->
   <div class="title" style="left: 0; right: 0; text-align: center; top: 388px; font-size: 180px; color: var(--navy); --d: calc(var(--b0) + .15s)">PonyTail</div>
 
-  <!-- флакон: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <!-- флакон: ч/б вырезка Kie (assets/images/ee47e06d231dc805.cut.png, brand/PROMPTS.md) -->
   <div class="abs drop sticker" style="left: 300px; top: 262px; width: 180px; height: 270px; --r: 6deg; --d: calc(var(--b0) + .35s)" data-boil>
-    <svg viewBox="0 0 240 360" width="180" height="270">
-      <defs>
-        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
-        <pattern id="ridge" width="12" height="70" patternUnits="userSpaceOnUse"><rect width="12" height="70" fill="#ece8e0"/><rect x="8" width="3" height="70" fill="#9f988e"/></pattern>
-        <linearGradient id="glassb" x1="0" x2="1"><stop offset="0" stop-color="#2a2623"/><stop offset=".28" stop-color="#6e6862"/><stop offset=".55" stop-color="#3a3531"/><stop offset="1" stop-color="#191614"/></linearGradient>
-      </defs>
-      <rect x="44" y="64" width="152" height="24" fill="#2b2724" stroke="#141210" stroke-width="3"/>
-      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#glassb)" stroke="#141210" stroke-width="4"/>
-      <rect x="12" y="84" width="216" height="268" rx="26" fill="url(#ht)" opacity=".28"/>
-      <rect x="30" y="104" width="13" height="226" rx="6" fill="#fff" opacity=".3"/>
-      <rect x="22" y="2" width="196" height="68" rx="10" fill="url(#ridge)" stroke="#141210" stroke-width="4"/>
-      <rect x="34" y="150" width="172" height="146" fill="#f3efe6" stroke="#141210" stroke-width="2"/>
-      <rect x="34" y="150" width="172" height="146" fill="url(#ht)" opacity=".08"/>
-      <text x="120" y="196" text-anchor="middle" font-family="PTMono" font-size="25" font-weight="700" fill="#141210">PONYTAIL</text>
-      <line x1="50" y1="212" x2="190" y2="212" stroke="#141210" stroke-width="2"/>
-      <text x="120" y="244" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">по 1 перед</text>
-      <text x="120" y="270" text-anchor="middle" font-family="PTMono" font-size="19" fill="#141210">кодом</text>
-    </svg>
+    <img src="images/ee47e06d231dc805.cut.png" alt="" style="position: absolute; left: -66.0px; top: -20.9px; width: 311.7px; height: 311.7px">
+    <div class="kie-label" style="left: 33.2px; top: 127.5px; width: 108.8px; height: 90.6px"><b>PONYTAIL</b><i></i><span>по 1 перед<br>кодом</span></div>
   </div>
 
   <!-- полоска кода -->
@@ -183,11 +173,17 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   st.style.transform = 'scale(' + k + ')';
 
   // подписи: куски не длиннее CAP символов, граница — и на смене бита
-  const CAP = 30, Wd = S.words || [], bt = (S.beats || []).map(b => b.t0);
-  const beatOf = (t) => bt.reduce((i, b0, j) => (t >= b0 - 1e-3 ? j : i), 0);
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
   // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
   const byBeat = [];
-  Wd.forEach((w, i) => { const b = beatOf(w.t0); (byBeat[b] = byBeat[b] || []).push(i); });
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
   const chunks = [];
   byBeat.forEach((ids, b) => {
     if (!ids) return;
@@ -247,6 +243,34 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   const FPS2 = 12;
   const all = document.getAnimations.bind(document);
   document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
   const boil = Array.from(document.querySelectorAll('[data-boil]'));
   window.seek = (t) => {
     captions(t);  // подписи — по точному времени речи, не шагом

@@ -12,22 +12,24 @@ format: vertical          # vertical 1080×1920 | horizontal 1920×1080 | square
 platform: youtube-shorts            # площадка выхода (python -m studio platforms): youtube | youtube-shorts | tiktok | instagram-reels | …
                           #   validate сверит формат и длительность, qa — файл по профилю площадки; null — без площадки
 fps: 30
-target_duration: 24.0     # пробные кадры (3 сцены из 8); бета 40–45 с — вернуть 43
+target_duration: 49.0     # бета 8 сцен, ElevenLabs Artspace темп 110, без контекста: речь до ~47,5 с + финальный постер со штампом ~1,5 с (пользователь: ~48–50 с, 2026-11-09)
 
 tts:
-  backend: piper       # `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
+  backend: elevenlabs  # с 2026-11-09 (было piper ruslan, темп 109); `new` пишет сюда --tts или первый доступный. rhvoice (офлайн, ставится tools/setup_rhvoice.sh) | edge (онлайн) | piper (офлайн нейро)
                           #   | fake (тон вместо речи — только тесты/черновики) | none (ролик без голоса: music, slideshow)
-  voice: ru_RU-ruslan-medium   # auto — по языку (studio/lang.py). ru: aleksandr-hq | ru-RU-DmitryNeural | ru_RU-dmitri-medium;
+  voice: auto            # голос студии (voices: в studio.yaml → .env студии); auto — по языку (studio/lang.py). ru: aleksandr-hq | ru-RU-DmitryNeural | ru_RU-dmitri-medium;
                           #   en: slt | en-US-GuyNeural | en_US-lessac-medium
-  rate: auto              # auto — подбор под target_duration; ДЛЯ ДЛИННЫХ РОЛИКОВ ЗАФИКСИРУЙТЕ ЧИСЛО после 1-й главы
+  rate: 110               # ElevenLabs — только числом (auto синтезировал бы несколько раз — деньги)
   rate_range: [98, 125]   # что считаем естественным темпом
+  context: false          # без соседних строк в запросе: с ними ElevenLabs читал строку как середину речи —
+                          #   без конца предложения и с началом следующей фразы в хвосте (обрыв на стыках, 2026-11-09)
 
 pauses:                   # секунды
-  start: 0.45             # тишина в начале ролика
+  start: 0.3              # тишина в начале ролика
   comma: 0.18             # после строки, оканчивающейся на , : ; —
-  sentence: 0.40          # после строки, оканчивающейся на . ! ?
-  scene: 0.55             # между сценами
-  end: 0.6                # в конце ролика
+  sentence: 0.42          # после строки, оканчивающейся на . ! ?
+  scene: 0.6              # между сценами
+  end: 0.5                # в конце ролика
 
 style:
   palette: neon           # neon | calm | lab  (studio/gfx.py: PALETTES)
@@ -36,12 +38,16 @@ style:
   font: Inter Display
 
 music:
-  enabled: true
+  enabled: false          # с 2026-11-09 вместо музыки — бумажные звуки под движение (sfx ниже, просьба пользователя)
   level_db: -13           # уровень подложки; QA требует, чтобы музыка была на 14–28 LU тише голоса
   duck: true              # приглушать музыку под голосом
   # sync: beat               # склейки сцен в долю трека (bar — в сильную долю); kind: music — включено (ROADMAP C3)
   # file: drive.mp3           # свой трек: путь от папки проекта или имя в brand/music/ студии (будет зациклен)
   # by_chapter: {ch02: calm.mp3}   # свой трек на главу, стык — кроссфейд (crossfade: 2.0)
+
+# Звуки под движение: страницы сцен отдают старты анимаций (common.js → window.sfx), звуки — studio/sfx.py.
+# Без музыки их слышно хуже на тишине — уровень поднят относительно умолчания (−28…−32 dB к голосу).
+sfx: {enabled: true, level_db: 10}
 
 subtitles:
   enabled: true

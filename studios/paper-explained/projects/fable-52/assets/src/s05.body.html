@@ -1,0 +1,52 @@
+<!-- s05 — пример 2 и сравнение: «Или теорема Ферма. | Тысяча агентов Фейбл за тридцать часов |
+     записала доказательство так, | что его проверила машина. | Опус в тех же условиях | застрял на четверти.»
+     Идея: две дорожки одной задачи. Формула от руки на полоске, под ней дорожка Fable — до конца, шестерни и
+     галочка «проверено», ниже дорожка Opus — четверть и штамп.
+     b0: ярлык, формула; b1–b2: дорожка Fable заполняется; b3: шестерни, галочка; b4: дорожка Opus; b5: «26 %», штамп. -->
+<style>
+  .formula { padding: 10px 34px 16px; font-family: Caveat; font-weight: 700; font-size: 124px; line-height: 1; color: var(--ink); white-space: nowrap; }
+  .formula sup { font-size: 64px; }
+  .track { position: absolute; left: 20px; width: 720px; height: 70px; box-sizing: border-box; border: 2.4px solid rgba(20,18,16,.55); }
+  .fill { height: 100%; }
+  .fill.hot { background: var(--grain), var(--terra); width: 100%; }
+  .fill.blue { background: var(--grain), var(--blue); width: 26%; }
+  .tname { position: absolute; left: 20px; font-family: PTMono; font-size: 25px; color: var(--navy); white-space: nowrap; }
+  .tname b { font-weight: 400; color: var(--dim); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Пример 2</div>
+  <div class="cross" style="left: 690px; top: 30px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 262px; width: 66px; height: 66px; --d: calc(var(--b0) + .4s)"></div>
+
+  <!-- формула -->
+  <div class="abs slideR" style="left: 40px; top: 104px; --r: -2.5deg; --d: calc(var(--b0) + .1s)" data-boil>
+    <div class="shadow"><div class="tanp formula" data-torn="lr" data-depth="9">x<sup>n</sup> + y<sup>n</sup> = z<sup>n</sup></div></div>
+  </div>
+  <div class="abs label appear" style="left: 60px; top: 286px; --d: calc(var(--b0) + .5s)">теорема Ферма → запись в Lean</div>
+
+  <!-- дорожка Fable -->
+  <div class="tname appear" style="top: 360px; --d: var(--b1)">Fable 5.2 <b>× 1000 агентов</b></div>
+  <div class="track appear" style="top: 398px; --d: var(--b1)">
+    <div class="fill hot growX" style="--d: calc(var(--b1) + .15s); --dd: calc(var(--e2) - var(--b1) - .3s)" data-sfx="slide"></div>
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 600px; top: 478px; --r: 3deg; --d: calc(var(--e2) - .1s)" data-boil>за 30 ч</div>
+
+  <!-- проверила машина -->
+  <div class="abs drop sticker" style="left: 250px; top: 486px; width: 210px; height: 170px; --r: -5deg; --d: var(--b3)" data-boil>
+    <img data-cut="GEARS" data-box="210 170">
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw" data-at="проверила:0.3" pathLength="1" stroke="#6F8A4E" stroke-width="12" fill="none"
+       style="--dd: .3s" d="M480 566 L 512 606 L 570 520"/></svg>
+  <div class="abs pop sheet chip shadow" style="left: 20px; top: 540px; --r: -2deg" data-at="проверила:0.5" data-boil>проверено</div>
+
+  <!-- дорожка Opus -->
+  <div class="tname appear" style="top: 690px; --d: var(--b4)">Opus 5.5 <b>× 1000 агентов</b></div>
+  <div class="track appear" style="top: 728px; --d: var(--b4)">
+    <div class="fill blue growX" style="--d: calc(var(--b4) + .15s); --dd: .8s" data-sfx="slide"></div>
+  </div>
+  <div class="abs pop num" style="left: 226px; top: 734px; font-size: 68px; --d: var(--b5)">26 %</div>
+  <div class="stamp" data-at="застрял:0.25" style="left: 450px; top: 720px; font-size: 50px; --r: -6deg">Застрял</div>
+
+  <div class="src appear" style="top: 846px; --d: calc(var(--b1) + .3s)">Источник: Anthropic, 9 нояб. 2026. Opus 5.5 — 26 % за 18 ч и почти без
+    прогресса к 30 ч; по одному запуску на модель, это не новое доказательство, а его машинная запись.</div>
+</div>

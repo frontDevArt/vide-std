@@ -1,0 +1,104 @@
+chapter: ch01
+title: "Тун Экспо с Etagi Yerevan"
+# Все сцены — webfx: страница assets/scenes/sNN.html (собирается scenes/build.py из scenes/*.html + lib) рисует
+# фото, графику, переходы и слова озвучки сама. Переход на склейке: конец сцены и начало следующей закрыты одной
+# шторкой (кадр на стыке совпадает). Звуки — sfx (секунды; отрицательные — от конца сцены).
+scenes:
+  - id: s01
+    template: webfx
+    lines:
+      - "Планируете купить | недвижимость | в Армении?"
+    params:
+      file: assets/scenes/s01.html
+      sfx: [[0.02, thud], ["b1", pop], ["b2", pop], [-0.32, whoosh]]
+
+  - id: s02
+    template: webfx
+    lines:
+      - "Тогда не пропустите | главное событие ноября!"
+    params:
+      file: assets/scenes/s02.html
+      sfx: [["b0", swish], ["w:ноября", thud], [-0.34, whoosh]]
+
+  - id: s03
+    template: webfx
+    lines:
+      - "Тринадцатого, | четырнадцатого | и пятнадцатого ноября | в Ереване пройдёт «Тун Экспо» — | выставка недвижимости!"
+    params:
+      file: assets/scenes/s03.html
+      sfx: [["w:тринадцатого", tick], ["w:четырнадцатого", tick], ["w:пятнадцатого", tick], ["w:тун", swish],
+            ["w:выставка", pop], [-0.36, whoosh]]
+
+  - id: s04
+    template: webfx
+    lines:
+      - "А мы — «Этажи Ереван», | международное агентство недвижимости, — | будем рядом | и поможем сделать правильный выбор!"
+    image:
+      - prompt: >-
+          a friendly team of three real estate consultants, two women and one man in crisp white shirts with small red
+          badges, standing together and smiling in a bright modern office with floor-to-ceiling windows overlooking
+          Yerevan city, Mount Ararat faintly visible in the distance, vertical composition, people in the lower two thirds
+    params:
+      file: assets/scenes/s04.html
+      sfx: [[0.05, thud], ["w:международное", swish], ["w:будем", swish], ["w:выбор", pop], [-0.5, riser], [-0.3, whoosh]]
+
+  - id: s05
+    template: webfx
+    lines:
+      - "Сопроводим вас на выставке | и поможем разобраться в предложениях."
+    image:
+      - prompt: >-
+          a real estate consultant in a white shirt with a red lanyard guiding a young couple through a bright modern
+          real estate exhibition hall, pointing at an architectural scale model of white residential towers on a stand,
+          blurred visitors and stands in the background, vertical composition
+    params:
+      file: assets/scenes/s05.html
+      sfx: [[0.0, swish], [0.62, tick], ["w:выставке", pop], [-0.3, whoosh]]
+
+  - id: s06
+    template: webfx
+    lines:
+      - "Подберём недвижимость | под ваши желания и бюджет."
+    params:
+      file: assets/scenes/s06.html
+      sfx: [[0.12, pop], [0.45, tick], ["w:желания", pop], ["w:бюджет", pop], [-0.3, whoosh]]
+
+  - id: s07
+    template: webfx
+    lines:
+      - "Проконсультируем | и проведём через все этапы — | от выбора до покупки."
+    image:
+      - prompt: >-
+          close-up of a real estate agent's hand giving shiny apartment keys on a red keychain to a smiling young couple
+          in a bright new empty apartment with large windows and city view, warm sunlight, vertical composition
+    params:
+      file: assets/scenes/s07.html
+      sfx: [[0.12, pop], [0.45, tick], ["w:выбора", tick], ["w:покупки", pop], [-0.45, riser]]
+
+  - id: s08
+    template: webfx
+    lines:
+      - "И самое главное — | наша помощь | абсолютно бесплатна!"
+    params:
+      file: assets/scenes/s08.html
+      sfx: [[0.0, thud], ["w:бесплатна", thud], ["w:бесплатна", pop], [-0.32, whoosh]]
+
+  # s09 — где написать (просьба пользователя 2026-11-01: Инстаграм, Фейсбук, Ватсап или звонок; без адресов в речи)
+  - id: s09
+    template: webfx
+    lines:
+      - "Напишите нам прямо сейчас — | в Инстаграм, | Фейсбук | или Ватсап!"
+      - "Или просто позвоните!"
+    params:
+      file: assets/scenes/s09.html
+      sfx: [[0.25, pop], ["w:инстаграм", pop], ["w:фейсбук", pop], ["w:ватсап", pop], ["w:позвоните", thud],
+            [-0.32, whoosh]]
+
+  - id: s10
+    template: webfx
+    lines:
+      - "Мы поможем найти | недвижимость вашей мечты!"
+    hold: 1.6
+    params:
+      file: assets/scenes/s10.html
+      sfx: [[0.2, swish], ["w:мечты", pop], [-1.0, tick]]

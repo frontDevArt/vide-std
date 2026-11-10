@@ -1,7 +1,7 @@
-# Бета «лимиты Claude → Graphify и PonyTail». Сейчас — 3 пробных кадра стиля (s01, s06, s07);
-# остальные сцены (s02–s05, s08) — после утверждения кадров. Разбор стиля — docs/reference/VOX_STYLE.md.
+# Бета «лимиты Claude → Graphify и PonyTail», 8 сцен ≈ 43 с. Разбор стиля — docs/reference/VOX_STYLE.md, план — outline.md.
 # Тело сцены — страница web.html (бумага, вырезки, маркер, нитка; движение «на двойках» 12 к/с — внутри страницы),
-# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md; пока сеть не отдаёт файлы — SVG-заглушки кодом), заголовок, круг и линии — кодом.
+# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md), заголовок, круг, линии и цифры — кодом.
+# s08 новых картинок не заказывает: берёт вырезки s01 (часы — перевёрнутыми), s06 и s07.
 chapter: ch01
 title: "Почему кончаются лимиты"
 scenes:
@@ -13,6 +13,45 @@ scenes:
     params: {file: assets/s01-hook.html, fade: false}
     image:
       - prompt: "a vintage hourglass with almost all the sand already in the lower bulb, front view"
+        role: subject
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Вот в чём дело: | Клод не помнит чат."
+      - "С каждым сообщением | он перечитывает весь разговор."
+    params: {file: assets/s02-memory.html, fade: false}
+    image:
+      - prompt: "a single goldfish swimming in a small round glass fishbowl with water, side view"
+        role: subject
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Первое сообщение — копейки."
+      - "Тридцатое тащит за собой | все двадцать девять."
+    params: {file: assets/s03-chain.html, fade: false}
+    image:
+      - prompt: "a heavy vintage iron ball and chain shackle, the chain lying in loose loops beside the ball, front view"
+        role: subject
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "В коде хуже: | файл за файлом — | и всё в одну кучу."
+    params: {file: assets/s04-pile.html, fade: false}
+    image:
+      - prompt: "a vintage metal office filing cabinet with the top drawer pulled open and stuffed with paper folders, three-quarter view"
+        role: subject
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Лимит съедают не вопросы."
+      - "Его съедает чтение."
+    params: {file: assets/s05-reading.html, fade: false}
+    image:
+      - prompt: "a pair of vintage round wire-rimmed reading glasses, unfolded, front view"
         role: subject
 
   - id: s06
@@ -36,3 +75,9 @@ scenes:
     image:
       - prompt: "a vintage glass pharmacy pill bottle with a plain blank label, front view"
         role: subject
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Меньше читать. | Меньше писать. | Дольше лимит."
+    params: {file: assets/s08-recipe.html, fade: false}

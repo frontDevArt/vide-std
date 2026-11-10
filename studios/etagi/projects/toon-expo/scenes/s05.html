@@ -1,0 +1,58 @@
+<!-- s05 — «Сопроводим вас на выставке | и поможем разобраться в предложениях.»
+     красный кадр (после пролёта в знак) сжимается в чекбокс ☑ 01; фото: консультант ведёт пару по выставке;
+     ярлык «TOON EXPO · 13–15 ноября» (цвета организатора); выход — косая шторка -->
+<style>
+  #bg { background: #0D0D0E; }
+  .glow { background: radial-gradient(circle at 80% 85%, rgba(255,66,66,.35), rgba(255,66,66,0) 55%),
+                      radial-gradient(circle at 10% 10%, rgba(255,255,255,.07), rgba(255,255,255,0) 40%); }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  const glow = FX.el('div', 'full bleed glow', bg);
+  FX.on(t => set(glow, { s: 1 + 0.06 * Math.sin(t * 1.4) }));
+
+  const row = FX.checkRow(1, { t0: 0.42, noPop: true });
+  // красный кадр сжимается в чекбокс
+  const red = FX.el('div', 'full bleed', FX.$('#tr'));
+  red.style.background = '#FF4242'; red.style.zIndex = 80;
+  const c = row.cb;
+  FX.on(t => {
+    const k = E.ioExpo(span(t, 0.0, 0.46));
+    const top = lerp(0, c.y, k), left = lerp(0, c.x, k), right = lerp(0, Wd - c.x - c.w, k), bot = lerp(0, Hd - c.y - c.h, k);
+    red.style.clipPath = `inset(${top.toFixed(1)}px ${right.toFixed(1)}px ${bot.toFixed(1)}px ${left.toFixed(1)}px round ${(k * c.w * 0.16).toFixed(1)}px)`;
+    set(red, { o: t < 0.44 ? 1 : 0 });
+  });
+
+  const wide = FX.L === 'wide', sq = FX.L === 'sq';
+  const pb = FX.box({ tall: [0.06, 0.37, 0.94, 1.0], sq: [0.16, 0.39, 0.84, 1.0], wide: [0.6, 0.0, 1.0, 1.0] });
+  const card = FX.el('div', 'pcard', document.body);
+  Object.assign(card.style, { left: pb.x + 'px', top: pb.y + 'px', width: pb.w + 'px', height: pb.h + 'px' });
+  const ph = FX.photo(card, '{{img:s05}}');
+  ph.img.style.objectPosition = FX.L === 'tall' ? '55% 45%' : '62% 55%';
+  FX.kb(ph, 0.2, FX.D, { s: 1.22, x: 20 }, { s: 1.05, x: -20 });
+  FX.on(t => {
+    const k = span(t, 0.22, 0.9);
+    set(card, { persp: 1500, ry: lerp(-35, -4, E.out3(k)) + 2 * Math.sin(t), x: lerp(pb.w * 0.5, 0, E.out4(k)), o: span(t, 0.22, 0.32) });
+  });
+  // ярлык выставки на фото
+  const tag = FX.el('div', 'tag', document.body, FX.icon.pin('#077390') + '<span><b class="tn">TOON</b> <b class="te">EXPO</b> · 13–15 НОЯБРЯ</span>');
+  tag.style.fontSize = Math.min(FX.stage.w / 17, 40) + 'px';
+  FX.init(() => {                                        // по центру карточки, но не за краем зоны
+    const tw = tag.offsetWidth, st = FX.stage;
+    tag.style.left = Math.min(st.x1 - tw, Math.max(st.x0, pb.x + (pb.w - tw) / 2)) + 'px';
+    tag.style.top = (pb.y + pb.h - tag.offsetHeight - pb.h * 0.05) + 'px';
+  });
+  const tT = FX.w('выставке') - 0.05;
+  FX.on(t => { const k = span(t, tT, tT + 0.45); set(tag, { y: lerp(30, 0, E.back(k)), s: lerp(0.7, 1, E.back(k)), o: span(t, tT, tT + 0.12) }); });
+
+  FX.captions(document.body, {
+    box: { tall: [0, 0.09, 1, 0.35], sq: [0, 0.11, 1, 0.37], wide: [0, 0.14, 0.56, 0.96] },
+    align: FX.L === 'wide' ? 'left' : 'center', accent: ['выставке', 'разобраться'],
+    size: { tall: 100, sq: 92, wide: 112 },
+  });
+
+  FX.slantOut(['#FF4242', '#191919'], 0.4, 1);
+})();
+</script>

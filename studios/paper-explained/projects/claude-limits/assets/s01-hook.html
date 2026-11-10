@@ -52,6 +52,12 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
 /* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
 .sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
                    drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
 
 /* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
 .shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
@@ -134,30 +140,9 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   <!-- заголовок за часами -->
   <div class="title" style="left: 0; right: 0; text-align: center; top: 362px; font-size: 262px; --d: var(--b1)">Лимит</div>
 
-  <!-- песочные часы: ч/б вырезка (заглушка кодом; Kie — brand/PROMPTS.md) -->
+  <!-- песочные часы: ч/б вырезка Kie (assets/images/24d3ada43b9b3492.cut.png, brand/PROMPTS.md) -->
   <div class="abs drop sticker" style="left: 273px; top: 300px; width: 234px; height: 360px; --r: 4deg; --d: calc(var(--b1) + .2s)" data-boil>
-    <svg viewBox="0 0 260 400" width="234" height="360">
-      <defs>
-        <pattern id="ht" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#141210"/></pattern>
-        <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#c9c4bb"/><stop offset=".3" stop-color="#f6f3ec"/><stop offset="1" stop-color="#a9a299"/></linearGradient>
-        <linearGradient id="wood" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c544d"/><stop offset="1" stop-color="#221e1b"/></linearGradient>
-        <clipPath id="gl"><path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z"/></clipPath>
-      </defs>
-      <rect x="14" y="30" width="15" height="340" fill="#35302c"/><rect x="231" y="30" width="15" height="340" fill="#35302c"/>
-      <path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z" fill="url(#glass)"/>
-      <g clip-path="url(#gl)">
-        <path class="sand-top" d="M48 92 Q130 116 212 92 L 138 200 L 122 200 Z" fill="#3a3531"/>
-        <path class="sand-bot" d="M40 366 Q130 236 220 366 Z" fill="#3a3531"/>
-        <rect x="128" y="198" width="4" height="160" fill="#3a3531"/>
-        <rect x="0" y="0" width="260" height="400" fill="url(#ht)" opacity=".22"/>
-        <rect x="150" y="0" width="110" height="400" fill="url(#ht)" opacity=".35"/>
-      </g>
-      <path d="M40 34 C40 120 118 170 122 200 C118 230 40 280 40 366 L220 366 C220 280 142 230 138 200 C142 170 220 120 220 34 Z" fill="none" stroke="#141210" stroke-width="5"/>
-      <path d="M62 60 C64 110 96 150 110 176" stroke="#fff" stroke-width="7" fill="none" opacity=".75" stroke-linecap="round"/>
-      <rect x="0" y="0" width="260" height="36" rx="6" fill="url(#wood)" stroke="#141210" stroke-width="4"/>
-      <rect x="0" y="364" width="260" height="36" rx="6" fill="url(#wood)" stroke="#141210" stroke-width="4"/>
-      <path d="M12 14 H 248 M 18 24 H 200 M 12 378 H 240 M 30 388 H 250" stroke="#0e0c0b" stroke-width="2" opacity=".55"/>
-    </svg>
+    <img src="images/24d3ada43b9b3492.cut.png" alt="" style="position: absolute; left: -103.4px; top: -43.8px; width: 440.2px; height: 440.2px">
   </div>
 
   <!-- к «обеду»: выноска и штамп -->
@@ -185,11 +170,17 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   st.style.transform = 'scale(' + k + ')';
 
   // подписи: куски не длиннее CAP символов, граница — и на смене бита
-  const CAP = 30, Wd = S.words || [], bt = (S.beats || []).map(b => b.t0);
-  const beatOf = (t) => bt.reduce((i, b0, j) => (t >= b0 - 1e-3 ? j : i), 0);
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
   // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
   const byBeat = [];
-  Wd.forEach((w, i) => { const b = beatOf(w.t0); (byBeat[b] = byBeat[b] || []).push(i); });
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
   const chunks = [];
   byBeat.forEach((ids, b) => {
     if (!ids) return;
@@ -249,6 +240,34 @@ svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events
   const FPS2 = 12;
   const all = document.getAnimations.bind(document);
   document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
   const boil = Array.from(document.querySelectorAll('[data-boil]'));
   window.seek = (t) => {
     captions(t);  // подписи — по точному времени речи, не шагом

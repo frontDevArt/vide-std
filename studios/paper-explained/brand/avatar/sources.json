@@ -1,0 +1,26 @@
+{
+ "scissors": {
+  "file": "src/scissors.png",
+  "source": "Kie AI nano-banana-2 2K",
+  "license": "Google Gemini API terms (через Kie AI)",
+  "prompt": "a pair of vintage steel tailor scissors, half open, seen straight from above, blades pointing up. Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details.",
+  "credits": 12.0,
+  "task": "b62ecb01c11996b22b8d1fa60d15c4ba"
+ },
+ "plane": {
+  "file": "src/plane.png",
+  "source": "Kie AI nano-banana-2 2K",
+  "license": "Google Gemini API terms (через Kie AI)",
+  "prompt": "a single folded paper airplane made of plain blank white paper, flying upward to the right, three-quarter view from the side, simple bold silhouette. Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details.",
+  "credits": 12.0,
+  "task": "a1e2ec6948cbb51564f18ed371b4694f"
+ },
+ "hand": {
+  "file": "src/hand.png",
+  "source": "Kie AI nano-banana-2 2K",
+  "license": "Google Gemini API terms (через Kie AI)",
+  "prompt": "a vintage engraving-style human hand with a shirt cuff, index finger pointing to the right, the other fingers folded, side view, simple bold silhouette. Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details.",
+  "credits": 12.0,
+  "task": "473da28a6e26aa5e32f411009a4ce086"
+ }
+}

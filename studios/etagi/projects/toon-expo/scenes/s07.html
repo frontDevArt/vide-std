@@ -1,0 +1,85 @@
+<!-- s07 — «Проконсультируем | и проведём через все этапы — | от выбора до покупки.»
+     ☑ 03; шкала этапов Выбор → Просмотр → Сделка → Ключи (узлы — на «проведём…этапы», красная линия — «от выбора
+     до покупки»); фото: ключи на красном брелоке; выход — красная вспышка -->
+<style>
+  #bg { background: #0D0D0E; }
+  .glow { background: radial-gradient(circle at 20% 90%, rgba(255,66,66,.3), rgba(255,66,66,0) 50%); }
+  .steps { position: absolute; }
+  .st-line { position: absolute; height: 8px; border-radius: 4px; background: rgba(255,255,255,.18); overflow: hidden; }
+  .st-line i { position: absolute; inset: 0; background: #FF4242; transform-origin: 0 50%; }
+  .node { position: absolute; border-radius: 50%; background: #1C1C1F; border: 5px solid rgba(255,255,255,.45);
+          display: flex; align-items: center; justify-content: center; font-family: Unb, Mont; font-weight: 800; color: #fff; }
+  .node.on { background: #FF4242; border-color: #FF4242; }
+  .nl { position: absolute; transform: translateX(-50%); font-weight: 800; color: #fff; white-space: nowrap; letter-spacing: .02em; }
+  .kbadge { position: absolute; border-radius: 50%; background: #FF4242; box-shadow: 0 14px 30px rgba(255,66,66,.45); }
+  .kbadge svg { width: 100%; height: 100%; }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  FX.el('div', 'full bleed glow', FX.$('#bg'));
+  FX.checkRow(3, { t0: 0.12 });
+
+  // фото ключей
+  const pb = FX.box({ tall: [0.06, 0.52, 0.94, 1.0], sq: [0.2, 0.54, 0.8, 1.0], wide: [0.6, 0.0, 1.0, 1.0] });
+  const card = FX.el('div', 'pcard', document.body);
+  Object.assign(card.style, { left: pb.x + 'px', top: pb.y + 'px', width: pb.w + 'px', height: pb.h + 'px' });
+  const ph = FX.photo(card, '{{img:s07}}');
+  ph.img.style.objectPosition = FX.L === 'wide' ? '55% 50%' : '60% 48%';
+  FX.kb(ph, 0.3, FX.D, { s: 1.08, x: 0 }, { s: 1.24, x: -30 });
+  FX.on(t => {
+    const k = span(t, 0.3, 0.95);
+    set(card, { persp: 1500, rx: lerp(-30, 0, E.out3(k)), y: lerp(pb.h * 0.5, 0, E.out4(k)), o: span(t, 0.3, 0.4) });
+  });
+  const bs = Math.min(pb.w, pb.h) * 0.22;
+  const kb = FX.el('div', 'kbadge', document.body, FX.icon.key('#fff'));
+  Object.assign(kb.style, { padding: (bs * 0.17) + 'px', width: bs + 'px', height: bs + 'px', left: (pb.x + pb.w - bs * 1.1) + 'px', top: (pb.y + pb.h - bs * 1.15) + 'px' });
+  const tK = FX.w('покупки') - 0.05;
+  FX.on(t => { const k = span(t, tK, tK + 0.45); set(kb, { s: E.back2(k), r: lerp(-120, 0, E.out3(k)), o: k > 0 ? 1 : 0 }); });
+
+  // шкала этапов
+  const sb = FX.box({ tall: [0.02, 0.33, 0.98, 0.49], sq: [0.04, 0.34, 0.96, 0.51], wide: [0.0, 0.64, 0.55, 0.88] });
+  const names = ['ВЫБОР', 'ПРОСМОТР', 'СДЕЛКА', 'КЛЮЧИ'];
+  const ns = Math.min(sb.h * 0.52, sb.w / 7.5), padX = ns * 0.75;
+  const cy = sb.y + ns / 2 + 4;
+  const xs = names.map((_, i) => sb.x + padX + i * (sb.w - 2 * padX) / 3);
+  const line = FX.el('div', 'st-line', document.body, '<i></i>');
+  Object.assign(line.style, { left: xs[0] + 'px', top: (cy - 4) + 'px', width: (xs[3] - xs[0]) + 'px' });
+  const nodes = names.map((nm, i) => {
+    const n = FX.el('div', 'node', document.body, String(i + 1));
+    Object.assign(n.style, { left: (xs[i] - ns / 2) + 'px', top: (cy - ns / 2) + 'px', width: ns + 'px', height: ns + 'px', fontSize: (ns * 0.4) + 'px' });
+    n.lb = FX.el('div', 'nl', document.body, nm);
+    Object.assign(n.lb.style, { left: xs[i] + 'px', top: (cy + ns * 0.62) + 'px', fontSize: Math.min(ns * 0.36, (sb.w / 4) / 7.2) + 'px' });
+    return n;
+  });
+  const tA = FX.w('проведём') - 0.05, tZ = FX.w('этапы') + 0.1;
+  const tF0 = FX.w('выбора') - 0.05, tF1 = FX.w('покупки') + 0.25;
+  FX.on(t => {
+    set(line, { o: span(t, tA, tA + 0.2), sx: E.out3(span(t, tA, tZ)) });
+    line.style.transformOrigin = '0 50%';
+    const f = E.io2(span(t, tF0, tF1));
+    set(line.firstChild, { sx: f });
+    nodes.forEach((n, i) => {
+      const a = lerp(tA, tZ, i / 3), k = span(t, a, a + 0.4);
+      const lit = f * 3 >= i - 0.02 && t >= tF0;
+      n.classList.toggle('on', lit);
+      const kp = lit ? span(t, tF0 + (tF1 - tF0) * i / 3, tF0 + (tF1 - tF0) * i / 3 + 0.3) : 0;
+      set(n, { s: E.back2(k) * (1 + 0.22 * Math.sin(Math.PI * kp)), o: k > 0 ? 1 : 0 });
+      set(n.lb, { o: span(t, a + 0.1, a + 0.35), y: lerp(14, 0, E.out3(span(t, a + 0.1, a + 0.4))) });
+      n.lb.style.transform = `translateX(-50%) ${n.lb.style.transform}`;
+    });
+  });
+
+  FX.captions(document.body, {
+    box: { tall: [0, 0.085, 1, 0.31], sq: [0, 0.1, 1, 0.32], wide: [0, 0.13, 0.56, 0.6] },
+    align: FX.L === 'wide' ? 'left' : 'center', accent: ['проконсультируем', 'этапы', 'покупки'],
+    size: { tall: 96, sq: 92, wide: 108 },
+  });
+
+  FX.slantIn(['#191919', '#FF4242'], 0.4, -1);
+  // вспышка к склейке: полный цвет уже на последнем кадре сцены (FX.flashOut доходит лишь до ~80 %)
+  const flash = FX.el('div', 'full bleed', FX.$('#tr'));
+  flash.style.background = '#FF4242'; flash.style.zIndex = 70;
+  FX.on(t => FX.set(flash, { o: FX.E.in2(FX.span(t, FX.D - 0.28, FX.D - 0.045)) }));
+})();
+</script>

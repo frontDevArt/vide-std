@@ -1,0 +1,53 @@
+<!-- s02 — механизм: «Вот в чём дело: | Клод не помнит чат. | С каждым сообщением | он перечитывает весь разговор.»
+     Идея: память золотой рыбки. Слева — лента переписки, справа — аквариум (ч/б вырезка) и вертикальный «ЗАНОВО».
+     b0: ярлык, лента с пятью репликами; b1: аквариум, штамп «не помнит»; b2: новая реплика внизу;
+     b3: полоса чтения проходит ленту сверху вниз; к концу бита — стрелка возврата к началу, полоса — снова наверху. -->
+<style>
+  .chat { width: 390px; height: 760px; padding: 26px 22px; box-sizing: border-box; }
+  .msg { position: relative; padding: 12px 14px 10px; margin-bottom: 12px; font-family: PTMono; font-size: 27px; line-height: 1.2; }
+  .msg b { display: block; font-size: 19px; letter-spacing: 3px; color: var(--navy); margin-bottom: 2px; }
+  .msg.you { background: var(--grain), var(--tan); margin-left: 34px; }
+  .msg.cl { margin-right: 34px; border-left: 4px solid var(--navy); }
+  .msg .new { position: absolute; right: -10px; top: -14px; font-family: Oswald; font-weight: 700; font-size: 20px; letter-spacing: 2px;
+              text-transform: uppercase; color: var(--paper-hi); background: var(--terra); padding: 2px 10px; }
+  .scan { position: absolute; left: 8px; right: 8px; top: 18px; height: 96px; background: var(--mustard); opacity: 0;
+          mix-blend-mode: multiply;
+          animation: scan calc(var(--e3) - var(--b3) - .2s) steps(14, end) var(--b3) forwards, scanBack .01s linear calc(var(--e3) + .1s) forwards; }
+  @keyframes scan { 0% { top: 18px; opacity: .6; } 100% { top: 640px; opacity: .6; } }
+  @keyframes scanBack { to { top: 18px; opacity: .6; } }
+  .vt { position: absolute; left: 618px; top: 950px; width: 610px; height: 160px; transform: rotate(-90deg); transform-origin: 0 0; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Вот в чём дело</div>
+  <div class="cross" style="left: 450px; top: 660px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 700px; top: 40px; width: 64px; height: 64px; --d: calc(var(--b1) + .3s)"></div>
+
+  <!-- лента переписки -->
+  <div class="abs slideL" style="left: 6px; top: 110px; --r: -1.5deg; --d: calc(var(--b0) + .15s)" data-boil>
+    <div class="shadow"><div class="sheet chat" data-torn="tb" data-depth="8">
+      <div class="msg you appear" style="--d: calc(var(--b0) + .30s)"><b>ВЫ</b>почини вход</div>
+      <div class="msg cl appear" style="--d: calc(var(--b0) + .42s)"><b>CLAUDE</b>смотрю auth.py</div>
+      <div class="msg you appear" style="--d: calc(var(--b0) + .54s)"><b>ВЫ</b>а тесты?</div>
+      <div class="msg cl appear" style="--d: calc(var(--b0) + .66s)"><b>CLAUDE</b>запускаю тесты</div>
+      <div class="msg you appear" style="--d: calc(var(--b0) + .78s)"><b>ВЫ</b>теперь ui</div>
+      <div class="msg cl drop" style="--d: var(--b2); --r: 0deg"><b>CLAUDE</b>открываю ui.tsx<span class="new">новое</span></div>
+      <div class="scan"></div>
+    </div></div>
+  </div>
+
+  <!-- аквариум -->
+  <div class="disc" style="left: 440px; top: 70px; width: 320px; height: 320px; --d: var(--b1)"></div>
+  <div class="abs drop sticker" style="left: 450px; top: 92px; width: 300px; height: 277px; --r: -4deg; --d: calc(var(--b1) + .15s)" data-boil>
+    <img data-cut="926079616e8f6f97" data-box="300 277">
+  </div>
+  <div class="stamp" data-at="помнит:0.15" style="left: 396px; top: 388px; font-size: 40px; --r: -8deg">Не помнит</div>
+
+  <!-- возврат к началу -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#C46557" stroke-width="10" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="--d: calc(var(--e3) - .2s); --dur: .4s" d="M405 820 C 560 760, 560 260, 412 175"/>
+    <path class="draw" pathLength="1" style="--d: calc(var(--e3) + .2s); --dur: .15s" d="M448 160 L 410 174 L 432 210"/>
+  </g></svg>
+
+  <!-- вертикальный заголовок -->
+  <div class="vt"><div class="title" style="left: 0; top: 4px; font-size: 176px; color: var(--navy); --d: var(--b3)">Заново</div></div>
+</div>

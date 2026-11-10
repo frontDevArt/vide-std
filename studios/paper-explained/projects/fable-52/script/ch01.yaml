@@ -1,0 +1,105 @@
+# «Fable 5.2: что нового — и неделя в подписке Pro», 10 сцен ≈ 80 с. План и источники — outline.md.
+# Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/, сборка build.py),
+# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md); заголовки, цифры, схемы и источники — кодом.
+# Цифры в речи — по минимуму: точные значения и источник — в кадре.
+chapter: ch01
+title: "Fable 5.2"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Вышел Фейбл пять-два — | новая старшая модель Клода."
+      - "И к запуску — подарок: | неделю он входит в подписку Про."
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - prompt: "a vintage cardboard gift box tied with a ribbon and a bow, lid closed, three-quarter view"
+        role: subject
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Зачем обновление? | Прошлый Фейбл был старшим, | а младший Опус обгонял его в коде."
+      - "Пять-два возвращает порядок: | теперь он выше обоих."
+    params: {file: assets/s02-why.html, fade: false}
+    image:
+      - prompt: "a vintage royal crown, front view"
+        role: subject
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Что нового? | Отвечает до тридцати процентов быстрее."
+      - "Стоит дешевле. | И вдвое реже отказывает по ошибке."
+    params: {file: assets/s03-new.html, fade: false}
+    image:
+      - prompt: "a vintage mechanical stopwatch with a plain dial that has only tick marks and one hand, front view"
+        role: subject
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Что он умеет? | Инженер дал ему пустую папку."
+      - "Через восемь дней | в ней была операционная система."
+      - "И она запускается на ноутбуке."   # отдельной строкой: хвостом длинной строки фраза звучала незаконченной (пользователь, 2026-11-10)
+    params: {file: assets/s04-os.html, fade: false}
+    image:
+      - prompt: "an open empty vintage manila paper file folder standing upright, front view"
+        role: subject
+      - prompt: "a vintage portable laptop computer, open, with a blank screen, three-quarter view"
+        role: subject
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Или теорема Ферма. | Тысяча агентов Фейбл за тридцать часов | записала доказательство так, | что его проверила машина."
+      - "Опус в тех же условиях | застрял на четверти."
+    params: {file: assets/s05-fermat.html, fade: false}
+    image:
+      - prompt: "two interlocking vintage brass clockwork gears, front view"
+        role: subject
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Значит, Опус пора выбросить? | Нет."
+      - "Антропик сама советует на каждый день брать Опус."
+      - "Фейбл — для самых тяжёлых задач."
+    params: {file: assets/s06-opus.html, fade: false}
+    image:
+      - prompt: "a vintage steel claw hammer with a wooden handle, standing upright head up, front view"
+        role: subject
+      - prompt: "a heavy vintage sledgehammer with a long wooden handle, standing upright head up, front view"
+        role: subject
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "И честно: | все эти цифры — от самой Антропик."
+      - "Независимых замеров пока мало."
+    params: {file: assets/s07-honest.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Теперь подарок. | По шестнадцатое ноября включительно | Фейбл входит в подписку Про."
+      - "На него уходит | до половины недельного лимита."
+    params: {file: assets/s08-offer.html, fade: false}
+    image:
+      - prompt: "a whole round rustic pie with a golden crust, seen from directly above, perfectly centered"
+        role: subject
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Сам он не включится: | выберите его в списке моделей."
+      - "И заберите в настройках | один бесплатный сброс лимита."
+      - "С семнадцатого — | только за отдельные кредиты."
+    params: {file: assets/s09-how.html, fade: false}
+
+  - id: s10
+    template: paper_page
+    hold: 1.2
+    lines:
+      - "Стоит ли Фейбл своих денег, | или Опуса хватает? | Напишите в комментариях."
+      - "Было полезно — | поставьте лайк и подпишитесь."
+    params: {file: assets/s10-cta.html, fade: false}

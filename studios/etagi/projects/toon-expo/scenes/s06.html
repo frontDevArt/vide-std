@@ -1,0 +1,88 @@
+<!-- s06 — «Подберём недвижимость | под ваши желания и бюджет.»
+     ☑ 02; 3D-карусель реальных новостроек (каталог am.etagi.com) крутится и тормозит; фильтры «Район / Комнаты /
+     Бюджет» отмечаются на словах; выход — косая шторка -->
+<style>
+  #bg { background: #0D0D0E; }
+  .glow { background: radial-gradient(circle at 50% 60%, rgba(255,66,66,.28), rgba(255,66,66,0) 55%); }
+  .ring { position: absolute; transform-style: preserve-3d; }
+  .rc { position: absolute; border-radius: 22px; overflow: hidden; backface-visibility: hidden; border: 5px solid #fff;
+        box-shadow: 0 20px 50px rgba(0,0,0,.6); }
+  .rc .dk { position: absolute; inset: 0; background: #0D0D0E; }
+  .filters { position: absolute; display: flex; justify-content: center; gap: .5em; flex-wrap: nowrap; }
+  .fchip { display: inline-flex; align-items: center; gap: .4em; padding: .38em .75em .38em .45em; border-radius: 999px;
+           border: 3px solid rgba(255,255,255,.35); color: #fff; font-weight: 800; white-space: nowrap; position: relative; }
+  .fchip .ci { width: 1.15em; height: 1.15em; border-radius: 50%; border: 3px solid rgba(255,255,255,.5); position: relative; }
+  .fchip .ci svg { position: absolute; inset: -3px; width: calc(100% + 6px); height: calc(100% + 6px); }
+  .fchip .fill { position: absolute; inset: -3px; border-radius: 999px; background: #FF4242; transform-origin: 0 50%; z-index: -1; }
+</style>
+<script>
+(() => {
+  const { set, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  FX.el('div', 'full bleed glow', bg);
+  FX.checkRow(2, { t0: 0.12 });
+
+  // карусель: кольцо из 8 карточек
+  const rb = FX.box({ tall: [0, 0.31, 1, 0.82], sq: [0, 0.33, 1, 0.83], wide: [0.5, 0.04, 1, 0.96] });
+  const ring = FX.el('div', 'ring', document.body);
+  const ch = rb.h * 0.84, cw = Math.min(ch * 0.7, rb.w * 0.36);
+  const n = 8, R = cw * 1.42;
+  Object.assign(ring.style, { left: (rb.x + rb.w / 2) + 'px', top: (rb.y + rb.h / 2) + 'px', width: '0px', height: '0px' });
+  const cards = Array.from({ length: n }, (_, i) => {
+    const c = FX.el('div', 'rc', ring);
+    Object.assign(c.style, { width: cw + 'px', height: ch + 'px', left: (-cw / 2) + 'px', top: (-ch / 2) + 'px' });
+    const ph = FX.photo(c, `../photos/nb-0${i + 1}.jpg`);
+    c.dk = FX.el('div', 'dk', c);
+    return c;
+  });
+  const t0 = 0.0, t1 = FX.D - 0.25;
+  FX.on(t => {
+    const k = span(t, t0, t1);
+    const turns = 1.15;
+    const ang = -360 * turns * E.out3(k) + 22.5 * 0;    // тормозит к концу
+    const kin = E.out3(span(t, 0.05, 0.6));
+    ring.style.transform = `perspective(${(rb.w * 2.2).toFixed(0)}px) translateZ(${(-R).toFixed(1)}px) rotateX(${lerp(-25, -6, kin).toFixed(2)}deg) rotateY(${ang.toFixed(2)}deg) scale(${lerp(0.6, 1, kin).toFixed(3)})`;
+    cards.forEach((c, i) => {
+      const a = i * 360 / n;
+      c.style.transform = `rotateY(${a}deg) translateZ(${R.toFixed(1)}px)`;
+      const rel = ((a + ang) % 360 + 360) % 360;
+      const cos = Math.cos(rel * Math.PI / 180);
+      c.dk.style.opacity = (0.75 * (1 - (cos + 1) / 2)).toFixed(3);
+      c.style.opacity = (span(t, 0.05 + i * 0.03, 0.25 + i * 0.03) * span(cos, 0.62, 0.86)).toFixed(3);  // боковые — тают: карусель не выходит за зону
+    });
+  });
+
+  // фильтры
+  const fb = FX.box({ tall: [0, 0.855, 1, 0.94], sq: [0, 0.865, 1, 0.97], wide: [0, 0.8, 0.5, 0.92] });
+  const fl = FX.el('div', 'filters', document.body);
+  Object.assign(fl.style, { left: fb.x + 'px', top: fb.y + 'px', width: fb.w + 'px', height: fb.h + 'px',
+    justifyContent: FX.L === 'wide' ? 'flex-start' : 'center' });
+  fl.style.fontSize = Math.min(fb.h * 0.42, fb.w / 23) + 'px';
+  const names = ['РАЙОН', 'КОМНАТЫ', 'БЮДЖЕТ'];
+  const tW = FX.w('желания') - 0.05, tB = FX.w('бюджет') - 0.05;
+  const when = [tW, (tW + tB) / 2, tB];
+  const chips = names.map((nm, i) => {
+    const c = FX.el('div', 'fchip', fl, `<span class="fill"></span><span class="ci">${FX.icon.check('#fff', 16)}</span><span>${nm}</span>`);
+    c.ck = c.querySelector('.ck'); c.fill = c.querySelector('.fill');
+    return c;
+  });
+  FX.init(() => chips.forEach(c => { c.ck.L = c.ck.getTotalLength(); c.ck.style.strokeDasharray = c.ck.L; }));
+  FX.on(t => chips.forEach((c, i) => {
+    const ka = span(t, 0.5 + i * 0.08, 0.85 + i * 0.08);
+    set(c, { y: lerp(26, 0, E.back(ka)), o: ka });
+    const k = span(t, when[i], when[i] + 0.3);
+    set(c.fill, { sx: E.out4(k) });
+    c.ck.style.strokeDashoffset = ((c.ck.L || 100) * (1 - E.out3(span(t, when[i] + 0.1, when[i] + 0.35)))).toFixed(1);
+    c.style.borderColor = k > 0.5 ? '#FF4242' : 'rgba(255,255,255,.35)';
+  }));
+
+  FX.captions(document.body, {
+    box: { tall: [0, 0.085, 1, 0.3], sq: [0, 0.1, 1, 0.32], wide: [0, 0.14, 0.48, 0.76] },
+    align: FX.L === 'wide' ? 'left' : 'center', accent: ['недвижимость', 'желания', 'бюджет'],
+    size: { tall: 100, sq: 96, wide: 112 },
+  });
+
+  FX.slantIn(['#FF4242', '#191919'], 0.4, 1);
+  FX.slantOut(['#191919', '#FF4242'], 0.4, -1);
+})();
+</script>

@@ -1,0 +1,10 @@
+# ИМЯ в data-cut → ключ кэша картинки Kie (assets/images/<ключ>.cut.png; происхождение — assets.yaml)
+GIFT a35699b2d0247090
+CROWN 3f9a5ea8fdb9874b
+WATCH d603e228a30b5f54
+FOLDER 8a10168fa5dcf02c
+LAPTOP 8105b48c6efdeb54
+GEARS 76880adf1f83fabf
+HAMMER e3b5b2f14533773c
+SLEDGE 705ccc1a3ec58d4d
+PIE 75217d9f504c3314

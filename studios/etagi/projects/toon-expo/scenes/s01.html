@@ -1,0 +1,75 @@
+<!-- s01 — крючок: «Планируете купить | недвижимость | в Армении?»
+     удар → красный знак-«скат» растёт маской и открывает ЖК с видом на Арарат; слова влетают; конец — вспышка-зум -->
+<style>
+  #bg { background: #0D0D0E; }
+  .mark { position: absolute; background: #FF4242; }
+  .frame-c { position: absolute; width: 70px; height: 70px; border: 6px solid #fff; opacity: .9; }
+</style>
+<script>
+(() => {
+  const { S, set, k, span, lerp, E, W: Wd, H: Hd } = FX;
+  const bg = FX.$('#bg');
+  const zoom = FX.el('div', 'full bleed', bg);                 // всё, что «влетает» во вспышку
+  const rim = FX.el('div', 'full bleed', zoom);                 // красный кант знака
+  rim.style.background = '#FF4242';
+  const win = FX.el('div', 'full bleed', zoom);                 // окно-знак с фото
+  const ph = FX.photo(win, '../photos/ararat-view.jpg', 'bleed');
+  ph.img.style.objectPosition = FX.L === 'wide' ? '50% 40%' : '56% 50%';
+  FX.kb(ph, 0, FX.D, { s: 1.16, x: 0 }, { s: 1.0, x: FX.L === 'wide' ? 0 : -40 });
+  const shade = FX.el('div', 'full bleed shade-t', zoom);
+  const vig = FX.el('div', 'full bleed vignette', zoom);
+
+  // знак растёт из центра: 0–0.14 появление, 0.18–0.8 — маска на весь кадр
+  const cx = Wd / 2, cy = Hd * (FX.L === 'wide' ? 0.5 : 0.56);
+  const size = t => {
+    const s0 = Math.min(Wd, Hd) * 0.26;
+    const kin = E.back2(span(t, 0.0, 0.16));
+    const kg = E.inExpo(span(t, 0.2, 0.78));
+    return s0 * kin + kg * Math.max(Wd, Hd) * 4.2;
+  };
+  FX.on(t => {
+    const s = size(t);
+    rim.style.clipPath = FX.houseClip(cx, cy, s * 1.07 + 14);
+    win.style.clipPath = FX.houseClip(cx, cy + s * 0.012, s * 0.86);
+    set(win, { o: span(t, 0.06, 0.14) });
+    set(shade, { o: 0.2 + 0.5 * span(t, 0.3, 0.8) });
+    set(rim, { o: 1 - span(t, 0.7, 0.85) });
+  });
+
+  // уголки видоискателя по безопасной зоне
+  const st = FX.stage, m = 6;
+  [[0, 0, 'top left'], [1, 0, 'top right'], [0, 1, 'bottom left'], [1, 1, 'bottom right']].forEach(([fx, fy], i) => {
+    const c = FX.el('div', 'frame-c', document.body);
+    Object.assign(c.style, { left: (st.x0 + fx * (st.w - 70)) + 'px', top: (st.y0 + fy * (st.h - 70)) + 'px',
+      borderRight: fx ? '' : 'none', borderLeft: fx ? 'none' : '', borderBottom: fy ? '' : 'none', borderTop: fy ? 'none' : '' });
+    if (fx) c.style.borderLeft = 'none'; else c.style.borderRight = 'none';
+    if (fy) c.style.borderTop = 'none'; else c.style.borderBottom = 'none';
+    FX.on(t => set(c, { o: span(t, 0.55 + i * 0.05, 0.75 + i * 0.05) * 0.9, s: lerp(1.4, 1, E.out3(span(t, 0.55 + i * 0.05, 0.85 + i * 0.05))) }));
+  });
+
+  const cap = FX.captions(document.body, {
+    box: { tall: [0.02, 0.03, 0.98, 0.5], sq: [0.03, 0.03, 0.97, 0.56], wide: [0.0, 0.06, 0.62, 0.94] },
+    align: FX.L === 'wide' ? 'left' : 'center', groups: [[0, 2]], accent: ['недвижимость'],
+    size: { tall: 120, sq: 128, wide: 150 }, valign: FX.L === 'wide' ? 'center' : 'top',
+  });
+  // «?» — подпрыгивает
+  FX.on(t => {
+    const sp = cap.groups[0].spans.at(-1);
+    if (!sp) return;
+    const a = FX.w('армении') + 0.25;
+    sp.ct.style.display = 'inline-block';
+    sp.ct.style.transform = `rotate(${(Math.sin(span(t, a, a + 0.6) * Math.PI * 3) * 4 * (1 - span(t, a, a + 0.6))).toFixed(2)}deg)`;
+  });
+
+  // конец: зум-удар во вспышку
+  FX.on(t => {
+    const kz = E.in3(span(t, FX.D - 0.24, FX.D));
+    set(zoom, { s: 1 + 0.18 * kz });
+    set(cap.cap, { s: 1 + 0.35 * kz, o: 1 - kz * 0.6 });
+  });
+  // вспышка к склейке: полный цвет уже на последнем кадре сцены (FX.flashOut доходит лишь до ~80 %)
+  const flash = FX.el('div', 'full bleed', FX.$('#tr'));
+  flash.style.background = '#FFFFFF'; flash.style.zIndex = 70;
+  FX.on(t => FX.set(flash, { o: FX.E.in2(FX.span(t, FX.D - 0.22, FX.D - 0.045)) }));
+})();
+</script>

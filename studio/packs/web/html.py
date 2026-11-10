@@ -5,6 +5,7 @@ words [{w, t0, t1}], vars (params.vars), area и safe (рабочая зона �
 В :root — переменные `--dur`, `--b0`…`--bN` (начала битов, `s`), `--e0`… (концы), `--v-<имя>` (params.vars),
 цвета палитры `--c-<имя>` (`--c-accent`, `--c-text`…) и шрифт `--font` (семейство `studio`, файлы стиля):
 `animation-delay: var(--b1)` — анимация со второго бита. Свой ход времени — `window.seek = (t, S) => {…}`.
+Звуки под движение — `window.sfx = () => [[t, имя], …]` (имена — studio/sfx.py), их кладёт в дорожку assemble.
 Фон страницы — прозрачный: под ней наш фон, над ней — субтитры.
 """
 from __future__ import annotations
@@ -71,6 +72,18 @@ class HtmlScene(Template):
         if k < 1:
             img.putalpha(img.getchannel("A").point(lambda a: int(a * k + 0.5)))
         return img
+
+    def sfx_events(self):
+        """Звуки под движение (studio/sfx.py): страница объявляет `window.sfx = () => [[t, имя], …]`, t — время
+        сцены в секундах (обычно — старты её CSS-анимаций). Без `window.sfx` в тексте страницы Chromium не нужен.
+        audio.sfx_events создаёт шаблон без setup() (его зовёт рендер) — здесь он лениво."""
+        if not hasattr(self, "file"):
+            self.setup()
+        if "window.sfx" not in self.file.read_text(encoding="utf-8", errors="ignore"):
+            return []
+        pg = B.page(self.key, self.file, self.W, self.H, self.scene, self.css)
+        ev = pg.evaluate("() => typeof window.sfx === 'function' ? window.sfx() : []") or []
+        return [(float(t), str(n)) for t, n in ev]
 
     def draw(self, img, t, T):
         lay = self.layer(t)

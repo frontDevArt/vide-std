@@ -1,0 +1,54 @@
+<!-- s04 — пример 1: «Что он умеет? | Инженер дал ему пустую папку. | Через восемь дней |
+     в ней была операционная система. | Она запускается на ноутбуке.»
+     Идея: из пустоты — система. Папка слева, сверху восемь клеток-дней под маркером, из папки вылетают части
+     системы, внизу справа — ноутбук и штамп.
+     b0: ярлык; b1: папка, «пусто»; b2: клетки и «8 дней»; b3: фишки системы; b4: ноутбук, штамп. -->
+<style>
+  .day { position: absolute; top: 118px; width: 70px; height: 70px; font-family: PTMono; font-size: 30px; color: var(--navy);
+         display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 6px rgba(60,45,20,.16); }
+  .day s { position: absolute; left: 8px; right: 8px; top: 31px; height: 8px; background: var(--terra-dk); border-radius: 4px; transform-origin: 0 50%;
+           mix-blend-mode: multiply; animation: strike .2s ease-out var(--d) both; }
+  @keyframes strike { from { transform: rotate(-38deg) scaleX(0); } to { transform: rotate(-38deg) scaleX(1); } }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Пример 1</div>
+  <div class="cross" style="left: 690px; top: 30px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 20px; top: 250px; width: 60px; height: 60px; --d: calc(var(--b1) + .3s)"></div>
+
+  <!-- восемь дней -->
+  <div id="days"></div>
+  <script>
+    (function () {
+      const box = document.getElementById('days');
+      for (let i = 0; i < 8; i++) {
+        const el = document.createElement('div');
+        el.className = 'day sheet appear';
+        el.style.cssText = `left: ${10 + i * 86}px; --d: calc(var(--b2) + ${(i * 0.07).toFixed(2)}s)`;
+        el.innerHTML = (i + 1) + `<s style="--d: calc(var(--b2) + ${(0.2 + i * 0.07).toFixed(2)}s)"></s>`;
+        box.appendChild(el);
+      }
+    })();
+  </script>
+  <div class="title" style="left: 398px; top: 262px; font-size: 118px; color: var(--terra-dk); --d: calc(var(--b2) + .35s)">8 дней</div>
+
+  <!-- папка: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 16px; top: 330px; width: 350px; height: 300px; --r: -4deg; --d: var(--b1)" data-boil>
+    <img data-cut="FOLDER" data-box="350 300">
+  </div>
+  <div class="abs pop tanp chip shadow" style="left: 110px; top: 296px; --r: -5deg" data-at="пустую" data-boil>пусто</div>
+
+  <!-- части системы вылетают из папки -->
+  <div class="abs pop sheet chip shadow" style="left: 392px; top: 446px; --r: -3deg; --d: calc(var(--b3) + .00s)" data-boil>ядро</div>
+  <div class="abs pop sheet chip shadow" style="left: 536px; top: 420px; --r: 4deg; --d: calc(var(--b3) + .12s)" data-boil>драйверы</div>
+  <div class="abs pop sheet chip shadow" style="left: 420px; top: 520px; --r: 2deg; --d: calc(var(--b3) + .24s)" data-boil>файлы</div>
+  <div class="abs pop sheet chip shadow" style="left: 580px; top: 500px; --r: -2deg; --d: calc(var(--b3) + .36s)" data-boil>окна</div>
+  <div class="abs pop sheet chip shadow" style="left: 400px; top: 594px; --r: -1deg; --d: calc(var(--b3) + .48s)" data-boil>вход в систему</div>
+
+  <!-- ноутбук: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 396px; top: 660px; width: 350px; height: 230px; --r: 3deg; --d: var(--b4)" data-boil>
+    <img data-cut="LAPTOP" data-box="350 230">
+  </div>
+  <div class="stamp" data-at="запускается:0.4" style="left: 30px; top: 716px; font-size: 54px; --r: -8deg">Загрузилась</div>
+
+  <div class="src appear" style="top: 908px; --d: calc(var(--b2) + .3s)">Источник: Anthropic — эксперимент инженера: 1000+ субагентов, 8 суток.</div>
+</div>

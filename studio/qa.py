@@ -101,8 +101,16 @@ def run(proj: Project, log=print, fast=False):
         lo, hi = proj.cfg["tts"].get("rate_range", [98, 125])
         chk(lo - 1 <= tl["rate"] <= hi + 1, "Темп естественный",
             f"rate {tl['rate']:.0f} (диапазон {lo}–{hi}); {tl['wpm_speech']} слов/мин в речи")
+        seams = _seams(proj, tl)
+        if seams is None:
+            skip("Стыки речи: фразы не обрываются", "голос fake — тон, а не речь")
+        elif seams:
+            warn("WARN", "Стыки речи: фразы не обрываются", seams)
+        else:
+            chk(True, "Стыки речи: фразы не обрываются", f"{len(lines)} фраз: хвосты затухают, паузы не встык "
+                "(≥ 0,3 c между предложениями, ≥ 0,45 — между сценами)")
     else:
-        for n in ("Слова не обрезаны", "Темп естественный"):
+        for n in ("Слова не обрезаны", "Темп естественный", "Стыки речи: фразы не обрываются"):
             skip(n, "нет речи")
     md = proj.build / "mix"
     I, pk = loudness(final)
@@ -161,7 +169,7 @@ def run(proj: Project, log=print, fast=False):
                   "Субтитры не мелькают (>0.55 c)", "Каждая фраза имеет субтитр в момент начала"):
             skip(n, no_subs)
     else:
-        _check_subs(proj, chk, subs, lines)
+        _check_subs(proj, chk, subs, lines, drawn_subs(proj))
 
     # --- вёрстка: контент сцены в полях кадра (P1.10; с ROADMAP B2 — ❌)
     from .safezone import qa_check
@@ -202,16 +210,82 @@ def run(proj: Project, log=print, fast=False):
     return ok
 
 
-def _check_subs(proj, chk, subs, lines):
+# Тишина до следующей фразы не короче (с): после запятой/двоеточия/тире, после предложения, на склейке сцен.
+# Ниже — следующая фраза «наезжает» (claude-limits 2026-11-09: 0,26 / 0,51 с звучали как обрыв).
+MIN_GAP = {"comma": 0.12, "sentence": 0.3, "scene": 0.45}
+
+
+def min_gap(text, scene_cut):
+    """Нужная тишина после строки text: склейка сцен — scene, строка на , : ; — — comma, иначе sentence."""
+    if scene_cut:
+        return MIN_GAP["scene"]
+    return MIN_GAP["comma"] if text.rstrip()[-1:] in ",:;—–-" else MIN_GAP["sentence"]
+
+
+def _seams(proj, tl):
+    """Стыки речи (2026-11-09, обрывы ElevenLabs на склейках): хвост каждой фразы (tts.tail_issues — оборвана или
+    с чужим началом) и тишина от конца её звука до следующей фразы (min_gap). '' — чисто, иначе причины с решением;
+    None — у fake/none проверять нечего (тон, а не речь)."""
+    from . import tts as T
+    if proj.cfg["tts"]["backend"] in ("fake", "none"):
+        return None
+    cache = proj.bdir("tts")
+    rows = [(s["id"], s["start"] + L["t0"], L) for s in tl["scenes"] for L in s["lines"]]
+    clip, bleed, tight = [], [], []
+    for i, (sid, t0, L) in enumerate(rows):
+        p = cache / L["wav"]
+        if not p.exists():
+            continue
+        x = T.read_wav(p)
+        name = f"{sid} «…{L['text'][-24:]}»"
+        iss = T.tail_issues(x)
+        clip += [name] if "clip" in iss else []
+        bleed += [name] if "bleed" in iss else []
+        if i + 1 < len(rows):
+            gap = rows[i + 1][1] - (t0 + len(x) / T.SR)
+            need = min_gap(L["text"], rows[i + 1][0] != sid)
+            if gap < need - 0.01:
+                tight.append(f"{name} → {gap:.2f} c (нужно ≥ {need:.2f})")
+    out = []
+    if bleed:
+        out.append(f"в конце чужой звук (начало следующей фразы) — {len(bleed)}: {'; '.join(bleed[:4])}"
+                   + (". ElevenLabs: tts.context: false" if proj.cfg["tts"]["backend"] == "elevenlabs" else ""))
+    if clip:
+        out.append(f"оборваны, не затухают — {len(clip)}: {'; '.join(clip[:4])}. Пересинтез этих строк "
+                   "(кэш до среза хвоста −60 dB) или context: false")
+    if tight:
+        out.append(f"следующая фраза почти встык — {len(tight)}: {'; '.join(tight[:4])}. "
+                   "pauses.sentence ≥ 0,35 / scene ≥ 0,5 (как в шаблоне)")
+    return " | ".join(out)
+
+
+def drawn_subs(proj):
+    """Субтитры, которые рисуются в кадре: у сцен, чей шаблон рисует речь сам (`speech_on_screen` — kit.kinetic,
+    проектные), их в кадре нет (render.frame) — остаются только в .srt/.vtt. Признак — у экземпляра шаблона, как в
+    render.frame: проектный шаблон может решать по params сцены."""
+    from .render import make_template, prepare
+    tl, ctx = prepare(proj)
+    return [(s["start"] + c["t0"], s["start"] + c["t1"], c["lines"]) for s in tl["scenes"]
+            if s["subs"] and not getattr(make_template(ctx, s), "speech_on_screen", False) for c in s["subs"]]
+
+
+def _check_subs(proj, chk, subs, lines, drawn=None):
+    """subs — все субтитры (файл .srt/.vtt): наложение и покрытие фраз; drawn — те, что рисуются в кадре
+    (None — все): ширина строк и мелькание — только у них."""
+    drawn = subs if drawn is None else drawn
     f = G.font(S.font_size(proj), "bold")
     maxw = S.max_width(proj)
     ml = int(proj.cfg["subtitles"].get("max_lines", 2))
-    bad = [c for c in subs if not c[2] or len(c[2]) > ml or max(f.getlength(l) for l in c[2]) > maxw]
-    chk(not bad, f"Субтитры: не больше {ml} строк и влезают по ширине", f"{len(subs)} шт." + (f"; плохие: {bad[:3]}" if bad else ""))
+    name = f"Субтитры: не больше {ml} строк и влезают по ширине"
+    if subs and not drawn:
+        chk(True, name, "в кадр не рисуются: речь рисуют сами сцены (speech_on_screen), субтитры — в .srt/.vtt")
+    else:
+        bad = [c for c in drawn if not c[2] or len(c[2]) > ml or max(f.getlength(l) for l in c[2]) > maxw]
+        chk(not bad, name, f"{len(drawn)} шт." + (f"; плохие: {bad[:3]}" if bad else ""))
     ov = [i for i in range(len(subs) - 1) if subs[i][1] > subs[i + 1][0] + 1e-3]
     chk(not ov, "Субтитры не накладываются друг на друга")
-    short = [c for c in subs if c[1] - c[0] < 0.55]
-    chk(len(short) <= max(1, len(subs) // 10), "Субтитры не мелькают (>0.55 c)", f"коротких: {len(short)}")
+    short = [c for c in drawn if c[1] - c[0] < 0.55]
+    chk(len(short) <= max(1, len(drawn) // 10), "Субтитры не мелькают (>0.55 c)", f"коротких: {len(short)}")
     coverage = []
     for (a0, a1, txt, _) in lines:
         cov = any(c[0] <= a0 + 0.15 and c[1] >= a0 + 0.15 for c in subs)

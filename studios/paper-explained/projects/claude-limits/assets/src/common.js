@@ -15,11 +15,17 @@
   st.style.transform = 'scale(' + k + ')';
 
   // подписи: куски не длиннее CAP символов, граница — и на смене бита
-  const CAP = 30, Wd = S.words || [], bt = (S.beats || []).map(b => b.t0);
-  const beatOf = (t) => bt.reduce((i, b0, j) => (t >= b0 - 1e-3 ? j : i), 0);
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
   // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
   const byBeat = [];
-  Wd.forEach((w, i) => { const b = beatOf(w.t0); (byBeat[b] = byBeat[b] || []).push(i); });
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
   const chunks = [];
   byBeat.forEach((ids, b) => {
     if (!ids) return;
@@ -79,6 +85,34 @@
   const FPS2 = 12;
   const all = document.getAnimations.bind(document);
   document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
   const boil = Array.from(document.querySelectorAll('[data-boil]'));
   window.seek = (t) => {
     captions(t);  // подписи — по точному времени речи, не шагом

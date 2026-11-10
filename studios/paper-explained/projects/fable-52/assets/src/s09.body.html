@@ -1,0 +1,56 @@
+<!-- s09 — как забрать: «Сам он не включится: | выберите его в списке моделей. | И заберите в настройках |
+     один бесплатный сброс лимита. | С семнадцатого — | только за отдельные кредиты.»
+     Идея: три шага сверху вниз по диагонали. Список моделей (схема) с обводкой Fable; путь в настройках и кнопка
+     сброса; листок «17, с 11:00 мск» — дальше кредиты.
+     b0: ярлык, список; b1: обводка и галочка; b2: путь в настройках; b3: кнопка, штамп; b4: листок «17»; b5: полоска. -->
+<style>
+  .list { width: 380px; box-sizing: border-box; padding: 18px 0 10px; }
+  .list h4 { margin: 0 24px 10px; font-family: PTMono; font-weight: 400; font-size: 21px; letter-spacing: 5px; color: var(--dim); display: flex; justify-content: space-between; }
+  .list .m { padding: 9px 24px 7px; font-family: Oswald; font-weight: 600; font-size: 40px; line-height: 44px; color: var(--ink); border-top: 1.6px solid rgba(20,18,16,.25); }
+  .list .m.f { color: var(--terra-dk); }
+  .path { padding: 14px 22px 12px; font-family: PTMono; font-size: 25px; color: var(--navy); white-space: nowrap; }
+  .btn { padding: 12px 24px 9px; font-family: Oswald; font-weight: 600; font-size: 38px; color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+  .leaf { width: 204px; box-sizing: border-box; text-align: center; padding-bottom: 8px; }
+  .leaf .mon { background: var(--navy); color: var(--paper-hi); font-family: PTMono; font-size: 19px; letter-spacing: 5px; padding: 6px 0 4px; }
+  .leaf .day { font-family: Oswald; font-weight: 700; font-size: 120px; line-height: 1.02; color: var(--ink); }
+  .leaf .hr { font-family: PTMono; font-size: 25px; color: var(--terra-dk); padding-bottom: 6px; }
+  .after { padding: 14px 24px 10px; }
+  .after b { display: block; font-family: Oswald; font-weight: 700; font-size: 54px; line-height: 1; text-transform: uppercase; white-space: nowrap; color: var(--paper-hi); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Как забрать</div>
+  <div class="cross" style="left: 690px; top: 30px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 210px; width: 70px; height: 70px; --d: calc(var(--b1) + .3s)"></div>
+
+  <!-- 1. список моделей (схема) -->
+  <div class="abs slideL" style="left: 6px; top: 108px; --r: -2deg; --d: calc(var(--b0) + .1s)" data-boil>
+    <div class="shadow"><div class="sheet list" data-torn="b" data-depth="7">
+      <h4><span>МОДЕЛЬ</span><span>схема</span></h4>
+      <div class="m">Opus 5.5</div><div class="m">Sonnet 5.5</div><div class="m">Haiku 5.5</div><div class="m f">Fable 5.2</div>
+    </div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke-linecap="round">
+    <ellipse class="draw" pathLength="1" cx="190" cy="372" rx="184" ry="38" transform="rotate(-3 190 372)" stroke="#C46557" stroke-width="7" style="--d: var(--b1); --dd: .4s"/>
+    <path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="11" style="--d: calc(var(--b1) + .4s); --dd: .25s" d="M404 352 L 432 386 L 486 310"/>
+  </g></svg>
+  <div class="abs pop tanp chip shadow" style="left: 470px; top: 388px; --r: 3deg; --d: calc(var(--b1) + .55s)" data-boil>выбрать вручную</div>
+
+  <!-- 2. настройки и сброс -->
+  <div class="abs slideR" style="left: 250px; top: 462px; --r: 1.5deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="tanp path" data-torn="lr" data-depth="6">Settings → Usage → Limit resets</div></div>
+  </div>
+  <div class="abs pop shadow" style="left: 420px; top: 540px; --r: -2deg; --d: var(--b3)" data-boil><div class="btn">Reset for free</div></div>
+  <div class="stamp" data-at="сброс:0.2" style="left: 220px; top: 548px; font-size: 46px; --r: -8deg">1 сброс</div>
+
+  <!-- 3. с семнадцатого -->
+  <div class="abs drop" style="left: 14px; top: 660px; --r: -5deg; --d: var(--b4)" data-boil>
+    <div class="shadow"><div class="sheet leaf" data-torn="b" data-depth="6"><div class="mon">НОЯБРЬ</div><div class="day">17</div><div class="hr">с 11:00 мск</div></div></div>
+  </div>
+  <div class="abs slideR" style="left: 232px; top: 690px; --r: -1.5deg; --d: var(--b5)" data-boil>
+    <div class="shadow"><div class="after" data-torn="lr" data-depth="8" style="background: var(--grain), var(--terra)"><b>Дальше — кредиты</b></div></div>
+  </div>
+  <div class="abs label appear" style="left: 242px; top: 790px; font-size: 22px; --d: calc(var(--b5) + .3s)">usage credits, сверх подписки</div>
+  <div class="abs label appear" style="left: 242px; top: 826px; font-size: 22px; color: var(--dim); --d: calc(var(--b5) + .5s)">Max и Ultra: 1–3 сброса до 8.03.2027</div>
+
+  <div class="src appear" style="top: 908px; --d: calc(var(--b2) + .3s)">Источник: support.claude.com, «Fable 5.2 launch offers».</div>
+</div>

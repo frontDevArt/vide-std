@@ -1,0 +1,35 @@
+# Происхождение файлов проекта (ROADMAP C2). Фото — из ссылки пользователя на чат ChatGPT
+# (https://chatgpt.com/share/6ae72310-2bfc-83ed-bbb3-d14714d17061, скачаны 2026-11-01 с images.openai.com по просьбе
+# пользователя «используй картинки из ссылки»): рендеры новостроек из каталога am.etagi.com и сайтов застройщиков,
+# фото прошлой выставки Тун Экспо. Права у застройщиков и авторов — показ в рекламе агентства-продавца
+# подтвердить у клиента до публикации (сказано пользователю).
+assets:
+  - {file: assets/etagi.svg, source: "логотип клиента, SVG прислан пользователем 2026-11-01", license: права у клиента (Etagi), by: Etagi}
+  - {file: assets/fonts/Montserrat-VF.ttf, source: github.com/google/fonts (ofl/montserrat), license: OFL-1.1, by: Julieta Ulanovsky}
+  - {file: assets/fonts/Unbounded-VF.ttf, source: assets/fonts студии, license: OFL-1.1, by: NaN}
+  - {file: assets/photos/ararat-view.jpg, source: "ссылка пользователя (ChatGPT) → рендер ЖК с видом на Арарат", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/dusk-tower.jpg, source: "ссылка пользователя (ChatGPT) → рендер ЖК на закате", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/night-aerial.jpg, source: "ссылка пользователя (ChatGPT) → ночной рендер ЖК Skyline", license: рендер застройщика — подтвердить у клиента, by: Renshin}
+  - {file: assets/photos/expo-hall.jpg, source: "ссылка пользователя (ChatGPT) → «TOON EXPO Invest 2026. Metrum Invest-ի մասնակցության ամփոփում»", license: фото с выставки — подтвердить у клиента, by: Metrum Invest}
+  - {file: assets/photos/nb-01.jpg, source: "ссылка пользователя (ChatGPT) → новостройки из каталога am.etagi.com", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-02.jpg, source: "ссылка пользователя (ChatGPT) → новостройки из каталога am.etagi.com", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-03.jpg, source: "ссылка пользователя (ChatGPT) → новостройки из каталога am.etagi.com", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-04.jpg, source: "ссылка пользователя (ChatGPT) → ЖК Լույսեր (Luyser)", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-05.jpg, source: "ссылка пользователя (ChatGPT) → ЖК Skyline", license: рендер застройщика — подтвердить у клиента, by: Renshin}
+  - {file: assets/photos/nb-06.jpg, source: "ссылка пользователя (ChatGPT) → новостройки из каталога am.etagi.com", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-07.jpg, source: "ссылка пользователя (ChatGPT) → новостройки из каталога am.etagi.com", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/photos/nb-08.jpg, source: "ссылка пользователя (ChatGPT) → ЖК Gyurjyan Cascade", license: рендер застройщика — подтвердить у клиента, by: застройщик}
+  - {file: assets/scenes/s01.html, source: "страница сцены, собрана scenes/build.py из scenes/s01.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s02.html, source: "страница сцены, собрана scenes/build.py из scenes/s02.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s03.html, source: "страница сцены, собрана scenes/build.py из scenes/s03.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s04.html, source: "страница сцены, собрана scenes/build.py из scenes/s04.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s05.html, source: "страница сцены, собрана scenes/build.py из scenes/s05.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s06.html, source: "страница сцены, собрана scenes/build.py из scenes/s06.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s07.html, source: "страница сцены, собрана scenes/build.py из scenes/s07.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s08.html, source: "страница сцены, собрана scenes/build.py из scenes/s08.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s09.html, source: "страница сцены, собрана scenes/build.py из scenes/s09.html", license: наш код, by: Video Studio}
+  - {file: assets/scenes/s10.html, source: "страница сцены, собрана scenes/build.py из scenes/s10.html", license: наш код, by: Video Studio}
+  - {file: assets/toon-expo.svg, source: "логотип выставки TOON Real Estate Expo, SVG прислан пользователем 2026-11-01", license: "права у организатора выставки — показ в рекламе подтвердить у клиента", by: TOON Expo}
+  - {file: assets/images/599a1a0182f87806.png, source: Kie AI nano-banana-2 2K, license: Google Gemini API terms (через Kie AI), by: генерация, prompt: 'a friendly team of three real estate consultants, two women and one man in crisp white shirts with small red badges, standing together and smiling in a bright modern office with floor-to-ceiling windows overlooking Yerevan city, Mount Ararat faintly visible in the distance, vertical composition, people in the lower two thirds. photorealistic premium real-estate advertising photography, modern Yerevan Armenia, warm natural daylight, clean composition, white and charcoal tones with small vivid red (#FF4242) accents, shallow depth of field, no text, no letters, no logos, no watermarks', model: nano-banana-2, credits: 12.0, usd: 0.06, task: 6ff60552cba7c3ccde34431212929b6d}
+  - {file: assets/images/79145710f144db02.png, source: Kie AI nano-banana-2 2K, license: Google Gemini API terms (через Kie AI), by: генерация, prompt: 'a real estate consultant in a white shirt with a red lanyard guiding a young couple through a bright modern real estate exhibition hall, pointing at an architectural scale model of white residential towers on a stand, blurred visitors and stands in the background, vertical composition. photorealistic premium real-estate advertising photography, modern Yerevan Armenia, warm natural daylight, clean composition, white and charcoal tones with small vivid red (#FF4242) accents, shallow depth of field, no text, no letters, no logos, no watermarks', model: nano-banana-2, credits: 12.0, usd: 0.06, task: 4a5a7867f8b6c789f0610602922f1511}
+  - {file: assets/images/b218913cbbc2cba8.png, source: Kie AI nano-banana-2 2K, license: Google Gemini API terms (через Kie AI), by: генерация, prompt: 'close-up of a real estate agent''s hand giving shiny apartment keys on a red keychain to a smiling young couple in a bright new empty apartment with large windows and city view, warm sunlight, vertical composition. photorealistic premium real-estate advertising photography, modern Yerevan Armenia, warm natural daylight, clean composition, white and charcoal tones with small vivid red (#FF4242) accents, shallow depth of field, no text, no letters, no logos, no watermarks', model: nano-banana-2, credits: 12.0, usd: 0.06, task: 728a2abad3cd9bedf598eed4623c68af}

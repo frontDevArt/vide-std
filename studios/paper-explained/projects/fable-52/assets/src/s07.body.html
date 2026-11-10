@@ -1,0 +1,46 @@
+<!-- s07 — честно: «И честно: | все эти цифры — от самой Антропик. | Независимых замеров пока мало.»
+     Идея: кто мерил. Два листа: заполненная таблица со штампом «замеры автора» и почти пустой лист «независимые».
+     Разрыв ритма: без предмета-вырезки, без цифр.
+     b0: ярлык, заголовок; b1: лист с таблицей, штамп; b2: второй лист, пометка рукой. -->
+<style>
+  .tbl { width: 400px; height: 540px; box-sizing: border-box; padding: 24px 26px; }
+  .tbl h4, .empty h4 { margin: 0 0 18px; font-family: PTMono; font-weight: 400; font-size: 24px; letter-spacing: 5px; color: var(--navy); }
+  .tbl .r { display: flex; gap: 14px; margin-bottom: 20px; }
+  .tbl .r i { height: 20px; background: rgba(20,18,16,.78); }
+  .tbl .r u { height: 20px; background: var(--terra); }
+  .tbl .by { position: absolute; left: 26px; bottom: 22px; font-family: PTSerif; font-style: italic; font-size: 22px; color: var(--dim); }
+  .empty { width: 350px; height: 440px; box-sizing: border-box; padding: 24px 26px; border: 3px dashed rgba(48,53,60,.6); background: var(--grain), rgba(251,248,239,.7); }
+  .empty .r { height: 20px; margin-bottom: 20px; border: 2px dashed rgba(48,53,60,.35); box-sizing: border-box; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Честно</div>
+  <div class="title" style="left: 300px; top: 14px; font-size: 150px; color: var(--navy); --d: calc(var(--b0) + .15s)">Цифры</div>
+  <div class="cross" style="left: 20px; top: 780px; --d: calc(var(--b1) + .3s)"></div>
+  <div class="dot" style="left: 640px; top: 840px; width: 80px; height: 80px; --d: calc(var(--b2) + .3s)"></div>
+
+  <!-- лист с таблицей -->
+  <div class="abs slideL" style="left: 14px; top: 190px; --r: -3deg; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="sheet tbl" data-torn="b" data-depth="8">
+      <h4>БЕНЧМАРКИ</h4>
+      <div class="r"><i style="width: 150px"></i><u style="width: 150px"></u></div>
+      <div class="r"><i style="width: 110px"></i><u style="width: 190px"></u></div>
+      <div class="r"><i style="width: 170px"></i><u style="width: 120px"></u></div>
+      <div class="r"><i style="width: 130px"></i><u style="width: 170px"></u></div>
+      <div class="r"><i style="width: 160px"></i><u style="width: 140px"></u></div>
+      <div class="r"><i style="width: 120px"></i><u style="width: 180px"></u></div>
+      <div class="r"><i style="width: 150px"></i><u style="width: 130px"></u></div>
+      <div class="by">мерила: Anthropic</div>
+    </div></div>
+  </div>
+  <div class="stamp" data-at="самой" style="left: 30px; top: 520px; font-size: 48px; border-width: 6px; --r: -10deg">Замеры автора</div>
+
+  <!-- второй лист: независимые -->
+  <div class="abs slideR" style="left: 424px; top: 330px; --r: 4deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="empty">
+      <h4>НЕЗАВИСИМЫЕ</h4>
+      <div class="r" style="width: 240px"></div><div class="r" style="width: 190px"></div>
+    </div></div>
+  </div>
+  <div class="abs pop hand" style="left: 462px; top: 560px; font-size: 76px; --r: -6deg" data-at="мало" data-sfx="marker">пока мало</div>
+  <div class="abs label appear" style="left: 454px; top: 668px; font-size: 21px; --r: 4deg" data-at="мало:0.3">модель вышла 9 ноября</div>
+</div>

@@ -1,0 +1,9 @@
+# Библиотека музыки студии (ROADMAP C3): треки лежат рядом, в проекте — `music: {file: <имя>}`.
+# У каждого трека известны источник и лицензия: без них validate предупреждает, qa — ❌.
+tracks:
+  - file: toon-drive.wav
+    title: Toon Drive
+    source: синтез кодом студии, make_track.py рядом (2026-11-01), без сэмплов
+    license: CC0 (наш код)
+    by: Video Studio
+    bpm: 124
