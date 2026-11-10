@@ -274,12 +274,14 @@ def estimate(proj, jobs: list[Job] | None = None) -> dict:
     st = settings(proj.cfg)
     jobs = plan(proj) if jobs is None else jobs
     todo = [j for j in jobs if not j.out.exists()]
-    paid = [j for j in todo if st["backend"] == "kie" and not j.local]
+    kie = [j for j in todo if st["backend"] == "kie" and not j.local]
+    wait = [j for j in kie if pending_of(proj, j)]  # задача уже оплачена — осталось скачать
+    paid = [j for j in kie if j not in wait]
     credits = round(sum(j.credits for j in paid), 2)
     usd = round(credits / CREDITS_PER_USD, 4)
     return {"todo": todo, "cached": len(jobs) - len(todo), "credits": credits, "usd": usd,
             "budget_usd": st["budget_usd"], "over": usd > st["budget_usd"],
-            "unpriced": sorted({j.model for j in paid if not j.priced})}
+            "unpriced": sorted({j.model for j in paid if not j.priced}), "pending": wait}
 
 
 def prompt_text(req: dict, st: dict) -> str:
@@ -508,6 +510,92 @@ class _Transient(ImagesUnavailable):
     """Сбой сети или 5xx — опрос статуса можно повторить."""
 
 
+class _TaskFailed(ImagesUnavailable):
+    """Задача Kie упала (state fail) — результата не будет, запись о ней не нужна."""
+
+
+class ResultPending(ImagesUnavailable):
+    """Задача оплачена и готова у Kie, а файл результата не скачан (хост файлов недоступен из этой сети). Задача
+    записана в pending.json — повтор `images` докачает без новой оплаты."""
+
+
+# Незавершённые задачи Kie: assets/images/pending.json — {"<шаг>:<ключ>": {task, model, date, where}}. Запись
+# появляется сразу после createTask (деньги уже списаны) и уходит, когда файл лёг в кэш или задача упала. Пока она
+# есть, работа не оплачивается заново: повтор доопрашивает ту же задачу и качает её результат. Файл можно унести
+# вместе с проектом (git) и докачать на другой машине — результат у Kie хранится KIE_KEEP_DAYS.
+PENDING = "pending.json"
+KIE_KEEP_DAYS = 14  # docs.kie.ai: «Generated files are kept for 14 days»
+KIE_RESULT_HOSTS = ("tempfile.aiquickdraw.com",)  # откуда качаются resultUrls — проба до оплаты (kie_hosts_blocked)
+
+
+def _today():
+    import datetime
+    return datetime.date.today()
+
+
+def pending(proj) -> dict:
+    try:
+        d = json.loads((proj.root / DIR / PENDING).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return d if isinstance(d, dict) else {}
+
+
+def pending_until(rec: dict):
+    """До какого дня результат задачи лежит у Kie."""
+    import datetime
+    return datetime.date.fromisoformat(rec["date"]) + datetime.timedelta(days=KIE_KEEP_DAYS)
+
+
+def pending_of(proj, job: Job) -> dict | None:
+    """Оплаченная незавершённая задача работы; просроченная (результат у Kie уже удалён) — не в счёт."""
+    rec = pending(proj).get(f"{job.step}:{job.key}")
+    try:
+        return rec if rec["task"] and pending_until(rec) >= _today() else None
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _pending_set(proj, job: Job, rec: dict | None):
+    d = pending(proj)
+    if rec is None:
+        d.pop(f"{job.step}:{job.key}", None)
+    else:
+        d[f"{job.step}:{job.key}"] = rec
+    f = proj.root / DIR / PENDING
+    if d:
+        f.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(d, f)
+    else:
+        f.unlink(missing_ok=True)
+
+
+def source_of(proj, job: Job) -> Path | None:
+    """Картинка из кэша, которая нужна работе на вход (база state_b, вход раскладки и вырезания); None — не нужна."""
+    if job.step == "image":
+        return path(proj, job.base) if job.base else None
+    return path(proj, job.key)
+
+
+def kie_hosts_blocked() -> list[str]:
+    """Хосты файлов результата Kie, до которых из этой сети не достучаться (сетевой фильтр рвёт соединение) —
+    проверка до оплаты. Любой HTTP-ответ, хоть 404, — хост доступен. Фильтр не обходим: генерация — из другой сети
+    или `images --defer` (оплатить здесь, скачать позже)."""
+    import urllib.error
+    import urllib.request
+    bad = []
+    for h in KIE_RESULT_HOSTS:
+        try:
+            with _urlopen(urllib.request.Request(f"https://{h}/", method="HEAD", headers={"User-Agent": "vide-std"}),
+                          15):
+                pass
+        except urllib.error.HTTPError:
+            pass
+        except (urllib.error.URLError, TimeoutError, OSError):
+            bad.append(h)
+    return bad
+
+
 def _kie_key(ws=None) -> str:
     k = workspace.secret("KIE_API_KEY", ws)
     if not k:
@@ -583,10 +671,21 @@ def kie_upload(file, ws=None) -> str:
 
 def kie_task(model: str, inp: dict, ws=None, timeout: float = KIE_TIMEOUT, poll: float = KIE_POLL) -> dict:
     """createTask → опрос recordInfo до success / fail / таймаута → {task, credits, result} (result — resultJson)."""
+    return kie_wait(kie_create(model, inp, ws), model, ws, timeout, poll)
+
+
+def kie_create(model: str, inp: dict, ws=None) -> str:
+    """createTask → taskId. Платно и не повторяется: id сразу записать (pending.json), дальше — только kie_wait."""
     tid = (_kie_call(f"{KIE_API}/jobs/createTask", body={"model": model, "input": inp}, method="POST", ws=ws)
            or {}).get("taskId")
     if not tid:
         raise ImagesUnavailable(f"Kie createTask {model}: нет taskId в ответе")
+    return tid
+
+
+def kie_wait(tid: str, model: str, ws=None, timeout: float = KIE_TIMEOUT, poll: float = KIE_POLL) -> dict:
+    """Опрос recordInfo задачи до success / fail / таймаута → {task, credits, result}. Бесплатно — и для задачи
+    прошлого запуска."""
     t0, fails, state = _clock(), 0, None
     while True:
         _sleep(poll)
@@ -603,7 +702,7 @@ def kie_task(model: str, inp: dict, ws=None, timeout: float = KIE_TIMEOUT, poll:
             return {"task": tid, "credits": d.get("creditsConsumed"),
                     "result": json.loads(res) if isinstance(res, str) else res}
         if state == "fail":
-            raise ImagesUnavailable(f"Kie задача {tid} ({model}) упала: {d.get('failCode')} {d.get('failMsg')}")
+            raise _TaskFailed(f"Kie задача {tid} ({model}) упала: {d.get('failCode')} {d.get('failMsg')}")
         if _clock() - t0 > timeout:
             raise ImagesUnavailable(f"Kie задача {tid} ({model}): нет результата за {timeout:.0f} с (состояние "
                                     f"{state}); кредиты могли списаться — сверить баланс")
@@ -616,7 +715,7 @@ def _download(url: str) -> bytes:
         with _urlopen(urllib.request.Request(url, headers={"User-Agent": "vide-std"}), 180) as r:
             return r.read()
     except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
-        raise ImagesUnavailable(f"не скачать результат Kie {url.split('?')[0]}: {getattr(e, 'reason', e)}")
+        raise ResultPending(f"не скачать результат Kie {url.split('?')[0]}: {getattr(e, 'reason', e)}")
 
 
 def kie_input(proj, job: Job, st: dict, refs: list) -> dict:
@@ -638,31 +737,54 @@ def kie_input(proj, job: Job, st: dict, refs: list) -> dict:
     return inp
 
 
-def _kie_one(job: Job, model: str, inp: dict, ws) -> dict:
-    r = kie_task(model, inp, ws)
+def _kie_result(proj, job: Job, make_inp, ws) -> dict:
+    """Результат задачи работы → {task, credits, result, resumed}. Есть незавершённая задача (pending.json) — доопрос
+    её же, без входов и без оплаты; иначе createTask (make_inp() — вход модели: загрузки делаются только тут)."""
+    rec = pending_of(proj, job)
+    if rec:
+        tid = rec["task"]
+    else:
+        tid = kie_create(job.model, make_inp(), ws)
+        _pending_set(proj, job, {"task": tid, "model": job.model, "date": _today().isoformat(), "where": job.where})
+    try:
+        r = kie_wait(tid, job.model, ws)
+    except _TaskFailed:
+        _pending_set(proj, job, None)
+        raise
+    return {**r, "resumed": bool(rec)}
+
+
+def _kie_one(proj, job: Job, make_inp, ws) -> dict:
+    r = _kie_result(proj, job, make_inp, ws)
     urls = r["result"].get("resultUrls") or []
     if not urls:
+        _pending_set(proj, job, None)
         raise ImagesUnavailable(f"Kie задача {r['task']}: нет resultUrls")
     _save_png(_download(urls[0]), job.out)
-    return {"credits": r["credits"], "task": r["task"], "files": [job.out]}
+    _pending_set(proj, job, None)
+    return {"credits": r["credits"], "task": r["task"], "files": [job.out], "resumed": r["resumed"]}
 
 
 def _kie_job(proj, job: Job, st: dict, ws) -> dict:
     if job.step == "image":
-        refs = [kie_upload(path(proj, job.base), ws)] if job.base else []  # «та же сцена, но…»: база — первой
-        if st.get("reference"):
-            ref = proj.root / st["reference"]
-            if not ref.exists():
-                raise ImagesUnavailable(f"images.reference: нет файла {st['reference']}")
-            refs.append(kie_upload(ref, ws))
-        return _kie_one(job, job.model, kie_input(proj, job, st, refs), ws)
-    src = kie_upload(path(proj, job.key), ws)
+        def inp():
+            refs = [kie_upload(path(proj, job.base), ws)] if job.base else []  # «та же сцена, но…»: база — первой
+            if st.get("reference"):
+                ref = proj.root / st["reference"]
+                if not ref.exists():
+                    raise ImagesUnavailable(f"images.reference: нет файла {st['reference']}")
+                refs.append(kie_upload(ref, ws))
+            return kie_input(proj, job, st, refs)
+        return _kie_one(proj, job, inp, ws)
     if job.step == "cutout":
-        return _kie_one(job, job.model, {"image": src}, ws)
-    r = kie_task(job.model, {"image_url": src, "prompt": "Separate into layers: " + "; ".join(job.req["layers"]) + ".",
-                             "size": st["resolution"], "output_format": "png"}, ws)
+        return _kie_one(proj, job, lambda: {"image": kie_upload(path(proj, job.key), ws)}, ws)
+    r = _kie_result(proj, job, lambda: {
+        "image_url": kie_upload(path(proj, job.key), ws),
+        "prompt": "Separate into layers: " + "; ".join(job.req["layers"]) + ".",
+        "size": st["resolution"], "output_format": "png"}, ws)
     data = (r["result"].get("resultObject") or {}).get("layers_data") or []
     if not data:
+        _pending_set(proj, job, None)
         raise ImagesUnavailable(f"Kie задача {r['task']}: нет layers_data в ответе раскладки")
     d = job.out.parent
     d.mkdir(parents=True, exist_ok=True)
@@ -678,7 +800,8 @@ def _kie_job(proj, job: Job, st: dict, ws) -> dict:
         else:
             meta["base"] = name
     _write_json(meta, job.out)
-    return {"credits": r["credits"], "task": r["task"], "files": files}
+    _pending_set(proj, job, None)
+    return {"credits": r["credits"], "task": r["task"], "files": files, "resumed": r["resumed"]}
 
 
 # ---------------------------------------------------------------- rembg (локально, tools/rembg-venv)
