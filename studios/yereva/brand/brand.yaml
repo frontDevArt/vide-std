@@ -1,0 +1,34 @@
+# Бренд-кит студии "Yereva" (ROADMAP A2). Формат и «свой стиль по референсу» — docs/BRAND.md.
+# Референс — логотип (прототип Gemini 2026-10-28, перерисован кодом: logo/make_logo.py → logo/out/).
+# Цвета логотипа сняты пипеткой: синий #2266ED, почти чёрный #1A1A18. Фон роликов — тёмно-синий (выбор пользователя
+# 2026-10-28 из 4 вариантов: графит «мрачно», светлый и фирменный синий ломают субтитры tiktok), логотип — logo-light.
+name: "Yereva"
+base: neon                 # встроенная палитра-основа: neon | calm | lab (недостающие ключи — отсюда)
+palette:                   # роль → #RRGGBB; good/warn/bad не совпадают с акцентами
+  bg: "#0F1F4B"            # глубокий синий логотипа
+  bg_top: "#1D3A80"
+  bg_bot: "#0A1638"
+  surface: "#1B2D63"       # карточки, панели
+  text: "#FFFFFF"
+  dim: "#AEBBDA"
+  accent: "#5B9BFF"        # синий логотипа, светлее: #2266ED на синем фоне не читается
+  accent2: "#9EC1FF"
+  good: "#34C77B"
+  warn: "#F5B83D"
+  bad: "#F0524F"
+  neutral: "#7F8DB0"        # не ближе к accent2: вердикт «нет данных» должен отличаться
+  ink: "#0F1F4B"
+fonts:                     # Montserrat — выбор пользователя 2026-10-28 из пяти (геометрия как у надписи логотипа Outfit,
+                           # в котором нет кириллицы); файл с github.com/google/fonts (ofl/montserrat)
+  head: {file: Montserrat-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-montserrat.txt)}
+  num: {file: Montserrat-VF.ttf, license: OFL-1.1 (brand/fonts/OFL-montserrat.txt)}
+  mono: {file: JetBrainsMono-VF.ttf, license: OFL-1.1 (assets/fonts/OFL-jetbrainsmono.txt)}
+logo: {light: logo-light.png, dark: logo-dark.png}   # light — для тёмного фона; копии logo/out/
+background: gradient       # lab | gradient | solid | {type: image, file: photo.jpg, dim: 0.45}
+camera: false
+motion: {transition: wipe, bg: 2.5}   # шторка между сценами, пятна фона в 2,5 раза живее (выбор 2026-10-28: «мало motion»)
+subs: tiktok               # karaoke | plate | tiktok (крупные, для вертикали)
+shape: {radius: 20, line: 3}   # геометрия логотипа: строгие грани, небольшой радиус
+cta: {text: Написать в директ, url: "@yereva.am"}
+voice:
+  tone: уверенный, спокойный, на «вы»; без жаргона SMM и обещаний «вирусности» — заявки и цифры

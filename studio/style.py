@@ -162,6 +162,11 @@ class Style:
         return dict(self.brand["shape"]) if self.brand else {}
 
     @property
+    def motion(self):
+        """Движение бренда: {transition: none | wipe, bg: скорость пятен фона}; пусто — без кита или без ключа motion."""
+        return dict((self.brand or {}).get("motion") or {})
+
+    @property
     def key(self):
         return (self.palette, self.mood, self.overrides, self.font, self.kit) + ((self.subs_mode,) if self.subs_mode else ())
 

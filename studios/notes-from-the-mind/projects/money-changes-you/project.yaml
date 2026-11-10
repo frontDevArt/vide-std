@@ -1,0 +1,92 @@
+# Бриф: briefs/money-changes-you.md (Myth on Trial, deep-dive ~27 мин; радар 2026-W43 #10). Канал Notes From The Mind.
+# Итоговый вердикт HALF-TRUE; подпункт «богатые злее/нечестнее» — MYTH (глава 3).
+schema_version: 1
+title: "Does Money Change You? What Researchers Actually Found"
+topic: "Is it true that money changes people — that a raise or sudden wealth rewrites your personality?"
+audience: >-
+  Взрослые англоязычные зрители канала, работают и получают зарплату, без научной подготовки. Вынести: после роста
+  дохода личность сдвигается, но крошечно (≤ 0,06 SD) и временно; «богатые злее» — громкие маленькие опыты, не
+  повторившиеся на больших данных; связь двусторонняя — добросовестность и спокойствие сами ведут к росту дохода.
+kind: explainer
+language: en
+format: horizontal
+platform: youtube
+fps: 30
+target_duration: null     # ~27 минут по речи (~5 100 слов при замере ~190 слов/мин); 6 глав по 4–5 мин
+
+tts:
+  backend: elevenlabs     # голос канала; ключ и голос — только в .env
+  voice: auto             # ELEVENLABS_VOICE_ID
+  rate: 100               # числом, как у канала (auto = повторный платный синтез)
+  rate_range: [95, 115]
+
+pauses:
+  start: 0.45
+  comma: 0.18
+  sentence: 0.40
+  scene: 0.55
+  end: 0.6
+
+style:
+  palette: lab
+  mood: deep              # glow_cool #2BB3C9, glow_warm #6D7CFF, accent2 #A5C8FF (лёд) — холодный «измерительный» тон
+  font: Inter Display
+
+music:
+  enabled: true
+  level_db: -14           # под голос ElevenLabs
+  duck: true
+
+sfx:
+  enabled: true
+
+subtitles:
+  enabled: true
+  max_lines: 1
+  size: 36
+
+loudness: -14
+
+avoid:
+  - "реальные люди (знаменитости, миллиардеры, конкретные победители лотерей) — только учёные как авторы"
+  - "медицина и диагнозы; политика неравенства и налогов"
+  - "годы и авторы в речи — только в плашке источника и в описании (решение канала 2026-10-26)"
+  - "«science proved», «science says»"
+  - "не смешивать с темой «деньги и счастье» ($75 000) — одна фраза про лотерею и довольство жизнью"
+  - "не больше ~7 слов в фокусе: подписи короткие, текст не дублирует озвучку (STYLE §3); подписи каналов пульта не считаются"
+
+done_means:
+  - "подвердикт MYTH (ch03) и итог HALF-TRUE (ch06) — словами и штампом"
+  - "каждая цифра в кадре = источник = озвучка; все (?) из брифа закрыты до голоса главы"
+  - "пульт личности (lab_mixer) проходит через весь ролик, состояние фейдеров — через state"
+  - {final_hold: 1.5}
+
+chapters: [ch01, ch02, ch03, ch04, ch05, ch06]
+
+package:
+  description: >-
+    They say money changes people. One of the biggest analyses yet followed more than a hundred thousand working adults for
+    up to twenty years to see what a raise really does to personality. We also cross-examine the famous studies
+    claiming rich people are meaner — and what happened when others tried to repeat them. Verdict: HALF-TRUE.
+    Sources for every claim are below.
+  hashtags: [psychology, money, personality, science, mythbusting]
+  cover: {text: "NEW YOU?", verdict: HALF-TRUE}   # как в утверждённом демо; auto взял бы первый (подвердикт MYTH ch03)
+  sources:                # дополняется по главам: «Авторы (год). Название. Журнал. Ссылка»
+    - "John, O. P., & Srivastava, S. (1999). The Big Five trait taxonomy: History, measurement, and theoretical perspectives. In L. A. Pervin & O. P. John (Eds.), Handbook of personality: Theory and research (2nd ed., pp. 102–138). Guilford Press."
+    - "Li, W.-D., Yu, K., Yang, W., Zhang, Z., Zhang, X., Dormann, C., Zhang, H., & Zheng, Y. (2026). Do money and time change who you are? A continuous time meta-analysis and review of reciprocal relationships between personality traits and income. Psychological Bulletin. https://doi.org/10.1037/bul0000526"
+    - "Piff, P. K., Stancato, D. M., Côté, S., Mendoza-Denton, R., & Keltner, D. (2012). Higher social class predicts increased unethical behavior. PNAS, 109(9), 4086–4091. https://doi.org/10.1073/pnas.1118373109"
+    - "Vohs, K. D., Mead, N. L., & Goode, M. R. (2006). The psychological consequences of money. Science, 314(5802), 1154–1156. https://doi.org/10.1126/science.1132491"
+    - "Klein, R. A., et al. (2014). Investigating variation in replicability: A \"Many Labs\" replication project. Social Psychology, 45(3), 142–152. https://doi.org/10.1027/1864-9335/a000178"
+    - "Rohrer, D., Pashler, H., & Harris, C. R. (2015). Do subtle reminders of money change people's political views? Journal of Experimental Psychology: General, 144(4), e73–e85. https://doi.org/10.1037/xge0000058"
+    - "Vadillo, M. A., Hardwicke, T. E., & Shanks, D. R. (2016). Selection bias, vote counting, and money-priming effects. Journal of Experimental Psychology: General, 145(5), 655–663. https://doi.org/10.1037/xge0000157"
+    - "Trautmann, S. T., van de Kuilen, G., & Zeckhauser, R. J. (2013). Social class and (un)ethical behavior: A framework, with evidence from a large population sample. Perspectives on Psychological Science, 8(5), 487–497. https://doi.org/10.1177/1745691613491272"
+    - "Korndörfer, M., Egloff, B., & Schmukle, S. C. (2015). A large scale test of the effect of social class on prosocial behavior. PLOS ONE, 10(7), e0133193. https://doi.org/10.1371/journal.pone.0133193"
+    - "Côté, S., House, J., & Willer, R. (2015). High economic inequality leads higher-income individuals to be less generous. PNAS, 112(52), 15838–15843. https://doi.org/10.1073/pnas.1511536112"
+    - "Schmukle, S. C., Korndörfer, M., & Egloff, B. (2019). No evidence that economic inequality moderates the effect of income on generosity. PNAS, 116(20), 9790–9795. https://doi.org/10.1073/pnas.1807942116"
+    - "Jung, S., Smeets, P., Stoop, J., & Vosgerau, J. (2023). Social status and unethical behavior: Two replications of the field studies in Piff et al. (2012). Journal of Experimental Psychology: General, 152(5), 1368–1378. https://doi.org/10.1037/xge0001333"
+    - "Roberts, B. W., Walton, K. E., & Viechtbauer, W. (2006). Patterns of mean-level change in personality traits across the life course: A meta-analysis of longitudinal studies. Psychological Bulletin, 132(1), 1–25. https://doi.org/10.1037/0033-2909.132.1.1"
+    - "Bleidorn, W., Schwaba, T., Zheng, A., Hopwood, C. J., Sosa, S. S., Roberts, B. W., & Briley, D. A. (2022). Personality stability and change: A meta-analysis of longitudinal studies. Psychological Bulletin, 148(7–8), 588–619. https://doi.org/10.1037/bul0000365"
+    - "Ayaita, A. (2022). Does money change who you are? Quasi-experimental evidence on the effects of wage increases on personality. Working paper (not peer-reviewed). https://www.diw.de/de/diw_01.c.849093.de/s_13666.html"
+    - "Brickman, P., Coates, D., & Janoff-Bulman, R. (1978). Lottery winners and accident victims: Is happiness relative? Journal of Personality and Social Psychology, 36(8), 917–927. https://doi.org/10.1037/0022-3514.36.8.917"
+    - "Denissen, J. J. A., Bleidorn, W., Hennecke, M., Luhmann, M., Orth, U., Specht, J., & Zimmermann, J. (2018). Uncovering the power of personality to shape income. Psychological Science, 29(1), 3–13. https://doi.org/10.1177/0956797617724435"
+    - "Lindqvist, E., Östling, R., & Cesarini, D. (2020). Long-run effects of lottery wealth on psychological well-being. Review of Economic Studies, 87(6), 2703–2726. https://doi.org/10.1093/restud/rdaa006"

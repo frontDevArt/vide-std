@@ -1,0 +1,165 @@
+# Глава 5: «How big is 0.06?» — масштаб эффекта. Сверено 2026-10-29:
+# - Li et al. 2026 — пик ≈ 0,06 SD добросовестности на 1 SD дохода (ch04). Перевод в места из 100 — наш расчёт по
+#   нормальному распределению: Φ(0,06) ≈ 0,524 → с 50-го на ~52-е место (в плашке «our math»).
+# - Roberts, Walton & Viechtbauer 2006 (Psych. Bulletin 132(1), PubMed 16435954) — 92 выборки; добросовестность и
+#   эмоциональная стабильность растут, особенно в молодости. Bleidorn et al. 2022 (DIW) — сдвиг чуть меньше прежних
+#   оценок, эмоциональная стабильность растёт устойчивее. d по чертам НЕ сверены (PMC — капча) → в речи без чисел и без
+#   «many times larger»; сравнение только качественное: год и затухание против десятилетий и закрепления.
+# - Ayaita 2022 (DIW Berlin, рабочий доклад, не рецензирован): минимальная зарплата в Германии 2015 как квазиэксперимент,
+#   2SLS, N = 1 955; значимых эффектов нет, существенные эффекты в основном отвергаются.
+# - Brickman, Coates & Janoff-Bulman 1978 (JPSP 36(8)): 22 победителя лотереи, текущее счастье почти как у контроля.
+# - Lindqvist, Östling & Cesarini 2020 (REStud 87(6)): шведские игроки, опрос через 5–22 года — устойчивый рост
+#   удовлетворённости жизнью (> 10 лет), эффекты на счастье и психическое здоровье заметно меньше. 0,037 SD на $100 000 —
+#   в речи не называем (одна фраза про лотерею и довольство жизнью, avoid брифа).
+chapter: ch05
+title: "How big is 0.06?"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Chapter five. | How big is a hair?"
+    min_duration: 3
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 1}
+      number: 5
+      total: 6
+      title: "How big is 0.06?"
+      subtitle: "putting the effect to scale"
+
+  - id: s02
+    template: lab_mixer
+    lines:
+      - "Let's go back under the magnifying glass."
+      - "The biggest shift in the whole panel | was zero point zero six standard deviations, | in conscientiousness."
+      - "A standard deviation is roughly how far a typical person sits | from the average. | So this is six hundredths of that distance."
+      - "On the desk, | it's a move you can't see | without zooming in."
+    params:
+      mixer: {at: "back", x: 1180, values: {INCOME: 0.82, O: 0.64, C: 0.42, E: 0.699, A: 0.549, N: 0.357}}
+      moves:
+        - {ch: C, to: 0.426, at: "zero"}
+      lens: {ch: C, at: "magnifying", shift: 70, shift_at: "zero", text: "+0.06 SD", zoom: "ZOOM"}
+      focus:
+        - {ch: C, at: "conscientiousness"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · peak ≈ 0.06 SD per 1 SD of income", at: "zero"}
+      keep: [mixer]
+    hold: 0.4
+
+  - id: s03
+    template: lab_crowd
+    lines:
+      - "Here's a way to picture it."
+      - "Line up a hundred people, | from the least organized | to the most organized."
+      - "You're standing right in the middle, | at number fifty."
+      - "Now give yourself that big raise, | and wait a year for the peak effect. | You move up about two places."
+      - "Two places, | out of a hundred. | And then, | over the next few years, | you slowly drift back."
+    params:
+      hero: {value: 2, from: 0, caption: "places up", sub: "out of 100 · peak, then fades", color: "accent", at: "two#1"}
+      crowd:
+        n: 100
+        cols: 20
+        at: "hundred"
+        highlight:
+          - {index: 49, label: "50th", color: "dim", at: "fifty"}
+          - {index: 51, label: "~52nd", color: "accent", at: "two#1"}
+      source: {label: "OUR MATH", text: "0.06 SD on a normal curve ≈ 2 places in 100 · Li et al., 2026", at: "two#1"}
+
+  # ================================================================ сравнение с возрастом
+  - id: s04
+    template: lab_versus
+    lines:
+      - "To feel how small that is, | compare it with something that really does move personality: | time."
+      - "Remember the big reviews from chapter one? | Over the decades, | most of us become noticeably more conscientious, | and calmer."
+      - "A later, | even larger review found that drift a little smaller than first thought. | But emotional stability kept climbing, | steadily, | across the whole lifespan."
+      - "Now set them side by side. | A big raise nudges a slider for a year or so, | and then it slides back. | Getting older pushes the same sliders for decades, | and the change stays."
+    params:
+      left:
+        title: "A BIG RAISE"
+        items:
+          - {text: "a nudge, ~1 year", at: "compare"}
+          - {text: "then it slides back", at: "slides"}
+      right:
+        title: "GETTING OLDER"
+        items:
+          - {text: "pushes for decades", at: "decades#1"}
+          - {text: "and it stays", at: "steadily"}
+      source: {label: "META-ANALYSES", text: "Roberts et al., 2006 · Bleidorn et al., 2022", at: "reviews"}
+
+  # ================================================================ минимальная зарплата
+  - id: s05
+    template: lab_flow
+    lines:
+      - "There's still a nagging problem, though. | The panel only watches."
+      - "People who get raises might differ in ways the surveys never measured."
+      - "So here's a cleaner test: | a raise that has nothing to do with you."
+      - "In twenty fifteen, | Germany introduced a national minimum wage. | Overnight, | many low earners got a pay rise, | not because of anything they did, | but because the law changed."
+      - "That turns an ordinary survey | into something close to a natural experiment."
+    params:
+      stations:
+        - {icon: chart, title: "Panel watches", sub: "hidden causes?", at: "watches"}
+        - {icon: book, title: "New law", sub: "minimum wage, 2015", at: "introduced"}
+        - {icon: money, title: "Pay rises", sub: "not earned by you", at: "rise"}
+      source: {label: "WORKING PAPER", text: "Ayaita, 2022 · DIW Berlin · not peer-reviewed", at: "cleaner"}
+
+  - id: s06
+    template: lab_full_number
+    lines:
+      - "One economist followed nearly two thousand people | through that change, | using the German Socio-Economic Panel."
+      - "The result: | no significant change in personality."
+      - "And the data were precise enough | to make a large effect very unlikely."
+      - "One caveat: | this is a working paper, | not yet peer-reviewed. | But it points the same way as the big panel."
+    params:
+      value: 2
+      from: 0
+      prefix: "~"
+      suffix: "K"
+      caption: "people"
+      sub: "pay rise by law · no personality change"
+      at: "thousand"
+      source: {label: "WORKING PAPER", text: "Ayaita, 2022 · N = 1,955 · not peer-reviewed", at: "followed"}
+
+  # ================================================================ лотерея
+  - id: s07
+    template: lab_hero_stack
+    lines:
+      - "But surely a fortune is different. | What about winning the lottery?"
+      - "You've probably heard the claim: | lottery winners end up no happier, | or even miserable."
+      - "It mostly traces back to one study from the nineteen-seventies, | with just twenty-two winners."
+      - "They reported being about as happy as people who hadn't won. | Over the years, | that got retold as: | winners are miserable."
+    params:
+      claim: {label: "POPULAR CLAIM", text: "“Lottery winners end up *miserable*.”", at: "claim", qmark: true}
+      hero: {value: 22, from: 0, caption: "winners", sub: "the famous study", color: "text", at: "twenty-two"}
+      cards:
+        - {icon: people, title: "Tiny sample", sub: "22 winners", at: "just"}
+        - {icon: chat, title: "“About as happy”", sub: "not miserable", at: "reported"}
+        - {icon: cross, title: "Retold as misery", sub: "story grew", chip: "MYTH", chip_color: "myth", at: "retold"}
+      source: {label: "STUDY", text: "Brickman, Coates & Janoff-Bulman, 1978", at: "traces"}
+
+  - id: s08
+    template: lab_flow
+    lines:
+      - "Decades later, | economists in Sweden checked with a much larger group of lottery players, | five to twenty-two years after their win."
+      - "Big winners were more satisfied with their lives, | and it lasted more than a decade. | The effects on day-to-day happiness | were much smaller."
+      - "Notice what changed, though. | Not who they were, | but their circumstances, | and how they rated their life."
+    params:
+      stations:
+        - {icon: tag, title: "The win", sub: "Swedish lotteries", at: "Sweden"}
+        - {icon: clock, title: "Years later", sub: "5 to 22 years", at: "five"}
+        - {icon: check, title: "More satisfied", sub: "happiness: smaller", at: "satisfied"}
+      source: {label: "STUDY", text: "Lindqvist, Östling & Cesarini, 2020 · Review of Economic Studies", at: "Sweden"}
+
+  # ================================================================ итог главы + мост к ch06
+  - id: s09
+    template: lab_mixer
+    lines:
+      - "So let's put the evidence on the desk."
+      - "A big raise: | a nudge, | gone within a few years. | A raise by law: | nothing measurable. | A fortune: | a better-rated life, | not a new personality."
+      - "Which leaves the real puzzle for our last chapter. | If money barely touches the sliders, | why is almost everyone sure | that it rewrites people?"
+    params:
+      mixer: {at: "desk", x: 1060, values: {INCOME: 0.82, O: 0.64, C: 0.426, E: 0.699, A: 0.549, N: 0.357}}
+      focus:
+        - {ch: C, at: "nudge"}
+        - {ch: INCOME, at: "law"}
+        - {ch: X, at: "fortune"}
+        - {ch: INCOME, at: "sure"}
+      keep: [mixer]
+    hold: 0.5

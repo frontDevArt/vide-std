@@ -1,0 +1,215 @@
+# Глава 2: «Exhibit A» — громкие опыты. Piff et al. 2012 (PNAS 109(9), 7 исследований: 2 полевых — перекрёсток и
+# пешеходный переход в районе Сан-Франциско, 5 лабораторных — конфеты «для детей», ложь в переговорах, жульничество ради
+# приза, одобрение неэтичного на работе; объяснение — отношение к жадности, прайминг выгод жадности уравнивал классы) и
+# Vohs, Mead & Goode 2006 (Science 314(5802), 9 экспериментов: прайминг деньгами — дольше не просили помощи, меньше
+# помогали, больше дистанция с незнакомцем, предпочитали работать одни; «self-sufficient orientation»). Почему завирусились.
+# Сверено 2026-10-29: абстракты PNAS/Science, news.berkeley.edu 2012-02-27. Проценты Piff — НЕ в речи (решение outline);
+# n отдельных исследований не сверены (PNAS 403, PMC — капча) → в кадре и речи только «7 studies», «5 lab studies», «9 experiments».
+# Подача: без годов в речи, авторы — в плашках; пульт — в конце: «предсказание обвинения» (A вниз) → мост к ch03.
+chapter: ch02
+title: "Exhibit A"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Chapter two. | Exhibit A."
+    min_duration: 3
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      number: 2
+      total: 6
+      title: "Exhibit A"
+      subtitle: "the headline studies"
+
+  # ================================================================ Piff et al.: дорога
+  - id: s02
+    template: lab_hero_stack
+    lines:
+      - "The prosecution's first witness | is a paper from a team at the University of California, Berkeley."
+      - "Its claim fits in one line: | the higher your social class, | the more likely you are to bend the rules."
+      - "And it didn't rest on a single test. | It packed seven studies into one paper, | some on real streets, | some in the lab."
+    params:
+      claim: {label: "EXHIBIT A", text: "“Higher class, *more rule-breaking*.”", at: "claim", qmark: false}
+      hero: {value: 7, from: 0, caption: "studies", sub: "in one paper", color: accent, at: "seven"}
+      cards:
+        - {icon: book, title: "One paper", sub: "PNAS · 2012", at: "single"}
+        - {icon: wheel, title: "On the road", sub: "two field studies", at: "packed"}
+        - {icon: flask, title: "In the lab", sub: "five experiments", at: "streets"}
+      source: {label: "EXHIBIT A", text: "Piff et al., 2012 · PNAS", at: "paper"}
+
+  - id: s03
+    template: lab_diagram
+    lines:
+      - "Start on the road."
+      - "Researchers watched a busy four-way intersection in the San Francisco area."
+      - "They rated each car as a rough signal of the driver's status: | its make, | its age, | how it looked."
+      - "Then they noted who waited their turn, | and who cut in front of other drivers."
+    params:
+      center: {icon: wheel, title: "Four-way stop", at: "intersection"}
+      labels:
+        - {text: "car make", at: "make"}
+        - {text: "car age", at: "age"}
+        - {text: "how it looks", at: "looked"}
+        - {text: "who cuts in", at: "cut"}
+      source: {label: "STUDY 1", text: "Piff et al., 2012 · field observation", at: "intersection"}
+
+  - id: s04
+    template: lab_versus
+    lines:
+      - "The pattern was hard to miss. | Drivers of pricier cars | cut in more often."
+      - "In a second study, | a researcher stepped up to a crosswalk, | where drivers are required by law to stop."
+      - "The older, | cheaper cars | usually stopped. | The newer, | more expensive ones | were more likely to drive straight through."
+    params:
+      left:
+        title: "OLDER, CHEAPER CARS"
+        items:
+          - {text: "waited their turn", at: "cut"}
+          - {text: "stopped for walkers", at: "usually"}
+      right:
+        title: "NEWER, PRICIER CARS"
+        items:
+          - {text: "cut in more", at: "cut"}
+          - {text: "drove through", at: "newer"}
+      source: {label: "STUDIES 1–2", text: "Piff et al., 2012 · PNAS", at: "crosswalk"}
+
+  # ================================================================ Piff et al.: лаборатория
+  - id: s05
+    template: lab_flow
+    lines:
+      - "Then the team moved into the lab, | where they could control who felt rich."
+      - "Some people compared themselves | with those at the very bottom of the social ladder, | which makes you feel higher up. | Others, | with those at the very top."
+      - "Afterwards, | they were offered a jar of candy, | and told it was meant for children in a nearby lab."
+      - "The people nudged to feel higher up | took more of the children's candy."
+    params:
+      stations:
+        - {icon: chart, title: "Feel higher", sub: "compare down the ladder", at: "bottom"}
+        - {icon: tag, title: "Candy jar", sub: "meant for children", at: "jar"}
+        - {icon: person, title: "Take more", sub: "the felt-rich group", at: "nudged"}
+      source: {label: "STUDY 4", text: "Piff et al., 2012 · lab experiment", at: "jar"}
+
+  - id: s06
+    template: lab_hero_stack
+    lines:
+      - "In all, | five lab studies | told the same story."
+      - "Higher-class people were more likely | to lie in a negotiation, | to cheat at a game for a prize, | and to say that bending the rules at work | was fine."
+    params:
+      claim: {label: "THE PATTERN", text: "“Status, then *shortcuts*.”", at: "story", qmark: false}
+      hero: {value: 5, from: 0, caption: "lab studies", sub: "same direction", color: accent, at: "five"}
+      cards:
+        - {icon: chat, title: "Lie", sub: "in a negotiation", at: "lie"}
+        - {icon: tag, title: "Cheat", sub: "for a prize", at: "cheat"}
+        - {icon: receipt, title: "Bend rules", sub: "at work", at: "bending"}
+      source: {label: "STUDIES 3–7", text: "Piff et al., 2012 · PNAS", at: "five"}
+
+  - id: s07
+    template: lab_diagram
+    lines:
+      - "Why would status do that?"
+      - "The authors pointed to attitudes about greed. | People higher up | were more likely to see greed as a good thing."
+      - "And when the researchers nudged anyone | to think about the benefits of greed, | lower-class people started acting the same way."
+    params:
+      center: {icon: money, title: "Greed is good?", at: "greed"}
+      labels:
+        - {text: "higher status", at: "higher"}
+        - {text: "greed seems fine", at: "good"}
+        - {text: "anyone can be nudged", at: "nudged"}
+      source: {label: "MECHANISM", text: "Piff et al., 2012 · study 7", at: "attitudes"}
+
+  # ================================================================ Vohs et al.: прайминг деньгами
+  - id: s08
+    template: lab_hero_stack
+    lines:
+      - "The second witness | goes even further."
+      - "It says you don't need to be rich. | Just thinking about money | is enough to change how you treat people."
+      - "Across nine experiments, | people were quietly reminded of money. | They unscrambled sentences about money, | or worked next to a stack of play money."
+    params:
+      claim: {label: "EXHIBIT B", text: "“Just *thinking* about money.”", at: "thinking", qmark: false}
+      hero: {value: 9, from: 0, caption: "experiments", sub: "in one paper", color: accent, at: "nine"}
+      cards:
+        - {icon: chat, title: "Word puzzles", sub: "sentences about money", at: "unscrambled"}
+        - {icon: money, title: "Play money", sub: "a stack in view", at: "worked"}
+      source: {label: "EXHIBIT B", text: "Vohs, Mead & Goode, 2006 · Science", at: "witness"}
+
+  - id: s09
+    template: lab_versus
+    lines:
+      - "The results read like a character sketch."
+      - "People reminded of money | worked longer on a hard puzzle | before asking for help."
+      - "They were less helpful to others."
+      - "When they were about to meet a stranger, | they chose to sit farther away."
+      - "And given the choice, | they preferred to work alone."
+    params:
+      left:
+        title: "NEUTRAL REMINDER"
+        items:
+          - {text: "asked for help sooner", at: "asking"}
+          - {text: "helped more", at: "helpful"}
+          - {text: "sat closer", at: "farther"}
+      right:
+        title: "MONEY ON THE MIND"
+        items:
+          - {text: "asked for help later", at: "asking"}
+          - {text: "helped less", at: "helpful"}
+          - {text: "sat farther away", at: "farther"}
+          - {text: "chose to work alone", at: "preferred"}
+      source: {label: "EXHIBIT B", text: "Vohs et al., 2006 · nine experiments", at: "asking"}
+
+  - id: s10
+    template: lab_diagram
+    lines:
+      - "The authors' summary: | money makes people self-sufficient."
+      - "You don't want to depend on anyone, | and you don't want anyone depending on you."
+      - "Put the two exhibits side by side, | and the case sounds airtight. | Status makes you bend the rules, | and money itself makes you colder."
+    params:
+      center: {icon: person, title: "Self-sufficient", at: "summary"}
+      labels:
+        - {text: "lean on no one", at: "depend"}
+        - {text: "no one leans on you", at: "depending"}
+        - {text: "bend the rules", at: "bend"}
+        - {text: "colder", at: "itself"}
+      source: {label: "EXHIBIT B", text: "Vohs, Mead & Goode, 2006 · Science", at: "summary"}
+
+  # ================================================================ почему завирусились
+  - id: s11
+    template: lab_flow
+    lines:
+      - "And the public loved it."
+      - "These findings spread everywhere: | headlines, | popular talks, | best-selling books."
+      - "It's easy to see why. | They confirmed a hunch most of us already had."
+      - "The scenes were vivid: | a shiny car blowing past a pedestrian, | candy taken from kids."
+      - "And they came from two of the most respected journals in science."
+    params:
+      stations:
+        - {icon: check, title: "Fits a hunch", sub: "what we already believe", at: "hunch"}
+        - {icon: wheel, title: "Vivid scenes", sub: "cars, candy, kids", at: "vivid"}
+        - {icon: book, title: "Top journals", sub: "PNAS · Science", at: "journals"}
+
+  # ================================================================ предсказание обвинения на пульте
+  - id: s12
+    template: lab_mixer
+    lines:
+      - "So let's put the prosecution's case on our mixing desk."
+      - "If they're right, | push income up, | and agreeableness should drop. | Hard."
+      - "Less warmth, | less trust, | more grabbing the candy."
+    params:
+      mixer: {at: "mixing", x: 1060, values: {INCOME: 0.3, O: 0.64, C: 0.42, E: 0.7, A: 0.55, N: 0.36}}
+      focus:
+        - {ch: A, at: "agreeableness"}
+      moves:
+        - {ch: INCOME, to: 0.82, at: "income"}
+        - {ch: A, to: 0.22, at: "Hard"}
+      keep: [mixer]
+
+  - id: s13
+    template: lab_mixer
+    lines:
+      - "That's a bold prediction, | and bold predictions deserve a hard look."
+      - "Because there's a detail we skipped. | Most of these findings came from fairly small samples, | run by a single team."
+      - "So what happens | when other teams run the same tests, | on far more people?"
+      - "Time for the cross-examination."
+    params:
+      mixer: {from_prev: true, x: 1060}
+      focus:
+        - {ch: A, at: "prediction"}
+        - {ch: X, at: "detail"}
+    hold: 0.4

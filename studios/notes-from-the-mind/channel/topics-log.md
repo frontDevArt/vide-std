@@ -46,6 +46,6 @@
 | 2026-W43 | Short videos are shrinking your attention span (goldfish 8 seconds) | Myth on Trial | radar | HALF-TRUE |
 | 2026-W43 | A gratitude list makes you happier | Myth on Trial | radar | HALF-TRUE |
 | 2026-W43 | The marshmallow test predicts a child's success | Myth on Trial | radar | HALF-TRUE |
-| 2026-W43 | A pay raise changes your personality | Fresh Study | radar | HALF-TRUE |
+| 2026-W43 | Money changes people / a pay raise changes your personality — deep-dive 21:20 (briefs/money-changes-you.md) · 2026-10-29 https://youtu.be/AWJg5GF70vA | Myth on Trial | published | HALF-TRUE |
 | 2026-W43 | Your morning coffee makes you more alert (projects/coffee-wake, ~2 мин) | Myth on Trial | brief | HALF-TRUE |
 | 2026-W43 | 12 psychology myths, put on trial — сборник ~60 мин (briefs/twelve-myths.md, projects/twelve-myths) | Myth on Trial | brief | MIXED |

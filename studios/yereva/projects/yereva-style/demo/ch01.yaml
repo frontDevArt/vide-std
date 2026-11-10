@@ -1,0 +1,36 @@
+# Демо стиля студии 10–15 с (/new-studio): `python -m studio demo yereva-style` → projects/yereva-style-demo/.
+# Карта с булавками конкурентов (крючок) → удар «вас нет» → что делаем (кинетический текст) → логотип → призыв.
+# Без цифр: кейсов у агентства ещё нет.
+chapter: ch01
+title: "демо стиля"
+scenes:
+  - id: s01
+    template: map
+    lines: ["Человек ищет в Ереване агентство недвижимости. | Находит три."]
+    params:
+      title: "агентство *недвижимости*"
+      view: [44.475, 40.17, 44.525, 40.24]
+      pin_scale: 1.7
+      pins:
+        - {lat: 40.2066, lon: 44.5031, label: "Арабкир", at: "агентство"}
+        - {lat: 40.1811, lon: 44.5136, label: "Кентрон", at: "недвижимости"}
+        - {lat: 40.2275, lon: 44.4853, label: "Давташен", at: "три"}
+  - id: s02
+    template: kinetic
+    lines: ["Вас среди них нет."]
+    min_duration: 1.8
+    params: {text: "Вас среди них *нет.*", size: 118, lines_max: 4}
+  - id: s03
+    template: kinetic
+    lines: ["Ролики, реклама и карты — | чтобы клиенты находили именно вас."]
+    params: {accent: ["находили", "вас"], lines_max: 3}
+  - id: s04
+    template: media.logo_sting
+    lines: ["Будьте на виду."]
+    min_duration: 2.3
+    params: {tagline: "Будьте *на виду*", plate: light}
+  - id: s05
+    template: cta_end
+    lines: ["Напишите нам в директ."]
+    min_duration: 3
+    params: {title: "Напишите *нам*", button: "Написать в директ", done: "Ждём вас", handle: "@yereva.am", at: 0, plate: light}

@@ -1,0 +1,213 @@
+# Глава 4: «The big panel» — Li, Yu, Yang, Zhang, Zhang, Dormann, Zhang & Zheng 2026 (Psychological Bulletin,
+# doi:10.1037/bul0000526). Сверено 2026-10-29 (обзор PsyPost): преререгистрированный метаанализ 11 национальных/региональных
+# панелей (США, Германия, Нидерланды, Норвегия, Австралия), до 134 515 работающих взрослых, 4–20 лет, 3–18 волн, ≥ 3 замеров.
+# Доход → личность: добросовестность ↑ (сильнее всего, пик ≈ 0,06 SD на 1 SD дохода), эмоц. стабильность ↑ (≈ вдвое меньше),
+# доброжелательность и экстраверсия ↓ (≈ 0,01 SD), открытость — нет связи. Обратно: добросовестность и стабильность → доход ↑,
+# экстраверсия → чуть ↓; по величине направления не различаются. Пик через ~1,2–1,4 года, затухание за десятилетие
+# (форму кривой задаёт модель, не проверена; замеров чаще раза в год нет). Старшие: прибавка → стабильность и открытость ↑,
+# доброжелательность ↑. Ограничения: наблюдательные данные, самоотчёт, только богатые западные страны, неучтённые события.
+# Пульт: N на пульте = neuroticism → рост эмоциональной стабильности = ручка N чуть вниз.
+chapter: ch04
+title: "The big panel"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines:
+      - "Chapter four. | The big panel."
+    min_duration: 3
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 1}
+      number: 4
+      total: 6
+      title: "The big panel"
+      subtitle: "same people, many years"
+
+  - id: s02
+    template: lab_full_number
+    lines:
+      - "So far, | we've looked at experiments with a few hundred people, | snapshots taken on a single afternoon."
+      - "Now, | the other kind of evidence."
+      - "A team of researchers pooled eleven long-running national surveys, | from the United States, | Germany, | the Netherlands, | Norway, | and Australia."
+      - "Together, | they cover up to a hundred and thirty-four thousand working adults."
+    params:
+      value: 134
+      from: 0
+      suffix: "K"
+      caption: "working adults"
+      sub: "n = 134,515 · 11 panels · 5 countries"
+      at: "hundred"
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · Psychological Bulletin", at: "pooled"}
+
+  - id: s03
+    template: lab_flow
+    lines:
+      - "These aren't one-off polls."
+      - "The same people answer the same questions | again and again, | for anywhere from four to twenty years."
+      - "Each person's income goes on record, | and so do their five personality sliders, | at least three times."
+      - "Instead of comparing rich people with poor people, | it compares each person | with their own past."
+      - "And the team wrote down its plan in advance, | the same standard we asked of the retrials."
+    params:
+      stations:
+        - {icon: people, title: "Same people", sub: "4 to 20 years", at: "same#1"}
+        - {icon: receipt, title: "Income + traits", sub: "at least 3 times", at: "income"}
+        - {icon: check, title: "Plan first", sub: "registered in advance", at: "plan"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · preregistered", at: "plan"}
+
+  - id: s04
+    template: lab_diagram
+    lines:
+      - "With data like that, | you can ask a much sharper question."
+      - "Not: | are rich people different? | But: | when this person's pay goes up, | what happens to this person's personality, | a few months later, | a year later, | a decade later?"
+      - "And because the arrows can point both ways, | the same model checks the reverse: | when someone's personality shifts, | what happens to their pay?"
+    params:
+      center: {icon: chart, title: "Same person, over time", at: "sharper"}
+      labels:
+        - {text: "pay up → traits?", at: "pay"}
+        - {text: "months · years · decade", at: "decade"}
+        - {text: "traits → pay?", at: "reverse"}
+
+  # ================================================================ результаты: пульт
+  - id: s05
+    template: lab_mixer
+    lines:
+      - "Here's what they found, | slider by slider."
+      - "After a rise in income, | conscientiousness tends to go up. | People become a little more organized and reliable. | That was the strongest link."
+      - "Emotional stability rises too, | about half as much."
+      - "Agreeableness and extraversion | dip, | very slightly."
+      - "And openness? | No link at all."
+    params:
+      mixer: {at: "found", x: 1060, values: {INCOME: 0.3, O: 0.64, C: 0.42, E: 0.7, A: 0.55, N: 0.36}}
+      moves:
+        - {ch: INCOME, to: 0.82, at: "rise"}
+        - {ch: C, to: 0.426, at: "strongest"}
+        - {ch: N, to: 0.357, at: "half"}
+        - {ch: A, to: 0.549, at: "dip"}
+        - {ch: E, to: 0.699, at: "dip"}
+      focus:
+        - {ch: C, at: "conscientiousness"}
+        - {ch: N, at: "Emotional"}
+        - {ch: A, at: "Agreeableness"}
+        - {ch: E, at: "extraversion"}
+        - {ch: O, at: "openness"}
+        - {ch: X, at: "link#2"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · 4 of 5 traits shift", at: "found"}
+      keep: [mixer]
+
+  - id: s06
+    template: lab_mixer
+    lines:
+      - "If you're watching the desk, | you might wonder | whether anything moved at all."
+      - "Something did. | We just need a magnifying glass."
+      - "Take a big jump in pay, | the kind that lifts you well above most of your colleagues."
+      - "On average, | conscientiousness rises by about zero point zero six standard deviations."
+      - "That's the biggest change in the whole study."
+    params:
+      chrome: {step: 1}
+      mixer: {from_prev: true, x: 1180}
+      lens: {ch: C, at: "magnifying", shift: 70, shift_at: "zero", text: "+0.06 SD", zoom: "ZOOM"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · peak ≈ 0.06 SD per 1 SD of income", at: "zero"}
+      keep: [mixer]
+    hold: 0.6
+
+  # ================================================================ когда: пик и затухание
+  - id: s07
+    template: lab_flow
+    lines:
+      - "Timing matters too."
+      - "The shift builds up after the raise, | reaches its peak somewhere between one and one and a half years later, | then slowly fades | over the following decade."
+      - "Picture the first year after a promotion: | new responsibilities, | new habits, | maybe a little more care with the details. | Then life settles, | and most of that drifts back."
+      - "One honest caveat: | that rise-and-fall shape is built into the statistical model, | not tested by it. | And none of the surveys measured people | more often than once a year."
+    params:
+      stations:
+        - {icon: money, title: "The raise", sub: "pay goes up", at: "builds"}
+        - {icon: timer, title: "Peak", sub: "~1.2–1.4 years", at: "peak"}
+        - {icon: clock, title: "Fade", sub: "over a decade", at: "fades"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · curve shape assumed by the model", at: "peak"}
+
+  # ================================================================ обратная стрелка
+  - id: s08
+    template: lab_diagram
+    lines:
+      - "Now the reverse arrow. | And this is where it gets interesting."
+      - "When people became more conscientious, | or more emotionally stable, | their income tended to rise afterwards."
+      - "More extraverted? | Their pay dipped, | slightly."
+      - "And here's the key part: | the push from personality to money | was about as strong | as the push from money to personality."
+    params:
+      center: {icon: person, title: "You → money", at: "reverse"}
+      labels:
+        - {text: "more reliable → pay up", at: "conscientious"}
+        - {text: "calmer → pay up", at: "stable"}
+        - {text: "same size both ways", at: "strong"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · reciprocal effects", at: "reverse"}
+
+  - id: s09
+    template: lab_versus
+    lines:
+      - "Think about what that does to the classic story."
+      - "A colleague gets promoted, | and suddenly they seem more serious, | more buttoned-up. | So money changed them, | right?"
+      - "Maybe. | Or maybe they were already getting more organized, | and that's exactly why they got promoted."
+      - "From the outside, | both stories look the same. | Only years of data on the same person | can tell them apart, | and even then, | only roughly."
+    params:
+      left:
+        title: "THE STORY"
+        items:
+          - {text: "promoted, then serious", at: "promoted"}
+          - {text: "“money changed them”", at: "changed"}
+      right:
+        title: "THE OTHER STORY"
+        items:
+          - {text: "more organized first", at: "organized"}
+          - {text: "then promoted", at: "why"}
+
+  # ================================================================ возраст
+  - id: s10
+    template: lab_versus
+    lines:
+      - "There's one more wrinkle: | age."
+      - "For older workers, | a raise was linked to bigger gains in emotional stability, | and in openness."
+      - "And agreeableness went up, | not down."
+      - "So even the small dip in warmth | isn't a universal rule. | It depends on who's getting the raise."
+    params:
+      left:
+        title: "YOUNGER WORKERS"
+        items:
+          - {text: "warmth dips slightly", at: "wrinkle"}
+      right:
+        title: "OLDER WORKERS"
+        items:
+          - {text: "calmer, more open", at: "openness"}
+          - {text: "warmth goes up", at: "agreeableness"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · age as moderator", at: "older"}
+
+  # ================================================================ ограничения
+  - id: s11
+    template: lab_diagram
+    lines:
+      - "Before we weigh any of this, | the fine print."
+      - "These are observational surveys, | not experiments, | so they can't prove that money causes anything."
+      - "Personality was self-reported: | it's how people see themselves, | not how they act."
+      - "All eleven panels come from wealthy Western countries. | And a promotion often arrives with other life changes, | like a move or a new family, | that the model can't fully separate."
+    params:
+      center: {icon: question, title: "The fine print", at: "fine"}
+      labels:
+        - {text: "no experiment", at: "observational"}
+        - {text: "self-report", at: "self-reported"}
+        - {text: "rich Western countries", at: "Western"}
+        - {text: "other life events", at: "changes"}
+      source: {label: "LIMITATIONS", text: "Li et al., 2026", at: "observational"}
+
+  # ================================================================ мост к ch05
+  - id: s12
+    template: lab_mixer
+    lines:
+      - "So the panel's verdict is not, | money does nothing."
+      - "Money moves the sliders, | and the sliders move money. | Both, | by a hair."
+      - "Which leaves the obvious question. | How small is a hair, | exactly?"
+    params:
+      mixer: {at: "verdict", x: 1060, values: {INCOME: 0.82, O: 0.64, C: 0.426, E: 0.699, A: 0.549, N: 0.357}}
+      focus:
+        - {ch: C, at: "sliders#1"}
+        - {ch: INCOME, at: "money#2"}
+        - {ch: X, at: "hair#1"}
+      keep: [mixer]
+    hold: 0.4

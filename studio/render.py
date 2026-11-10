@@ -19,7 +19,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from . import assets as AS
 from . import gfx as G
@@ -95,6 +95,7 @@ def _prepare(proj: Project, draft=False):
     codes = {}  # класс шаблона → хэш кода, который рисует его сцены
     scripts = {(ch, sc.get("id")): sc for ch, d in proj.chapters for sc in d.get("scenes") or []}
     style_key = stable_hash([proj.cfg["style"], proj.cfg["subtitles"], proj.cfg["language"]])
+    wipe = style.motion.get("transition") == "wipe"
     for i, s in enumerate(scenes):
         s["first"], s["last"] = i == 0, i == len(scenes) - 1
         s["state_in"] = dict(state)
@@ -126,7 +127,8 @@ def _prepare(proj: Project, draft=False):
                                 proj.cfg["render"]["crf"], preset, W, H, ctx["safe"], ctx["subs_top"]] + ([extra] if extra else [])
                                + ([ctx["subs_bottom"]] if ctx["subs_bottom"] is not None else [])
                                + ([s["glow"]] if use_glow else []) + ([media] if media else [])
-                               + ([auto] if auto else []))
+                               + ([auto] if auto else [])
+                               + ([s["first"], s["last"]] if wipe else []))  # шторка зависит от места сцены
     return tl, ctx
 
 
@@ -306,8 +308,39 @@ def frame(ctx, tpl, scene, f, sub_size, alpha=False):
     else:
         tpl.draw(img, t, T)
     if not alpha:
-        draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style, ctx.get("subs_bottom"))
+        if not getattr(tpl, "speech_on_screen", False):  # kit.kinetic: текст в кадре и есть речь
+            draw_subs(img, scene, t, sub_size, ctx["W"], ctx["H"], style, ctx.get("subs_bottom"))
+        if style.motion.get("transition") == "wipe":
+            draw_wipe(img, scene, t, style)
     return img
+
+
+WIPE = 0.2  # с: шторка закрывает кадр в конце сцены и столько же открывает в начале следующей
+
+
+def draw_wipe(img, scene, t, style):
+    """Шторка бренд-кита между сценами (motion.transition: wipe). В конце сцены косая панель цвета фона с полосой
+    акцента наезжает справа и закрывает кадр, в начале следующей — уезжает влево. На склейке кадр с обеих сторон
+    закрыт одним цветом, поэтому шва не видно, а сцены по-прежнему рендерятся и кэшируются по отдельности.
+    Начало ролика и конец последней сцены — без шторки; сцены короче 4·WIPE — тоже (мелькало бы)."""
+    D = scene["dur"]
+    if D < 4 * WIPE:
+        return
+    W, H = img.size
+    sl, bar = W * 0.22, W * 0.06  # наклон кромки и ширина полосы акцента
+    if not scene.get("last") and t > D - WIPE:
+        e = G.lerp(W + bar, -sl - 2, G.eio(G.prog(t, D - WIPE, D)))  # 2 px запаса: кромка полигона включительна
+        panel = [(e + sl, 0), (W + sl, 0), (W + sl, H), (e, H)]
+        stripe = [(e + sl - bar, 0), (e + sl, 0), (e, H), (e - bar, H)]
+    elif not scene.get("first") and t < WIPE:
+        e = G.lerp(W + 2, -sl - bar, G.eio(G.prog(t, 0, WIPE)))
+        panel = [(-sl, 0), (e + sl, 0), (e, H), (-sl, H)]
+        stripe = [(e + sl, 0), (e + sl + bar, 0), (e + bar, H), (e, H)]
+    else:
+        return
+    d = ImageDraw.Draw(img)
+    d.polygon(panel, fill=style.col("bg_bot"))
+    d.polygon(stripe, fill=style.col("accent"))
 
 
 ALPHA = {  # прозрачный экспорт для монтажки (ROADMAP C2, старый R4): кодек и пиксельный формат с альфой

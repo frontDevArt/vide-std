@@ -298,6 +298,7 @@ class Compare(KitTemplate):
                             "булавки [{lat, lon, label, at}] (или x, y — доли кадра карты)", list),
                   "view": P(None, "область [lon0, lat0, lon1, lat1]; по умолчанию — вокруг булавок", list),
                   "route": P(False, "дуги между булавками по порядку"),
+                  "pin_scale": P(1.0, "размер булавок и подписей (1,5–2 — крупно, для высокого кадра)"),
                   "first_beat": P(None, "булавка i — на бите first_beat + i, если у неё нет at", int),
                   **KitTemplate.COMMON},
           beats="булавка — по `at` или биту first_beat + i (иначе равномерно); дуга к ней рисуется перед её появлением")
@@ -322,9 +323,10 @@ class Map(KitTemplate):
                     self.m.y0 + self.m.h * (lat1 - float(p.get("lat", 0))) / (lat1 - lat0))
         self.pts = [xy(p) for p in pins]
         self.grid = self._grid()
-        self.pin = self._pin(int(40 * self.u * self.kz))
-        self.ring = circle(int(36 * self.u), None, outline=self.style.col(self.c), width=max(2, int(3 * self.u)))
-        lf = self.fs(32)
+        z = max(0.5, float(self.p.get("pin_scale", 1.0)))  # крупнее булавки — для высокого кадра и телефона
+        self.pin = self._pin(int(40 * self.u * self.kz * z))
+        self.ring = circle(int(36 * self.u * z), None, outline=self.style.col(self.c), width=max(2, int(3 * self.u * z)))
+        lf = self.fs(32 * z)
         self.lab = [self._label(str(p.get("label", "")), lf) if p.get("label") else None for p in pins]
         self.dot = G.glowify(circle(int(16 * self.u), None, fill=self.style.col("text")), self.c, 6 * self.u)
 

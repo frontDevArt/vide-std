@@ -4,8 +4,8 @@ measured:
 - language: en
   backend: elevenlabs
   voice: f81e9560557a
-  wpm: 189.6
+  wpm: 176.8
   rate: 100.0
-  words: 8758
-  project: twelve-myths
-  date: '2026-10-26'
+  words: 3442
+  project: money-changes-you
+  date: '2026-10-29'

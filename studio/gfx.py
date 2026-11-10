@@ -338,6 +338,7 @@ class Background:
         self.base = Image.fromarray(np.clip(g, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
         m = min(W, H)
         rnd = random.Random(seed)
+        self.speed = style.motion.get("bg", 1.0)  # бренд-кит motion.bg: живее (2–3) или спокойнее пятна
         self.blobs = []
         for c in ("violet", "magenta", "cyan", "violet"):
             s = int(m * rnd.uniform(0.75, 1.1))
@@ -348,6 +349,7 @@ class Background:
 
     def frame(self, T, energy=1.0):
         img = self.base.copy()
+        T *= self.speed
         for b in self.blobs:
             cx = (b["x"] + b["ax"] * math.sin(b["wx"] * T * 6.283 + b["p"])) * self.W
             cy = (b["y"] + b["ay"] * math.cos(b["wy"] * T * 6.283 + b["p"] * 1.3)) * self.H

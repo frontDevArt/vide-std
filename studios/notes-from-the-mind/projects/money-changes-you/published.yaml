@@ -1,0 +1,10 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: youtube
+  url: https://youtu.be/AWJg5GF70vA
+  date: 2026-10-29 16:01
+  version: null
+  file: money-changes-you.mp4
+  sha1: 4d7e52fe68c1
+  duration: 1279.7

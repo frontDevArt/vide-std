@@ -28,7 +28,8 @@ ROLES = {
     "ink": ("ink",),
 }
 KEYS = ("name", "base", "palette", "fonts", "logo", "shape", "background", "camera", "subs",
-        "intro", "outro", "cta", "music", "voice")
+        "intro", "outro", "cta", "music", "voice", "motion")
+TRANSITIONS = ("none", "wipe")  # motion.transition: склейка сцен как есть | шторка (render.draw_wipe)
 
 
 def _rel(p: Path) -> str:
@@ -152,10 +153,23 @@ def parse(raw: dict, kit_dir: Path) -> tuple[dict, list[str]]:
     voice = raw.get("voice")
     if voice is not None and not isinstance(voice, dict):
         errs.append("voice: словарь (tone: …)")
+    motion = raw.get("motion")
+    if motion is not None:  # нет ключа — нет и в ките: ключ кэша рендера старых китов не меняется
+        motion = motion if isinstance(motion, dict) else {}
+        for k in set(motion) - {"transition", "bg"}:
+            errs.append(f"motion.{k}: можно transition, bg")
+        tr = motion.get("transition", "none")
+        if tr not in TRANSITIONS:
+            errs.append(f"motion.transition: {tr!r} — можно {', '.join(TRANSITIONS)}")
+        bgm = motion.get("bg", 1.0)
+        if isinstance(bgm, bool) or not isinstance(bgm, (int, float)) or not 0 <= bgm <= 5:
+            errs.append(f"motion.bg = {bgm!r}: скорость пятен фона, число 0–5 (1 — как без ключа)")
+            bgm = 1.0
+        motion = {"transition": tr, "bg": float(bgm)}
 
     kit = {"name": str(raw.get("name") or kit_dir.parent.name), "base": base, "colors": colors, "fonts": fonts,
            "background": background, "camera": camera is True, "subs": subs, "shape": dict(shape), "logo": logo,
-           **assets, "cta": cta or {}, "voice": voice or {}}
+           **assets, "cta": cta or {}, "voice": voice or {}, **({"motion": motion} if motion is not None else {})}
     return kit, errs
 
 

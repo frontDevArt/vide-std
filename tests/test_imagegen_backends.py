@@ -262,3 +262,80 @@ def test_kie_no_key(tmp_path, monkeypatch):
 def test_kie_balance(kie):
     kie(FakeKie())
     assert imagegen.kie_balance() == 1234.5
+
+
+# ---------------------------------------------------------------- оплаченный результат не теряется (pending.json)
+def _blocked(srv, on=lambda: True):
+    """Сеть, где хост файлов результата режется (сетевой фильтр рвёт TLS), а API Kie отвечает."""
+    def net(req, timeout):
+        if on() and req.full_url.startswith("https://tmp.example/out"):
+            raise urllib.error.URLError(ConnectionResetError(10054, "reset"))
+        return srv(req, timeout)
+    return net
+
+
+def test_kie_download_blocked_keeps_task_and_resumes_free(tmp_path, kie):
+    srv, state = FakeKie(), {"blocked": True}
+    kie(_blocked(srv, lambda: state["blocked"]))
+    proj = _load(tmp_path, {"backend": "kie"}, image={"prompt": "room"})
+    job = imagegen.plan(proj)[0]
+    with pytest.raises(imagegen.ResultPending, match="не скачать результат Kie"):
+        imagegen.generate(proj, job)
+    rec = imagegen.pending_of(proj, job)
+    assert rec["task"] == "t1" and not job.out.exists()
+    est = imagegen.estimate(proj)
+    assert est["credits"] == 0 and est["pending"] == est["todo"]  # повтор — докачка, не оплата
+    with pytest.raises(imagegen.ResultPending):
+        imagegen.generate(proj, job)  # сеть та же — та же задача, без новой оплаты
+    state["blocked"] = False
+    r = imagegen.generate(proj, job)
+    assert r["resumed"] is True and r["task"] == "t1" and Image.open(job.out).format == "PNG"
+    assert len(srv.bodies("createTask")) == 1
+    assert imagegen.pending(proj) == {} and not (job.out.parent / imagegen.PENDING).exists()
+
+
+def test_kie_timeout_keeps_task_failed_and_expired_drop_it(tmp_path, kie, monkeypatch):
+    proj = _load(tmp_path, {"backend": "kie"}, image={"prompt": "room"})
+    job = imagegen.plan(proj)[0]
+    srv = kie(FakeKie(states=("generating",)))
+    t = iter(range(0, 10000, 300))
+    monkeypatch.setattr(imagegen, "_clock", lambda: next(t))
+    with pytest.raises(imagegen.ImagesUnavailable, match="нет результата за 600 с"):
+        imagegen.generate(proj, job)
+    assert imagegen.pending_of(proj, job)["task"] == "t1"  # задача может дозреть — повтор её доопросит
+    srv = kie(FakeKie(states=("fail",)))
+    with pytest.raises(imagegen.ImagesUnavailable, match="упала"):
+        imagegen.generate(proj, job)
+    assert srv.bodies("createTask") == [] and imagegen.pending_of(proj, job) is None  # упавшую — забыть
+    f = job.out.parent / imagegen.PENDING
+    f.write_text(json.dumps({f"image:{job.key}": {"task": "old", "date": "2020-01-01"}}), encoding="utf-8")
+    assert imagegen.pending_of(proj, job) is None and imagegen.estimate(proj)["credits"] == 12  # Kie хранит 14 дней
+    srv = kie(FakeKie(states=("success",)))
+    assert imagegen.generate(proj, job)["resumed"] is False and len(srv.bodies("createTask")) == 1
+
+
+def test_kie_layers_resume_skips_upload(tmp_path, kie):
+    result = {"resultObject": {"layers_data": [{"z_index": 0, "url": "https://tmp.example/out-base.png"}]}}
+    srv, state = FakeKie(result=result), {"blocked": True}
+    kie(_blocked(srv, lambda: state["blocked"]))
+    proj = _load(tmp_path, {"backend": "kie"}, image=SCENE)
+    img, lay = imagegen.plan(proj)
+    imagegen._save_png(_png(), img.out.parent.mkdir(parents=True, exist_ok=True) or img.out)
+    with pytest.raises(imagegen.ResultPending):
+        imagegen.generate(proj, lay)
+    state["blocked"] = False
+    assert imagegen.generate(proj, lay)["resumed"] is True and lay.out.exists()
+    assert len(srv.bodies("createTask")) == 1 and len([c for c in srv.calls if c[1] == imagegen.KIE_UPLOAD]) == 1
+    assert imagegen.pending(proj) == {}
+
+
+def test_kie_hosts_blocked_probe(monkeypatch):
+    def reset(req, timeout):
+        raise urllib.error.URLError(ConnectionResetError(10054, "reset"))
+
+    def answers_404(req, timeout):
+        raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, io.BytesIO(b""))
+    monkeypatch.setattr(imagegen, "_urlopen", reset)
+    assert imagegen.kie_hosts_blocked() == list(imagegen.KIE_RESULT_HOSTS)
+    monkeypatch.setattr(imagegen, "_urlopen", answers_404)  # ответил хоть чем-то — хост доступен
+    assert imagegen.kie_hosts_blocked() == []

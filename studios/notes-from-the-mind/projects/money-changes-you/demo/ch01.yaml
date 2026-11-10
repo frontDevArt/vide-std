@@ -1,0 +1,39 @@
+# Демо стиля 10–15 с (channel/STYLE.md §14) для money-changes-you: метафора «пульт личности» (мастер INCOME + фейдеры
+# O C E A N), настроение deep, новые элементы — шаблон lab_mixer (projects/money-changes-you/templates/mixer.py):
+# пульт с фейдерами через state и «лупа» на фейдере C. Открывающий расчётный лист с RAISE. Вердикт HALF-TRUE.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: lab_mixer
+    voice: {style: 0.3}
+    lines:
+      - "They say money changes people."
+      - "So picture a raise, | overnight."
+    params:
+      chrome: {rubric: "Myth on Trial", number: "deep-dive", steps: [CLAIM, EVIDENCE, VERDICT], step: 0}
+      slip:
+        title: "PAYSLIP"
+        at: "say"
+        rows:
+          - {text: "base pay", value: "100%", at: "money"}
+          - {text: "raise", value: "+20%", at: "raise", color: accent}
+      mixer: {at: "changes", x: 1250}
+      moves:
+        - {ch: INCOME, to: 0.82, at: "raise"}
+        - {ch: C, to: 0.506, at: "overnight"}
+        - {ch: A, to: 0.497, at: "overnight"}
+      keep: [mixer]
+  - id: s02
+    template: lab_mixer
+    lines:
+      - "Your personality | barely moves."
+      - "Zoom way in, | and the shift is real."
+      - {text: "Verdict: | half-true.", voice: {style: 0.35}}
+    params:
+      chrome: {step: 1}
+      mixer: {from_prev: true, x: 1180}
+      lens: {ch: C, at: "zoom", shift: 70, shift_at: "real", text: "+0.06 SD", zoom: "ZOOM"}
+      source: {label: "META-ANALYSIS", text: "Li et al., 2026 · n = 134,515", at: "barely"}
+      verdict: {verdict: "HALF-TRUE", sub: "real, but *tiny*", at: "half-true"}
+    hold: 1.0

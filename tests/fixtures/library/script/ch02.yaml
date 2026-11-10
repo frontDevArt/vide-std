@@ -52,6 +52,10 @@ scenes:
     min_duration: 4
     params: {file: assets/podcast.mp4, start: 1.0, speaker: "Alex Moore", role: "host",
              captions: [{t: 0.2, text: "Light changes how we rest"}, {t: 2.2, text: "more than we think"}]}
+  - id: s13
+    template: kinetic
+    lines: ["Light changes | how we rest."]
+    params: {accent: ["rest"]}
   - id: s12
     template: cta_end
     lines: ["Thanks for watching. | Subscribe for more."]

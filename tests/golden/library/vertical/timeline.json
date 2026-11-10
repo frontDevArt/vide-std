@@ -1,5 +1,5 @@
 {
- "src": "d43956cfd89a",
+ "src": "731f90a5c968",
  "fps": 30,
  "size": [
   1080,
@@ -8,11 +8,11 @@
  "rate": 105.0,
  "voice": "fake",
  "backend": "fake",
- "total_frames": 2093,
- "duration": 69.76666666666667,
- "words": 122,
- "wpm_speech": 135.5,
- "wpm_overall": 104.9,
+ "total_frames": 2162,
+ "duration": 72.06666666666666,
+ "words": 127,
+ "wpm_speech": 136.6,
+ "wpm_overall": 105.7,
  "scenes": [
   {
    "chapter": "ch01",
@@ -1972,6 +1972,91 @@
   },
   {
    "chapter": "ch02",
+   "id": "s13",
+   "template": "kinetic",
+   "params": {
+    "accent": [
+     "rest"
+    ]
+   },
+   "lines": [
+    {
+     "text": "Light changes how we rest.",
+     "wav": "5ee7353110dc619e.wav",
+     "t0": 0.2783,
+     "t1": 2.0323
+    }
+   ],
+   "beats": [
+    {
+     "text": "Light changes",
+     "line": 0,
+     "t0": 0.2783,
+     "t1": 1.1483
+    },
+    {
+     "text": "how we rest.",
+     "line": 0,
+     "t0": 1.2583,
+     "t1": 2.0323
+    }
+   ],
+   "words": [
+    {
+     "w": "Light",
+     "line": 0,
+     "t0": 0.2783,
+     "t1": 0.6013
+    },
+    {
+     "w": "changes",
+     "line": 0,
+     "t0": 0.6303,
+     "t1": 1.1483
+    },
+    {
+     "w": "how",
+     "line": 0,
+     "t0": 1.2623,
+     "t1": 1.5003
+    },
+    {
+     "w": "we",
+     "line": 0,
+     "t0": 1.5283,
+     "t1": 1.7233
+    },
+    {
+     "w": "rest.",
+     "line": 0,
+     "t0": 1.7523,
+     "t1": 2.0323
+    }
+   ],
+   "start": 65.16666666666667,
+   "dur": 2.3,
+   "start_frame": 1955,
+   "n_frames": 69,
+   "subs": [
+    {
+     "lines": [
+      "Light changes"
+     ],
+     "t0": 0.228,
+     "t1": 1.188
+    },
+    {
+     "lines": [
+      "how we rest."
+     ],
+     "t0": 1.208,
+     "t1": 2.25
+    }
+   ],
+   "hash": "283706a93648"
+  },
+  {
+   "chapter": "ch02",
    "id": "s12",
    "template": "cta_end",
    "params": {
@@ -1989,83 +2074,83 @@
     {
      "text": "Thanks for watching. Subscribe for more.",
      "wav": "43f63c136f33a80b.wav",
-     "t0": 0.2783,
-     "t1": 3.2023
+     "t0": 0.2823,
+     "t1": 3.2063
     }
    ],
    "beats": [
     {
      "text": "Thanks for watching.",
      "line": 0,
-     "t0": 0.2783,
-     "t1": 1.5083
+     "t0": 0.2823,
+     "t1": 1.5123
     },
     {
      "text": "Subscribe for more.",
      "line": 0,
-     "t0": 1.7983,
-     "t1": 3.2023
+     "t0": 1.8023,
+     "t1": 3.2063
     }
    ],
    "words": [
     {
      "w": "Thanks",
      "line": 0,
-     "t0": 0.2783,
-     "t1": 0.6443
+     "t0": 0.2823,
+     "t1": 0.6483
     },
     {
      "w": "for",
      "line": 0,
-     "t0": 0.6723,
-     "t1": 0.9103
+     "t0": 0.6763,
+     "t1": 0.9143
     },
     {
      "w": "watching.",
      "line": 0,
-     "t0": 0.9393,
-     "t1": 1.4993
+     "t0": 0.9433,
+     "t1": 1.5033
     },
     {
      "w": "Subscribe",
      "line": 0,
-     "t0": 1.8043,
-     "t1": 2.5173
+     "t0": 1.8083,
+     "t1": 2.5213
     },
     {
      "w": "for",
      "line": 0,
-     "t0": 2.5463,
-     "t1": 2.7843
+     "t0": 2.5503,
+     "t1": 2.7883
     },
     {
      "w": "more.",
      "line": 0,
-     "t0": 2.8123,
-     "t1": 3.2023
+     "t0": 2.8163,
+     "t1": 3.2063
     }
    ],
-   "start": 65.16666666666667,
+   "start": 67.46666666666667,
    "dur": 4.6,
-   "start_frame": 1955,
+   "start_frame": 2024,
    "n_frames": 138,
    "subs": [
     {
      "lines": [
       "Thanks for watching."
      ],
-     "t0": 0.228,
-     "t1": 1.728
+     "t0": 0.232,
+     "t1": 1.732
     },
     {
      "lines": [
       "Subscribe for more."
      ],
-     "t0": 1.748,
-     "t1": 3.552
+     "t0": 1.752,
+     "t1": 3.556
     }
    ],
-   "hash": "6f8bea32eb88"
+   "hash": "cabd486e6dd7"
   }
  ]
 }

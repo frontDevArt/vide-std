@@ -69,6 +69,15 @@ def test_sources_match_through_lead_in(tmp_path):
     assert package.sources(proj) == (refs, [])  # подводка и имя организации не мешают, без дублей
 
 
+def test_sources_split_original_to_replication(tmp_path):
+    refs = ["Côté, S., House, J., & Willer, R. (2015). High inequality. PNAS.",
+            "Schmukle, S. C., Korndörfer, M., & Egloff, B. (2019). No evidence. PNAS."]
+    scenes = [{"id": "s01", "template": "statement", "lines": ["Line."],
+               "params": {"text": "x", "source": {"text": "Côté et al., 2015 → Schmukle et al., 2019"}}}]
+    proj = _proj(tmp_path / "p", scenes, package={"sources": refs})
+    assert package.sources(proj) == (refs, [])  # «оригинал → репликация» — две цитаты
+
+
 def test_short_ref():
     assert package.short_ref("Bushman, B. J. (2002). Does venting. PSPB, 28. https://doi.org/10.1/x.") \
         == "Bushman (2002) https://doi.org/10.1/x"
