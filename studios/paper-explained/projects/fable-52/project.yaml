@@ -1,0 +1,73 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+schema_version: 1
+title: "Fable 5.2: что нового — и неделя в подписке Pro"
+topic: "Fable 5.2: что нового, зачем обновление, сравнение с Opus 5.5 и что с подпиской до 16 ноября"
+audience: "Русскоязычные пользователи Claude и Claude Code; вынести — что изменилось в Fable 5.2, когда брать его, а когда Opus 5.5, и как до 16 ноября пользоваться им в подписке Pro"
+kind: explainer           # длительность по речи (~80 с): пользователь — «где-то минута, можно больше»
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null     # по речи
+
+tts:
+  backend: elevenlabs     # голос студии Artspace (voices: в studio.yaml → .env студии)
+  voice: auto
+  rate: 110               # ElevenLabs — только числом (auto = несколько платных синтезов)
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # как в правилах студии: 0,42 / 0,6 с
+  start: 0.3
+  comma: 0.18
+  sentence: 0.42
+  scene: 0.6
+  end: 0.6
+
+style:
+  palette: neon           # перекрыто бренд-китом студии (defaults.style.brand)
+  font: Inter Display
+
+music:
+  enabled: false          # студия: без музыки — бумажные звуки под движение
+  level_db: -13
+  duck: true
+
+sfx: {enabled: true, level_db: 10}
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+# Картинки Kie: только предметы-вырезки без букв; текст, цифры и схемы — кодом (web.html).
+images:
+  enabled: true
+  style: "Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details"   # brand/PROMPTS.md
+  budget_usd: 1
+
+# Пакет к загрузке в TikTok (`python -m studio package fable-52` → studios/paper-explained/output/fable-52/).
+package:
+  title: "Вышел Fable 5.2: что нового и неделя в подписке Pro"
+  description: >-
+    Вышел Fable 5.2 — новая старшая модель Claude. Что в ней нового, чем она отличается от Opus 5.5 и как
+    по 16 ноября включительно (до 10:59 по Москве 17 ноября) пользоваться ею в подписке Pro — до половины
+    недельного лимита. Все цифры — из анонса Anthropic, независимых замеров пока мало.
+    А вы как думаете: Fable стоит своих денег или Opus хватает? Пишите в комментариях.
+  hashtags: [claude, anthropic, нейросети, ии, fable]
+  cover: {at: 7.1}          # конец первой сцены: заголовок, коробка и листок «9–16 ноября, включительно»
+  ai_label: false           # решение студии (CLAUDE.md, 2026-11-10): художественный коллаж и обычная синтезированная
+                            #   озвучка под отметку TikTok не попадают; реалистичных сцен и людей в ролике нет
+  sources:
+    - "Anthropic, «Introducing Claude Fable 5.2 and Claude Mythos 5.2», 9 ноября 2026. https://www.anthropic.com/claude-fable-and-mythos-5-2"
+    - "Claude Help Center, «Claude Fable 5.2 launch offers». https://support.claude.com/en/articles/17506494-claude-fable-5-2-launch-offers"
+
+avoid:
+  - "хайп и крик; цифры без плашки источника; логотипы Anthropic/Claude как свои"
+  - "раскладка «круг по центру + заголовок поперёк + предмет» из claude-limits"
+done_means:
+  - "каждая цифра в кадре — с источником (Anthropic, 9 нояб. 2026 / support.claude.com)"
+  - "в финале — вопрос для комментариев, лайк и подписка"

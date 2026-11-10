@@ -1,0 +1,41 @@
+<!-- s06 — Opus не выбрасываем: «Значит, Опус пора выбросить? | Нет. | Антропик сама советует
+     на каждый день брать Опус. | Фейбл — для самых тяжёлых задач.»
+     Идея: два инструмента. Кадр делит косая линия: слева молоток (Opus, на каждый день), справа кувалда (Fable,
+     тяжёлое). Вопрос гасится штампом «Нет».
+     b0: линия, «OPUS», молоток, «?»; b1: штамп; b2: цитата, на «каждый» — фишка «на каждый день»; b3: «FABLE», кувалда, фишка. -->
+<style>
+  .q { position: absolute; font-family: Oswald; font-weight: 700; font-size: 330px; line-height: .8; color: var(--terra); mix-blend-mode: multiply; }
+  .quote { width: 372px; box-sizing: border-box; padding: 18px 22px 16px; font-family: PTSerif; font-size: 27px; line-height: 1.28; color: var(--ink); }
+  .quote i { display: block; margin-top: 8px; font-size: 21px; color: var(--dim); }
+</style>
+<div class="stage">
+  <svg class="ink rings" width="780" height="960">
+    <path class="draw thin" pathLength="1" d="M436 20 L 372 930" style="--d: var(--b0); --dd: .6s"/>
+  </svg>
+  <div class="cross" style="left: 20px; top: 520px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 690px; top: 870px; width: 60px; height: 60px; --d: calc(var(--b3) + .4s)"></div>
+
+  <!-- слева: Opus и молоток -->
+  <div class="title" style="left: 0; top: 30px; font-size: 136px; color: var(--navy); --d: var(--b0)">Opus</div>
+  <div class="abs label appear" style="left: 262px; top: 44px; --d: calc(var(--b0) + .3s)">5.5</div>
+  <div class="abs pop" style="left: 232px; top: 196px; --r: 8deg" data-at="выбросить"><div class="q fadeTo" style="position: static; --d: calc(var(--b1) + .1s); --to: .22">?</div></div>
+  <div class="abs drop sticker" style="left: 36px; top: 180px; width: 230px; height: 400px; --r: -7deg; --d: calc(var(--b0) + .15s)" data-boil>
+    <img data-cut="HAMMER" data-box="230 400">
+  </div>
+  <div class="stamp" style="left: 150px; top: 330px; font-size: 118px; border-width: 9px; --r: -11deg; --d: var(--b1)">Нет</div>
+
+  <!-- цитата -->
+  <div class="abs slideL" style="left: 4px; top: 690px; --r: -1.5deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="sheet quote" data-torn="tb" data-depth="7">«Для большинства задач советуем начинать с Opus&nbsp;5.5»
+      <i>— Anthropic, анонс 9 нояб. 2026</i></div></div>
+  </div>
+  <div class="abs pop tanp chip shadow" style="left: 60px; top: 606px; --r: 3deg" data-at="каждый" data-boil>на каждый день</div>
+
+  <!-- справа: Fable и кувалда -->
+  <div class="title" style="left: 446px; top: 30px; font-size: 136px; color: var(--terra-dk); --d: var(--b3)">Fable</div>
+  <div class="abs label appear" style="left: 712px; top: 150px; --d: calc(var(--b3) + .3s)">5.2</div>
+  <div class="abs drop sticker" style="left: 470px; top: 196px; width: 250px; height: 570px; --r: 5deg; --d: calc(var(--b3) + .15s)" data-boil>
+    <img data-cut="SLEDGE" data-box="250 570">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 424px; top: 790px; --r: -3deg; --d: calc(var(--b3) + .45s)" data-boil>самые тяжёлые задачи</div>
+</div>

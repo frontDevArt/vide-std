@@ -4,11 +4,11 @@ measured:
 - language: ru
   backend: elevenlabs
   voice: 848d5c1805bc
-  wpm: 156.1
+  wpm: 150.0
   rate: 110.0
-  words: 103
-  project: claude-limits
-  date: '2026-11-09'
+  words: 185
+  project: fable-52
+  date: '2026-11-10'
 - language: ru
   backend: piper
   voice: 2dce0a8db652

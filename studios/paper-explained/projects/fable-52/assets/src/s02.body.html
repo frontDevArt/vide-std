@@ -1,0 +1,52 @@
+<!-- s02 — зачем: «Зачем обновление? | Прошлый Фейбл был старшим, | а младший Опус обгонял его в коде. |
+     Пять-два возвращает порядок: | теперь он выше обоих.»
+     Идея: забег. Три горизонтальные бумажные полосы от общей линии старта — длина по значению теста (от нуля);
+     младшая обгоняет старшую, новая — длиннее обеих, на неё падает корона.
+     b0: ярлык, заголовок, линия старта; b1: Fable 5.1; b2: Opus 5.5 и стрелка обгона; b3: Fable 5.2; b4: корона, фишка. -->
+<style>
+  .row { position: absolute; left: 20px; }
+  .row .name { font-family: PTMono; font-size: 25px; color: var(--navy); margin-bottom: 8px; white-space: nowrap; }
+  .row .name b { font-weight: 400; color: var(--dim); }
+  .bar { height: 76px; background: var(--grain), var(--tan); box-shadow: 0 8px 8px rgba(60,45,20,.18); display: flex; align-items: center; justify-content: flex-end; }
+  .bar span { font-family: Oswald; font-weight: 700; font-size: 58px; padding-right: 16px; letter-spacing: -1px; }
+  .bar.blue { background: var(--grain), var(--blue); color: var(--paper-hi); }
+  .bar.hot { background: var(--grain), var(--terra); color: var(--paper-hi); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: var(--b0)">Зачем обновление</div>
+  <div class="title" style="left: 0; top: 96px; font-size: 190px; --d: calc(var(--b0) + .15s)">Код</div>
+  <div class="abs label appear" style="left: 372px; top: 124px; line-height: 1.35; --d: calc(var(--b0) + .4s)">тест FrontierCode 2.0<br>принятых правок, %</div>
+  <div class="cross" style="left: 690px; top: 36px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 676px; top: 250px; width: 70px; height: 70px; --d: calc(var(--b1) + .3s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <path class="draw thin" pathLength="1" d="M20 290 L 20 800" style="--d: calc(var(--b0) + .3s); --dd: .5s"/>
+  </svg>
+
+  <div class="row" style="top: 306px">
+    <div class="name appear" style="--d: var(--b1)">Fable 5.1 <b>· старшая</b></div>
+    <div class="bar growX" style="width: 422px; --d: calc(var(--b1) + .1s)" data-sfx="slide"><span>32,4</span></div>
+  </div>
+  <div class="row" style="top: 456px">
+    <div class="name appear" style="--d: var(--b2)">Opus 5.5 <b>· младшая</b></div>
+    <div class="bar blue growX" style="width: 593px; --d: calc(var(--b2) + .1s)" data-sfx="slide"><span>45,5</span></div>
+  </div>
+  <!-- обгон: стрелка от конца старшей к концу младшей -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#C46557" stroke-width="8" stroke-linecap="round">
+    <path class="draw" data-at="обгонял" pathLength="1" style="--dd: .4s" d="M462 386 C 560 380, 650 420, 650 470"/>
+    <path class="draw" data-at="обгонял:0.38" pathLength="1" style="--dd: .15s" d="M628 446 L 650 474 L 676 448"/>
+  </g></svg>
+
+  <div class="row" style="top: 654px">
+    <div class="name appear" style="--d: var(--b3)">Fable 5.2</div>
+    <div class="bar hot growX" style="width: 640px; --d: calc(var(--b3) + .1s)" data-sfx="slide"><span>49,1</span></div>
+  </div>
+
+  <!-- корона на новой полосе -->
+  <div class="abs drop sticker" style="left: 596px; top: 584px; width: 150px; height: 112px; --r: 9deg; --d: var(--b4)" data-boil>
+    <img data-cut="CROWN" data-box="150 112">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 250px; top: 792px; --r: -2deg; --d: calc(var(--b4) + .3s)" data-boil>выше обоих</div>
+
+  <div class="src appear" style="top: 880px; --d: calc(var(--b1) + .3s)">Источник: Anthropic, 9 нояб. 2026. FrontierCode 2.0 — доля правок,
+    которые приняли бы мейнтейнеры; у каждой модели — её максимальный режим.</div>
+</div>

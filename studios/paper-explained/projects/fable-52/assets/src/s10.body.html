@@ -1,0 +1,64 @@
+<!-- s10 — призыв: «Стоит ли Фейбл своих денег, | или Опуса хватает? | Напишите в комментариях. |
+     Было полезно — | поставьте лайк и подпишитесь.»
+     Идея: голосование. Два бумажных бюллетеня с инструментами из s06, между ними «?», под ними — облачко
+     комментария; внизу — бумажное сердце и плюс-подписка, подпись канала.
+     b0: бюллетень Fable; b1: бюллетень Opus, «?»; b2: облачко; b3: сердце; b4: плюс, подпись канала. -->
+<style>
+  .ballot { position: relative; width: 340px; height: 330px; box-sizing: border-box; padding: 18px 22px; }
+  .ballot b { display: block; font-family: Oswald; font-weight: 700; font-size: 84px; line-height: .95; text-transform: uppercase; letter-spacing: -1px; }
+  .ballot .label { position: absolute; left: 22px; bottom: 18px; font-size: 22px; line-height: 1.25; }
+  .ballot .box { position: absolute; left: 22px; top: 116px; width: 54px; height: 54px; border: 4px solid var(--ink); box-sizing: border-box; }
+  .q { font-family: Oswald; font-weight: 700; font-size: 230px; line-height: .8; color: var(--terra); mix-blend-mode: multiply; }
+  .bubble { position: absolute; left: 0; top: 0; width: 520px; height: 150px; display: flex; align-items: center; justify-content: center;
+            font-family: Oswald; font-weight: 600; font-size: 36px; color: var(--ink); padding-bottom: 28px; box-sizing: border-box; }
+  .plus { width: 150px; height: 150px; border-radius: 50%; background: var(--grain), var(--navy); color: var(--paper-hi); font-family: Oswald; font-weight: 700;
+          font-size: 150px; line-height: 132px; text-align: center; }
+  .sign { font-family: Oswald; font-weight: 700; font-size: 62px; text-transform: uppercase; letter-spacing: -1px; white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 20px; top: 430px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 690px; top: 440px; width: 64px; height: 64px; --d: calc(var(--b1) + .3s)"></div>
+
+  <!-- бюллетень Fable -->
+  <div class="abs slideL" style="left: 8px; top: 34px; --r: -3deg; --d: var(--b0)" data-boil>
+    <div class="shadow"><div class="sheet ballot" data-torn="b" data-depth="7">
+      <b style="color: var(--terra-dk)">Fable</b><div class="box"></div>
+      <div class="label">стоит своих денег</div>
+    </div></div>
+  </div>
+  <div class="abs drop sticker" style="left: 244px; top: 92px; width: 120px; height: 280px; --r: 8deg; --d: calc(var(--b0) + .2s)" data-boil>
+    <img data-cut="SLEDGE" data-box="120 280">
+  </div>
+
+  <!-- бюллетень Opus -->
+  <div class="abs slideR" style="left: 420px; top: 78px; --r: 3deg; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="tanp ballot" data-torn="b" data-depth="7">
+      <b style="color: var(--navy)">Opus</b><div class="box"></div>
+      <div class="label">хватает и его</div>
+    </div></div>
+  </div>
+  <div class="abs drop sticker" style="left: 652px; top: 146px; width: 110px; height: 230px; --r: -7deg; --d: calc(var(--b1) + .2s)" data-boil>
+    <img data-cut="HAMMER" data-box="110 230">
+  </div>
+  <div class="abs pop" style="left: 338px; top: 150px; --r: 6deg" data-at="хватает"><div class="q">?</div></div>
+
+  <!-- облачко комментария -->
+  <div class="abs pop" style="left: 130px; top: 440px; width: 520px; height: 150px; --r: -2deg; --d: var(--b2)" data-boil>
+    <svg class="shadow" width="520" height="150" style="position: absolute; left: 0; top: 0; overflow: visible">
+      <path d="M8 6 H512 V118 H150 L96 148 L104 118 H8 Z" fill="#FBF8EF" stroke="#141210" stroke-width="3" stroke-linejoin="round"/></svg>
+    <div class="bubble">ваш ответ — в комментарии</div>
+  </div>
+
+  <!-- лайк и подписка -->
+  <div class="abs pop" style="left: 96px; top: 636px; --r: -8deg" data-at="лайк" data-boil>
+    <svg class="shadow" width="190" height="172" viewBox="0 0 190 172" style="overflow: visible">
+      <path d="M95 166 C 20 112, 4 74, 12 44 C 22 8, 70 2, 95 40 C 120 2, 168 8, 178 44 C 186 74, 170 112, 95 166 Z" fill="#C46557"/></svg>
+  </div>
+  <div class="abs label appear" style="left: 150px; top: 818px" data-at="лайк:0.3">лайк</div>
+  <div class="abs pop shadow" style="left: 430px; top: 640px; --r: 5deg" data-at="подпишитесь" data-boil><div class="plus">+</div></div>
+  <div class="abs label appear" style="left: 440px; top: 818px" data-at="подпишитесь:0.3">подписка</div>
+
+  <!-- подпись канала -->
+  <div class="abs slideL" style="left: 0; top: 872px; --d: calc(var(--e4) + .1s)"><div class="sign">На бумаге</div></div>
+  <div class="abs label appear" style="left: 318px; top: 902px; --d: calc(var(--e4) + .4s)">один ролик — один механизм</div>
+</div>
