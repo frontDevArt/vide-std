@@ -1,0 +1,71 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+schema_version: 1
+title: "Скиллы из Claude в Gemini 4 Argon и Codex"
+topic: "Видео-ответ на комментарии к ролику «ЛИМИТ»: можно ли скиллы из Claude (Graphify, PonyTail) поставить в Gemini 4 Argon и в Codex"
+audience: "Русскоязычные пользователи ИИ-агентов, которые сидят не только в Claude; вынести — скилл это открытый стандарт (папка с файлом SKILL.md), одна папка работает в Claude, у Google (через Antigravity) и в Codex; Graphify и PonyTail ставятся и туда"
+kind: explainer           # длительность по речи; бриф — 45–60 с (прошлый хит — 49 с)
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null     # по речи, цель ~55 с
+
+tts:
+  backend: elevenlabs     # голос студии Artspace (voices: в studio.yaml → .env студии)
+  voice: auto
+  rate: 110               # ElevenLabs — только числом (auto = несколько платных синтезов)
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # как в правилах студии: 0,42 / 0,6 с
+  start: 0.3
+  comma: 0.18
+  sentence: 0.42
+  scene: 0.6
+  end: 0.6
+
+style:
+  palette: neon           # перекрыто бренд-китом студии (defaults.style.brand)
+  font: Inter Display
+
+music:
+  enabled: false          # студия: без музыки — бумажные звуки под движение
+  level_db: -13
+  duck: true
+
+sfx: {enabled: true, level_db: 10}
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+# Картинки Kie: только предметы-вырезки без букв; текст, пути, команды и схемы — кодом (web.html).
+images:
+  enabled: true
+  style: "Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details"   # brand/PROMPTS.md
+  budget_usd: 1
+
+# Пакет к загрузке в TikTok (`python -m studio package skills-gemini-codex`) — обложка и подпись из брифа.
+package:
+  title: "А в Gemini и Codex? Скиллы из Claude — открытый стандарт"
+  description: >-
+    Скиллы из Claude работают и в Gemini 4 Argon, и в Codex: это один открытый формат SKILL.md. Для Argon нужен
+    агент Antigravity, в Codex скиллы встроены. Graphify и Ponytail уже ставятся в оба.
+  hashtags: [claude, gemini, codex, claudecode, нейросети, ии, программирование]
+  cover: {at: 4.3}          # конец s01: заголовок «А В GEMINI И CODEX?» (обложка из брифа) и обе карточки комментариев
+  ai_label: false           # решение студии (CLAUDE.md, 2026-11-10): коллаж и синтезированная озвучка под отметку не попадают
+
+avoid:
+  - {numbers_without_source: false}   # решение пользователя 2026-11-10: источников в кадре нет — факты сверены до ролика
+  - "хайп и крик; логотипы Claude/Google/OpenAI как свои"
+  - "не утверждать: что скиллы работают в обычном чате Gemini (приложение); что Argon бесплатный; точный путь папки скиллов в Antigravity"
+  - "раскладки прошлых роликов: круг + заголовок поперёк + предмет (claude-limits), забег-полосы, бирки лесенкой (fable-52)"
+done_means:
+  - "формула канала: боль → подробнее про боль → решение"
+  - "крючок — сами комментарии (izi_i_pizi_wlamon_skvizi: Gemini Argon; severyn: Codex), ответ «да» — в решении"
+  - "в кадре — только факты брифа 1–7, без плашек источников"
+  - "в финале — лайк и подписка (s12)"

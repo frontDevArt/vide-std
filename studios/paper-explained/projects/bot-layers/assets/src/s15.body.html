@@ -1,0 +1,31 @@
+<!-- s15 — инструменты, защита, кэш: «Инструменты — только вместе с доступом. | Защита — до запуска, |
+     кэш и роутер — когда пошёл поток.»
+     Идея: касса и мопед приходят вместе с замком — в башню встают MCP и ДОСТУП одной парой, замок между ними; сито —
+     ЗАЩИТА с ярлыком «до запуска»; на «поток» слева течёт поток вопросов клиентов — и только тогда КЭШ · РОУТЕР.
+     b0: касса, мопед, пара MCP + ДОСТУП, замок; b1: сито, «до запуска», ЗАЩИТА; b2: поток вопросов, КЭШ · РОУТЕР. -->
+<style>
+  .q { padding: 8px 16px 6px; font-family: PTSerif; font-size: 25px; color: var(--ink); white-space: nowrap; }
+  .tag { padding: 8px 16px 6px; font-family: Oswald; font-weight: 600; font-size: 30px; letter-spacing: 1px; color: var(--paper-hi); white-space: nowrap; }
+</style>
+<div class="stage">
+  <!--@tower {"kind": "straight", "n": 7, "add": [["инструменты", "доступом"], "защита", "кэш"], "hd": 0.6}-->
+
+  <!-- инструменты — только с доступом -->
+  <div class="abs drop sticker" style="left: 0; top: 76px; width: 190px; height: 170px; --r: -4deg" data-at="инструменты:-0.1" data-boil><img data-cut="REGISTER" data-box="190 170"></div>
+  <div class="abs drop sticker" style="left: 186px; top: 100px; width: 230px; height: 150px; --r: 3deg" data-at="инструменты:0.15" data-boil><img data-cut="SCOOTER" data-box="230 150"></div>
+  <div class="abs pop shadow" style="left: 40px; top: 262px; --r: -2deg" data-at="доступом"><div class="tag" style="background: var(--grain), var(--navy)">MCP + доступ — вместе</div></div>
+
+  <!-- защита — до запуска -->
+  <div class="abs drop sticker" style="left: 0; top: 340px; width: 200px; height: 180px; --r: -10deg" data-at="защита:-0.1" data-boil><img data-cut="SIEVE" data-box="200 180"></div>
+  <div class="abs pop shadow" style="left: 210px; top: 400px; --r: 3deg" data-at="запуска"><div class="tag" style="background: var(--grain), var(--olive)">до запуска</div></div>
+
+  <!-- поток -->
+  <div class="abs slideL shadow" style="left: 0; top: 580px; --r: -2deg" data-at="кэш:-0.2"><div class="tanp q">Где пицца?</div></div>
+  <div class="abs slideL shadow" style="left: 150px; top: 610px; --r: 2deg" data-at="кэш:0.05"><div class="tanp q">Сколько ждать?</div></div>
+  <div class="abs slideL shadow" style="left: 20px; top: 660px; --r: 1deg" data-at="роутер"><div class="tanp q">Меню?</div></div>
+  <div class="abs slideL shadow" style="left: 130px; top: 690px; --r: -3deg" data-at="когда"><div class="tanp q">Где пицца?</div></div>
+  <div class="abs slideL shadow" style="left: 0; top: 740px; --r: 2deg" data-at="пошёл"><div class="tanp q">Акции есть?</div></div>
+  <div class="abs slideL shadow" style="left: 190px; top: 770px; --r: -1deg" data-at="пошёл:0.15"><div class="tanp q">Где пицца?</div></div>
+  <div class="abs slideL shadow" style="left: 60px; top: 820px; --r: 1.5deg" data-at="поток"><div class="tanp q">Сколько ждать?</div></div>
+  <div class="abs hand appear" style="left: 250px; top: 860px; font-size: 54px; color: var(--navy)" data-at="поток:0.15">поток!</div>
+</div>

@@ -1,0 +1,10 @@
+# ИМЯ в data-cut → ключ кэша картинки Kie (assets/images/<ключ>.cut.png; происхождение — assets.yaml)
+# или путь к готовой вырезке от папки assets/ (рука и ножницы — вырезки бренда, brand/avatar/sources.json)
+HAND ../../../brand/avatar/src/hand.cut.png
+SCISSORS ../../../brand/avatar/src/scissors.cut.png
+GLASS 09ccdfab1c0d61ee
+EMPTY 97cd1213ceceff52
+PAPERS 1d14fce27293bdda
+SCROLL 956afd163fe113ca
+WATCH aae51d17e2db5136
+GAUGE 000cf7466a64c18b

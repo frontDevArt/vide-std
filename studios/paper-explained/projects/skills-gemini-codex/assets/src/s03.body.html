@@ -1,0 +1,37 @@
+<!-- s03 — подробнее про боль: «Кажется, переезд — это всё с нуля. | У каждого агента | свои папки и правила.»
+     Идея: переезд. Стопка коробок по диагонали снизу слева, справа сверху — «ВСЁ / С НУЛЯ?», справа снизу — три
+     отдельные карточки агентов, у каждой свои «папки» и «правила» (пометки рукой, скобка маркером).
+     b0: ярлык, коробки; «всё»: заголовок; b1: карточки агентов; b2: пометки и скобка. -->
+<style>
+  .agent { width: 300px; box-sizing: border-box; padding: 14px 20px 12px; }
+  .agent b { display: block; font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; color: var(--navy); }
+  .agent i { display: flex; gap: 10px; margin-top: 8px; font-style: normal; }
+  .agent i u { text-decoration: none; font-family: PTMono; font-size: 19px; color: var(--dim); border: 1.5px solid rgba(20,18,16,.35); padding: 3px 8px 1px; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: 0s">Переезд</div>
+  <div class="cross" style="left: 690px; top: 860px; --d: calc(var(--b1) + .3s)"></div>
+  <div class="dot" style="left: 30px; top: 330px; width: 70px; height: 70px; --d: calc(var(--b0) + .5s)"></div>
+
+  <div class="title" style="right: 0; top: 100px; font-size: 200px; text-align: right; color: var(--navy)" data-at="всё">Всё</div>
+  <div class="title" style="right: 0; top: 262px; font-size: 168px; text-align: right; color: var(--terra-dk)" data-at="нуля">с нуля?</div>
+
+  <!-- коробки: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 0; top: 400px; width: 400px; height: 500px; --r: -3deg; --d: .05s" data-boil>
+    <img data-cut="BOXES" data-box="400 500">
+  </div>
+
+  <!-- у каждого агента — своё -->
+  <div class="abs slideR" style="left: 440px; top: 470px; --r: 2deg; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="sheet agent" data-torn="lr" data-depth="5"><b>Claude</b><i><u>папки</u><u>правила</u></i></div></div>
+  </div>
+  <div class="abs slideR" style="left: 456px; top: 620px; --r: -1.5deg; --d: calc(var(--b1) + .15s)" data-boil>
+    <div class="shadow"><div class="sheet agent" data-torn="lr" data-depth="5"><b>Gemini</b><i><u>папки</u><u>правила</u></i></div></div>
+  </div>
+  <div class="abs slideR" style="left: 444px; top: 770px; --r: 1.5deg; --d: calc(var(--b1) + .3s)" data-boil>
+    <div class="shadow"><div class="sheet agent" data-torn="lr" data-depth="5"><b>Codex</b><i><u>папки</u><u>правила</u></i></div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#C46557" stroke-width="7" fill="none"
+       style="--d: var(--b2); --dd: .35s" d="M424 482 C 404 520, 404 860, 424 900"/></svg>
+  <div class="abs hand pop" style="left: 286px; top: 410px; font-size: 54px; color: var(--terra-dk); --r: -6deg" data-at="правила:0.1">у каждого своё</div>
+</div>

@@ -1,0 +1,95 @@
+# «Один лимит на двоих: ChatGPT и Codex с декабря», 11 сцен ≈ 51 с. План и факты — outline.md.
+# Формула канала: новость (s01) → боль (s02) → почему (s03–s04) → лечение на одном листе (s05–s08) → вылечено (s09).
+# Источников в кадре нет. Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/,
+# сборка build.py), предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md); надписи, ползунок, чат, лист — кодом.
+# Повторно предметы не заказываются: полный стакан s01 — в s09; ножницы s03 и рука s11 — вырезки бренда
+# (brand/avatar/src/).
+chapter: ch01
+title: "Один лимит на двоих"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "С декабря Чат-Джи-Пи-Ти и Кодекс | будут есть один лимит на двоих."
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - prompt: "a tall vintage soda fountain glass filled to the brim with a thick milkshake, two long striped drinking straws leaning out in opposite directions, front view"
+        role: subject
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Покодили вечер в Кодексе — | а в чате думающий режим | уже на нуле."
+    params: {file: assets/s02-pain.html, fade: false}
+    image:
+      - prompt: "a tall vintage soda fountain glass completely empty, only a thin foamy trace at the bottom, two long striped drinking straws leaning out in opposite directions, front view"
+        role: subject
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Потому что лимит теперь — в токенах."
+      - "Это всё, что модель | читает и пишет."
+    params: {file: assets/s03-tokens.html, fade: false}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Агент Кодекса | читает ваши файлы."
+      - "А длинный чат | перечитывается на каждый ответ."
+    params: {file: assets/s04-eaters.html, fade: false}
+    image:
+      - prompt: "a tall untidy stack of loose paper documents and sheets, slightly leaning, front view"
+        role: subject
+      - prompt: "a long sheet of paper unrolling from a scroll and hanging down in loose curls, front view"
+        role: subject
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Лечение — на одном листе."
+      - "Первое: | простые вопросы — в Инстант."
+      - "Он лимит не тратит."
+    params: {file: assets/s05-instant.html, fade: false}
+    image:
+      - prompt: "a vintage mechanical stopwatch with a blank dial face without any numbers, front view"
+        role: subject
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Второе: | ползунок размышления — | не выше, чем нужно."
+    params: {file: assets/s06-slider.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Третье: | новая задача — | новый чат."
+    params: {file: assets/s07-newchat.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Четвёртое: | Кодексу — точная задача | и нужные файлы."
+      - "Тогда он читает их, | а не весь проект."
+    params: {file: assets/s08-files.html, fade: false}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "И лимита хватит | и чату, и Кодексу."
+    params: {file: assets/s09-cured.html, fade: false}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "А вы — в чате | или в Кодексе?"
+    params: {file: assets/s10-question.html, fade: false}
+
+  - id: s11                 # обещание пользователя (150 лайков → ролик про плагины и настройки), лайк и подписка
+    template: paper_page
+    hold: 1.2
+    lines:
+      - "Если этот ролик наберёт сто пятьдесят лайков, | в следующем покажем, | как с плагинами и настройками | сэкономить ещё больше."
+      - "Подпишитесь, чтобы не пропустить."
+    params: {file: assets/s11-follow.html, fade: false}

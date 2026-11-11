@@ -1,0 +1,41 @@
+<!-- s08 — заплатка 6, КЭШ · РОУТЕР: «В пятницу вечером | счёт за нейросеть растёт быстрее заказов. | Ставите кэш и роутер.»
+     Идея: листок календаря «ПТ 19:00»; две чековые ленты печатаются вниз — «счёт» длинная и быстрая, «заказы» короткая
+     (штамп «СЧЁТ»); на «кэш» — две фишки: повтор → готовый ответ, простое → малая модель; коробка КЭШ · РОУТЕР.
+     b0: календарь; b1: ленты, штамп; b2: фишки, коробка. -->
+<style>
+  .leaf { width: 176px; box-sizing: border-box; text-align: center; padding-bottom: 12px; }
+  .leaf .top { background: var(--grain), var(--terra); color: var(--paper-hi); font-family: Oswald; font-weight: 600; font-size: 30px; letter-spacing: 3px; padding: 6px 0 4px; }
+  .leaf b { display: block; font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1.1; color: var(--navy); margin-top: 6px; }
+  .roll b { font-family: Oswald; font-weight: 600; font-size: 26px; letter-spacing: 2px; color: var(--navy); display: block; margin-bottom: 4px; }
+  .roll .dots { color: var(--dim); }
+  .rule { display: flex; gap: 10px; align-items: baseline; padding: 9px 16px 7px; font-family: PTMono; font-size: 22px; color: var(--ink); white-space: nowrap; }
+  .rule b { font-family: Oswald; font-weight: 600; font-size: 25px; color: var(--blue); letter-spacing: 1px; }
+</style>
+<div class="stage">
+  <div class="dot" style="left: 680px; top: 70px; width: 62px; height: 62px; --d: .4s"></div>
+  <!--@tower {"kind": "patch", "n": 7, "add": "кэш"}-->
+
+  <div class="abs drop" style="left: 0; top: 74px; --r: -4deg" data-at="пятницу" data-boil>
+    <div class="shadow"><div class="sheet leaf"><div class="top">ПЯТНИЦА</div><b>19:00</b></div></div>
+  </div>
+  <div class="abs hand appear" style="left: 200px; top: 120px; font-size: 52px" data-at="вечером">вечер, все голодные</div>
+
+  <!-- ленты: счёт и заказы -->
+  <div class="abs shadow" style="left: 0; top: 282px; --r: -1deg; transform: rotate(var(--r))">
+    <div class="print" style="--dd: 2.1s" data-sfx="slide" data-at="счёт"><div class="roll" style="width: 214px; height: 470px" data-torn="b" data-depth="7">
+      <b>СЧЁТ</b>
+      <span class="dots">запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽<br>запрос ···· ₽</span>
+    </div></div>
+  </div>
+  <div class="abs shadow" style="left: 236px; top: 282px; --r: 1.5deg; transform: rotate(var(--r))">
+    <div class="print" style="--dd: 2s" data-sfx="none" data-at="счёт:0.1"><div class="roll" style="width: 200px; height: 160px" data-torn="b" data-depth="7">
+      <b>ЗАКАЗЫ</b>
+      <span class="dots">пицца ···· ✓<br>пицца ···· ✓<br>пицца ···· ✓</span>
+    </div></div>
+  </div>
+  <div class="stamp" style="left: 236px; top: 520px; font-size: 72px; --r: -10deg" data-at="быстрее">Счёт</div>
+
+  <!-- кэш и роутер -->
+  <div class="abs slideL shadow" style="left: 0; top: 792px; --r: -1deg" data-at="кэш:0.1"><div class="sheet rule"><b>КЭШ</b> повтор → готовый ответ</div></div>
+  <div class="abs slideL shadow" style="left: 0; top: 862px; --r: 1deg" data-at="роутер"><div class="sheet rule"><b>РОУТЕР</b> простое → малая модель</div></div>
+</div>

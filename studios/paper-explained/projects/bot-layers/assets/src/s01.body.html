@@ -1,0 +1,29 @@
+<!-- s01 — боль: «Пиццерия ставит на сайт бота Кузю. | Первый же клиент спрашивает, где заказать пиццу, |
+     а Кузя советует пиццерию напротив.»
+     Идея: вывеска «Корочка» во всю ширину; под ней чат сайта — клиент спрашивает про пиццу, Кузя советует конкурента;
+     справа внизу — первая коробка МОДЕЛЬ и робот Кузя на ней: так начинается башня.
+     b0: вывеска, коробка, Кузя, подпись рукой; b1: пицца, реплика клиента; b2: ответ Кузи, штамп «КОНКУРЕНТ». -->
+<div class="stage">
+  <div class="cross" style="left: 696px; top: 292px; --d: .6s"></div>
+  <div class="dot" style="left: 640px; top: 470px; width: 66px; height: 66px; --d: .5s"></div>
+  <!--@tower {"kind": "patch", "n": 1, "intro": {"box": 0.15, "bot": "кузю"}}-->
+
+  <div class="title" style="left: -6px; top: 74px; font-size: 200px; color: var(--terra-dk); --d: .1s">Корочка</div>
+  <div class="abs pop tanp chip shadow" style="left: 8px; top: 252px; --r: -3deg; --d: .45s" data-boil>пиццерия · чат на сайте</div>
+
+  <!-- подпись рукой у робота -->
+  <div class="abs hand appear" style="left: 286px; top: 800px; font-size: 58px" data-at="кузю:0.3">бот Кузя</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="4" fill="none"
+       stroke-linecap="round" stroke-linejoin="round" style="--dd: .3s" data-at="кузю:0.45"
+       d="M440 832 C 470 846, 498 836, 520 806 M 504 806 L 521 804 L 520 822"/></svg>
+
+  <!-- чат -->
+  <div class="abs drop sticker" style="left: 0; top: 336px; width: 170px; height: 170px; --r: -8deg" data-at="пиццу:-0.3"><img data-cut="PIZZA" data-box="170 170"></div>
+  <div class="abs slideR" style="left: 160px; top: 336px; --r: 1.5deg" data-at="клиент" data-boil>
+    <div class="shadow"><div class="tanp bub" style="width: 290px" data-torn="b" data-depth="5"><span class="who">клиент</span>Где заказать пиццу?</div></div>
+  </div>
+  <div class="abs slideL" style="left: 0; top: 540px; --r: -1.5deg" data-at="кузя" data-boil>
+    <div class="shadow"><div class="sheet bub bot" style="width: 450px" data-torn="b" data-depth="5"><span class="mini sticker"><img data-cut="ROBOT" data-box="50 76"></span><span class="who">Кузя · бот</span>Загляните в «Пиццу напротив» — там вкусно!</div></div>
+  </div>
+  <div class="stamp" style="left: 146px; top: 676px; font-size: 54px; --r: -9deg" data-at="напротив">Конкурент</div>
+</div>

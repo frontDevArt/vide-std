@@ -1,0 +1,35 @@
+<!-- s10 — провал на восьмом слое: «Восемь слоёв, | месяц работы. | А потом кто-то делает промпт «повеселее». |
+     И Кузя снова советует пиццерию напротив.»
+     Идея: огромная «8» и «месяц работы» рукой; тот же стикер промпта из s03 въезжает, на нём рукой дописано
+     «+ будь повеселее!» — башня качается; на «снова» башня рассыпается в груду (её же стоит s11), Кузя — сверху
+     ответ про «Пиццу напротив», штамп «СНОВА».
+     b0: «8»; b1: «месяц работы»; b2: стикер, приписка, качка; b3: реплика, падение, штамп. -->
+<style>
+  .add { position: absolute; left: 30px; top: 214px; font-family: Caveat; font-weight: 700; font-size: 56px; color: var(--terra-dk); white-space: nowrap; }
+</style>
+<div class="stage">
+  <!--@tower {"kind": "patch", "n": 8, "wobble": "повеселее", "fall": "снова"}-->
+
+  <div class="abs fadeTo" style="--to: 0" data-at="кузя:-0.1">
+    <div class="num" style="position: absolute; left: 0; top: 64px; font-size: 330px" data-sfx="none"><span class="pop" style="display: inline-block; --d: .25s" data-sfx="stamp">8</span></div>
+    <div class="abs pop tanp chip shadow" style="left: 170px; top: 120px; font-size: 34px; --r: -4deg; --d: .55s" data-boil>слоёв</div>
+    <div class="abs hand appear" style="left: 170px; top: 210px; font-size: 64px" data-at="месяц">месяц работы</div>
+    <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="5" fill="none" stroke-linecap="round"
+         style="--dd: .3s" data-at="месяц:0.35" d="M172 290 C 250 282, 340 284, 420 292"/></svg>
+  </div>
+
+  <!-- тот же стикер промпта — с правкой рукой -->
+  <div class="abs slideL" style="left: 0; top: 352px; --r: -3deg" data-at="потом" data-boil>
+    <div class="shadow"><div class="sticky" style="width: 440px; height: 284px; position: relative">
+      <div class="hd">СИСТЕМНЫЙ ПРОМПТ<small>system prompt</small></div>
+      Ты — помощник<br>«Корочки». Конкурентов<br>не советуй.
+      <div class="add appear" data-at="повеселее:-0.1">+ будь повеселее!</div>
+    </div></div>
+  </div>
+
+  <!-- снова конкурент -->
+  <div class="abs slideL" style="left: 0; top: 70px; --r: -1.5deg" data-at="кузя" data-boil>
+    <div class="shadow"><div class="sheet bub bot" style="width: 450px" data-torn="b" data-depth="5"><span class="mini sticker"><img data-cut="ROBOT" data-box="50 76"></span><span class="who">Кузя · бот</span>Загляните в «Пиццу напротив» — там веселее!</div></div>
+  </div>
+  <div class="stamp" style="left: 236px; top: 216px; font-size: 64px; --r: 9deg" data-at="советует">Снова</div>
+</div>

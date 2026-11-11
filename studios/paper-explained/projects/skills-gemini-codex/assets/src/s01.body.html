@@ -1,0 +1,48 @@
+<!-- s01 — крючок: «Можно ли скиллы из Клода | поставить в Джемини Аргон? | А в Кодекс?»
+     Идея: ролик — ответ зрителям. Сверху карточка комментария izi_i_pizi_wlamon_skvizi, посередине заголовок в три
+     этажа «А В / GEMINI / И CODEX?» (он же обложка), снизу карточка severyn и рука канала указывает на неё.
+     b0: карточка 1; b1: «А В», «GEMINI», «4 Argon» рукой; b2: «И CODEX?», карточка 2, рука. -->
+<style>
+  .cmt { position: relative; box-sizing: border-box; padding: 20px 26px 16px 100px; }
+  .cmt .ava { position: absolute; left: 22px; top: 22px; width: 58px; height: 58px; border-radius: 50%; background: var(--grain), var(--tan);
+              font-family: Oswald; font-weight: 600; font-size: 30px; line-height: 58px; text-align: center; color: var(--navy); }
+  .cmt .nick { font-family: PTMono; font-size: 21px; color: var(--dim); }
+  .cmt .txt { font-family: PTSerif; font-size: 34px; line-height: 1.18; color: var(--ink); margin-top: 6px; }
+  .cmt .meta { display: flex; align-items: center; gap: 26px; margin-top: 10px; font-family: PTMono; font-size: 19px; color: var(--dim); }
+  .cmt .meta svg { width: 22px; height: 20px; vertical-align: -3px; margin-right: 6px; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 696px; top: 6px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 676px; top: 236px; width: 74px; height: 74px; --d: calc(var(--b1) + .2s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <path class="draw thin" pathLength="1" d="M0 262 L 640 262" style="--d: calc(var(--b0) + .3s); --dd: .5s"/>
+  </svg>
+
+  <!-- комментарий 1 -->
+  <div class="abs slideL" style="left: 10px; top: 40px; --r: -1.5deg; --d: 0s" data-boil>
+    <div class="shadow"><div class="sheet cmt" style="width: 650px" data-torn="b" data-depth="6">
+      <div class="ava">i</div>
+      <div class="nick">izi_i_pizi_wlamon_skvizi</div>
+      <div class="txt">Можно сделать подобные скилы на гемини аргон?</div>
+      <div class="meta"><span><svg viewBox="0 0 22 20"><path d="M11 19 C 4 13, 1 10, 1 6 A 5 5 0 0 1 11 4 A 5 5 0 0 1 21 6 C 21 10, 18 13, 11 19 Z" fill="#A9503F"/></svg>17</span><span>Ответить</span></div>
+    </div></div>
+  </div>
+
+  <!-- заголовок в три этажа — обложка -->
+  <div class="title" style="left: -4px; top: 296px; font-size: 168px; color: var(--navy); --d: var(--b1)">А в</div>
+  <div class="title" style="left: -6px; top: 428px; font-size: 246px; color: var(--terra-dk); --d: calc(var(--b1) + .2s)">Gemini</div>
+  <div class="abs pop tanp chip shadow" style="left: 470px; top: 344px; font-size: 40px; --r: -6deg" data-at="аргон" data-boil>4 Argon</div>
+  <div class="title" style="left: -4px; top: 628px; font-size: 172px; color: var(--navy); --d: var(--b2)">и Codex?</div>
+
+  <!-- комментарий 2 и рука канала -->
+  <div class="abs slideR" style="left: 318px; top: 790px; --r: 2.5deg; --d: calc(var(--b2) + .15s)" data-boil>
+    <div class="shadow"><div class="sheet cmt" style="width: 440px" data-torn="lr" data-depth="6">
+      <div class="ava">s</div>
+      <div class="nick">severyn</div>
+      <div class="txt">а на codex?</div>
+    </div></div>
+  </div>
+  <div class="abs slideL sticker" style="left: 4px; top: 790px; width: 290px; height: 150px; --r: -4deg; --d: calc(var(--b2) + .3s)" data-boil>
+    <img data-cut="HAND" data-box="290 150">
+  </div>
+</div>

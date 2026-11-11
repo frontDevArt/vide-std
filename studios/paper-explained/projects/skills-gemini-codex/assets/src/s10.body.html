@@ -1,0 +1,37 @@
+<!-- s10 — решение: «Понитейл — скилл для Клода | и правила для Кодекса и Джемини.»
+     Идея: развилка. «PONYTAIL» сверху, блистер слева, от него маркером две ветки вправо: «скилл» → Claude Code,
+     «правила» → Codex CLI и Gemini CLI; фишки встают на своих словах.
+     b0: заголовок, блистер, верхняя ветка, «скилл»; b1: нижняя ветка, «правила», фишки. -->
+<style>
+  .card { width: 400px; box-sizing: border-box; padding: 16px 22px 18px; }
+  .card h3 { margin: 0 0 10px; font-family: Oswald; font-weight: 700; font-size: 62px; line-height: 1; text-transform: uppercase; color: var(--navy); }
+  .card .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .card .c { padding: 8px 14px 6px; font-family: PTMono; font-size: 26px; color: var(--ink); border: 2px solid rgba(20,18,16,.4); white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 690px; top: 900px; --d: calc(var(--b1) + .3s)"></div>
+  <div class="dot" style="left: 40px; top: 640px; width: 70px; height: 70px; --d: calc(var(--b1) + .4s)"></div>
+
+  <div class="title" style="left: -6px; top: 40px; font-size: 168px; color: var(--navy); --d: 0s">PonyTail</div>
+
+  <!-- блистер: ч/б вырезка Kie (из s09) -->
+  <div class="abs drop sticker" style="left: 0; top: 330px; width: 300px; height: 250px; --r: -8deg; --d: calc(var(--b0) + .15s)" data-boil>
+    <img data-cut="BLISTER" data-box="300 250">
+  </div>
+
+  <!-- ветки -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#C46557" stroke-width="7" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="--dd: .3s" data-at="скилл" d="M290 440 C 320 380, 330 330, 362 312"/>
+    <path class="draw" pathLength="1" style="--dd: .3s" data-at="правила" d="M290 480 C 320 560, 330 620, 362 640"/>
+  </g></svg>
+
+  <div class="abs drop" style="left: 370px; top: 236px; --r: 1.5deg" data-at="скилл" data-boil>
+    <div class="shadow"><div class="sheet card" data-torn="lr" data-depth="5"><h3>скилл</h3>
+      <div class="row"><span class="c pop" data-at="клода">Claude Code</span></div></div></div>
+  </div>
+  <div class="abs drop" style="left: 370px; top: 540px; --r: -1.5deg" data-at="правила" data-boil>
+    <div class="shadow"><div class="tanp card" data-torn="lr" data-depth="5"><h3>правила</h3>
+      <div class="row"><span class="c pop" data-at="кодекса">Codex CLI</span><span class="c pop" data-at="джемини">Gemini CLI</span></div></div></div>
+  </div>
+  <div class="abs hand appear" style="left: 330px; top: 790px; font-size: 44px; color: var(--terra-dk); --d: calc(var(--b1) + 1.2s)">и для других агентов</div>
+</div>

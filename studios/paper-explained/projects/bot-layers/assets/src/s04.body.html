@@ -1,0 +1,52 @@
+<!-- s04 — заплатка 2, RAG: «Потом Кузя обещает за опоздание тысячу рублей, | а по правилам — промокод на триста. |
+     Подключаете раг — | поиск по документам.»
+     Идея: реплика Кузи с выдуманной 1000 ₽ (штамп «ВЫДУМАЛ»); под ней лист правил доставки, 300 ₽ — под маркером;
+     на «подключаете» ножницы режут лист на полоски, на «раг» полоски расходятся и падает коробка RAG; на «поиск»
+     нужная полоска (п. 4.2) обводится и пунктиром идёт к Кузе.
+     b0: реплика, штамп; b1: лист правил, маркер; b2: ножницы, разрезы, коробка; b3: п. 4.2 → Кузя, фишка RAG. -->
+<style>
+  .row { position: absolute; left: 0; width: 450px; height: 56px; box-sizing: border-box; padding: 15px 18px 0;
+         font-family: PTMono; font-size: 22px; color: var(--ink); white-space: nowrap;
+         animation: nudge .3s cubic-bezier(.2, .8, .3, 1.2) var(--d, 0s) both; }
+  @keyframes nudge { from { transform: none; } to { transform: translate(var(--nx, 0px), var(--ny, 0px)) rotate(var(--nr, 0deg)); } }
+  .row.hd { font-family: Oswald; font-weight: 600; font-size: 26px; letter-spacing: 3px; color: var(--navy); padding-top: 12px; }
+  .mk { background: linear-gradient(var(--mustard), var(--mustard)) no-repeat 0 62% / 0% 78%; mix-blend-mode: multiply;
+        animation: mk .3s linear var(--d, 0s) both; }
+  @keyframes mk { to { background-size: 100% 78%; } }
+  .ring { fill: none; stroke: var(--olive); stroke-width: 6; }
+</style>
+<div class="stage">
+  <div class="dot" style="left: 690px; top: 120px; width: 64px; height: 64px; --d: .4s"></div>
+  <!--@tower {"kind": "patch", "n": 3, "add": "раг"}-->
+
+  <!-- Кузя выдумал -->
+  <div class="abs slideL" style="left: 0; top: 76px; --r: -1.5deg" data-at="кузя" data-boil>
+    <div class="shadow"><div class="sheet bub bot" style="width: 450px" data-torn="b" data-depth="5"><span class="mini sticker"><img data-cut="ROBOT" data-box="50 76"></span><span class="who">Кузя · бот</span>Простите за опоздание! Вернём 1000 ₽.</div></div>
+  </div>
+  <div class="stamp" style="left: 250px; top: 214px; font-size: 50px; --r: 8deg; z-index: 3" data-at="тысячу">Выдумал</div>
+
+  <!-- лист правил: полоски, которые потом режут -->
+  <div class="abs slideR shadow" style="left: 0; top: 318px; width: 450px; height: 224px; --r: 1deg" data-at="правилам:-0.35">
+    <div class="row sheet hd" style="top: 0; --nx: -6px; --ny: -14px; --nr: -2deg" data-at="раг:0.05">ПРАВИЛА ДОСТАВКИ</div>
+    <div class="row sheet" style="top: 56px; --nx: 10px; --ny: -5px; --nr: 1.5deg" data-at="раг:0.05">4.1 Везём — до 60 минут</div>
+    <div class="row sheet" style="top: 112px; --nx: -8px; --ny: 5px; --nr: -1deg" data-at="раг:0.05">4.2 Опоздали — <span class="mk" data-sfx="marker" data-at="триста">промокод 300 ₽</span></div>
+    <div class="row sheet" style="top: 168px; --nx: 6px; --ny: 15px; --nr: 2deg" data-at="раг:0.05">4.3 Возврат — оператор</div>
+  </div>
+  <!-- разрезы и ножницы -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#141210" stroke-width="2.6" stroke-dasharray="9 8" stroke-linecap="round">
+    <path class="appear" data-sfx="none" style="--d: 0s" data-at="подключаете:0.2" d="M-6 374 L 460 376"/>
+    <path class="appear" data-sfx="none" style="--d: 0s" data-at="подключаете:0.35" d="M-6 430 L 460 432"/>
+    <path class="appear" data-sfx="none" style="--d: 0s" data-at="подключаете:0.5" d="M-6 486 L 460 488"/>
+  </g></svg>
+  <div class="abs slideR sticker" style="left: 250px; top: 560px; width: 200px; height: 130px; --r: -24deg" data-at="подключаете" data-boil>
+    <img data-cut="SCISSORS" data-box="200 130">
+  </div>
+
+  <!-- поиск по документам: нужная полоска — к Кузе -->
+  <svg class="ink" width="780" height="960">
+    <rect class="ring draw" pathLength="1" x="-10" y="428" width="470" height="62" rx="8" style="--dd: .3s" data-at="поиск"/>
+    <path class="draw" pathLength="1" fill="none" stroke="#6F8A4E" stroke-width="5" stroke-dasharray=".04 .025" stroke-linecap="round"
+          style="--dd: .4s" data-at="поиск:0.2" d="M462 458 C 520 470, 530 520, 556 560"/>
+  </svg>
+  <div class="abs pop tanp chip shadow" style="left: 10px; top: 724px; font-size: 30px; --r: -2deg" data-at="поиск:0.1" data-boil><b style="font-family: Oswald; color: var(--terra-dk)">RAG</b> — поиск по документам</div>
+</div>

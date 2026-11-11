@@ -1,0 +1,40 @@
+<!-- s09 — решение: «Наши таблетки — уже там. | Графифай ставится одной командой | и сам находит агента.»
+     Идея: таблетки из ролика «ЛИМИТ». Блистер справа сверху (две таблетки подписаны), «GRAPHIFY» крупно,
+     под ним лента терминала — команда печатается; из неё разлетаются фишки найденных агентов.
+     b0: ярлык, блистер, подписи; b1: заголовок, команда печатается; b2: фишки агентов с галочками. -->
+<style>
+  .term { width: 770px; box-sizing: border-box; padding: 16px 20px 13px; background: var(--grain), var(--navy); }
+  .term .type { display: block; overflow: hidden; white-space: nowrap; font-family: PTMono; font-size: 27px; color: var(--paper-hi);
+                width: 0; animation: type var(--dd, .8s) steps(44) var(--d) both; }
+  @keyframes type { to { width: 44ch; } }
+  .term .type em { font-style: normal; color: var(--mustard); }
+  .ag { padding: 10px 18px 8px; font-family: Oswald; font-weight: 600; font-size: 36px; color: var(--navy); white-space: nowrap; }
+  .ag::after { content: ' ✓'; color: var(--olive); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: 0s">Таблетки от лимита</div>
+  <div class="cross" style="left: 30px; top: 230px; --d: calc(var(--b0) + .3s)"></div>
+
+  <!-- блистер: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 400px; top: 20px; width: 360px; height: 290px; --r: 6deg; --d: .05s" data-boil>
+    <img data-cut="BLISTER" data-box="360 290">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 150px; top: 120px; font-size: 28px; --r: -3deg; --d: calc(var(--b0) + .55s)" data-boil>Graphify</div>
+  <div class="abs pop sheet chip shadow" style="left: 190px; top: 196px; font-size: 28px; --r: 2deg; --d: calc(var(--b0) + .7s)" data-boil>PonyTail</div>
+
+  <div class="title" style="left: -6px; top: 330px; font-size: 176px; color: var(--terra-dk); --d: var(--b1)">Graphify</div>
+
+  <!-- команда -->
+  <div class="abs slideL" style="left: 4px; top: 520px; --r: -1deg; --d: calc(var(--b1) + .1s)" data-boil>
+    <div class="shadow"><div class="term"><span class="type" data-at="ставится" style="--dd: .9s" data-sfx="tick"><em>$</em> pip install graphifyy &amp;&amp; graphify install</span></div></div>
+  </div>
+  <div class="abs hand appear" style="left: 470px; top: 610px; font-size: 48px" data-at="командой:0.3">одна команда</div>
+
+  <!-- находит агентов -->
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="2.6" fill="none"
+       style="--d: var(--b2); --dd: .3s" d="M200 600 C 180 650, 150 680, 120 700"/></svg>
+  <div class="abs pop sheet ag shadow" style="left: 0; top: 710px; --r: -3deg; --d: calc(var(--b2) + .1s)" data-boil>Claude Code</div>
+  <div class="abs pop sheet ag shadow" style="left: 280px; top: 720px; --r: 2deg; --d: calc(var(--b2) + .22s)" data-boil>Codex</div>
+  <div class="abs pop sheet ag shadow" style="left: 470px; top: 706px; --r: -2deg; --d: calc(var(--b2) + .34s)" data-boil>Gemini CLI</div>
+  <div class="abs pop tanp chip shadow" style="left: 200px; top: 820px; font-size: 30px; --r: 1deg; --d: calc(var(--b2) + .5s)" data-boil>и ещё 20+ инструментов</div>
+</div>

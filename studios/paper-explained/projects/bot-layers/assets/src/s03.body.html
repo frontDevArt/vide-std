@@ -1,0 +1,40 @@
+<!-- s03 — заплатка 1, ПРОМПТ: «Сначала пишете системный промпт — | скрытую инструкцию к каждому сообщению: |
+     «Ты помощник Корочки, | конкурентов не советуй».»
+     Идея: жёлтый стикер «системный промпт» сверху слева; под ним сообщения клиентов, к каждому прицеплена копия
+     стикера (инструкция едет с каждым сообщением, клиент её не видит); на «промпт» под Кузю падает коробка ПРОМПТ.
+     b0: стикер, коробка; b1: сообщения с метками, «клиенту не видно»; b2–b3: строки промпта на стикере. -->
+<style>
+  .msg { box-sizing: border-box; padding: 14px 22px 16px 22px; font-family: PTSerif; font-size: 31px; line-height: 1.15; white-space: nowrap; }
+  .tag { position: absolute; left: -16px; top: -20px; padding: 6px 12px 4px; font-family: PTMono; font-size: 18px; color: var(--navy);
+         background: var(--grain), var(--mustard); }
+  .ghost { color: rgba(20, 18, 16, .2); }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 470px; top: 86px; --d: .5s"></div>
+  <!--@tower {"kind": "patch", "n": 2, "add": "промпт"}-->
+
+  <!-- стикер системного промпта -->
+  <div class="abs drop" style="left: 0; top: 78px; --r: -2deg; --d: .3s" data-boil>
+    <div class="shadow"><div class="sticky" style="width: 450px; height: 316px">
+      <div class="hd">СИСТЕМНЫЙ ПРОМПТ<small>system prompt</small></div>
+      <div class="appear" data-at="помощник:-0.15">Ты — помощник<br>«Корочки».</div>
+      <div class="appear" style="margin-top: 14px" data-at="конкурентов">Конкурентов<br>не советуй.</div>
+    </div></div>
+  </div>
+  <div class="abs hand appear" style="left: 250px; top: 410px; font-size: 44px; color: var(--dim); --r: -3deg" data-at="скрытую">клиенту не видно</div>
+
+  <!-- к каждому сообщению -->
+  <div class="abs slideR" style="left: 40px; top: 488px; --r: 1deg" data-at="скрытую:0.2" data-boil>
+    <div class="shadow"><div class="tanp msg" style="width: 400px">Где заказать пиццу?</div></div>
+    <div class="tag pop" style="--r: -8deg" data-at="каждому">промпт</div>
+  </div>
+  <div class="abs slideR" style="left: 20px; top: 598px; --r: -1.5deg" data-at="скрытую:0.4" data-boil>
+    <div class="shadow"><div class="tanp msg" style="width: 420px">Сколько ждать курьера?</div></div>
+    <div class="tag pop" style="--r: -6deg" data-at="каждому:0.18">промпт</div>
+  </div>
+  <div class="abs slideR" style="left: 50px; top: 708px; --r: 1.5deg" data-at="скрытую:0.6" data-boil>
+    <div class="shadow"><div class="tanp msg" style="width: 330px">Есть без лука?</div></div>
+    <div class="tag pop" style="--r: -9deg" data-at="каждому:0.36">промпт</div>
+  </div>
+  <div class="abs hand appear" style="left: 70px; top: 830px; font-size: 48px; color: var(--navy)" data-at="сообщению">+ к каждому сообщению</div>
+</div>

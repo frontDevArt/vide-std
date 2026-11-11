@@ -1,0 +1,21 @@
+<!-- s10 — вопрос: «А вы — в чате | или в Кодексе?»
+     Идея: две огромные бумажные фишки наискосок — ChatGPT сверху слева, Codex снизу справа, между ними «или» рукой;
+     внизу строка «ответ — в комментариях» с карандашной чертой.
+     b0: ярлык, «чате» — ChatGPT; b1: «или», «кодексе» — Codex и «?». -->
+<style>
+  .big { padding: 26px 36px 20px; font-family: Oswald; font-weight: 700; line-height: .9; white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 0; --d: .05s">Вопрос</div>
+  <div class="dot" style="left: 660px; top: 100px; width: 70px; height: 70px; --d: .3s"></div>
+  <div class="abs slideL" style="left: 0; top: 110px; --r: -4deg" data-at="чате" data-boil>
+    <div class="shadow"><div class="sheet big" style="font-size: 150px; color: var(--navy)" data-torn="all" data-depth="7">ChatGPT</div></div>
+  </div>
+  <div class="abs hand pop" style="left: 300px; top: 360px; font-size: 130px; color: var(--terra-dk); --r: -6deg" data-at="или">или</div>
+  <div class="abs drop" style="left: 250px; top: 520px; --r: 3deg" data-at="кодексе" data-boil>
+    <div class="shadow"><div class="tanp big" style="font-size: 160px; color: var(--terra-dk)" data-torn="all" data-depth="7">Codex</div></div>
+  </div>
+  <div class="abs hand pop" style="left: 60px; top: 520px; font-size: 220px; color: var(--navy); --r: -10deg" data-at="кодексе:0.25">?</div>
+  <div class="abs appear label" style="left: 0; top: 860px; font-size: 30px; --d: .6s">✎ ответ — в комментариях</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="3" fill="none" opacity=".6" style="--d: .7s; --dd: .4s" d="M0 912 L 520 912"/></svg>
+</div>

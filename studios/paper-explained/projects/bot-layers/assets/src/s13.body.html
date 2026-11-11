@@ -1,0 +1,43 @@
+<!-- s13 — фундамент: «Фундамент — эвалы и трейсы, | с первого дня. | Сначала записываете, какой ответ правильный, |
+     и каждая правка проходит проверку.»
+     Идея: новая башня начинается с широкой синей плиты ЭВАЛЫ · ТРЕЙСЫ, Кузя встаёт на неё, рядом линейка; листок
+     «ДЕНЬ 1»; лист эвалов — контрольные вопросы и правильные ответы; внизу правка-стикер проходит проверку «48 / 48».
+     b0: плита, Кузя, фишки evals / traces; b1: «ДЕНЬ 1»; b2: лист эвалов по строкам; b3: правка → проверка. -->
+<style>
+  .leaf { width: 168px; box-sizing: border-box; text-align: center; padding-bottom: 10px; }
+  .leaf .top { background: var(--grain), var(--blue); color: var(--paper-hi); font-family: Oswald; font-weight: 600; font-size: 28px; letter-spacing: 3px; padding: 6px 0 4px; }
+  .leaf b { display: block; font-family: Oswald; font-weight: 700; font-size: 84px; line-height: 1.05; color: var(--navy); }
+  .ev { box-sizing: border-box; padding: 18px 22px 20px; }
+  .ev .hd { font-family: Oswald; font-weight: 600; font-size: 28px; letter-spacing: 3px; color: var(--blue); }
+  .ev .hd small { font-family: PTMono; font-weight: 400; font-size: 18px; letter-spacing: 1px; color: var(--dim); margin-left: 8px; }
+  .q { margin-top: 14px; padding-top: 12px; border-top: 1.5px dashed rgba(20, 18, 16, .3); }
+  .q i { display: block; font-family: PTSerif; font-style: normal; font-size: 27px; line-height: 1.15; color: var(--ink); }
+  .q b { display: block; font-family: PTMono; font-weight: 400; font-size: 22px; color: var(--olive); margin-top: 4px; }
+  .fix { padding: 10px 18px 8px; font-family: Caveat; font-weight: 700; font-size: 40px; color: var(--navy); background: var(--grain), var(--mustard); white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 700px; top: 120px; --d: .5s"></div>
+  <!--@tower {"kind": "straight", "n": 1, "intro": {"box": 0.2, "bot": "фундамент:0.55"}}-->
+  <div class="abs pop shadow" style="left: 300px; top: 780px; --r: -4deg" data-at="эвалы"><div class="chip sheet">evals</div></div>
+  <div class="abs pop shadow" style="left: 330px; top: 700px; --r: 3deg" data-at="трейсы"><div class="chip sheet">traces</div></div>
+
+  <div class="abs drop" style="left: 0; top: 70px; --r: -4deg" data-at="первого:-0.2" data-boil>
+    <div class="shadow"><div class="sheet leaf"><div class="top">ДЕНЬ</div><b>1</b></div></div>
+  </div>
+
+  <!-- лист эвалов: какой ответ правильный -->
+  <div class="abs slideR" style="left: 196px; top: 70px; --r: 1.5deg" data-at="сначала" data-boil>
+    <div class="shadow"><div class="sheet ev" style="width: 380px" data-torn="b" data-depth="6">
+      <div class="hd">ЭВАЛЫ<small>контрольные вопросы</small></div>
+      <div class="q appear" data-at="записываете"><i>Где заказать пиццу?</i><b>→ только в «Корочке»</b></div>
+      <div class="q appear" data-at="какой"><i>Курьер опоздал?</i><b>→ промокод 300 ₽</b></div>
+      <div class="q appear" data-at="правильный"><i>Чей это адрес?</i><b>→ не скажу: чужой</b></div>
+    </div></div>
+  </div>
+
+  <!-- каждая правка — через проверку -->
+  <div class="abs pop shadow" style="left: 0; top: 470px; --r: -3deg" data-at="правка:-0.2"><div class="fix">правка</div></div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .3s" data-at="проходит" d="M146 500 L 184 500 M 172 490 L 186 500 L 172 510"/></svg>
+  <div class="stamp olive" style="left: 196px; top: 466px; font-size: 40px; --r: -5deg" data-at="проверку">48 / 48 прошло</div>
+</div>

@@ -1,0 +1,46 @@
+<!-- s12 — настоящее лечение: «Настоящее лечение — | те же восемь слоёв, | но в другом порядке | и на фундаменте.»
+     Идея: бланк рецепта «Rp.» на весь кадр: те же восемь слоёв списком в новом порядке; первая строка — ЭВАЛЫ · ТРЕЙСЫ
+     (фундамент), стрелка рукой показывает, что она переехала с последнего места на первое; синий штамп «ФУНДАМЕНТ».
+     b0: бланк; b1: строки по одной; b2: стрелка «была последней»; b3: штамп, галочка у первой строки. -->
+<style>
+  .rx { position: relative; box-sizing: border-box; padding: 34px 40px; }
+  .rx .hd { font-family: Oswald; font-weight: 700; font-size: 72px; letter-spacing: 4px; color: var(--navy); line-height: 1; }
+  .rx .sub { font-family: PTMono; font-size: 21px; color: var(--dim); margin-top: 8px; }
+  .rx .rule { position: absolute; left: 40px; right: 40px; top: 160px; border-top: 3px solid var(--navy); opacity: .7; }
+  .rp { position: absolute; left: 44px; top: 178px; font-family: PTSerif; font-style: italic; font-weight: 700; font-size: 72px; color: var(--terra-dk); }
+  .ln { position: absolute; left: 70px; display: flex; align-items: center; gap: 18px; white-space: nowrap; }
+  .ln .n { width: 40px; font-family: Caveat; font-weight: 700; font-size: 52px; color: var(--navy); text-align: right; }
+  .ln .sw { width: 64px; height: 30px; border-radius: 2px; background: var(--grain), var(--kraft); position: relative;
+            box-shadow: inset 0 -3px 0 rgba(90, 60, 25, .25), inset 0 0 0 1.5px rgba(90, 60, 25, .4); }
+  .ln .sw::after { content: ''; position: absolute; left: 20px; right: 20px; top: 9px; height: 12px; background: var(--c, var(--navy)); }
+  .ln b { font-family: Oswald; font-weight: 600; font-size: 44px; letter-spacing: 1px; color: var(--ink); }
+  .ln small { font-family: PTMono; font-size: 20px; color: var(--dim); }
+  .ln.first .sw { width: 92px; background: var(--grain), var(--blue); }
+  .ln.first .sw::after { display: none; }
+  .ln.first b { color: var(--blue); }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 704px; top: 0; --d: .5s"></div>
+  <div class="abs drop" style="left: 14px; top: 36px; --r: -1.2deg; --d: .15s">
+    <div class="shadow"><div class="sheet rx" style="width: 744px; height: 900px" data-torn="b" data-depth="8">
+      <div class="hd">РЕЦЕПТ</div>
+      <div class="sub">бот Кузя · пиццерия «Корочка»</div>
+      <div class="rule"></div>
+    </div></div>
+    <div class="rp appear" style="--d: .5s">Rp.</div>
+    <div class="ln first pop" style="top: 270px; --d: 0s" data-at="восемь:-0.3"><span class="n">1</span><span class="sw"></span><b>ЭВАЛЫ · ТРЕЙСЫ</b></div>
+    <div class="ln pop" style="top: 364px" data-at="восемь:-0.15"><span class="n">2</span><span class="sw" style="--c: var(--navy)"></span><b>МОДЕЛЬ</b></div>
+    <div class="ln pop" style="top: 438px" data-at="восемь"><span class="n">3</span><span class="sw" style="--c: var(--mustard)"></span><b>ПРОМПТ</b><small>prompt</small></div>
+    <div class="ln pop" style="top: 512px" data-at="восемь:0.15"><span class="n">4</span><span class="sw" style="--c: var(--blue)"></span><b>RAG</b><small>поиск по документам</small></div>
+    <div class="ln pop" style="top: 586px" data-at="слоёв"><span class="n">5</span><span class="sw" style="--c: var(--terra)"></span><b>MCP + ДОСТУП</b></div>
+    <div class="ln pop" style="top: 660px" data-at="слоёв:0.15"><span class="n">6</span><span class="sw" style="--c: var(--olive)"></span><b>ЗАЩИТА</b><small>до запуска</small></div>
+    <div class="ln pop" style="top: 734px" data-at="слоёв:0.3"><span class="n">7</span><span class="sw" style="--c: var(--blue)"></span><b>КЭШ · РОУТЕР</b><small>при потоке</small></div>
+    <!-- была последней — стала первой -->
+    <svg class="ink" width="760" height="900"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"
+         style="--dd: .6s" data-at="другом" d="M640 840 C 740 760, 740 420, 690 300 M 676 318 L 690 296 L 708 316"/></svg>
+    <div class="abs hand appear" style="left: 290px; top: 812px; font-size: 48px; color: var(--navy)" data-at="другом:0.2">было последним</div>
+    <div class="stamp ok" style="left: 400px; top: 196px; font-size: 54px; --r: 6deg" data-at="фундаменте">Фундамент</div>
+    <svg class="ink" width="760" height="900"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"
+         style="--dd: .2s" data-at="фундаменте:0.35" d="M14 290 L 32 310 L 62 268"/></svg>
+  </div>
+</div>

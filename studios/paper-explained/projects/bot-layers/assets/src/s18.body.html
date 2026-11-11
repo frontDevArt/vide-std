@@ -1,0 +1,42 @@
+<!-- s18 — призыв: «Было полезно — | поставьте лайк и подпишитесь.» (правило студии)
+     Идея: карточка канала «На бумаге» (аватар — рука на терракотовом круге, brand/avatar/hand.png); справа Кузя на своей
+     первой коробке; на «лайк» — бумажное сердце, на «подпишитесь» — кнопка «Подписаться» и оливковая галочка.
+     b0: карточка, Кузя; «лайк»: сердце и штрихи; «подпишитесь»: кнопка, галочка. -->
+<style>
+  .chan { width: 740px; box-sizing: border-box; padding: 24px 28px; display: flex; align-items: center; gap: 28px; }
+  .chan img { width: 176px; height: 176px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 5px var(--navy); flex: none; }
+  .chan b { display: block; font-family: Oswald; font-weight: 700; font-size: 92px; line-height: .95; color: var(--navy); text-transform: uppercase; white-space: nowrap; }
+  .chan small { display: block; margin-top: 12px; font-family: PTMono; font-size: 32px; color: var(--dim); }
+  .heart { width: 300px; height: 272px; background: var(--grain), var(--terra);
+           clip-path: path('M150 268 C 56 199, 0 143, 0 81 A 75 75 0 0 1 150 53 A 75 75 0 0 1 300 81 C 300 143, 244 199, 150 268 Z'); }
+  .follow { padding: 16px 32px 12px; font-family: Oswald; font-weight: 600; font-size: 56px; color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+  .pbox1 { position: absolute; left: 480px; top: 830px; width: 270px; height: 64px; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 0; --d: 0s">Было полезно?</div>
+  <div class="cross" style="left: 700px; top: 4px; --d: .3s"></div>
+
+  <div class="abs drop" style="left: 20px; top: 76px; --r: -1.5deg; --d: .05s" data-boil>
+    <div class="shadow"><div class="sheet chan" data-torn="b" data-depth="7">
+      <img src="../../../brand/avatar/hand.png" alt="">
+      <div><b>На бумаге</b><small>@nabumage.tv</small></div>
+    </div></div>
+  </div>
+
+  <!-- Кузя на первой коробке -->
+  <div class="bx shadow drop pbox1" style="--d: .25s"><div class="box"><span class="lab" style="--c: var(--navy)">МОДЕЛЬ</span></div></div>
+  <div class="abs drop sticker" style="left: 540px; top: 572px; width: 150px; height: 262px; --r: 2deg; --d: .4s" data-boil=".6"><img data-cut="ROBOT" data-box="150 262 b"></div>
+
+  <!-- лайк -->
+  <div class="abs pop sticker" style="left: 70px; top: 380px; --r: -5deg" data-at="лайк" data-sfx="flick" data-boil><div class="heart"></div></div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#A9503F" stroke-width="7" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="--dd: .15s" data-at="лайк:0.2" d="M392 410 L 426 378"/>
+    <path class="draw" pathLength="1" style="--dd: .15s" data-at="лайк:0.25" d="M404 462 L 450 456"/>
+    <path class="draw" pathLength="1" style="--dd: .15s" data-at="лайк:0.3" d="M366 374 L 376 330"/>
+  </g></svg>
+
+  <!-- подписка -->
+  <div class="abs pop shadow" style="left: 20px; top: 720px; --r: 2deg" data-at="подпишитесь" data-boil><div class="follow">+ Подписаться</div></div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .2s" data-at="подпишитесь:0.6" d="M380 860 L 404 886 L 450 826"/></svg>
+</div>

@@ -1,0 +1,159 @@
+# «Бот на нейросети — это восемь слоёв», 18 сцен ≈ 2:00. План, факты и визуальная линия — outline.md.
+# Версия 3 — слияние (пользователь 2026-11-10): история «проблема за проблемой» из версии 1 + лечение из версии 2.
+#   s01–s02  боль сразу: Кузя советует конкурента; «почти каждая компания лечит это неправильно»;
+#   s03–s10  неправильное лечение — заплатки: провал → слой, восемь раз, и всё равно провал на восьмом слое;
+#   s11      диагноз: слои ставили после пожара, проверку — последней;
+#   s12–s16  настоящее лечение: те же восемь слоёв в другом порядке, на фундаменте из эвалов и трейсов —
+#            та же правка «повеселее» теперь ловится до клиентов;
+#   s17–s18  вывод «заплатки лечат симптомы, порядок лечит бота», вопрос, лайк и подписка.
+# Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/, сборка build.py),
+# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md); коробки-слои, чат, листы, рецепт и схемы — кодом.
+# Сквозное: робот Кузя на башне коробок от пиццы; в заплатках башня кривая, скотч, падает (s10);
+# в лечении — ровная, на фундаменте. Предметы заказываются один раз: робот и пицца s01 — дальше везде;
+# касса и мопед s05 — в s15; замок s06 — в s15; сито s07; ножницы s04 — вырезка бренда, бесплатно.
+chapter: ch01
+title: "Восемь слоёв"
+scenes:
+  # ── боль сразу ──
+  - id: s01
+    template: paper_page
+    lines:
+      - "Пиццерия ставит на сайт бота Кузю."
+      - "Первый же клиент спрашивает, где заказать пиццу, | а Кузя советует пиццерию напротив."
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - prompt: "a vintage tin toy robot standing upright, boxy body, square head with two round eyes and a small antenna, arms slightly raised, front view"
+        role: subject
+      - prompt: "a whole round pizza with melted cheese and a few slices of salami, seen from directly above"
+        role: subject
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Так начинает почти каждая компания."
+      - "И почти каждая лечит это неправильно."
+    params: {file: assets/s02-wrong.html, fade: false}
+
+  # ── неправильное лечение: заплатки ──
+  - id: s03                 # заплатка 1: ПРОМПТ
+    template: paper_page
+    lines:
+      - "Сначала пишете системный промпт — | скрытую инструкцию к каждому сообщению:"
+      - "«Ты помощник Корочки, | конкурентов не советуй»."
+    params: {file: assets/s03-prompt.html, fade: false}
+
+  - id: s04                 # выдумывает → RAG
+    template: paper_page
+    lines:
+      - "Потом Кузя обещает за опоздание тысячу рублей, | а по правилам — промокод на триста."
+      - "Подключаете раг — | поиск по документам."
+    params: {file: assets/s04-rag.html, fade: false}
+
+  - id: s05                 # только говорит → MCP
+    template: paper_page
+    lines:
+      - "Клиенты просят отменить заказ, | а Кузя умеет только объяснять."
+      - "Даёте ему кассу и доставку | через эм-си-пи."
+    params: {file: assets/s05-mcp.html, fade: false}
+    image:
+      - prompt: "a vintage mechanical cash register with a crank handle, three-quarter view"
+        role: subject
+      - prompt: "a vintage delivery scooter with a plain square delivery box on the rear rack, side view"
+        role: subject
+
+  - id: s06                 # чужие данные → ДОСТУП
+    template: paper_page
+    lines:
+      - "Тут кто-то узнаёт у Кузи | чужой адрес доставки."
+      - "Добавляете доступ."
+    params: {file: assets/s06-access.html, fade: false}
+    image:
+      - prompt: "a vintage closed iron padlock with a curved shackle, front view"
+        role: subject
+
+  - id: s07                 # промпт-инъекция → ЗАЩИТА
+    template: paper_page
+    lines:
+      - "Одна строчка белым по белому — | и Кузя раздаёт всем промокоды."
+      - "Ставите защиту."
+    params: {file: assets/s07-guard.html, fade: false}
+    image:
+      - prompt: "a vintage round metal kitchen sieve with a long handle, seen from above at an angle"
+        role: subject
+
+  - id: s08                 # счёт → КЭШ · РОУТЕР
+    template: paper_page
+    lines:
+      - "В пятницу вечером | счёт за нейросеть растёт быстрее заказов."
+      - "Ставите кэш и роутер."
+    params: {file: assets/s08-cache.html, fade: false}
+
+  - id: s09                 # не видно, где сломалось → ТРЕЙСЫ · ЭВАЛЫ
+    template: paper_page
+    lines:
+      - "Кузя пишет «курьер у двери», | а курьер час стоит на месте, | и никто не понимает почему."
+      - "Добавляете трейсы и эвалы."
+    params: {file: assets/s09-trace.html, fade: false}
+
+  - id: s10                 # провал на восьмом слое: башня падает
+    template: paper_page
+    lines:
+      - "Восемь слоёв, | месяц работы."
+      - "А потом кто-то делает промпт «повеселее»."
+      - "И Кузя снова советует пиццерию напротив."
+    params: {file: assets/s10-again.html, fade: false}
+
+  - id: s11                 # диагноз
+    template: paper_page
+    lines:
+      - "Это не лечение, а заплатки."
+      - "Каждый слой ставили после пожара, | а проверку — последней."
+    params: {file: assets/s11-diagnosis.html, fade: false}
+
+  # ── настоящее лечение: те же слои, другой порядок, фундамент ──
+  - id: s12
+    template: paper_page
+    lines:
+      - "Настоящее лечение — | те же восемь слоёв, | но в другом порядке | и на фундаменте."
+    params: {file: assets/s12-recipe.html, fade: false}
+
+  - id: s13                 # фундамент: эвалы и трейсы с первого дня
+    template: paper_page
+    lines:
+      - "Фундамент — эвалы и трейсы, | с первого дня."
+      - "Сначала записываете, какой ответ правильный, | и каждая правка проходит проверку."
+    params: {file: assets/s13-foundation.html, fade: false}
+
+  - id: s14                 # модель, промпт, раг
+    template: paper_page
+    lines:
+      - "Потом модель, промпт и раг — | и ответы сразу сверяются с правилами."
+    params: {file: assets/s14-core.html, fade: false}
+
+  - id: s15                 # инструменты с доступом, защита, кэш
+    template: paper_page
+    lines:
+      - "Инструменты — только вместе с доступом."
+      - "Защита — до запуска, | кэш и роутер — когда пошёл поток."
+    params: {file: assets/s15-tools.html, fade: false}
+
+  - id: s16                 # та же правка ловится
+    template: paper_page
+    lines:
+      - "И когда кто-то делает промпт «повеселее», | эвалы ловят правку раньше клиентов."
+    params: {file: assets/s16-caught.html, fade: false}
+
+  - id: s17                 # вывод и вопрос для комментариев
+    template: paper_page
+    lines:
+      - "Заплатки лечат симптомы. | Порядок лечит бота."
+      - "Ваш бот — на заплатках или на фундаменте?"
+      - "Пишите в комментариях."
+    params: {file: assets/s17-question.html, fade: false}
+
+  - id: s18                 # призыв: лайк и подписка (правило студии)
+    template: paper_page
+    hold: 1.2
+    lines:
+      - "Было полезно — | поставьте лайк и подпишитесь."
+    params: {file: assets/s18-follow.html, fade: false}

@@ -1,0 +1,42 @@
+<!-- s05 — решение: «Но скилл — это открытый стандарт. | Просто папка | с файлом-инструкцией.»
+     Идея: разворот к решению. Сверху «ОТКРЫТЫЙ / СТАНДАРТ», слева папка, из-под неё вправо выезжает лист SKILL.md
+     (шапка name / description, ниже шаги); маркер выделяет шапку, внизу пометка рукой.
+     b0: ярлык «решение», заголовок; b1: папка; b2: лист, выделения, пометка. -->
+<style>
+  .md { width: 480px; box-sizing: border-box; padding: 22px 24px 26px 56px; font-family: PTMono; font-size: 25px; line-height: 1.5; color: var(--ink); }
+  .md .fn { font-family: Oswald; font-weight: 700; font-size: 44px; line-height: 1.1; color: var(--navy); margin-bottom: 8px; }
+  .md .k { color: var(--terra-dk); }
+  .md .dim { color: var(--dim); }
+  .md .hl { position: relative; }
+  .md .hl::before { content: ''; position: absolute; left: -6px; right: -6px; top: 8px; bottom: 4px; background: var(--mustard); opacity: .75;
+                    mix-blend-mode: multiply; transform-origin: 0 50%; animation: growX .3s ease-out var(--d) both; }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; background: var(--olive); --d: 0s">Решение</div>
+  <div class="cross" style="left: 690px; top: 26px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 330px; width: 70px; height: 70px; --d: calc(var(--b1) + .3s)"></div>
+
+  <div class="title" style="left: -4px; top: 104px; font-size: 150px; color: var(--navy)" data-at="открытый">Открытый</div>
+  <div class="title" style="left: -4px; top: 226px; font-size: 150px; color: var(--olive)" data-at="стандарт">стандарт</div>
+
+  <!-- лист SKILL.md выезжает из папки (под ней) -->
+  <div class="abs slideL" style="left: 276px; top: 380px; --r: 3deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="sheet md" data-torn="b" data-depth="7">
+      <div class="fn">SKILL.md</div>
+      <div class="dim">---</div>
+      <div><span class="hl" style="--d: calc(var(--b2) + .45s)"><span class="k">name:</span> my-skill</span></div>
+      <div><span class="hl" style="--d: calc(var(--b2) + .6s)"><span class="k">description:</span> что</span></div>
+      <div class="dim">&nbsp;&nbsp;умеет и когда звать</div>
+      <div class="dim">---</div>
+      <div>1. Сделай…</div>
+      <div>2. Проверь…</div>
+    </div></div>
+  </div>
+
+  <!-- папка: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 0; top: 440px; width: 300px; height: 270px; --r: -5deg; --d: var(--b1)" data-boil>
+    <img data-cut="FOLDER" data-box="300 270">
+  </div>
+
+  <div class="abs hand appear" style="left: 20px; top: 812px; font-size: 50px; line-height: 1.05; --d: calc(var(--b2) + .8s)">сверху — имя и описание,<br>ниже — инструкции</div>
+</div>

@@ -1,0 +1,22 @@
+<!-- s05 — лечение 1: «Лечение — на одном листе. | Первое: | простые вопросы — в Инстант. | Он лимит не тратит.»
+     Идея: лечение — один лист (низ кадра, на одном месте до s09): падает с четырьмя пустыми пунктами. Верх — сначала
+     огромное «ЛЕЧЕНИЕ», потом иллюстрация пункта: секундомер (быстрый режим), фишка Instant и большой «0» — из
+     лимита не берёт.
+     b0: «ЛЕЧЕНИЕ», лист; b1: ярлык, секундомер; b2: пункт 1 пишется, «инстант» — фишка; b3: «0 из лимита», галочка. -->
+<div class="stage">
+  <div class="cross" style="left: 690px; top: 20px; --d: .5s"></div>
+  <div class="fadeTo" style="--to: 0; --d: 2.1s">
+    <div class="title" style="left: -6px; top: 160px; font-size: 186px; color: var(--navy); --d: .2s">Лечение</div>
+  </div>
+  <div class="kicker" style="left: 0; top: 0" data-at="первое:-0.15">Лечение</div>
+
+  <div class="abs drop sticker" style="left: 10px; top: 60px; width: 310px; height: 420px; --r: -3deg" data-at="первое" data-boil>
+    <div style="position: absolute; left: 45px; top: 138px; width: 220px; height: 220px; border-radius: 50%; background: var(--paper-hi)"></div>
+    <img data-cut="WATCH" data-box="310 420">
+  </div>
+  <div class="abs pop tanp chip shadow" style="left: 350px; top: 90px; font-size: 64px; --r: -3deg" data-at="инстант" data-boil>Instant</div>
+  <div class="abs num pop" style="left: 360px; top: 210px; font-size: 290px; color: var(--olive); --r: 2deg" data-at="лимит">0</div>
+  <div class="abs hand appear" style="left: 520px; top: 330px; font-size: 60px; --r: -4deg" data-at="тратит">из лимита</div>
+
+  <!--@sheet {"done": 0, "add": "простые", "tick": "тратит", "intro": 0.85}-->
+</div>

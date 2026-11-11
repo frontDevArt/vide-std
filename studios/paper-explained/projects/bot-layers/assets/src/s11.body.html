@@ -1,0 +1,46 @@
+<!-- s11 — диагноз: «Это не лечение, а заплатки. | Каждый слой ставили после пожара, | а проверку — последней.»
+     Идея: внизу — груда коробок после падения (как в конце s10), Кузя лежит на боку. Сверху слово «ЛЕЧЕНИЕ»
+     зачёркивается, поверх — штамп «ЗАПЛАТКИ». Посередине лента времени: восемь язычков пламени, после каждого падает
+     коробка; последняя (проверка) обводится — «проверка — последней».
+     b0: зачёркнутое «лечение», штамп; b1: пожар → коробка ×8; b2: обводка последней, подпись рукой. -->
+<style>
+  .mbox { position: absolute; width: 62px; height: 26px; border-radius: 2px; background: var(--grain), var(--kraft);
+          box-shadow: inset 0 -3px 0 rgba(90, 60, 25, .25), inset 0 0 0 1.5px rgba(90, 60, 25, .4); }
+  .mbox::after { content: ''; position: absolute; left: 18px; right: 18px; top: 8px; height: 10px; background: var(--c, var(--navy)); }
+</style>
+<div class="stage">
+  <!--@tower {"kind": "patch", "n": 8, "rubble": true}-->
+
+  <div class="title" style="left: -4px; top: 70px; font-size: 150px; color: var(--navy); --d: .1s">Лечение</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#A9503F" stroke-width="13" fill="none" stroke-linecap="round"
+       style="--dd: .3s" data-at="лечение:0.15" d="M-6 150 C 160 140, 380 130, 560 118"/></svg>
+  <div class="stamp" style="left: 210px; top: 168px; font-size: 92px; --r: -8deg" data-at="заплатки">Заплатки</div>
+
+  <!-- лента времени: пожар → слой, восемь раз -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#141210" stroke-width="2.4" opacity=".55">
+    <path class="appear" data-sfx="none" style="--d: 0s" data-at="каждый" d="M10 470 L 760 470 M 744 460 L 762 470 L 744 480"/></g></svg>
+  <div class="abs label appear" style="left: 650px; top: 482px; color: var(--dim)" data-at="каждый">время</div>
+  <div class="abs pop" style="left: 30px; top: 372px; --r: 6deg" data-at="каждый:0.00" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 21px; top: 444px; --c: var(--navy); --r: -4deg" data-at="каждый:0.12"></div>
+  <div class="abs pop" style="left: 122px; top: 372px; --r: -6deg" data-at="каждый:0.22" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 113px; top: 444px; --c: var(--mustard); --r: 4deg" data-at="каждый:0.34"></div>
+  <div class="abs pop" style="left: 214px; top: 372px; --r: 6deg" data-at="каждый:0.44" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 205px; top: 444px; --c: var(--blue); --r: -4deg" data-at="каждый:0.56"></div>
+  <div class="abs pop" style="left: 306px; top: 372px; --r: -6deg" data-at="каждый:0.66" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 297px; top: 444px; --c: var(--terra); --r: 4deg" data-at="каждый:0.78"></div>
+  <div class="abs pop" style="left: 398px; top: 372px; --r: 6deg" data-at="каждый:0.88" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 389px; top: 444px; --c: var(--navy); --r: -4deg" data-at="каждый:1.00"></div>
+  <div class="abs pop" style="left: 490px; top: 372px; --r: -6deg" data-at="каждый:1.10" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 481px; top: 444px; --c: var(--olive); --r: 4deg" data-at="каждый:1.22"></div>
+  <div class="abs pop" style="left: 582px; top: 372px; --r: 6deg" data-at="каждый:1.32" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 573px; top: 444px; --c: var(--blue); --r: -4deg" data-at="каждый:1.44"></div>
+  <div class="abs pop" style="left: 674px; top: 372px; --r: -6deg" data-at="каждый:1.54" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 665px; top: 444px; --c: var(--olive); --r: 4deg" data-at="каждый:1.66"></div>
+  <svg class="ink" width="780" height="960">
+    <ellipse class="draw" pathLength="1" cx="696" cy="456" rx="52" ry="30" fill="none" stroke="#A9503F" stroke-width="6"
+             style="--dd: .3s" data-at="проверку"/>
+  </svg>
+  <div class="abs hand appear" style="left: 300px; top: 520px; font-size: 56px; color: var(--terra-dk)" data-at="последней:-0.15">проверка — последней</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#A9503F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .25s" data-at="последней:0.1" d="M610 540 C 650 530, 670 510, 680 486 M 668 494 L 681 484 L 690 498"/></svg>
+</div>

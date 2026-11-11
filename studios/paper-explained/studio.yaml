@@ -24,4 +24,5 @@ max_accents: 2             # переопределений голоса (voice:
 
 # Ворота качества (ROADMAP D4, studio/gates.py): правила для всех проектов студии, к ним — avoid / done_means
 # проекта (одноимённое правило проекта главнее, `false` — выключить). Строка — пункт чек-листа «глазами» в qa.
-quality: {avoid: [{numbers_without_source: true}]}
+# Источники в кадре не нужны (решение пользователя 2026-11-10, CLAUDE.md «Правила контента»): факты сверяются до ролика.
+quality: {avoid: [{numbers_without_source: false}]}

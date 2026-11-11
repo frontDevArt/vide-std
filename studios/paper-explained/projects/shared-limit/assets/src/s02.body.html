@@ -1,0 +1,43 @@
+<!-- s02 — боль: «Покодили вечер в Кодексе — | а в чате думающий режим | уже на нуле.»
+     Идея: Кодекс пьёт из общего стакана. Сверху лента терминала Codex печатает работу вечера, под ней бумажное окно
+     чата и полоса «общий лимит», которая сливается, пока Кодекс работает; справа внизу — тот же стакан, пустой.
+     b0: терминал строка за строкой, «вечер» — луна рукой, лимит сливается; b1: окно чата, «думающий» — фишка
+     режима; «нуле»: штамп «НА НУЛЕ». -->
+<div class="stage">
+  <div class="cross" style="left: 700px; top: 286px; --d: .4s"></div>
+
+  <!-- терминал Codex -->
+  <div class="abs slideL" style="left: 0; top: 16px; --r: -1deg; --d: 0s" data-boil=".6">
+    <div class="shadow"><div class="term" style="width: 590px" data-torn="b" data-depth="6">
+      <div class="appear" style="--d: .1s"><span class="p">codex ›</span> перепиши модуль оплаты</div>
+      <div class="appear dim" style="--d: .45s">  читаю app.py, billing.py…</div>
+      <div class="appear dim" style="--d: .8s">  правлю ui.tsx, api.ts…</div>
+      <div class="appear dim" style="--d: 1.15s">  запускаю тесты…</div>
+      <div class="appear" style="--d: 1.5s"><span class="p">›</span> ещё раз, с нуля</div>
+    </div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="5" fill="none"
+       style="--dd: .3s" data-at="вечер" d="M690 40 A 46 46 0 1 0 742 116 A 36 36 0 1 1 690 40 Z"/></svg>
+  <div class="abs hand appear" style="left: 616px; top: 140px; font-size: 54px; --r: 4deg" data-at="вечер:0.2">вечер</div>
+
+  <!-- общий лимит сливается, пока работает Кодекс -->
+  <div class="abs label appear" style="left: 0; top: 296px; --d: .2s">общий лимит</div>
+  <div class="abs tanp" style="left: 0; top: 330px; width: 470px; height: 38px"></div>
+  <div class="abs drain" style="left: 0; top: 330px; width: 470px; height: 38px; background: var(--grain), var(--olive); --d: .3s; --dd: 1.6s"></div>
+
+  <!-- бумажное окно чата -->
+  <div class="abs drop" style="left: 0; top: 410px; --r: -1.5deg; --d: var(--b1)" data-boil=".6">
+    <div class="shadow"><div class="sheet win" style="width: 490px">
+      <div class="bar"><b>ChatGPT</b><i class="pop" data-at="думающий">Thinking · Medium</i></div>
+      <div class="msg">Разбери этот договор</div>
+      <div class="skel" style="width: 380px"></div><div class="skel" style="width: 300px"></div><div class="skel" style="width: 340px"></div>
+    </div></div>
+  </div>
+  <div class="stamp" style="left: 60px; top: 600px; font-size: 76px; --r: -9deg" data-at="нуле:-0.12">На нуле</div>
+
+  <!-- пустой стакан: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 516px; top: 330px; width: 260px; height: 620px; --r: 3deg; --d: .15s" data-boil>
+    <img data-cut="EMPTY" data-box="260 620">
+  </div>
+  <div class="abs hand appear" style="left: 300px; top: 820px; font-size: 64px; color: var(--terra-dk); --r: -4deg" data-at="нуле:0.2">пусто →</div>
+</div>

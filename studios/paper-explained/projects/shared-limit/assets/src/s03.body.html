@@ -1,0 +1,58 @@
+<!-- s03 — почему: «Потому что лимит теперь — в токенах. | Это всё, что модель | читает и пишет.»
+     Идея: лента вопроса режется ножницами на кусочки-токены; кусочки уходят в лоток «ЧИТАЕТ», ответ выходит
+     кусочками в лоток «ПИШЕТ», а полоса лимита внизу откусывается с двух сторон.
+     b0: лента, ножницы едут, «токенах» — лента разлетается на куски и заголовок «ТОКЕНЫ»; b1: «модель» — фишка
+     модели и лотки; «читает», «пишет»: куски в лотки, полоса лимита убывает. -->
+<style>
+  .strip { display: flex; position: absolute; left: 0; top: 330px; }
+  .tok { padding: 22px 10px 18px; font-family: PTSerif; font-size: 56px; line-height: 1; color: var(--ink); white-space: pre; }
+  .tray { box-sizing: border-box; width: 340px; height: 250px; padding-top: 18px; text-align: center; }
+  .tray b { font-family: Oswald; font-weight: 700; font-size: 46px; letter-spacing: 3px; color: var(--navy); }
+  .mini { position: absolute; padding: 8px 12px 6px; font-family: PTSerif; font-size: 30px; line-height: 1; color: var(--ink); }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 20px; top: 250px; --d: .5s"></div>
+  <div class="title" style="left: -6px; top: 30px; font-size: 220px; color: var(--terra); --d: 1.85s">Токены</div>
+
+  <!-- лента вопроса: при «токенах» куски расходятся -->
+  <div class="strip slideL" style="left: 60px; --d: .15s">
+    <div class="shadow"><div class="sheet tok split" style="--tx: -16px; --ty: -10px; --rr: -5deg" data-at="токенах">Раз</div></div>
+    <div class="shadow"><div class="tanp tok split" style="--tx: -6px; --ty: 12px; --rr: 4deg" data-at="токенах">бери</div></div>
+    <div class="shadow"><div class="sheet tok split" style="--tx: 2px; --ty: -14px; --rr: -3deg" data-at="токенах"> этот</div></div>
+    <div class="shadow"><div class="tanp tok split" style="--tx: 10px; --ty: 10px; --rr: 5deg" data-at="токенах"> дог</div></div>
+    <div class="shadow"><div class="sheet tok split" style="--tx: 16px; --ty: -8px; --rr: -4deg" data-at="токенах">овор</div></div>
+  </div>
+  <!-- ножницы едут по ленте -->
+  <div class="fadeTo" style="--to: 0; --d: 1.8s">
+    <div class="abs sticker knob" style="left: 0; top: 290px; width: 150px; height: 190px; --kx: 540px; --d: .55s; animation-duration: 1.2s" data-sfx="slide">
+      <div style="position: absolute; inset: 0; transform: rotate(90deg)"><img data-cut="SCISSORS" data-box="150 190"></div>
+    </div>
+  </div>
+
+  <!-- модель и два лотка -->
+  <div class="kicker" style="left: 290px; top: 500px; --d: var(--b1)">модель</div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#30353C" stroke-width="5" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="--dd: .3s" data-at="читает:-0.1" d="M300 530 C 230 540, 190 560, 180 600"/>
+    <path class="draw" pathLength="1" style="--dd: .3s" data-at="пишет:-0.1" d="M480 530 C 550 540, 590 560, 600 600"/>
+  </g></svg>
+  <div class="abs drop" style="left: 10px; top: 610px; --r: -1.5deg; --d: calc(var(--b1) + .1s)" data-boil=".6">
+    <div class="shadow"><div class="sheet tray" data-torn="t" data-depth="6"><b>ЧИТАЕТ</b></div></div>
+  </div>
+  <div class="abs drop" style="left: 430px; top: 610px; --r: 1.5deg; --d: calc(var(--b1) + .2s)" data-boil=".6">
+    <div class="shadow"><div class="tanp tray" data-torn="t" data-depth="6"><b>ПИШЕТ</b></div></div>
+  </div>
+  <div class="mini tanp drop shadow" style="left: 40px; top: 700px; --r: -8deg" data-at="читает">Раз</div>
+  <div class="mini sheet drop shadow" style="left: 130px; top: 724px; --r: 5deg" data-at="читает:0.12">бери</div>
+  <div class="mini tanp drop shadow" style="left: 236px; top: 702px; --r: -4deg" data-at="читает:0.24">этот</div>
+  <div class="mini sheet drop shadow" style="left: 70px; top: 770px; --r: 7deg" data-at="читает:0.36">дог</div>
+  <div class="mini sheet pop shadow" style="left: 460px; top: 704px; --r: 6deg" data-at="пишет">Пун</div>
+  <div class="mini tanp pop shadow" style="left: 560px; top: 728px; --r: -5deg" data-at="пишет:0.12">кт</div>
+  <div class="mini sheet pop shadow" style="left: 636px; top: 700px; --r: 4deg" data-at="пишет:0.24"> пер</div>
+  <div class="mini tanp pop shadow" style="left: 500px; top: 776px; --r: -7deg" data-at="пишет:0.36">вый</div>
+
+  <!-- лимит убывает с двух сторон -->
+  <div class="abs label appear" style="left: 0; top: 880px; --d: var(--b1)">лимит</div>
+  <div class="abs" style="left: 110px; top: 878px; width: 670px; height: 36px; background: var(--grain), var(--olive); animation: appear .01s linear var(--b1) both"></div>
+  <div class="abs growXR tanp" style="left: 560px; top: 878px; width: 220px; height: 36px; --dd: .4s" data-at="читает:0.1"></div>
+  <div class="abs growXR tanp" style="left: 380px; top: 878px; width: 180px; height: 36px" data-at="пишет:0.1"></div>
+</div>

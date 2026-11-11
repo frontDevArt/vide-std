@@ -1,0 +1,29 @@
+<!-- s16 — та же правка ловится: «И когда кто-то делает промпт «повеселее», | эвалы ловят правку раньше клиентов.»
+     Идея: тот же стикер промпта с припиской «+ будь повеселее!» летит к башне — и упирается в синюю пунктирную черту
+     проверки перед ней: штамп «47 / 48 — НЕ ПРОШЛО». Башня стоит ровно, Кузя на месте; «до клиентов не дошло».
+     b0: стикер, приписка; b1: полёт к черте, штамп, подпись рукой. -->
+<style>
+  .add { position: absolute; left: 30px; top: 214px; font-family: Caveat; font-weight: 700; font-size: 56px; color: var(--terra-dk); white-space: nowrap; }
+  .fly { animation: fly .5s cubic-bezier(.4, 0, .3, 1.2) var(--d, 0s) both; }
+  @keyframes fly { from { transform: translate(0, 0) rotate(-3deg); } to { transform: translate(-6px, 330px) rotate(4deg); } }
+  .gate { fill: none; stroke: #5B7684; stroke-width: 6; stroke-dasharray: 16 12; stroke-linecap: round; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 690px; top: 96px; --d: .4s"></div>
+  <!--@tower {"kind": "straight", "n": 7}-->
+
+  <div class="abs fly" data-at="эвалы:-0.3" data-sfx="flick" style="left: 0; top: 80px">
+    <div class="abs slideL" style="left: 0; top: 0; --r: 0deg" data-at="когда" data-boil>
+      <div class="shadow"><div class="sticky" style="width: 432px; height: 284px; position: relative">
+        <div class="hd">СИСТЕМНЫЙ ПРОМПТ<small>system prompt</small></div>
+        Ты — помощник<br>«Корочки». Конкурентов<br>не советуй.
+        <div class="add appear" data-at="повеселее:-0.1">+ будь повеселее!</div>
+      </div></div>
+    </div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="gate appear" data-sfx="none" style="--d: 0s" data-at="эвалы:-0.1" d="M442 380 L 442 940"/></svg>
+  <div class="stamp ok" style="left: 24px; top: 684px; font-size: 42px; --r: -5deg; z-index: 3" data-at="ловят">47/48 — не прошло</div>
+  <div class="abs hand appear" style="left: 20px; top: 794px; font-size: 48px; color: var(--olive)" data-at="раньше">клиенты не заметили</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .2s" data-at="клиентов:0.2" d="M388 822 L 406 842 L 436 800"/></svg>
+</div>

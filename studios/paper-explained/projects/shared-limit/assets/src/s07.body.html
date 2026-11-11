@@ -1,0 +1,31 @@
+<!-- s07 — лечение 3: «Третье: | новая задача — | новый чат.»
+     Идея: старый длинный свиток бледнеет и отрезается ножницами, рядом падает чистый лист «+ Новый чат».
+     b0: ярлык, свиток; b1 «задача»: ножницы, свиток бледнеет, стрелка; b2 «новый»: чистый лист; галочка на «чат». -->
+<style>
+  .fresh { box-sizing: border-box; width: 360px; height: 330px; padding: 26px 28px; }
+  .fresh b { display: block; font-family: Oswald; font-weight: 700; font-size: 54px; line-height: 1; color: var(--navy); }
+  .fresh i { display: block; height: 14px; margin-top: 30px; background: rgba(20, 18, 16, .1); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 0; animation: none">Лечение</div>
+  <div class="cross" style="left: 360px; top: 400px; --d: .3s"></div>
+
+  <div class="fadeTo" style="--to: .35; --d: 1.3s">
+    <div class="abs drop sticker" style="left: 10px; top: 60px; width: 270px; height: 430px; --r: -3deg; --d: .1s" data-boil>
+      <img data-cut="SCROLL" data-box="270 430">
+    </div>
+  </div>
+  <div class="abs sticker pop" style="left: 150px; top: 230px; width: 150px; height: 190px; --r: -60deg" data-at="задача">
+    <img data-cut="SCISSORS" data-box="150 190">
+  </div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path class="draw" pathLength="1" stroke="#A9503F" stroke-width="5" stroke-dasharray="1 1" style="--dd: .3s" data-at="задача:0.1" d="M20 300 L 290 280"/>
+    <path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="10" style="--dd: .3s" data-at="задача:0.4" d="M310 210 C 340 180, 370 180, 400 200"/>
+    <path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="10" style="--dd: .12s" data-at="задача:0.7" d="M380 178 L 404 202 L 374 214"/>
+  </g></svg>
+  <div class="abs drop" style="left: 410px; top: 80px; --r: 2deg" data-at="новый" data-boil=".6">
+    <div class="shadow"><div class="sheet fresh" data-torn="t" data-depth="6"><b>+ Новый чат</b><i></i><i style="width: 70%"></i><i style="width: 85%"></i></div></div>
+  </div>
+
+  <!--@sheet {"done": 2, "add": "новая", "tick": "чат"}-->
+</div>

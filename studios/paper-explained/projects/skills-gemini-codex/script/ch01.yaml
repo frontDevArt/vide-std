@@ -1,0 +1,107 @@
+# «Скиллы из Claude в Gemini 4 Argon и Codex», 11 сцен ≈ 58 с. План и факты — outline.md.
+# Формула канала: боль (s02) → подробнее про боль (s03–s04) → решение (s05–s10). Источников в кадре нет.
+# Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/, сборка build.py),
+# предметы — ч/б вырезки Kie (image:, brand/PROMPTS.md); заголовки, пути, команды и схемы — кодом.
+# Повторно предметы не заказываются: папка s05 — в s04, s06, s08, s11; мотор s04 — в s07; блистер s09 — в s10;
+# рука s01 — вырезка аватара бренда (brand/avatar/src/hand.cut.png).
+chapter: ch01
+title: "Скиллы в Gemini и Codex"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Можно ли скиллы из Клода | поставить в Джемини Аргон?"
+      - "А в Кодекс?"
+    params: {file: assets/s01-hook.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Знакомая боль: | полезная штука — | и только для Клода."
+      - "А у вас другой агент."
+    params: {file: assets/s02-pain.html, fade: false}
+    image:
+      - prompt: "a vintage metal toolbox with the lid open, a few hand tools inside, three-quarter view"
+        role: subject
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Кажется, переезд — это всё с нуля."
+      - "У каждого агента | свои папки и правила."
+    params: {file: assets/s03-moving.html, fade: false}
+    image:
+      - prompt: "a stack of three closed cardboard moving boxes sealed with tape, slightly askew, front view"
+        role: subject
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "С Аргоном — путаница: | это модель, а не программа."
+      - "Куда класть скилл?"
+    params: {file: assets/s04-model.html, fade: false}
+    image:
+      - prompt: "a vintage car engine block on its own, pistons and belts visible, three-quarter view"
+        role: subject
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Но скилл — это открытый стандарт."
+      - "Просто папка | с файлом-инструкцией."
+    params: {file: assets/s05-standard.html, fade: false}
+    image:
+      - prompt: "a closed vintage manila paper file folder with a tab on top, lying flat, seen from directly above"
+        role: subject
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "И одна и та же папка | работает в Клоде, у Гугла и в Кодексе."
+    params: {file: assets/s06-three.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Аргону нужен агент Гугла — | Антигравити."
+      - "И платная подписка."
+    params: {file: assets/s07-argon.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "В Кодексе скиллы встроены: | своя папка и свой установщик."
+    params: {file: assets/s08-codex.html, fade: false}
+    image:
+      - prompt: "a single vintage wooden desk drawer pulled out, empty inside, seen from above at an angle"
+        role: subject
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Наши таблетки — уже там."
+      - "Графифай ставится одной командой | и сам находит агента."
+    params: {file: assets/s09-graphify.html, fade: false}
+    image:
+      - prompt: "a vintage pharmacy blister pack with exactly two round pills, seen from directly above"
+        role: subject
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "Понитейл — скилл для Клода | и правила для Кодекса и Джемини."
+    params: {file: assets/s10-ponytail.html, fade: false}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Так что да: | одна папка — три агента."
+      - "Спрашивайте — | ответим роликом."
+    params: {file: assets/s11-yes.html, fade: false}
+
+  - id: s12                 # призыв: лайк и подписка (правка пользователя 2026-11-10 — «не забываем про подписку и лайки»)
+    template: paper_page
+    hold: 1.2
+    lines:
+      - "Было полезно — | поставьте лайк и подпишитесь."
+    params: {file: assets/s12-follow.html, fade: false}

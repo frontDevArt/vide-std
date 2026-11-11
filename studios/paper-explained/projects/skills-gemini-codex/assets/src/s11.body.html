@@ -1,0 +1,48 @@
+<!-- s11 — финал: «Так что да: | одна папка — три агента. | Спрашивайте — | ответим роликом.»
+     Идея: ответ одним словом. Гигантское «ДА» слева сверху, папка поверх его угла, под ними три фишки агентов;
+     внизу — пустая карточка комментария (рифма с s01) с мигающим курсором, рука канала и «ответим роликом».
+     b0: «ДА»; b1: папка, фишки; b2: карточка; b3: рука, фишка «ответим роликом». -->
+<style>
+  .cmt { position: relative; box-sizing: border-box; padding: 20px 26px 18px 100px; }
+  .cmt .ava { position: absolute; left: 22px; top: 22px; width: 58px; height: 58px; border-radius: 50%; background: var(--grain), var(--mustard); }
+  .cmt .nick { font-family: PTMono; font-size: 21px; color: var(--dim); }
+  .cmt .txt { font-family: PTSerif; font-style: italic; font-size: 36px; line-height: 1.2; color: var(--dim); margin-top: 6px; }
+  .cmt .caret { display: inline-block; width: 3px; height: 36px; margin-left: 4px; vertical-align: -6px; background: var(--ink); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .ag { padding: 10px 20px 8px; font-family: Oswald; font-weight: 600; font-size: 40px; color: var(--navy); white-space: nowrap; }
+  .reply { padding: 12px 24px 9px; font-family: Oswald; font-weight: 600; font-size: 44px; color: var(--paper-hi); background: var(--grain), var(--terra); white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 690px; top: 20px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 660px; top: 480px; width: 70px; height: 70px; --d: calc(var(--b1) + .5s)"></div>
+
+  <div class="title" style="left: -12px; top: 40px; font-size: 420px; color: var(--terra)" data-at="да">Да</div>
+
+  <!-- папка: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 486px; top: 190px; width: 280px; height: 230px; --r: 5deg; --d: 0s" data-boil>
+    <img data-cut="FOLDER" data-box="280 230">
+  </div>
+  <div class="abs pop tanp chip shadow" style="left: 540px; top: 140px; font-size: 32px; --r: -4deg" data-at="папка" data-boil>1 папка</div>
+
+  <svg class="ink" width="780" height="960"><g class="dash" fill="none" stroke="#141210" stroke-width="2.4" stroke-dasharray="8 10" opacity=".5">
+    <path class="appear" style="--d: calc(var(--b1) + .6s)" d="M560 430 C 420 460, 200 470, 130 500"/>
+    <path class="appear" style="--d: calc(var(--b1) + .6s)" d="M570 430 C 520 460, 420 480, 380 500"/>
+    <path class="appear" style="--d: calc(var(--b1) + .6s)" d="M590 430 C 600 460, 620 480, 640 500"/>
+  </g></svg>
+  <div class="abs pop sheet ag shadow" style="left: 0; top: 500px; --r: -3deg" data-at="три" data-boil>Claude</div>
+  <div class="abs pop sheet ag shadow" style="left: 250px; top: 508px; --r: 2deg" data-at="три:0.12" data-boil>Google</div>
+  <div class="abs pop sheet ag shadow" style="left: 520px; top: 500px; --r: -2deg" data-at="три:0.24" data-boil>Codex</div>
+
+  <!-- ваш вопрос -->
+  <div class="abs slideR" style="left: 90px; top: 640px; --r: -1.5deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="sheet cmt" style="width: 670px" data-torn="b" data-depth="6">
+      <div class="ava"></div>
+      <div class="nick">вы</div>
+      <div class="txt">ваш вопрос…<span class="caret"></span></div>
+    </div></div>
+  </div>
+  <div class="abs slideL sticker" style="left: 0; top: 800px; width: 260px; height: 136px; --r: -3deg; --d: var(--b3)" data-boil>
+    <img data-cut="HAND" data-box="260 136">
+  </div>
+  <div class="abs pop shadow" style="left: 290px; top: 830px; --r: 2deg" data-at="роликом" data-boil><div class="reply">ответим роликом ▶</div></div>
+</div>

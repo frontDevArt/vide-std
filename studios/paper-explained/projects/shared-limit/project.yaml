@@ -1,0 +1,74 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+schema_version: 1
+title: "Один лимит на двоих: ChatGPT и Codex с декабря"
+topic: "С декабря на Plus, Pro и Business у ChatGPT и Codex один общий лимит, и считают его в токенах: что его съедает и как беречь"
+audience: "Русскоязычные платные пользователи ChatGPT и Codex (зрители ролика про лимиты Claude, 28,7 тыс.). Вынести: лимит общий и в токенах — Кодекс может съесть чат; Instant лимит не тратит, ползунок размышления — не выше нужного, новая задача — новый чат, Кодексу — точная задача и нужные файлы"
+kind: explainer           # длительность по речи; цель ~50 с (прошлый хит — 49 с)
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null     # по речи, цель ~50 с
+
+tts:
+  backend: elevenlabs     # голос студии Artspace (voices: в studio.yaml → .env студии)
+  voice: auto
+  rate: 110               # ElevenLabs — только числом (auto = несколько платных синтезов)
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # как в правилах студии: 0,42 / 0,6 с
+  start: 0.3
+  comma: 0.18
+  sentence: 0.42
+  scene: 0.6
+  end: 0.6
+
+style:
+  palette: neon           # перекрыто бренд-китом студии (defaults.style.brand)
+  font: Inter Display
+
+music:
+  enabled: false          # студия: без музыки — бумажные звуки под движение
+  level_db: -13
+  duck: true
+
+sfx: {enabled: true, level_db: 10}
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+# Картинки Kie: только предметы-вырезки без букв; текст, ползунок, настройки и чат — кодом (web.html).
+images:
+  enabled: true
+  style: "Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no distorted anatomy, no blurry details"   # brand/PROMPTS.md
+  budget_usd: 1
+
+# Пакет к загрузке в TikTok (`python -m studio package shared-limit`) — только если пользователь попросит.
+package:
+  title: "С декабря ChatGPT и Codex едят один лимит на двоих"
+  description: >-
+    С декабря на Plus, Pro и Business у ChatGPT и Codex общий лимит, и считают его в токенах. Что его съедает и
+    как беречь: простые вопросы — в Instant (он лимит не тратит), ползунок размышления — не выше нужного, новая
+    задача — новый чат, Codex — точная задача и нужные файлы (он читает их, а не весь проект). Остаток общего
+    лимита и время сброса — Settings → Usage. Если ролик наберёт 150 лайков — в следующем покажем, как сэкономить ещё больше плагинами и
+    настройками.
+  hashtags: [chatgpt, codex, openai, нейросети, ии]   # tiktok: не больше 5
+  cover: {at: 4.6}          # конец s01: «ОДИН ЛИМИТ НА ДВОИХ» и стакан с двумя трубочками
+  ai_label: false           # решение студии (CLAUDE.md, 2026-11-10): коллаж и синтезированная озвучка под отметку не попадают
+
+avoid:
+  - {numbers_without_source: false}   # решение пользователя 2026-11-10: источников в кадре нет — факты сверены до ролика
+  - "хайп и крик; логотипы OpenAI/ChatGPT/Codex как свои"
+  - "не утверждать: точную дату декабря, размер лимита по тарифам, частоту сброса; что бесплатных (Free, Go) это касается; что чат совсем перестаёт отвечать (при исчерпании ChatGPT может перейти на другую модель)"
+  - "не копировать интерфейс ChatGPT: окна, ползунок и настройки — бумажные, своими словами"
+  - "раскладки прошлых роликов: круг + заголовок поперёк + предмет (claude-limits), забег-полосы и бирки лесенкой (fable-52), три лотка (skills-gemini-codex), башня (bot-layers)"
+done_means:
+  - "формула канала: новость → боль (Кодекс съел чат) → почему (токены: файлы, размышление, длинный чат) → лечение на одном листе → вылечено"
+  - "в кадре и в речи — только факты из outline.md, без плашек источников"
+  - "обещание мягко, «Если этот ролик наберёт…»: 150 лайков — следующий ролик, как сэкономить ещё больше плагинами и настройками; лайк и подписка в финале"

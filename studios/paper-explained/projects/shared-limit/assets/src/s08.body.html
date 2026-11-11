@@ -1,0 +1,39 @@
+<!-- s08 — лечение 4: «Четвёртое: | Кодексу — точная задача | и нужные файлы. | Тогда он читает их, | а не весь проект.»
+     Идея: ответ на «агент Кодекса читает ваши файлы» из s04. Слева та же стопка бумаг — «весь проект», справа лента
+     задачи Codex с точной формулировкой и два нужных файла; на «читает» их обводит оливковая рамка «только их», на
+     «весь» стопка бледнеет и перечёркивается.
+     b0: ярлык, стопка; «точная»: лента задачи; «нужные», «файлы»: фишки; «читает»: рамка; «весь»: крест на стопке. -->
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 0; animation: none">Лечение</div>
+  <div class="cross" style="left: 330px; top: 432px; --d: .4s"></div>
+
+  <!-- весь проект: стопка из s04 -->
+  <div class="fadeTo" style="--to: .4" data-at="весь">
+    <div class="abs drop sticker" style="left: 0; top: 70px; width: 250px; height: 380px; --r: -3deg; --d: .1s" data-boil>
+      <img data-cut="PAPERS" data-box="250 380">
+    </div>
+  </div>
+  <div class="abs hand appear" style="left: 30px; top: 440px; font-size: 48px; --r: -3deg; --d: .35s">весь проект</div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#A9503F" stroke-width="13" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="--dd: .16s" data-at="весь" d="M20 120 L 236 420"/>
+    <path class="draw" pathLength="1" style="--dd: .16s" data-at="весь:0.14" d="M236 120 L 20 420"/>
+  </g></svg>
+
+  <!-- точная задача -->
+  <div class="abs drop" style="left: 286px; top: 56px; --r: 1deg" data-at="точная:-0.1" data-boil=".6">
+    <div class="shadow"><div class="term" style="width: 490px" data-torn="b" data-depth="6">
+      <div><span class="p">codex ›</span> поправь расчёт скидки</div>
+      <div class="dim">  в billing.py, тест —</div>
+      <div class="dim">  tests/test_billing.py</div>
+    </div></div>
+  </div>
+
+  <!-- нужные файлы и рамка «только их» -->
+  <div class="abs pop tanp chip shadow" style="left: 316px; top: 286px; font-size: 32px; --r: -3deg" data-at="нужные" data-boil>billing.py</div>
+  <div class="abs pop sheet chip shadow" style="left: 414px; top: 356px; font-size: 32px; --r: 2deg" data-at="файлы" data-boil>test_billing.py</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="7" fill="none" stroke-linecap="round"
+       style="--dd: .45s" data-at="читает" d="M300 272 C 420 256, 640 258, 752 270 C 764 330, 762 390, 748 426 C 600 440, 420 438, 304 428 C 292 380, 292 320, 300 272 Z"/></svg>
+  <div class="abs hand appear" style="left: 520px; top: 438px; font-size: 50px; color: var(--olive); --r: -3deg" data-at="их">только их ✓</div>
+
+  <!--@sheet {"done": 3, "add": "кодексу", "tick": "проект"}-->
+</div>

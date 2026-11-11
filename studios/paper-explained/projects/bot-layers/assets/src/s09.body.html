@@ -1,0 +1,42 @@
+<!-- s09 — заплатка 7, ТРЕЙСЫ · ЭВАЛЫ: «Кузя пишет «курьер у двери», | а курьер час стоит на месте, |
+     и никто не понимает почему. | Добавляете трейсы и эвалы.»
+     Идея: Кузя бодро пишет «Курьер у двери!»; мопед (вырезка Kie) и часы — стрелка обегает час; штамп «ПОЧЕМУ?»; на
+     «трейсы» печатается чековая лента трейса — шаги ответа, вызов courier.where() упал с ошибкой; коробка — на самый верх.
+     b0: реплика; b1: мопед, часы, «стоит 1 час»; b2: штамп; b3: лента трейса, фишка, коробка ТРЕЙСЫ · ЭВАЛЫ. -->
+<style>
+  .roll .err { color: var(--terra-dk); }
+  .roll b { font-family: Oswald; font-weight: 600; font-size: 24px; letter-spacing: 2px; color: var(--navy); display: block; margin-bottom: 2px; }
+  .hand-min { transform-origin: 80px 80px; animation: spin var(--dd, 1.4s) linear var(--d, 0s) both; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+<div class="stage">
+  <!--@tower {"kind": "patch", "n": 8, "add": "трейсы"}-->
+
+  <div class="abs slideL" style="left: 0; top: 72px; --r: -1.5deg" data-at="кузя" data-boil>
+    <div class="shadow"><div class="sheet bub bot" style="width: 420px" data-torn="b" data-depth="5"><span class="mini sticker"><img data-cut="ROBOT" data-box="50 76"></span><span class="who">Кузя · бот</span>Курьер уже у двери!</div></div>
+  </div>
+
+  <!-- мопед стоит час -->
+  <div class="abs drop sticker" style="left: 0; top: 250px; width: 250px; height: 170px; --r: -2deg" data-at="курьер:1.0" data-boil><img data-cut="SCOOTER" data-box="250 170"></div>
+  <div class="abs pop" style="left: 270px; top: 236px; --d: 0s" data-at="час:-0.2">
+    <svg width="160" height="160" style="overflow: visible">
+      <circle cx="80" cy="80" r="70" fill="#FBF8EF" stroke="#141210" stroke-width="5"/>
+      <g stroke="#141210" stroke-width="4" stroke-linecap="round"><path d="M80 18 L 80 30"/><path d="M142 80 L 130 80"/><path d="M80 142 L 80 130"/><path d="M18 80 L 30 80"/></g>
+      <path d="M80 80 L 80 44" stroke="#141210" stroke-width="6" stroke-linecap="round"/>
+      <path class="hand-min" style="--dd: 1.3s" data-at="час" d="M80 80 L 80 24" stroke="#A9503F" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="80" cy="80" r="6" fill="#141210"/>
+    </svg>
+  </div>
+  <div class="abs hand appear" style="left: 250px; top: 404px; font-size: 50px; color: var(--terra-dk)" data-at="стоит">стоит 1 час</div>
+
+  <div class="stamp" style="left: 40px; top: 470px; font-size: 76px; --r: -7deg" data-at="почему">Почему?</div>
+
+  <!-- трейс -->
+  <div class="abs shadow" style="left: 0; top: 624px; --r: 1deg; transform: rotate(var(--r))">
+    <div class="print" style="--dd: .9s" data-sfx="slide" data-at="трейсы:-0.3"><div class="roll" style="width: 440px" data-torn="b" data-depth="7">
+      <b>ТРЕЙС · ответ Кузи</b>
+      1 вопрос: «где курьер?»<br><span class="err">2 courier.where() → ошибка</span><br>3 ответ: «у двери» — наугад
+    </div></div>
+  </div>
+  <div class="abs pop shadow" style="left: 250px; top: 590px; --r: 3deg" data-at="эвалы"><div class="chip" style="color: var(--paper-hi); background: var(--grain), var(--olive)">traces · evals</div></div>
+</div>

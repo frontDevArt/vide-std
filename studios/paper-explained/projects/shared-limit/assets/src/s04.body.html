@@ -1,0 +1,33 @@
+<!-- s04 — почему: «Агент Кодекса | читает ваши файлы. | А длинный чат | перечитывается на каждый ответ.»
+     Идея: две колонки «кто ест». Слева трубочка Кодекса воткнута в стопку бумаг, вокруг всплывают имена файлов;
+     справа свиток длинного чата, по нему сверху вниз бежит жёлтая полоса чтения — на каждом ответе заново.
+     b0: ярлык Codex, стопка, трубочка; b1 «читает»: файлы; b2 «длинный»: ярлык ChatGPT, свиток; b3: полоса чтения
+     дважды, петля-стрелка «с начала». -->
+<div class="stage">
+  <div class="dot" style="left: 330px; top: 860px; width: 64px; height: 64px; --d: .5s"></div>
+  <svg class="ink rings" width="780" height="960"><path class="draw thin" pathLength="1" d="M392 60 L 392 900" style="--d: .2s; --dd: .6s"/></svg>
+
+  <!-- слева: Кодекс читает файлы -->
+  <div class="kicker" style="left: 0; top: 0; --d: .1s">Codex</div>
+  <div class="abs drop sticker" style="left: 0; top: 250px; width: 360px; height: 560px; --r: -2deg; --d: .2s" data-boil>
+    <img data-cut="PAPERS" data-box="360 560">
+  </div>
+  <div class="abs straw drop" style="left: 236px; top: 96px; height: 300px; --r: 24deg" data-at="агент"></div>
+  <div class="abs pop tanp chip shadow" style="left: 10px; top: 120px; font-size: 30px; --r: -5deg" data-at="читает">app.py</div>
+  <div class="abs pop sheet chip shadow" style="left: 40px; top: 190px; font-size: 30px; --r: 3deg" data-at="читает:0.14">billing.py</div>
+  <div class="abs pop tanp chip shadow" style="left: 220px; top: 820px; font-size: 30px; --r: 4deg" data-at="читает:0.28">ui.tsx</div>
+  <div class="abs pop sheet chip shadow" style="left: 0; top: 870px; font-size: 30px; --r: -3deg" data-at="файлы">tests/</div>
+
+  <!-- справа: длинный чат перечитывается -->
+  <div class="kicker" style="left: 420px; top: 0" data-at="длинный">ChatGPT</div>
+  <div class="abs drop sticker" style="left: 420px; top: 96px; width: 330px; height: 560px; --r: 1.5deg" data-at="длинный" data-boil>
+    <img data-cut="SCROLL" data-box="330 560">
+  </div>
+  <div class="abs sweep" style="left: 440px; top: 110px; width: 290px; height: 46px; background: var(--mustard); mix-blend-mode: multiply; --sy: 500px; --dd: .95s" data-at="перечитывается" data-sfx="tick"></div>
+  <div class="abs sweep" style="left: 440px; top: 110px; width: 290px; height: 46px; background: var(--mustard); mix-blend-mode: multiply; --sy: 500px; --dd: .8s" data-at="каждый" data-sfx="tick"></div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#30353C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path class="draw" pathLength="1" style="--dd: .5s" data-at="перечитывается:0.15" d="M600 700 C 790 690, 790 200, 700 120"/>
+    <path class="draw" pathLength="1" style="--dd: .15s" data-at="перечитывается:0.6" d="M690 160 L 698 118 L 740 132"/>
+  </g></svg>
+  <div class="abs hand appear" style="left: 430px; top: 700px; width: 350px; font-size: 52px; line-height: 1.05; --r: -3deg" data-at="каждый">каждый ответ —<br>с начала</div>
+</div>

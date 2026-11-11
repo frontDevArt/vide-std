@@ -1,0 +1,47 @@
+<!-- s07 — решение: «Аргону нужен агент Гугла — | Антигравити. | И платная подписка.»
+     Идея (продолжение аналогии s04): мотору нужна машина. Мотор Аргона падает первым, вокруг него встаёт окно
+     программы Antigravity (приложение и CLI); внизу тарифная полоска: Free зачёркнут, AI Pro и AI Ultra — да.
+     b0: ярлык, мотор; b1: окно, фишки; b2: тарифы, зачёркивание, галочки. -->
+<style>
+  .win { width: 700px; height: 470px; box-sizing: border-box; }
+  .win .bar { height: 62px; background: var(--grain), var(--navy); display: flex; align-items: center; gap: 12px; padding: 0 22px; }
+  .win .bar i { width: 16px; height: 16px; border-radius: 50%; background: var(--paper-hi); opacity: .7; }
+  .win .bar b { margin-left: 14px; font-family: Oswald; font-weight: 600; font-size: 34px; color: var(--paper-hi); letter-spacing: 1px; }
+  .plan { width: 228px; box-sizing: border-box; padding: 18px 10px 14px; text-align: center; }
+  .plan b { display: block; font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; color: var(--ink); white-space: nowrap; }
+  .plan small { display: block; margin-top: 6px; font-family: PTMono; font-size: 18px; color: var(--dim); }
+</style>
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 0; --d: 0s">Gemini 4 Argon</div>
+  <div class="cross" style="left: 690px; top: 6px; --d: calc(var(--b0) + .3s)"></div>
+
+  <!-- окно программы — встаёт вокруг мотора -->
+  <div class="abs pop" style="left: 40px; top: 70px; --d: var(--b1)" data-boil>
+    <div class="shadow"><div class="sheet win"><div class="bar"><i></i><i></i><i></i><b>Antigravity</b></div></div></div>
+  </div>
+  <!-- мотор: ч/б вырезка Kie (из s04) -->
+  <div class="abs drop sticker" style="left: 160px; top: 150px; width: 460px; height: 340px; --r: 2deg; --d: .05s" data-boil>
+    <img data-cut="ENGINE" data-box="460 340">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 70px; top: 500px; font-size: 28px; --r: -3deg; --d: calc(var(--b1) + .3s)" data-boil>приложение на компьютер</div>
+  <div class="abs pop tanp chip shadow" style="left: 470px; top: 494px; font-size: 28px; --r: 3deg; --d: calc(var(--b1) + .45s)" data-boil>Antigravity CLI</div>
+  <div class="abs hand appear" style="left: 520px; top: 140px; font-size: 46px; --r: 4deg; --d: calc(var(--b1) + .6s)">агент</div>
+
+  <!-- тарифы -->
+  <div class="abs drop" style="left: 0; top: 636px; --r: -3deg; --d: var(--b2)" data-boil>
+    <div class="shadow"><div class="sheet plan" data-torn="lr" data-depth="5"><b>Free</b><small>бесплатно</small></div></div>
+  </div>
+  <div class="abs drop" style="left: 268px; top: 646px; --r: 1.5deg; --d: calc(var(--b2) + .12s)" data-boil>
+    <div class="shadow"><div class="tanp plan" data-torn="lr" data-depth="5"><b>AI Pro</b><small>Google</small></div></div>
+  </div>
+  <div class="abs drop" style="left: 534px; top: 636px; --r: 3deg; --d: calc(var(--b2) + .24s)" data-boil>
+    <div class="shadow"><div class="tanp plan" data-torn="lr" data-depth="5"><b>AI Ultra</b><small>Google</small></div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path class="draw" pathLength="1" stroke="#A9503F" stroke-width="12" style="--dd: .18s" data-at="платная" d="M20 650 L 220 770"/>
+    <path class="draw" pathLength="1" stroke="#A9503F" stroke-width="12" style="--dd: .18s" data-at="платная:0.15" d="M220 650 L 20 770"/>
+    <path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="11" style="--dd: .2s" data-at="подписка" d="M346 800 L 370 826 L 414 772"/>
+    <path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="11" style="--dd: .2s" data-at="подписка:0.15" d="M614 792 L 638 818 L 682 764"/>
+  </g></svg>
+  <div class="abs hand appear" style="left: 20px; top: 840px; font-size: 48px; color: var(--terra-dk); --d: calc(var(--b2) + .7s)">на бесплатном тарифе Argon нет</div>
+</div>

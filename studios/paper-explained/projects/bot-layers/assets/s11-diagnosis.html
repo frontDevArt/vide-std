@@ -1,0 +1,353 @@
+<!doctype html>
+<!-- Собрано assets/src/build.py из common.css, s11.body.html, common.js — правьте исходники. -->
+<html><head><meta charset="utf-8"><style>
+/* Paper Explained — общий вид сцен web.html (референс 2: редакционный коллаж «Global Icon / Global Impact»).
+   Слои снизу вверх: бумага (кит) → геометрия (круг, кольца, линии, кресты) → огромный заголовок → главный предмет
+   (ч/б вырезка с белой кромкой) → 2–5 вспомогательных элементов → тени. Подписи — common.js.
+   Сцена верстается в .stage 780×1380 (common.js вписывает её в безопасную зону): картинка — 0…960, подписи — ниже.
+   Время — шагом 1/12 с («на двойках», common.js): анимации пишутся обычными CSS @keyframes. */
+@font-face { font-family: Oswald; src: url('../../../brand/fonts/Oswald-VF.ttf'); font-weight: 200 700; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: PTMono; src: url('../../../brand/fonts/PTMono-Regular.ttf'); }
+
+:root {
+  --b0: 0s; --b1: 1.6s; --b2: 3.2s; --b3: 4.8s; --b4: 6.4s; --e0: 1.4s; --e1: 3s; --e2: 4.6s; --e3: 6.2s; --e4: 8s;
+  /* палитра — пипеткой по референсу (brand/brand.yaml) */
+  --ink: #141210; --paper: #F6F0E2; --paper-hi: #FBF8EF; --tan: #DCCDB0; --terra: #C46557; --terra-dk: #A9503F;
+  --blue: #5B7684; --navy: #30353C; --mustard: #E0C377; --dim: #7D766C; --olive: #6F8A4E;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .15  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grunge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -3 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+html, body { margin: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+body { color: var(--ink); font-family: Oswald, sans-serif; -webkit-font-smoothing: antialiased; }
+.stage { position: absolute; left: 150px; top: 150px; width: 780px; height: 1380px; transform-origin: 0 0; }
+.abs { position: absolute; }
+svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* ── геометрия ── */
+.disc { position: absolute; border-radius: 50%; background: var(--grain), var(--terra);
+        animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+.disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: multiply;
+               background: radial-gradient(circle, rgba(0,0,0,.30) 1.6px, transparent 2.2px) 0 0 / 9px 9px;
+               -webkit-mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%);
+               mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%); }
+.dot { position: absolute; border-radius: 50%; background: var(--grain), var(--tan); animation: pop .4s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both; }
+.rings circle, .thin { fill: none; stroke: var(--ink); stroke-width: 1.6; opacity: .38; }
+.cross { position: absolute; width: 70px; height: 70px; opacity: .45; animation: appear .01s linear var(--d, 0s) both; }
+.cross::before, .cross::after { content: ''; position: absolute; background: var(--ink); }
+.cross::before { left: 0; right: 0; top: 50%; height: 1.6px; } .cross::after { top: 0; bottom: 0; left: 50%; width: 1.6px; }
+.halftone { background-image: radial-gradient(rgba(20, 18, 16, .55) 1.5px, transparent 2px); background-size: 8px 8px; }
+
+/* ── заголовок: огромный, узкий, печатный; за предметом ── */
+.title { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .8;
+         letter-spacing: -2px; color: var(--ink); white-space: nowrap; mix-blend-mode: multiply;
+         animation: rise .5s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise { 0% { transform: translateY(60px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+.kicker { position: absolute; font-family: PTMono; font-size: 26px; letter-spacing: 6px; text-transform: uppercase;
+          color: var(--paper-hi); background: var(--navy); padding: 8px 18px 6px;
+          animation: slideL .45s cubic-bezier(.2,.8,.3,1.1) var(--d, 0s) both; }
+.label { font-family: PTMono; font-size: 24px; color: var(--navy); }
+
+/* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
+.sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
+                   drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
+
+/* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
+.shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
+.sheet { background: var(--grain), var(--paper-hi); }
+.tanp { background: var(--grain), var(--tan); }
+.stamp { position: absolute; border: 6px solid var(--terra-dk); color: var(--terra-dk); padding: 4px 16px 0;
+         font-family: Oswald; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-radius: 6px;
+         -webkit-mask-image: var(--grunge); mask-image: var(--grunge); mix-blend-mode: multiply;
+         animation: slam .42s cubic-bezier(.2, .7, .3, 1.2) var(--d, 0s) both; }
+@keyframes slam { 0% { transform: rotate(var(--r, -12deg)) scale(2.4); opacity: 0; }
+                  60% { opacity: .95; } 100% { transform: rotate(var(--r, -12deg)) scale(1); opacity: .92; } }
+
+/* линии: путь с pathLength="1" рисуется от 0 до 1 */
+.draw { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+        animation: draw var(--dd, .6s) ease-in-out var(--d, 0s) both; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* появления (пружина видна шагами 12 к/с) */
+.drop  { animation: drop .5s cubic-bezier(.2, .8, .3, 1.15) var(--d, 0s) both; }
+@keyframes drop { 0% { transform: translateY(-90px) rotate(calc(var(--r, 0deg) - 6deg)); opacity: 0; }
+                  45% { opacity: 1; } 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideL { animation: slideL .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideL { 0% { transform: translateX(-160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideR { animation: slideR .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideR { 0% { transform: translateX(160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.pop { animation: pop .4s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+@keyframes pop { 0% { transform: rotate(var(--r, 0deg)) scale(.2); opacity: 0; }
+                 100% { transform: rotate(var(--r, 0deg)) scale(1); opacity: 1; } }
+.appear { animation: appear .01s linear var(--d, 0s) both; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+.fadeTo { animation: fadeTo .4s linear var(--d, 0s) both; }
+@keyframes fadeTo { from { opacity: 1; } to { opacity: var(--to, .35); } }
+
+/* ── подписи (common.js): под картинкой сцены, краской; звучащее слово — приглушённым жёлтым ── */
+.caps { position: absolute; left: 0; right: 0; top: 985px; height: 230px; display: flex; align-items: center; justify-content: center; }
+.chunk { font-family: Oswald; font-weight: 600; font-size: 70px; line-height: 1.12; text-align: center; color: var(--ink); max-width: 760px; }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, var(--mustard) 2% 98%, transparent 99%);
+              background-repeat: no-repeat; background-position: 0 62%; background-size: 0% 74%; padding: 0 .08em; margin: 0 -.08em;
+              mix-blend-mode: multiply; }
+
+/* ── fable-52: общие мелочи сцен ── */
+@font-face { font-family: Caveat; src: url('../../../brand/fonts/Caveat-VF.ttf'); font-weight: 400 700; }
+.src { position: absolute; left: 0; width: 780px; font-family: PTSerif; font-style: italic; font-size: 22px; line-height: 1.3; color: var(--dim); }
+.chip { padding: 9px 17px 7px; font-family: PTMono; font-size: 25px; color: var(--navy); white-space: nowrap; }
+.num { font-family: Oswald; font-weight: 700; line-height: .85; color: var(--terra); letter-spacing: -2px; mix-blend-mode: multiply; white-space: nowrap; }
+.hand { font-family: Caveat; font-weight: 600; color: var(--navy); line-height: 1; }
+.growX { transform-origin: 0 50%; animation: growX var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+@keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* слово подписи не рвётся по дефису («пять-два»), тире держится за слово (common.js) */
+.chunk span { white-space: nowrap; }
+
+/* ── bot-layers: башня коробок от пиццы (её вставляет build.py — на склейках стоит одинаково), чат, листы ── */
+:root { --kraft: #C9A574; --kraft-hi: #D8BA8C; }
+.tower { position: absolute; left: 0; top: 0; width: 780px; height: 960px; transform-origin: 612px 940px; }
+.bx { position: absolute; transform: rotate(var(--r, 0deg)); transform-origin: 50% 50%; }
+.box { position: absolute; inset: 0; border-radius: 3px;
+       background: var(--grain), linear-gradient(180deg, var(--kraft-hi) 0 20%, var(--kraft) 20% 100%);
+       box-shadow: inset 0 -6px 0 rgba(90, 60, 25, .22), inset 0 0 0 2px rgba(90, 60, 25, .36); }
+.box::before { content: ''; position: absolute; left: 6px; right: 6px; top: 20%; height: 2px; background: rgba(90, 60, 25, .42); }
+.box .lab { position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%) rotate(var(--lr, 0deg)); white-space: nowrap;
+            padding: 5px 12px 2px; border-left: 10px solid var(--c, var(--navy)); background: var(--grain), var(--paper-hi);
+            font-family: Oswald; font-weight: 600; font-size: 25px; letter-spacing: 1px; line-height: 1; color: var(--ink); }
+.box.half .lab { font-size: 21px; padding: 4px 8px 1px; border-left-width: 7px; letter-spacing: 0; }
+.tape { position: absolute; width: 36px; height: 50px; background: rgba(240, 230, 196, .78); mix-blend-mode: multiply;
+        box-shadow: 0 1px 1px rgba(60, 45, 20, .2);
+        clip-path: polygon(0 6%, 12% 0, 25% 5%, 38% 0, 50% 6%, 62% 0, 75% 5%, 88% 0, 100% 6%, 100% 94%, 88% 100%, 75% 95%, 62% 100%, 50% 94%, 38% 100%, 25% 95%, 12% 100%, 0 94%); }
+.found { position: absolute; inset: 0; border-radius: 3px; background: var(--grain), var(--blue); overflow: hidden;
+         box-shadow: inset 0 -8px 0 rgba(20, 30, 40, .25); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.found::after { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply;
+                background: radial-gradient(circle, rgba(0,0,0,.28) 1.4px, transparent 2px) 0 0 / 8px 8px;
+                -webkit-mask-image: linear-gradient(90deg, transparent 40%, #000); mask-image: linear-gradient(90deg, transparent 40%, #000); }
+.found b { font-family: Oswald; font-weight: 700; font-size: 36px; letter-spacing: 2px; color: var(--paper-hi); line-height: 1; }
+.found small { font-family: PTMono; font-size: 18px; letter-spacing: 3px; color: rgba(251, 248, 239, .8); margin-top: 6px; }
+/* робот: прыжок на новую коробку (вложенные .hop — по одному на коробку), падение башни, качка */
+.hop { position: absolute; inset: 0; animation: hop var(--hd, .7s) cubic-bezier(.3, .6, .4, 1) var(--d, 0s) both; }
+@keyframes hop { 0% { transform: translate(0, 0) rotate(0deg); }
+                 30% { transform: translate(calc(var(--hx) * .4), calc(var(--hy) - 64px)) rotate(calc(var(--hr) * .4)); }
+                 75% { transform: translate(var(--hx), calc(var(--hy) - 6px)) rotate(var(--hr)); }
+                 100% { transform: translate(var(--hx), var(--hy)) rotate(var(--hr)); } }
+.fall { animation: fall var(--dd, .8s) cubic-bezier(.5, 0, .75, .7) var(--d, 0s) both; }
+@keyframes fall { 0% { transform: translate(0, 0) rotate(var(--r, 0deg)); }
+                  22% { transform: translate(calc(var(--fx) * .12), -26px) rotate(calc(var(--r, 0deg) * .5 + var(--fr) * .2)); }
+                  88% { transform: translate(var(--fx), calc(var(--fy) + 6px)) rotate(var(--fr)); }
+                  100% { transform: translate(var(--fx), var(--fy)) rotate(var(--fr)); } }
+.wob { animation: wob var(--dd, 1.6s) ease-in-out var(--d, 0s) both; }
+@keyframes wob { 0%, 100% { transform: rotate(0deg); } 15% { transform: rotate(-1deg); } 35% { transform: rotate(1.4deg); }
+                 55% { transform: rotate(-2deg); } 75% { transform: rotate(2.6deg); } 90% { transform: rotate(-1.2deg); } }
+/* счётчик слоёв: стоит на месте (склейки); .in — въезжает; цифры сменяются на словах */
+.cnt { animation: none; font-size: 32px; letter-spacing: 5px; }
+.cnt.in { animation: slideL .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+.cn { position: relative; display: inline-block; width: .62em; height: 1em; vertical-align: top; }
+.cn i, .cn b { position: absolute; left: 0; top: 0; font-style: normal; font-weight: 400; }
+.gone { animation: gone .01s linear var(--d, 0s) both; }
+@keyframes gone { from { opacity: 1; } to { opacity: 0; } }
+/* чат: клиент — беж, Кузя — белая бумага с крошечным роботом */
+.bub { position: relative; box-sizing: border-box; padding: 14px 24px 16px; font-family: PTSerif; font-size: 33px; line-height: 1.2; color: var(--ink); }
+.bub .who { display: block; font-family: PTMono; font-size: 19px; letter-spacing: 1px; color: var(--dim); margin-bottom: 4px; }
+.bub.bot { padding-left: 84px; }
+.bub .mini { position: absolute; left: 18px; top: 16px; width: 50px; height: 76px; }
+/* листы: стикер промпта, чековая лента */
+.sticky { box-sizing: border-box; background: var(--grain), var(--mustard); padding: 20px 26px 24px; font-family: PTMono; font-size: 28px; line-height: 1.32; color: var(--ink); }
+.sticky .hd { font-family: Oswald; font-weight: 600; font-size: 26px; letter-spacing: 3px; color: var(--navy); margin-bottom: 10px; }
+.sticky .hd small { font-family: PTMono; font-weight: 400; font-size: 18px; letter-spacing: 1px; color: rgba(48, 53, 60, .7); margin-left: 10px; }
+.roll { box-sizing: border-box; background: var(--grain), var(--paper-hi); padding: 18px 20px 26px; font-family: PTMono; font-size: 21px; line-height: 1.55; color: var(--ink); }
+.print { animation: print var(--dd, .8s) linear var(--d, 0s) both; }
+@keyframes print { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 -40px 0); } }
+.stamp.ok { border-color: var(--blue); color: var(--blue); }
+.stamp.olive { border-color: var(--olive); color: var(--olive); }
+.mono { font-family: PTMono; }
+
+</style></head><body>
+<!-- s11 — диагноз: «Это не лечение, а заплатки. | Каждый слой ставили после пожара, | а проверку — последней.»
+     Идея: внизу — груда коробок после падения (как в конце s10), Кузя лежит на боку. Сверху слово «ЛЕЧЕНИЕ»
+     зачёркивается, поверх — штамп «ЗАПЛАТКИ». Посередине лента времени: восемь язычков пламени, после каждого падает
+     коробка; последняя (проверка) обводится — «проверка — последней».
+     b0: зачёркнутое «лечение», штамп; b1: пожар → коробка ×8; b2: обводка последней, подпись рукой. -->
+<style>
+  .mbox { position: absolute; width: 62px; height: 26px; border-radius: 2px; background: var(--grain), var(--kraft);
+          box-shadow: inset 0 -3px 0 rgba(90, 60, 25, .25), inset 0 0 0 1.5px rgba(90, 60, 25, .4); }
+  .mbox::after { content: ''; position: absolute; left: 18px; right: 18px; top: 8px; height: 10px; background: var(--c, var(--navy)); }
+</style>
+<div class="stage">
+  <div class="kicker cnt" style="left: 0; top: 0; ">Слоёв: <span class="cn"><i><b>8</b></i></span></div><div class="tower"><svg class="ink rings" width="780" height="960"><path class="thin" d="M300 941 L 780 941"/></svg><div class="bx shadow " style="left: 477.0px; top: 876.0px; width: 270px; height: 64px; --r: 0deg; "><div class="box"><span class="lab" style="--c: var(--navy); --lr: -2deg">МОДЕЛЬ</span></div></div><div class="bx shadow " style="left: 260.0px; top: 885.0px; width: 240px; height: 58px; --r: -6deg; "><div class="box"><span class="lab" style="--c: var(--mustard); --lr: 1.5deg">ПРОМПТ</span><div class="tape" style="right: 26px; top: 34px; transform: rotate(8deg)"></div></div></div><div class="bx shadow " style="left: 488.0px; top: 807.0px; width: 280px; height: 70px; --r: 8deg; "><div class="box"><span class="lab" style="--c: var(--blue); --lr: -1deg">RAG</span><div class="tape" style="left: 26px; top: 46px; transform: rotate(-7deg)"></div></div></div><div class="bx shadow " style="left: 75.0px; top: 875.0px; width: 230px; height: 60px; --r: 18deg; "><div class="box"><span class="lab" style="--c: var(--terra); --lr: 2deg">MCP</span><div class="tape" style="right: 26px; top: 36px; transform: rotate(8deg)"></div></div></div><div class="bx shadow " style="left: 300.0px; top: 820.0px; width: 260px; height: 64px; --r: -14deg; "><div class="box"><span class="lab" style="--c: var(--navy); --lr: -1.5deg">ДОСТУП</span><div class="tape" style="left: 26px; top: 40px; transform: rotate(-7deg)"></div></div></div><div class="bx shadow " style="left: 609.0px; top: 744.0px; width: 222px; height: 56px; --r: 78deg; "><div class="box"><span class="lab" style="--c: var(--olive); --lr: 1deg">ЗАЩИТА</span><div class="tape" style="right: 26px; top: 32px; transform: rotate(8deg)"></div></div></div><div class="bx shadow " style="left: 387.0px; top: 753.0px; width: 270px; height: 66px; --r: -22deg; "><div class="box"><span class="lab" style="--c: var(--blue); --lr: -2deg">КЭШ · РОУТЕР</span><div class="tape" style="left: 26px; top: 42px; transform: rotate(-7deg)"></div></div></div><div class="bx shadow " style="left: 176.0px; top: 792.0px; width: 248px; height: 60px; --r: 32deg; "><div class="box"><span class="lab" style="--c: var(--olive); --lr: 1.5deg">ТРЕЙСЫ · ЭВАЛЫ</span><div class="tape" style="right: 26px; top: 36px; transform: rotate(8deg)"></div></div></div><div class="bx " style="left: 65.0px; top: 711.0px; width: 150px; height: 250px; --r: -80deg; " data-boil=".6"><div class="sticker" style="position: absolute; inset: 0"><img src="images/4caf1cd67d6f4535.cut.png" alt="" style="position: absolute; left: -65.0px; top: -15.0px; width: 279.9px; height: 279.9px"></div></div></div>
+
+  <div class="title" style="left: -4px; top: 70px; font-size: 150px; color: var(--navy); --d: .1s">Лечение</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#A9503F" stroke-width="13" fill="none" stroke-linecap="round"
+       style="--dd: .3s" data-at="лечение:0.15" d="M-6 150 C 160 140, 380 130, 560 118"/></svg>
+  <div class="stamp" style="left: 210px; top: 168px; font-size: 92px; --r: -8deg" data-at="заплатки">Заплатки</div>
+
+  <!-- лента времени: пожар → слой, восемь раз -->
+  <svg class="ink" width="780" height="960"><g fill="none" stroke="#141210" stroke-width="2.4" opacity=".55">
+    <path class="appear" data-sfx="none" style="--d: 0s" data-at="каждый" d="M10 470 L 760 470 M 744 460 L 762 470 L 744 480"/></g></svg>
+  <div class="abs label appear" style="left: 650px; top: 482px; color: var(--dim)" data-at="каждый">время</div>
+  <div class="abs pop" style="left: 30px; top: 372px; --r: 6deg" data-at="каждый:0.00" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 21px; top: 444px; --c: var(--navy); --r: -4deg" data-at="каждый:0.12"></div>
+  <div class="abs pop" style="left: 122px; top: 372px; --r: -6deg" data-at="каждый:0.22" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 113px; top: 444px; --c: var(--mustard); --r: 4deg" data-at="каждый:0.34"></div>
+  <div class="abs pop" style="left: 214px; top: 372px; --r: 6deg" data-at="каждый:0.44" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 205px; top: 444px; --c: var(--blue); --r: -4deg" data-at="каждый:0.56"></div>
+  <div class="abs pop" style="left: 306px; top: 372px; --r: -6deg" data-at="каждый:0.66" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 297px; top: 444px; --c: var(--terra); --r: 4deg" data-at="каждый:0.78"></div>
+  <div class="abs pop" style="left: 398px; top: 372px; --r: 6deg" data-at="каждый:0.88" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 389px; top: 444px; --c: var(--navy); --r: -4deg" data-at="каждый:1.00"></div>
+  <div class="abs pop" style="left: 490px; top: 372px; --r: -6deg" data-at="каждый:1.10" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 481px; top: 444px; --c: var(--olive); --r: 4deg" data-at="каждый:1.22"></div>
+  <div class="abs pop" style="left: 582px; top: 372px; --r: 6deg" data-at="каждый:1.32" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 573px; top: 444px; --c: var(--blue); --r: -4deg" data-at="каждый:1.44"></div>
+  <div class="abs pop" style="left: 674px; top: 372px; --r: -6deg" data-at="каждый:1.54" data-sfx="flick"><svg width="44" height="60" viewBox="-22 -32 44 60"><path d="M0 26 C -18 18, -16 -2, -4 -14 C -2 -6, 2 -4, 4 -2 C 4 -14, 2 -22, 6 -30 C 16 -18, 20 -4, 16 10 C 14 20, 8 26, 0 26 Z" fill="#C46557"/><path d="M0 24 C -8 20, -8 8, 0 -2 C 2 6, 8 10, 6 18 C 5 22, 3 24, 0 24 Z" fill="#E0C377"/></svg></div>
+  <div class="mbox drop" style="left: 665px; top: 444px; --c: var(--olive); --r: 4deg" data-at="каждый:1.66"></div>
+  <svg class="ink" width="780" height="960">
+    <ellipse class="draw" pathLength="1" cx="696" cy="456" rx="52" ry="30" fill="none" stroke="#A9503F" stroke-width="6"
+             style="--dd: .3s" data-at="проверку"/>
+  </svg>
+  <div class="abs hand appear" style="left: 300px; top: 520px; font-size: 56px; color: var(--terra-dk)" data-at="последней:-0.15">проверка — последней</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#A9503F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .25s" data-at="последней:0.1" d="M610 540 C 650 530, 670 510, 680 486 M 668 494 L 681 484 L 690 498"/></svg>
+</div>
+
+<script>
+// Paper Explained — общий ход сцены web.html.
+// 1) .stage 780×960 вписывается в рабочую зону кадра (SCENE.area, CSS px) по центру.
+// 2) Рваные края: data-torn="tb" (верх/низ), "lr", "all" — clip-path многоугольником с зазубринами (сид — номер элемента).
+// 3) Время «на двойках»: студия зовёт window.seek(t), мы ставим всем анимациям t, округлённое вниз до 1/12 с, а свой
+//    обход анимаций студии гасим (document.getAnimations → []). Без студии (просмотр в браузере) всё идёт как обычно.
+// 4) «Кипение» бумаги: элементы с data-boil чуть дрожат раз в 1/6 с (translate/rotate не мешают transform анимаций).
+// 5) Подписи (шаблон paper_page): слова озвучки кусками по 1–2 строки внизу сцены, звучащее слово — под маркером.
+(function () {
+  const S = window.SCENE || { W: 1080, H: 1920, area: { x0: 151, y0: 154, x1: 929, y1: 1536 } };
+  const a = S.area, aw = a.x1 - a.x0, ah = a.y1 - a.y0;
+  const st = document.querySelector('.stage');
+  const k = Math.min(aw / 780, ah / 1380) * 0.96;  // запас 4 %: тени, скотч и «кипение» не выходят за зону
+  st.style.left = (a.x0 + (aw - 780 * k) / 2) + 'px';
+  st.style.top = (a.y0 + (ah - 1380 * k) / 2) + 'px';
+  st.style.transform = 'scale(' + k + ')';
+
+  // подписи: куски не длиннее CAP символов, граница — и на смене бита
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
+  // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
+  const byBeat = [];
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
+  const chunks = [];
+  byBeat.forEach((ids, b) => {
+    if (!ids) return;
+    const len = ids.reduce((s, i) => s + Wd[i].w.length + 1, -1), n = Math.ceil(len / CAP), goal = len / n;
+    const first = chunks.length;  // первый кусок этого бита
+    let c = null, acc = 0;
+    ids.forEach(i => {
+      const made = chunks.length - first;  // кусков бита уже начато
+      if (!c || (made < n && acc >= goal * made - 2)) { c = { beat: b, idx: [], text: '' }; chunks.push(c); }
+      c.idx.push(i); c.text = c.text ? c.text + ' ' + Wd[i].w : Wd[i].w; acc += Wd[i].w.length + 1;
+    });
+  });
+  const caps = document.createElement('div'); caps.className = 'caps'; st.appendChild(caps);
+  chunks.forEach(c => {
+    c.el = document.createElement('div'); c.el.className = 'chunk';
+    c.spans = c.idx.map((i, n) => { const s = document.createElement('span'); s.textContent = Wd[i].w; c.el.appendChild(s);
+                                const nx = c.idx[n + 1], glue = nx !== undefined && /^[^\p{L}\p{N}]+$/u.test(Wd[nx].w);  // тире не висит одно на строке
+                                c.el.appendChild(document.createTextNode(glue ? ' ' : ' ')); return s; });
+    caps.appendChild(c.el);
+  });
+  function captions(t) {
+    let cur = -1;
+    chunks.forEach((c, j) => { if (t >= Wd[c.idx[0]].t0 - 0.05) cur = j; });
+    chunks.forEach((c, j) => {
+      c.el.style.display = j === cur ? 'block' : 'none';
+      if (j !== cur) return;
+      c.idx.forEach((i, n) => {
+        const w = Wd[i], next = Wd[i + 1];
+        const on = t >= w.t0 - 0.02 && (!next || t < next.t0 - 0.02 || n === c.idx.length - 1 && t < w.t1 + 0.4);
+        const p = Math.max(0, Math.min(1, (t - w.t0 + 0.02) / 0.14));
+        c.spans[n].style.backgroundSize = on ? (p * 100).toFixed(1) + '% 74%' : '0% 74%';
+      });
+    });
+  }
+
+  function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  document.querySelectorAll('[data-torn]').forEach((el, i) => {
+    const r = rng(9173 + i * 101), sides = el.dataset.torn, depth = +(el.dataset.depth || 7);
+    const step = 2.2, pts = [];
+    const j = (on) => (on ? r() * depth : 0);
+    const top = /t|all/.test(sides), bot = /b|all/.test(sides), lft = /l|all/.test(sides), rgt = /r|all/.test(sides);
+    for (let x = 0; x <= 100; x += step) pts.push([x, j(top) * 100 / el.offsetHeight]);
+    for (let y = 0; y <= 100; y += step * el.offsetWidth / el.offsetHeight) pts.push([100 - j(rgt) * 100 / el.offsetWidth, y]);
+    for (let x = 100; x >= 0; x -= step) pts.push([x, 100 - j(bot) * 100 / el.offsetHeight]);
+    for (let y = 100; y >= 0; y -= step * el.offsetWidth / el.offsetHeight) pts.push([j(lft) * 100 / el.offsetWidth, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%').join(',') + ')';
+  });
+
+  // data-at="слово[:сдвиг]" — элемент стартует со слова озвучки (SCENE.words, первое совпадение по началу слова)
+  const words = (S.words || []).map(w => ({ w: w.w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), t: w.t0 }));
+  document.querySelectorAll('[data-at]').forEach(el => {
+    const [word, off] = el.dataset.at.split(':');
+    const hit = words.find(x => x.w.startsWith(word.toLowerCase()));
+    if (hit) el.style.setProperty('--d', (hit.t + (+off || 0)).toFixed(3) + 's');
+  });
+
+  const FPS2 = 12;
+  const all = document.getAnimations.bind(document);
+  document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
+  const boil = Array.from(document.querySelectorAll('[data-boil]'));
+  window.seek = (t) => {
+    captions(t);  // подписи — по точному времени речи, не шагом
+    const q = Math.floor(t * FPS2 + 1e-4) / FPS2;
+    for (const an of all()) { an.pause(); an.currentTime = q * 1000; }
+    const n = Math.floor(t * 6);
+    boil.forEach((el, i) => {
+      const r = rng(n * 7919 + i * 131 + 1); const amp = +(el.dataset.boil || 1);
+      el.style.translate = ((r() - .5) * 1.4 * amp).toFixed(2) + 'px ' + ((r() - .5) * 1.4 * amp).toFixed(2) + 'px';
+      el.style.rotate = ((r() - .5) * .35 * amp).toFixed(3) + 'deg';
+    });
+  };
+})();
+
+</script>
+</body></html>

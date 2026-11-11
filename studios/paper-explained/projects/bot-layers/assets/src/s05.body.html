@@ -1,0 +1,33 @@
+<!-- s05 — заплатка 3, MCP: «Клиенты просят отменить заказ, | а Кузя умеет только объяснять. |
+     Даёте ему кассу и доставку | через эм-си-пи.»
+     Идея: клиент просит отменить заказ — Кузя отвечает длинной инструкцией (штамп «ТОЛЬКО СЛОВА»); потом касса и мопед
+     (вырезки Kie) пунктирами-вызовами cancel_order() / courier.where() тянутся к месту новой коробки MCP.
+     b0: просьба клиента; b1: ответ Кузи, штамп; b2: касса, мопед, пунктиры; b3: коробка MCP, фишка. -->
+<style>
+  .call { padding: 6px 12px 4px; font-family: PTMono; font-size: 21px; color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+  .wire { fill: none; stroke: #141210; stroke-width: 3; stroke-dasharray: 9 9; opacity: .6; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 690px; top: 120px; --d: .4s"></div>
+  <!--@tower {"kind": "patch", "n": 4, "add": "эмси"}-->
+
+  <div class="abs slideR" style="left: 96px; top: 76px; --r: 1.5deg" data-at="клиенты" data-boil>
+    <div class="shadow"><div class="tanp bub" style="width: 354px" data-torn="b" data-depth="5"><span class="who">клиент</span>Отмените мой заказ!</div></div>
+  </div>
+  <div class="abs slideL" style="left: 0; top: 230px; --r: -1.5deg" data-at="кузя" data-boil>
+    <div class="shadow"><div class="sheet bub bot" style="width: 450px; font-size: 28px" data-torn="b" data-depth="5"><span class="mini sticker"><img data-cut="ROBOT" data-box="50 76"></span><span class="who">Кузя · бот</span>Чтобы отменить заказ, позвоните оператору, назовите номер, затем…</div></div>
+  </div>
+  <div class="stamp" style="left: 120px; top: 408px; font-size: 44px; --r: -7deg" data-at="объяснять">Только слова</div>
+
+  <!-- касса и доставка — инструменты -->
+  <svg class="ink" width="780" height="960">
+    <path class="wire appear" data-sfx="none" style="--d: 0s" data-at="кассу:0.3" d="M210 560 C 330 540, 420 600, 478 700"/>
+    <path class="wire appear" data-sfx="none" style="--d: 0s" data-at="доставку:0.3" d="M410 770 C 450 760, 466 744, 480 724"/>
+  </svg>
+  <div class="abs drop sticker" style="left: 0; top: 478px; width: 210px; height: 200px; --r: -4deg" data-at="кассу" data-boil><img data-cut="REGISTER" data-box="210 200"></div>
+  <div class="abs drop sticker" style="left: 176px; top: 676px; width: 250px; height: 160px; --r: 3deg" data-at="доставку" data-boil><img data-cut="SCOOTER" data-box="250 160"></div>
+  <div class="abs pop shadow" style="left: 212px; top: 506px; --r: -3deg" data-at="кассу:0.4"><div class="call">cancel_order()</div></div>
+  <div class="abs pop shadow" style="left: 0; top: 724px; --r: 2deg" data-at="доставку:0.4"><div class="call">courier.where()</div></div>
+
+  <div class="abs pop tanp chip shadow" style="left: 20px; top: 872px; font-size: 30px; --r: -2deg" data-at="эмси:0.1" data-boil><b style="font-family: Oswald; color: var(--terra-dk)">MCP</b> — инструменты</div>
+</div>

@@ -1,0 +1,31 @@
+<!-- s04 — подробнее про боль: «С Аргоном — путаница: | это модель, а не программа. | Куда класть скилл?»
+     Идея (аналогия без слов): модель — это мотор без машины. Мотор по центру, над ним «МОДЕЛЬ», под ним
+     «≠ ПРОГРАММА»; внизу справа папка-скилл с вопросом — класть некуда.
+     b0: ярлык, мотор; b1: «МОДЕЛЬ», пометка «это мотор», «≠ ПРОГРАММА»; b2: папка и вопрос. -->
+<div class="stage">
+  <div class="kicker" style="left: 0; top: 20px; --d: 0s">Gemini 4 Argon</div>
+  <div class="cross" style="left: 690px; top: 26px; --d: calc(var(--b0) + .3s)"></div>
+  <div class="dot" style="left: 24px; top: 560px; width: 64px; height: 64px; --d: calc(var(--b1) + .4s)"></div>
+  <svg class="ink rings" width="780" height="960">
+    <circle class="draw thin" pathLength="1" cx="400" cy="440" r="250" style="--d: calc(var(--b0) + .3s); --dd: .7s"/>
+  </svg>
+
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 96px; font-size: 180px; color: var(--terra-dk)" data-at="модель">Модель</div>
+
+  <!-- мотор: ч/б вырезка Kie -->
+  <div class="abs drop sticker" style="left: 130px; top: 250px; width: 520px; height: 380px; --r: -2deg; --d: .05s" data-boil>
+    <img data-cut="ENGINE" data-box="520 380">
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="2.6" fill="none"
+       style="--dd: .25s" data-at="модель:0.4" d="M640 300 C 676 330, 680 372, 660 400"/></svg>
+  <div class="abs hand pop" style="left: 560px; top: 238px; font-size: 52px; --r: 6deg" data-at="модель:0.5">это мотор</div>
+
+  <div class="title" style="left: 0; right: 0; text-align: center; top: 652px; font-size: 104px; color: var(--navy)" data-at="программа">≠ программа</div>
+
+  <!-- папка-скилл: класть некуда -->
+  <div class="abs drop sticker" style="left: 486px; top: 780px; width: 220px; height: 150px; --r: 6deg; --d: var(--b2)" data-boil>
+    <img data-cut="FOLDER" data-box="220 150">
+  </div>
+  <div class="abs pop sheet chip shadow" style="left: 500px; top: 752px; font-size: 22px; --r: 4deg; --d: calc(var(--b2) + .2s)" data-boil>скилл</div>
+  <div class="abs hand pop" style="left: 360px; top: 760px; font-size: 170px; color: var(--terra-dk); --r: -6deg" data-at="скилл:0.1">?</div>
+</div>
