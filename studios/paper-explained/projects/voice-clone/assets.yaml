@@ -1,0 +1,13 @@
+# Источник и лицензия всего, что видно и слышно в ролике (studio/assets.py). Картинок Kie нет.
+assets:
+  - {file: assets/s01-voice.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s02-code.html, source: "своя вёрстка студии, собрана assets/src/build.py; рука — вырезка бренда brand/avatar/src/hand.cut.png (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s03-cut.html, source: "своя вёрстка студии, собрана assets/src/build.py; ножницы — вырезка бренда brand/avatar/src/scissors.cut.png (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s04-talk.html, source: "своя вёрстка студии, собрана assets/src/build.py; голова-кукла — SVG кодом (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s05-copy.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s06-letter.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s07-you.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s08-parents.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s09-cured.html, source: "своя вёрстка студии, собрана assets/src/build.py (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s10-share.html, source: "своя вёрстка студии, собрана assets/src/build.py; самолётик — вырезка бренда brand/avatar/src/plane.cut.png (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s11-follow.html, source: "своя вёрстка студии, собрана assets/src/build.py; рука и аватар канала — вырезки бренда brand/avatar/ (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}

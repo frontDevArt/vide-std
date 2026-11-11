@@ -1,0 +1,48 @@
+<!-- s05 — привычное не спасает, КСЕРОКС: «Обычно советуют | прислушаться к голосу.» «Но тут это не спасает.»
+     «Копию на слух | почти не отличить.»
+     Сверху бумажная плашка совета «Слушайте голос» — на «спасает» её зачёркивает маркер. Ниже две карточки голосового
+     «Сын»: оригинал лежит, копию печатает ксерокс (полоса света сверху вниз). Между ними «=»; у копии краски чуть
+     сбиты (common.js, data-misprint), на «копию» сдвиг становится заметным и падает штамп «КОПИЯ»; на «почти» «=»
+     меняется на «≈», внизу рукой — «на слух — почти не отличить». Карточки — 40…720 px: правый край — не под
+     колонкой кнопок TikTok. -->
+<div class="stage">
+  <div class="abs drop" style="left: 40px; top: 30px; --r: -2deg" data-at="советуют:-0.05" data-boil=".5">
+    <div class="shadow"><div class="tanp" style="padding: 14px 30px 10px; font-family: Oswald; font-weight: 600; font-size: 64px; line-height: 1; color: var(--navy); white-space: nowrap" data-torn="lr" data-depth="6">
+      <span style="font-family: PTMono; font-weight: 400; font-size: 24px; letter-spacing: 3px; color: var(--dim); display: block; margin-bottom: 6px">СОВЕТ</span>«Слушайте голос»</div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw strike" pathLength="1" fill="none" stroke-linecap="round"
+       style="--dd: .3s" data-at="спасает:-0.1" d="M30 124 C 200 112, 420 96, 610 80"/></svg>
+  <div class="abs hand appear" style="left: 560px; top: 120px; font-size: 54px; color: var(--terra-dk); --r: 6deg" data-at="спасает:0.2">не спасает</div>
+
+  <div class="kicker" style="left: 40px; top: 200px; --d: .5s">оригинал</div>
+  <div class="kicker" style="left: 400px; top: 200px; background: var(--terra-dk); --d: .85s">клон</div>
+
+  <!-- оригинал -->
+  <div class="abs drop" style="left: 40px; top: 262px; --r: -1.5deg; --d: .4s" data-boil=".5">
+    <div class="shadow"><div class="sheet card" style="width: 320px; height: 440px" data-torn="b" data-depth="6">
+      <div class="ink"><span class="face">С</span><span class="nm">Сын</span>
+        <span class="vb"><span class="play"></span><span class="wave" data-wave="14" data-seed="3"></span></span></div>
+    </div></div>
+  </div>
+
+  <!-- копия: печатается под полосой света, краски сбиты -->
+  <div class="abs" style="left: 400px; top: 262px; transform: rotate(1.5deg)" data-boil=".5">
+    <div class="shadow"><div class="printIn" style="--d: .8s; --dd: 1s">
+      <div class="sheet card" style="width: 320px; height: 440px" data-torn="b" data-depth="6">
+        <div class="ink" data-misprint="копию"><span class="face">С</span><span class="nm">Сын</span>
+          <span class="vb"><span class="play"></span><span class="wave" data-wave="14" data-seed="3"></span></span></div>
+      </div>
+    </div></div>
+    <div class="scanbar sweep" style="left: -20px; top: -20px; width: 360px; --sy: 480px; --d: .8s; --dd: 1s" data-sfx="none"></div>
+  </div>
+
+  <!-- = → ≈ -->
+  <div class="abs num fadeTo" style="left: 358px; top: 400px; font-size: 110px; color: var(--navy); --to: 0; animation-duration: .01s" data-at="почти">
+    <span class="appear" style="display: block; --d: 1.85s">=</span></div>
+  <div class="abs num pop" style="left: 352px; top: 396px; font-size: 116px; color: var(--terra-dk)" data-at="почти">≈</div>
+
+  <div class="stamp" style="left: 430px; top: 560px; font-size: 80px; --r: -14deg" data-at="копию">Копия</div>
+  <div class="abs hand appear" style="left: 40px; top: 770px; font-size: 64px; --r: -2deg" data-at="почти:0.1">на слух — почти не отличить</div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#30353C" stroke-width="5" fill="none" stroke-linecap="round"
+       style="--dd: .3s" data-at="отличить:0.1" d="M50 845 C 220 872, 470 872, 700 842"/></svg>
+</div>

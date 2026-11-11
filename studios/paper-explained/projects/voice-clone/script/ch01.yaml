@@ -1,0 +1,85 @@
+# «Мошенник говорит вашим голосом», 11 сцен ≈ 60 с. План и факты — outline.md.
+# Формула канала: боль (s01) → почему по шагам 1–2–3 (s02–s04) → привычное не спасает (s05) → лечение на одном листе (s06–s08) →
+# вылечено на том же случае (s09) → перешлите + вопрос (s10) → лайк и подписка (s11). Источников в кадре нет.
+# Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/, сборка build.py). Картинок Kie
+# нет: всё кодом, вырезки бренда — ножницы (s03), рука (s02, s11), самолётик (s10).
+chapter: ch01
+title: "Мошенник говорит вашим голосом"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Маме приходит голосовое: | «Мам, срочно переведи деньги»."
+      - "Это ваш голос."
+      - "Но вы его не записывали."
+    params: {file: assets/s01-voice.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Вот как это делают."
+      - "Шаг первый: | у вас просят код — | проголосовать за конкурс | или забрать подарок."
+      - "Но это код входа в ваш аккаунт."
+    params: {file: assets/s02-code.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Шаг второй: | в аккаунте — все ваши голосовые."
+      - "Из них нейросеть | склеивает ваш голос."
+    params: {file: assets/s03-cut.html, fade: false}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Шаг третий: | клон скажет маме что угодно — | с вашего же аккаунта."
+    params: {file: assets/s04-talk.html, fade: false}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Обычно советуют | прислушаться к голосу."
+      - "Но тут это не спасает."
+      - "Копию на слух | почти не отличить."
+    params: {file: assets/s05-copy.html, fade: false}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Лечение — на одном листе."
+    params: {file: assets/s06-letter.html, fade: false}
+    min_duration: 3.1
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Что сделать вам: | код входа никому не называйте, | даже «поддержке»."
+      - "И включите облачный пароль: | тогда одного кода не хватит."
+    params: {file: assets/s07-you.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Родителям: | просят денег — | перезвонить по номеру, а не в чат."
+      - "И кодовое слово семьи."
+    params: {file: assets/s08-parents.html, fade: false}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Мама спрашивает слово — | клон молчит."
+      - "И деньги остаются дома."
+    params: {file: assets/s09-cured.html, fade: false}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "Перешлите это родителям."
+      - "А вам такое приходило?"
+    params: {file: assets/s10-share.html, fade: false}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Если было полезно — | поставьте лайк и подпишитесь."
+    params: {file: assets/s11-follow.html, fade: false}

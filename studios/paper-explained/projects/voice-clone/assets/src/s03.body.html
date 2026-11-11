@@ -1,0 +1,62 @@
+<!-- s03 — почему, шаг 2, НОЖНИЦЫ И СКОТЧ: «Шаг второй: | в аккаунте — все ваши голосовые.» «Из них нейросеть |
+     склеивает ваш голос.» Шкала шагов: 1 пройден, на «шаг» загорается 2.
+     Три полоски — ваши старые голосовые (голосовое, сторис, кружок), пунктир разреза на x = 470. Ножницы с биркой
+     «нейросеть» едут вниз по пунктиру и щёлкают; как только проходят полоску, её кусок улетает дугой в новую строку
+     (y = 770). На «склеивает» стыки заклеивает скотч, на «голос» — третий кусок скотча и подпись «↑ ваш «голос»».
+     Ножницы: кончики внизу бокса 130×260, едут от y = 290 до 700 за 1,2 с со «нейросеть» − 0,45 с → проходят полоски
+     (низ 404, 544, 684) через 0,33, 0,74 и 1,15 с после старта; ручки не выходят за верх рабочей зоны.
+     Все времена разреза — от слова «нейросеть» (data-at), полоски — от «голосовые». -->
+<div class="stage">
+  <!-- шкала шагов: на одном месте в s02–s04 -->
+  <div class="abs steps" style="left: 556px; top: 22px"><i class="was">1</i><b>→</b><i>2<u class="pop" data-at="шаг:-0.05" data-sfx="flick">2</u></i><b>→</b><i>3</i></div>
+  <div class="title" style="left: -4px; top: -6px; font-size: 112px; color: var(--navy)" data-at="склеивает:-0.15">Склеивает</div>
+  <div class="abs hand appear" style="left: 30px; top: 200px; font-size: 56px; --r: -2deg" data-at="голосовые:-0.5">все ваши голосовые</div>
+
+  <!-- полоски: остаток (0…410) + кусок (410…640) -->
+  <div class="abs slideL" style="left: 60px; top: 300px" data-at="голосовые:-0.45" data-boil=".5">
+    <div class="shadow fadeTo" style="--to: .4" data-at="нейросеть:1.1"><div class="tanp strip" style="width: 410px" data-torn="l" data-depth="6"><span class="lab">голосовое</span><span class="wave" data-wave="16"></span></div></div>
+  </div>
+  <div class="abs slideL" style="left: 60px; top: 440px" data-at="голосовые:-0.35" data-boil=".5">
+    <div class="shadow fadeTo" style="--to: .4" data-at="нейросеть:1.1"><div class="tanp strip" style="width: 410px" data-torn="l" data-depth="6"><span class="lab">сторис</span><span class="wave" data-wave="18"></span></div></div>
+  </div>
+  <div class="abs slideL" style="left: 60px; top: 580px" data-at="голосовые:-0.25" data-boil=".5">
+    <div class="shadow fadeTo" style="--to: .4" data-at="нейросеть:1.1"><div class="tanp strip" style="width: 410px" data-torn="l" data-depth="6"><span class="lab">кружок</span><span class="wave" data-wave="17"></span></div></div>
+  </div>
+  <!-- куски: стоят продолжением полосок, после разреза летят в новую строку (y = 770; x = 45, 275, 505) -->
+  <div class="abs slideL" style="left: 470px; top: 300px" data-at="голосовые:-0.45">
+    <div class="abs fly" style="left: 0; top: 0; --tx: -425px; --ty: 470px; --rr: -2deg" data-at="нейросеть:-0.07">
+      <div class="shadow"><div class="tanp strip" style="width: 230px" data-torn="r" data-depth="6"><span class="wave" data-wave="11" data-seed="5"></span></div></div>
+    </div>
+  </div>
+  <div class="abs slideL" style="left: 470px; top: 440px" data-at="голосовые:-0.35">
+    <div class="abs fly" style="left: 0; top: 0; --tx: -195px; --ty: 330px; --rr: 1.5deg" data-at="нейросеть:0.34">
+      <div class="shadow"><div class="tanp strip" style="width: 230px" data-torn="r" data-depth="6"><span class="wave" data-wave="11" data-seed="9"></span></div></div>
+    </div>
+  </div>
+  <div class="abs slideL" style="left: 470px; top: 580px" data-at="голосовые:-0.25">
+    <div class="abs fly" style="left: 0; top: 0; --tx: 35px; --ty: 190px; --rr: -1deg" data-at="нейросеть:0.75">
+      <div class="shadow"><div class="tanp strip" style="width: 230px" data-torn="r" data-depth="6"><span class="wave" data-wave="11" data-seed="2"></span></div></div>
+    </div>
+  </div>
+
+  <!-- пунктир разреза -->
+  <svg class="ink appear" width="780" height="960" data-at="нейросеть:-0.7">
+    <path d="M470 286 L 470 698" stroke="#30353C" stroke-width="3" stroke-dasharray="12 9" opacity=".55" fill="none"/>
+  </svg>
+
+  <!-- ножницы с биркой «нейросеть»: вырезка бренда, кончики вниз; щелчки — метки .appear (tick) на разрезах -->
+  <div class="abs travel" style="left: 405px; top: 30px; width: 130px; height: 260px; --tx: 0; --ty: 410px; --dd: 1.2s" data-at="нейросеть:-0.45" data-sfx="swish">
+    <div class="snip sticker"><img data-cut="SCISSORS" data-box="130 260"></div>
+    <div class="abs pop kicker" style="left: 124px; top: 40px; position: absolute; background: var(--terra-dk); font-size: 22px; letter-spacing: 3px; --r: 4deg; animation-name: pop" data-at="нейросеть:-0.2">нейросеть</div>
+  </div>
+  <i class="abs appear" data-at="нейросеть:-0.22" data-sfx="tick"></i>
+  <i class="abs appear" data-at="нейросеть:0.19" data-sfx="tick"></i>
+  <i class="abs appear" data-at="нейросеть:0.6" data-sfx="tick"></i>
+
+  <!-- скотч на стыках новой строки -->
+  <div class="abs tape" style="left: 242px; top: 746px; --r: 8deg" data-at="склеивает:0.15" data-torn="tb" data-depth="5"></div>
+  <div class="abs tape" style="left: 472px; top: 746px; --r: -6deg" data-at="склеивает:0.45" data-torn="tb" data-depth="5"></div>
+  <div class="abs tape" style="left: 700px; top: 756px; height: 130px; --r: 14deg" data-at="голос" data-torn="tb" data-depth="5"></div>
+
+  <div class="abs hand appear" style="left: 250px; top: 886px; font-size: 60px; color: var(--terra-dk); --r: -3deg" data-at="голос:0.2">↑ ваш «голос»</div>
+</div>

@@ -1,0 +1,27 @@
+<!-- s07 — лечение: вам: «Что сделать вам: | код входа никому не называйте, | даже «поддержке».»
+     «И включите облачный пароль: | тогда одного кода не хватит.»
+     Лист — на месте из s06 (build.py). На «код» пишется пункт 1, галочка — после «называйте»; под листом плашка
+     «Поддержка: пришлите код» — зачёркнута на «поддержке». На «облачный» пишется пункт 2, под листом падает
+     бумажный замок с открытой дужкой; на «хватит» дужка защёлкивается, галочка пункта 2. -->
+<div class="stage">
+  <div class="title" style="left: -4px; top: -6px; font-size: 96px; color: var(--navy); animation: none">Лечение</div>
+  <div class="cross" style="left: 700px; top: 0; animation: none"></div>
+  <!--@sheet {"done": 0, "add": {"1": ["код", "называйте:0.25"], "2": ["облачный", "хватит:0.05"]}}-->
+
+  <!-- «поддержка» просит код -->
+  <div class="abs drop" style="left: 20px; top: 806px; --r: -2deg" data-at="поддержке:-0.25" data-boil=".5">
+    <div class="shadow"><div class="tanp chip" style="font-size: 27px; padding: 14px 20px 10px" data-torn="lr" data-depth="5">«Поддержка»: пришлите код</div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw strike" pathLength="1" fill="none" stroke-linecap="round"
+       style="--dd: .25s" data-at="поддержке:0.35" d="M14 842 C 160 836, 330 826, 480 818"/></svg>
+
+  <!-- замок: дужка защёлкивается на «войдут» -->
+  <div class="abs drop lock" style="left: 600px; top: 770px; --r: 4deg" data-at="облачный:-0.1" data-boil=".5">
+    <svg width="150" height="180" viewBox="0 0 150 180" style="overflow: visible; filter: drop-shadow(0 10px 8px rgba(60, 45, 20, .3))">
+      <path class="shackle" data-at="хватит:-0.05" data-sfx="stamp" d="M38 88 L 38 56 A 37 37 0 0 1 112 56 L 112 88" fill="none" stroke="#30353C" stroke-width="16" stroke-linecap="round"/>
+      <rect x="14" y="80" width="122" height="96" rx="12" fill="#E0C377" stroke="#30353C" stroke-width="5"/>
+      <circle cx="75" cy="118" r="12" fill="#30353C"/><path d="M69 122 L 81 122 L 78 150 L 72 150 Z" fill="#30353C"/>
+    </svg>
+  </div>
+  <div class="abs hand appear" style="left: 300px; top: 892px; font-size: 46px; color: var(--navy); --r: -4deg" data-at="пароль">второй замок →</div>
+</div>

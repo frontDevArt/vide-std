@@ -1,0 +1,54 @@
+<!-- s01 — боль, КАМЕРА В ГЛУБИНУ: «Маме приходит голосовое: | «Мам, срочно переведи деньги».» «Это ваш голос.»
+     «Но вы его не записывали.»
+     Стол мамы: лист в клетку, записка «позвонить сыну», бумажный телефон с чатом «Сын». На «голосовое» приходит
+     голосовое, и камера наезжает на него сквозь слои (стол почти стоит, записка уходит, передний план пролетает мимо).
+     Пока звучит «Мам, срочно переведи деньги» — волна голосового прыгает в такт. «Ваш» — штамп «ВАШ ГОЛОС»,
+     «записывали» — «?!» рукой. Точка наезда — центр голосового (434, 520) px сцены; тот же чат — в s09. -->
+<div class="stage">
+  <div class="cam">
+    <!-- L0: стол — лист в клетку -->
+    <div class="cam-l" style="--ox: 434px; --oy: 520px; --s1: 1.1; --d: 1.45s; --dd: 1.4s">
+      <div class="abs drop shadow" style="left: 30px; top: 60px; --r: -3deg; --d: 0s" data-boil=".4">
+        <div class="grid" style="width: 720px; height: 840px" data-torn="all" data-depth="8"></div>
+      </div>
+      <div class="cross" style="left: 0; top: 0; --d: .2s"></div>
+      <div class="cross" style="left: 700px; top: 880px; --d: .3s"></div>
+    </div>
+
+    <!-- L1: записка мамы -->
+    <div class="cam-l" style="--ox: 434px; --oy: 520px; --s1: 1.45; --d: 1.45s; --dd: 1.4s">
+      <div class="abs drop shadow" style="left: 34px; top: 92px; --r: -7deg; --d: .15s" data-boil=".7">
+        <div class="note" style="width: 250px; height: 210px" data-torn="b" data-depth="6">позвонить сыну ♥</div>
+      </div>
+    </div>
+
+    <!-- L2: телефон мамы с чатом -->
+    <div class="cam-l" style="--ox: 434px; --oy: 520px; --s1: 2.15; --d: 1.45s; --dd: 1.4s">
+      <div class="abs drop" style="left: 250px; top: 120px; --r: 2deg; --d: .05s" data-boil=".5">
+        <div class="phone" style="width: 380px; height: 770px; box-shadow: 0 26px 30px rgba(50, 38, 20, .35)">
+          <div class="scr">
+            <div class="chat-hd appear" style="--d: .2s"><span class="ava">С</span><span><b>Сын</b><i>в сети</i></span></div>
+            <div class="bub in pop" style="left: 16px; top: 120px; --d: .35s">Мам, ты дома?</div>
+            <div class="bub out pop" style="right: 16px; top: 200px; --d: .55s">Да, а что?</div>
+            <div class="vbub pop" style="left: 16px; top: 296px; width: 300px" data-at="голосовое:-0.15">
+              <span class="play"></span>
+              <span class="wave" data-wave="22" data-talk="мам~голос"></span>
+              <span class="vdur">0:07</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- L3: передний план — пролетает мимо камеры -->
+    <div class="cam-l" style="--ox: 434px; --oy: 520px; --s1: 3.4; --o1: 0; --d: 1.45s; --dd: 1.4s">
+      <div class="abs hand appear" style="left: 6px; top: 470px; font-size: 54px; --r: -4deg" data-at="маме:0.1">телефон<br>мамы →</div>
+      <div class="abs tape" style="left: 690px; top: 40px; --r: 28deg; --d: .3s" data-torn="tb" data-depth="5"></div>
+      <div class="abs tape" style="left: 70px; top: 760px; height: 120px; --r: -62deg; --d: .45s" data-torn="tb" data-depth="5"></div>
+    </div>
+  </div>
+
+  <!-- поверх камеры (не движется с ней) -->
+  <div class="stamp" style="left: 120px; top: 660px; font-size: 96px; --r: -6deg" data-at="ваш:-0.05">Ваш голос</div>
+  <div class="abs hand pop" style="left: 590px; top: 770px; font-size: 170px; color: var(--terra-dk); --r: 8deg" data-at="записывали">?!</div>
+</div>

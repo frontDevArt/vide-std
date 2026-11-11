@@ -1,0 +1,4 @@
+# ИМЯ в data-cut → путь к готовой вырезке от папки assets/ (вырезки бренда, brand/avatar/sources.json)
+SCISSORS ../../../brand/avatar/src/scissors.cut.png
+HAND ../../../brand/avatar/src/hand.cut.png
+PLANE ../../../brand/avatar/src/plane.cut.png

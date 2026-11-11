@@ -1,0 +1,58 @@
+<!-- s02 — почему, шаг 1, КОД ВХОДА: «Вот как это делают.» «Шаг первый: | у вас просят код — | проголосовать за конкурс
+     | или забрать подарок.» «Но это код входа в ваш аккаунт.»
+     На «вот» — заголовок «Как это делают» и крупная шкала шагов «1 → 2 → 3» по центру; на «шаг» заголовок гаснет,
+     шкала уезжает вправо вверх (то же место в s02–s04) и загорается 1.
+     Сверху две бумажные приманки: «Проголосуйте за конкурс рисунков» и «Вам подарок — премиум на год», у каждой
+     кнопка «получить код». Ниже на «код» печатается бумажный бланк кода — пять клеток по одной цифре. На «это код
+     входа» рядом падает бумажный ключ, к бланку — стрелка «= ключ от аккаунта»; на «аккаунт» справа выезжает рука
+     (вырезка бренда, зеркально) и забирает ключ, штамп «ВХОД В АККАУНТ». -->
+<style>
+  .bait { box-sizing: border-box; width: 520px; padding: 20px 26px 22px; font-family: PTSerif; font-size: 40px; line-height: 1.15; color: var(--ink); }
+  .bait b { display: block; font-family: Oswald; font-weight: 600; font-size: 26px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+  .bait .btn { display: inline-block; margin-top: 14px; padding: 9px 20px 7px; font-family: Oswald; font-weight: 600; font-size: 34px; color: var(--paper-hi); background: var(--grain), var(--olive); }
+  .code { display: flex; gap: 12px; padding: 20px 22px; }
+  .code i { width: 92px; height: 122px; box-sizing: border-box; border: 3px solid var(--navy); display: flex; align-items: center; justify-content: center;
+            font-style: normal; font-family: Oswald; font-weight: 700; font-size: 88px; color: var(--navy); background: var(--paper-hi); }
+</style>
+<div class="stage">
+  <!-- шкала шагов: на одном месте в s02–s04 -->
+  <div class="fadeTo" style="--to: 0; animation-duration: .25s" data-at="шаг:-0.35">
+    <div class="title" style="left: -4px; top: 130px; font-size: 150px; color: var(--navy)" data-at="вот:-0.05">Как это<br>делают</div>
+  </div>
+  <div class="abs dock" style="left: 556px; top: 22px; --fx: -480px; --fy: 420px; --fs: 3" data-at="шаг:-0.4" data-sfx="slide">
+  <div class="steps appear" data-at="вот:0.3"><i>1<u class="pop" data-at="шаг:-0.05" data-sfx="flick">1</u></i><b>→</b><i>2</i><b>→</b><i>3</i></div>
+  </div>
+
+  <!-- приманки -->
+  <div class="abs drop" style="left: 0; top: 0; --r: -2deg" data-at="проголосовать:-0.1" data-boil=".6">
+    <div class="shadow"><div class="sheet bait" data-torn="b" data-depth="6"><b>Конкурс рисунков</b>Проголосуйте за&nbsp;Алину!<br><span class="btn">Получить код →</span></div></div>
+  </div>
+  <div class="abs drop" style="left: 250px; top: 214px; --r: 2.5deg" data-at="подарок:-0.15" data-boil=".6">
+    <div class="shadow"><div class="tanp bait" data-torn="b" data-depth="6"><b>Подарок</b>Вам премиум на&nbsp;год!<br><span class="btn">Забрать →</span></div></div>
+  </div>
+
+  <!-- бланк кода -->
+  <div class="abs slideL" style="left: 0; top: 452px; --r: -1deg" data-at="код" data-boil=".5">
+    <div class="shadow"><div class="tanp code" data-torn="lr" data-depth="6">
+      <i class="appear" data-at="код:0.05">4</i><i class="appear" data-at="код:0.15">8</i><i class="appear" data-at="код:0.25">2</i><i class="appear" data-at="код:0.35">1</i><i class="appear" data-at="код:0.45">7</i>
+    </div></div>
+  </div>
+  <div class="abs label appear" style="left: 8px; top: 628px; font-size: 28px" data-at="код:0.5">код из сообщения</div>
+
+  <!-- ключ -->
+  <div class="abs drop" style="left: 30px; top: 720px; --r: -8deg" data-at="входа:-0.1" data-boil=".6">
+    <svg width="330" height="130" viewBox="0 0 330 130" style="overflow: visible; filter: drop-shadow(0 10px 8px rgba(60, 45, 20, .3))">
+      <circle cx="62" cy="65" r="56" fill="#E0C377" stroke="#30353C" stroke-width="5"/>
+      <circle cx="62" cy="65" r="20" fill="#F6F0E2" stroke="#30353C" stroke-width="5"/>
+      <path d="M116 52 L 318 52 L 318 80 L 292 80 L 292 104 L 268 104 L 268 80 L 244 80 L 244 98 L 222 98 L 222 80 L 116 80 Z"
+            fill="#E0C377" stroke="#30353C" stroke-width="5" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="abs hand appear" style="left: 120px; top: 852px; font-size: 60px; color: var(--terra-dk); white-space: nowrap; --r: -3deg" data-at="входа:0.1">↑ ключ</div>
+
+  <!-- рука забирает ключ -->
+  <div class="abs slideR sticker" style="left: 400px; top: 770px; width: 360px; height: 180px" data-at="аккаунт:-0.25" data-boil>
+    <div style="position: absolute; inset: 0; transform: scaleX(-1)"><img data-cut="HAND" data-box="360 180"></div>
+  </div>
+  <div class="stamp" style="left: 300px; top: 600px; font-size: 62px; --r: -7deg" data-at="аккаунт:0.15">Вход в аккаунт</div>
+</div>

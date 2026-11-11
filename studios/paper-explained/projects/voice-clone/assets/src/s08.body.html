@@ -1,0 +1,27 @@
+<!-- s08 — лечение: родителям: «Родителям: | просят денег — | перезвонить по номеру, а не в чат.» «И кодовое слово семьи.»
+     Лист — на месте (build.py), пункты 1–2 уже с галочками. На «перезвонить» пишется пункт 3; под листом — бумажная
+     трубка и плашка «по номеру», рядом «в чат» зачёркнуто на «чат». На «кодовое» пишется пункт 4, справа облачко
+     «* * *» — «только свои». -->
+<div class="stage">
+  <div class="title" style="left: -4px; top: -6px; font-size: 96px; color: var(--navy); animation: none">Лечение</div>
+  <div class="cross" style="left: 700px; top: 0; animation: none"></div>
+  <!--@sheet {"done": 2, "add": {"3": ["перезвонить", "чат:0.3"], "4": ["кодовое", "семьи:0.15"]}}-->
+
+  <!-- трубка «по номеру», «в чат» — зачёркнуто -->
+  <div class="abs pop" style="left: 18px; top: 800px; --r: -4deg" data-at="номеру:-0.15" data-boil=".5">
+    <div class="shadow"><div class="chip" style="display: flex; align-items: center; gap: 12px; font-size: 30px; color: var(--paper-hi); background: var(--grain), var(--navy); padding: 12px 22px 10px">
+      <svg width="38" height="38" viewBox="0 0 38 38"><path d="M9 3 L 15 3 L 18 12 L 13 16 C 15 21, 18 24, 23 26 L 27 21 L 35 24 L 35 30 C 35 33, 32 36, 28 35 C 15 33, 5 23, 3 10 C 2 6, 5 3, 9 3 Z" fill="#E0C377"/></svg>
+      по номеру</div></div>
+  </div>
+  <div class="abs pop" style="left: 300px; top: 812px; --r: 3deg" data-at="чат:-0.15" data-boil=".5">
+    <div class="shadow"><div class="tanp chip" style="font-size: 30px; padding: 12px 22px 10px">в тот же чат</div></div>
+  </div>
+  <svg class="ink" width="780" height="960"><path class="draw strike" pathLength="1" fill="none" stroke-linecap="round"
+       style="--dd: .22s" data-at="чат:0.15" d="M296 862 L 530 826"/></svg>
+
+  <!-- кодовое слово -->
+  <div class="abs pop" style="left: 568px; top: 786px; --r: 5deg" data-at="слово:-0.1" data-boil=".5">
+    <div class="shadow"><div class="sheet" style="padding: 12px 22px 8px; font-family: Oswald; font-weight: 700; font-size: 60px; letter-spacing: 6px; color: var(--terra-dk); border-radius: 26px">* * *</div></div>
+  </div>
+  <div class="abs hand appear" style="left: 560px; top: 892px; font-size: 48px; color: var(--navy); --r: -3deg" data-at="семьи">только свои</div>
+</div>

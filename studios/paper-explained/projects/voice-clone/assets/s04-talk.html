@@ -1,0 +1,573 @@
+<!doctype html>
+<!-- Собрано assets/src/build.py из common.css, s04.body.html, common.js — правьте исходники. -->
+<html><head><meta charset="utf-8"><style>
+/* Paper Explained — общий вид сцен web.html (референс 2: редакционный коллаж «Global Icon / Global Impact»).
+   Слои снизу вверх: бумага (кит) → геометрия (круг, кольца, линии, кресты) → огромный заголовок → главный предмет
+   (ч/б вырезка с белой кромкой) → 2–5 вспомогательных элементов → тени. Подписи — common.js.
+   Сцена верстается в .stage 780×1380 (common.js вписывает её в безопасную зону): картинка — 0…960, подписи — ниже.
+   Время — шагом 1/12 с («на двойках», common.js): анимации пишутся обычными CSS @keyframes. */
+@font-face { font-family: Oswald; src: url('../../../brand/fonts/Oswald-VF.ttf'); font-weight: 200 700; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: PTMono; src: url('../../../brand/fonts/PTMono-Regular.ttf'); }
+
+:root {
+  --b0: 0s; --b1: 1.6s; --b2: 3.2s; --b3: 4.8s; --b4: 6.4s; --e0: 1.4s; --e1: 3s; --e2: 4.6s; --e3: 6.2s; --e4: 8s;
+  /* палитра — пипеткой по референсу (brand/brand.yaml) */
+  --ink: #141210; --paper: #F6F0E2; --paper-hi: #FBF8EF; --tan: #DCCDB0; --terra: #C46557; --terra-dk: #A9503F;
+  --blue: #5B7684; --navy: #30353C; --mustard: #E0C377; --dim: #7D766C; --olive: #6F8A4E;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .15  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grunge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -3 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+html, body { margin: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+body { color: var(--ink); font-family: Oswald, sans-serif; -webkit-font-smoothing: antialiased; }
+.stage { position: absolute; left: 150px; top: 150px; width: 780px; height: 1380px; transform-origin: 0 0; }
+.abs { position: absolute; }
+svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* ── геометрия ── */
+.disc { position: absolute; border-radius: 50%; background: var(--grain), var(--terra);
+        animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+.disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: multiply;
+               background: radial-gradient(circle, rgba(0,0,0,.30) 1.6px, transparent 2.2px) 0 0 / 9px 9px;
+               -webkit-mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%);
+               mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%); }
+.dot { position: absolute; border-radius: 50%; background: var(--grain), var(--tan); animation: pop .4s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both; }
+.rings circle, .thin { fill: none; stroke: var(--ink); stroke-width: 1.6; opacity: .38; }
+.cross { position: absolute; width: 70px; height: 70px; opacity: .45; animation: appear .01s linear var(--d, 0s) both; }
+.cross::before, .cross::after { content: ''; position: absolute; background: var(--ink); }
+.cross::before { left: 0; right: 0; top: 50%; height: 1.6px; } .cross::after { top: 0; bottom: 0; left: 50%; width: 1.6px; }
+.halftone { background-image: radial-gradient(rgba(20, 18, 16, .55) 1.5px, transparent 2px); background-size: 8px 8px; }
+
+/* ── заголовок: огромный, узкий, печатный; за предметом ── */
+.title { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .8;
+         letter-spacing: -2px; color: var(--ink); white-space: nowrap; mix-blend-mode: multiply;
+         animation: rise .5s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise { 0% { transform: translateY(60px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+.kicker { position: absolute; font-family: PTMono; font-size: 26px; letter-spacing: 6px; text-transform: uppercase;
+          color: var(--paper-hi); background: var(--navy); padding: 8px 18px 6px;
+          animation: slideL .45s cubic-bezier(.2,.8,.3,1.1) var(--d, 0s) both; }
+.label { font-family: PTMono; font-size: 24px; color: var(--navy); }
+
+/* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
+.sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
+                   drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
+
+/* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
+.shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
+.sheet { background: var(--grain), var(--paper-hi); }
+.tanp { background: var(--grain), var(--tan); }
+.stamp { position: absolute; border: 6px solid var(--terra-dk); color: var(--terra-dk); padding: 4px 16px 0;
+         font-family: Oswald; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-radius: 6px;
+         -webkit-mask-image: var(--grunge); mask-image: var(--grunge); mix-blend-mode: multiply;
+         animation: slam .42s cubic-bezier(.2, .7, .3, 1.2) var(--d, 0s) both; }
+@keyframes slam { 0% { transform: rotate(var(--r, -12deg)) scale(2.4); opacity: 0; }
+                  60% { opacity: .95; } 100% { transform: rotate(var(--r, -12deg)) scale(1); opacity: .92; } }
+
+/* линии: путь с pathLength="1" рисуется от 0 до 1 */
+.draw { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+        animation: draw var(--dd, .6s) ease-in-out var(--d, 0s) both; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* появления (пружина видна шагами 12 к/с) */
+.drop  { animation: drop .5s cubic-bezier(.2, .8, .3, 1.15) var(--d, 0s) both; }
+@keyframes drop { 0% { transform: translateY(-90px) rotate(calc(var(--r, 0deg) - 6deg)); opacity: 0; }
+                  45% { opacity: 1; } 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideL { animation: slideL .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideL { 0% { transform: translateX(-160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideR { animation: slideR .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideR { 0% { transform: translateX(160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.pop { animation: pop .4s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+@keyframes pop { 0% { transform: rotate(var(--r, 0deg)) scale(.2); opacity: 0; }
+                 100% { transform: rotate(var(--r, 0deg)) scale(1); opacity: 1; } }
+.appear { animation: appear .01s linear var(--d, 0s) both; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+.fadeTo { animation: fadeTo .4s linear var(--d, 0s) both; }
+@keyframes fadeTo { from { opacity: 1; } to { opacity: var(--to, .35); } }
+
+/* ── подписи (common.js): под картинкой сцены, краской; звучащее слово — приглушённым жёлтым ── */
+.caps { position: absolute; left: 0; right: 0; top: 985px; height: 230px; display: flex; align-items: center; justify-content: center; }
+.chunk { font-family: Oswald; font-weight: 600; font-size: 70px; line-height: 1.12; text-align: center; color: var(--ink); max-width: 760px; }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, var(--mustard) 2% 98%, transparent 99%);
+              background-repeat: no-repeat; background-position: 0 62%; background-size: 0% 74%; padding: 0 .08em; margin: 0 -.08em;
+              mix-blend-mode: multiply; }
+
+/* ── fable-52: общие мелочи сцен ── */
+@font-face { font-family: Caveat; src: url('../../../brand/fonts/Caveat-VF.ttf'); font-weight: 400 700; }
+.src { position: absolute; left: 0; width: 780px; font-family: PTSerif; font-style: italic; font-size: 22px; line-height: 1.3; color: var(--dim); }
+.chip { padding: 9px 17px 7px; font-family: PTMono; font-size: 25px; color: var(--navy); white-space: nowrap; }
+.num { font-family: Oswald; font-weight: 700; line-height: .85; color: var(--terra); letter-spacing: -2px; mix-blend-mode: multiply; white-space: nowrap; }
+.hand { font-family: Caveat; font-weight: 600; color: var(--navy); line-height: 1; }
+.growX { transform-origin: 0 50%; animation: growX var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+@keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* слово подписи не рвётся по дефису («пять-два»), тире держится за слово (common.js) */
+.chunk span { white-space: nowrap; }
+
+/* ── shared-limit: лист лечения (build.py, s05–s09 — на одном месте), бумажный чат, терминал, ползунок ── */
+.sheetbox { left: 20px; top: 512px; width: 740px; }
+.cure { box-sizing: border-box; width: 740px; padding: 22px 30px 18px; }
+.cure .hd { font-family: Oswald; font-weight: 600; font-size: 34px; letter-spacing: 4px; text-transform: uppercase; color: var(--navy); margin-bottom: 6px; }
+.cure .row { position: relative; display: flex; align-items: center; height: 84px; border-top: 2px dashed rgba(20, 18, 16, .22); }
+.cure .n { flex: none; width: 52px; font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; color: var(--terra); }
+.cure .txt { flex: 1; font-family: Caveat; font-weight: 600; font-size: 54px; line-height: 1; color: var(--ink); white-space: nowrap; }
+.cure .txt b { font-family: PTMono; font-weight: 400; font-size: 32px; color: var(--navy); background: var(--grain), var(--tan);
+               padding: 5px 12px 3px; margin-left: 6px; vertical-align: 8px; white-space: nowrap; }
+.cure .cb { flex: none; width: 44px; height: 44px; box-sizing: border-box; border: 3px solid var(--navy); border-radius: 5px; opacity: .8; }
+.cure .tick { position: absolute; right: -8px; top: 6px; width: 66px; height: 66px; overflow: visible; }
+.cure .tick path { fill: none; stroke: var(--olive); stroke-width: 9; }
+.draw.on { animation: none; stroke-dashoffset: 0; }
+.write { animation: writeIn var(--dd, .9s) linear var(--d, 0s) both; }
+@keyframes writeIn { from { clip-path: inset(-20px 100% -20px 0); } to { clip-path: inset(-20px -40px -20px 0); } }
+.growXR { transform-origin: 100% 50%; animation: growX var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+.term { box-sizing: border-box; background: var(--grain), var(--navy); padding: 20px 26px 22px; font-family: PTMono; font-size: 25px; line-height: 1.5; color: var(--paper-hi); }
+.term .p { color: var(--mustard); }
+.term .dim { color: rgba(251, 248, 239, .62); }
+.win { box-sizing: border-box; padding: 0 0 22px; }
+.win .bar { display: flex; align-items: center; gap: 14px; padding: 14px 22px 12px; border-bottom: 2px solid rgba(20, 18, 16, .18); }
+.win .bar b { font-family: Oswald; font-weight: 600; font-size: 36px; color: var(--navy); }
+.win .bar i { font-style: normal; font-family: PTMono; font-size: 19px; color: var(--dim); background: var(--grain), var(--tan); padding: 4px 10px 2px; }
+.win .msg { margin: 18px 22px 0 auto; width: fit-content; max-width: 330px; padding: 12px 18px 10px; font-family: PTSerif; font-size: 29px; line-height: 1.2; background: var(--grain), var(--tan); }
+.win .skel { height: 18px; margin: 16px 22px 0; background: rgba(20, 18, 16, .13); }
+.knob { animation: knob .55s cubic-bezier(.3, .7, .3, 1.15) var(--d, 0s) both; }
+@keyframes knob { from { transform: translateX(0); } to { transform: translateX(var(--kx)); } }
+.sweep { animation: sweep var(--dd, 1.1s) cubic-bezier(.4, 0, .6, 1) var(--d, 0s) both; }
+@keyframes sweep { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: .85; } 92% { opacity: .85; } 100% { transform: translateY(var(--sy)); opacity: 0; } }
+.growY { transform-origin: 50% 100%; animation: growY var(--dd, .45s) cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.drain { transform-origin: 0 50%; animation: drain var(--dd, 1.4s) cubic-bezier(.5, 0, .7, 1) var(--d, 0s) both; }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.split { animation: split .4s cubic-bezier(.2, .8, .3, 1.2) var(--d, 0s) both; }
+@keyframes split { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--rr, 0deg)); } }
+.straw { position: absolute; width: 24px; border-radius: 4px; transform-origin: 50% 100%;
+         background: repeating-linear-gradient(-35deg, var(--paper-hi) 0 9px, var(--navy) 9px 17px);
+         box-shadow: 0 0 0 3px var(--paper-hi), 0 8px 10px rgba(50, 38, 20, .3); }
+.flag { padding: 8px 18px 6px; font-family: Oswald; font-weight: 600; font-size: 40px; line-height: 1; color: var(--navy); white-space: nowrap; }
+
+/* ── motion-test (2026-11-11): новые движения — камера, ножницы и скотч, говорящая вырезка, ксерокс, конверт ── */
+/* 1) Камера в глубину: .cam (common.js режет её во весь кадр, низ — рваный край над подписями) → слои .cam-l.
+      Все слои растут вокруг одной точки (--ox --oy, px сцены) до своего --s1: дальние чуть-чуть, ближние сильно
+      и уходят (--o1: 0) — параллакс бумажных слоёв. */
+.cam { position: absolute; left: 0; top: 0; width: 780px; height: 960px; }
+.cam-l { position: absolute; left: 0; top: 0; width: 780px; height: 960px; transform-origin: var(--ox, 390px) var(--oy, 480px);
+         animation: dolly var(--dd, 1.4s) cubic-bezier(.55, 0, .25, 1) var(--d, 0s) both; }
+@keyframes dolly { from { transform: scale(1); opacity: 1; } to { transform: scale(var(--s1, 1.5)); opacity: var(--o1, 1); } }
+.grid { background: linear-gradient(rgba(48, 53, 60, .13) 1.5px, transparent 1.5px) 0 0 / 34px 34px,
+                    linear-gradient(90deg, rgba(48, 53, 60, .13) 1.5px, transparent 1.5px) 0 0 / 34px 34px, var(--grain), var(--tan); }
+.note { box-sizing: border-box; padding: 26px 24px; background: var(--grain), var(--mustard); font-family: Caveat; font-weight: 600; font-size: 50px; line-height: 1; color: var(--navy); }
+
+/* бумажный телефон и чат */
+.phone { position: absolute; box-sizing: border-box; border-radius: 48px; background: var(--grain), var(--navy); padding: 58px 18px 64px; }
+.phone::before { content: ''; position: absolute; left: 50%; top: 24px; width: 90px; height: 12px; margin-left: -45px; border-radius: 6px; background: rgba(251, 248, 239, .25); }
+.phone .scr { position: relative; width: 100%; height: 100%; border-radius: 12px; background: var(--grain), var(--paper-hi); overflow: hidden; }
+.chat-hd { display: flex; align-items: center; gap: 14px; padding: 16px 18px 14px; border-bottom: 2px solid rgba(20, 18, 16, .15); }
+.ava { flex: none; width: 62px; height: 62px; border-radius: 50%; background: var(--grain), var(--blue); color: var(--paper-hi);
+       font-family: Oswald; font-weight: 600; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+.chat-hd b { display: block; font-family: Oswald; font-weight: 600; font-size: 34px; line-height: 1; color: var(--navy); }
+.chat-hd i { font-style: normal; font-family: PTMono; font-size: 18px; color: var(--olive); }
+.bub { position: absolute; padding: 12px 18px 10px; font-family: PTSerif; font-size: 27px; line-height: 1.15; border-radius: 20px; }
+.bub.in { background: var(--grain), var(--tan); border-bottom-left-radius: 6px; }
+.bub.out { background: var(--grain), #EFDDA6; border-bottom-right-radius: 6px; }
+.vbub { position: absolute; box-sizing: border-box; height: 92px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+        border-radius: 24px 24px 24px 6px; background: var(--grain), var(--tan); }
+.play { flex: none; position: relative; width: 56px; height: 56px; border-radius: 50%; background: var(--navy); }
+.play::after { content: ''; position: absolute; left: 22px; top: 17px; border-left: 19px solid var(--paper-hi);
+               border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
+.vdur { flex: none; font-family: PTMono; font-size: 20px; color: var(--dim); }
+/* волна голосового: столбики рисует common.js (data-wave="N"), высота — --h (речь: data-talk) */
+.wave { flex: 1; display: flex; align-items: center; gap: 3px; height: 52px; }
+.wave i { flex: 1; height: 100%; border-radius: 3px; background: var(--navy); transform: scaleY(var(--h, .5)); }
+
+/* 2) Ножницы и скотч: ножницы едут по линии разреза и щёлкают (.travel + .snip), кусок улетает дугой (.fly),
+      скотч вытягивается и прижимается (.tape) */
+.travel { animation: travel var(--dd, 1.2s) linear var(--d, 0s) both; }
+@keyframes travel { 0% { transform: translate(0, 0); opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; }
+                    100% { transform: translate(var(--tx, 0), var(--ty, 0)); opacity: 0; } }
+.snip { width: 100%; height: 100%; position: relative; animation: snip .34s steps(1) infinite; }
+@keyframes snip { 0% { transform: rotate(180deg); } 50% { transform: rotate(186deg) scaleX(.93); } }
+.fly { animation: fly var(--dd, .55s) cubic-bezier(.3, .6, .3, 1.12) var(--d, 0s) both; }
+@keyframes fly { 0% { transform: translate(0, 0) rotate(0deg); }
+                 45% { transform: translate(calc(var(--tx) * .45), calc(var(--ty) * .45 - 50px)) rotate(calc(var(--rr) * 4)); }
+                 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rr)); } }
+.strip { box-sizing: border-box; height: 104px; display: flex; align-items: center; gap: 14px; padding: 0 18px; }
+.strip .lab { flex: none; font-family: PTMono; font-size: 21px; color: var(--navy); }
+.tape { position: absolute; width: 66px; height: 150px; background: var(--grain), rgba(234, 222, 190, .82);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); transform-origin: 50% 0;
+        animation: tape .4s cubic-bezier(.2, .8, .3, 1.25) var(--d, 0s) both; }
+@keyframes tape { 0% { transform: rotate(var(--r, 0deg)) scaleY(0); opacity: 0; } 25% { opacity: 1; }
+                  70% { transform: rotate(var(--r, 0deg)) scaleY(1.07); } 100% { transform: rotate(var(--r, 0deg)) scaleY(1); opacity: 1; } }
+
+/* 3) Говорящая вырезка: челюсть на заклёпке, угол — --m (0…1) от common.js (data-talk) */
+.jaw { transform-origin: 236px 352px; transform: rotate(calc(var(--m, 0) * 15deg)); }
+.speech { box-sizing: border-box; padding: 26px 26px 30px; font-family: Caveat; font-weight: 700; font-size: 60px; line-height: 1; color: var(--ink); }
+
+/* 4) Ксерокс: лист печатается сверху вниз под полосой света (.printIn + .sweep), у копии сбиты краски — common.js
+      кладёт две копии краски (data-misprint), синюю и терракотовую, со сдвигом */
+.printIn { animation: printIn var(--dd, .9s) linear var(--d, 0s) both; }
+@keyframes printIn { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+.scanbar { position: absolute; height: 34px; mix-blend-mode: multiply;
+           background: linear-gradient(transparent, rgba(224, 195, 119, .9) 40%, #F3DE9C 50%, rgba(224, 195, 119, .9) 60%, transparent); }
+.card { position: relative; box-sizing: border-box; }
+.card .ink { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 34px 26px; box-sizing: border-box; }
+.card .face { width: 170px; height: 170px; border-radius: 50%; background: var(--grain), var(--blue); color: var(--paper-hi);
+              font-family: Oswald; font-weight: 600; font-size: 96px; display: flex; align-items: center; justify-content: center; }
+.card .nm { margin-top: 18px; font-family: Oswald; font-weight: 600; font-size: 52px; line-height: 1; color: var(--navy); }
+.card .vb { margin-top: 30px; width: 100%; height: 84px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
+            padding: 0 12px; border: 3px solid var(--navy); border-radius: 22px; }
+.card .vb .play { width: 50px; height: 50px; } .card .vb .play::after { left: 19px; top: 14px; }
+.card .vb .wave { height: 44px; }
+.mp { mix-blend-mode: multiply; pointer-events: none; }
+.mp.b { filter: url(#mpB); } .mp.t { filter: url(#mpT); }
+
+/* 5) Конверт и лист: клапан откидывается в 3D, лист выходит, конверт падает, лист разворачивается из трёх частей
+      (.pn.top и .pn.bot сложены на .pn.mid; у каждой — лицо .face и изнанка .back) */
+.env { position: absolute; width: 660px; height: 370px; perspective: 1100px; }
+.env-back { position: absolute; left: 0; top: 0; width: 660px; height: 370px; z-index: 0; background: var(--grain), #D3C2A0; }
+.env-pocket { position: absolute; left: 0; top: 0; width: 660px; height: 370px; z-index: 5; background: var(--grain), #E6D8BB;
+              clip-path: polygon(0 18%, 50% 60%, 100% 18%, 100% 100%, 0 100%); }
+.flapw { position: absolute; left: 0; top: 0; width: 660px; height: 222px; perspective: 900px; z-index: 6; }
+.flap { width: 100%; height: 100%; transform-origin: 50% 0; clip-path: polygon(0 0, 100% 0, 50% 100%); background: var(--grain), #C9B690; }
+.flapOpen { animation: flapOpen var(--dd, .4s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+@keyframes flapOpen { from { transform: rotateX(0deg); } to { transform: rotateX(180deg); } }
+@keyframes flapz { 0% { z-index: 6; } 49% { z-index: 6; } 50% { z-index: 1; } 100% { z-index: 1; } }
+@keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 60% { opacity: 1; }
+                  100% { transform: translateY(var(--fy, 760px)) rotate(var(--fr, 7deg)); opacity: 0; } }
+.fall { animation: fall var(--dd, .5s) cubic-bezier(.5, 0, .9, .6) var(--d, 0s) both; }
+.pstamp { position: absolute; width: 86px; height: 104px; box-sizing: border-box; background: var(--grain), var(--terra);
+          border: 7px solid var(--paper-hi); outline: 3px dotted var(--paper-hi); outline-offset: -1px; z-index: 5; }
+.fold { position: absolute; width: 600px; height: 230px; z-index: 3; perspective: 1400px; }
+.up { animation: up var(--dd, .45s) cubic-bezier(.3, .7, .3, 1.1) var(--d, 0s) both; }
+@keyframes up { from { transform: translateY(0); } to { transform: translateY(var(--uy, -250px)); } }
+.pn { position: absolute; left: 0; width: 600px; height: 230px; transform-style: preserve-3d; }
+.pn.mid { top: 0; } .pn.top { top: -230px; transform-origin: 50% 100%; } .pn.bot { top: 230px; transform-origin: 50% 0; }
+.pn .face, .pn .back { position: absolute; inset: 0; box-sizing: border-box; padding: 20px 30px; backface-visibility: hidden;
+                       -webkit-backface-visibility: hidden; background: var(--grain), var(--paper-hi); }
+.pn .back { transform: rotateX(180deg); background: var(--grain), #EFE6D2; }
+.pn.mid .face { box-shadow: inset 0 3px 0 rgba(60, 45, 20, .10), inset 0 -3px 0 rgba(60, 45, 20, .10); }
+.unfoldT { animation: unfoldT var(--dd, .45s) cubic-bezier(.4, 0, .3, 1.08) var(--d, 0s) both; }
+@keyframes unfoldT { from { transform: rotateX(-180deg); } to { transform: rotateX(0deg); } }
+.unfoldB { animation: unfoldB var(--dd, .45s) cubic-bezier(.4, 0, .3, 1.08) var(--d, 0s) both; }
+@keyframes unfoldB { from { transform: rotateX(180deg); } to { transform: rotateX(0deg); } }
+.shd { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(60, 45, 20, .05), rgba(60, 45, 20, .38));
+       animation: shd var(--dd, .45s) linear var(--d, 0s) both; }
+@keyframes shd { from { opacity: 1; } to { opacity: 0; } }
+.pn .hd2 { font-family: Oswald; font-weight: 600; font-size: 50px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; color: var(--navy); }
+.pn .who { display: inline-block; padding: 6px 14px 3px; font-family: PTMono; font-size: 24px; letter-spacing: 3px; text-transform: uppercase; color: var(--paper-hi); }
+.pn .it { font-family: Caveat; font-weight: 600; font-size: 43px; line-height: 1; color: var(--ink); white-space: nowrap; }
+
+/* ── voice-clone: лист лечения (build.py, <!--@sheet-->) — строки с квадратом и галочкой, наклейки под листом ── */
+.pn .row2 { position: relative; display: flex; align-items: center; gap: 12px; height: 58px; margin-top: 6px; border-bottom: 2px dashed rgba(20, 18, 16, .16); }
+.pn .row2 .cb { flex: none; width: 32px; height: 32px; box-sizing: border-box; border: 3px solid var(--navy); border-radius: 4px; opacity: .75; }
+.pn .row2 .tick { position: absolute; left: -6px; top: -4px; width: 50px; height: 50px; overflow: visible; }
+.pn .row2 .tick path { fill: none; stroke: var(--olive); stroke-width: 8; }
+.pn .hd2 + .hand { display: block; }
+.stamp.ok { border-color: var(--olive); color: var(--olive); }
+.lock .shackle { animation: shackle .3s cubic-bezier(.4, 0, .3, 1.4) var(--d, 0s) both; }
+@keyframes shackle { from { transform: translateY(-34px); } to { transform: translateY(0); } }
+.strike { stroke: var(--terra-dk); stroke-width: 7; }
+
+/* voice-clone (правка 2026-11-11): шкала шагов схемы «1 → 2 → 3» — s02–s04, одно место в кадре (склейки).
+   i — шаг впереди (бледный), i.was — пройденный, u внутри i — текущий: заливка терракотой выпрыгивает на data-at. */
+.steps { display: flex; align-items: center; gap: 6px; font-family: Oswald; font-weight: 700; }
+.steps i { position: relative; font-style: normal; width: 50px; height: 58px; box-sizing: border-box; border: 3px solid var(--dim);
+           color: var(--dim); background: var(--paper-hi); display: flex; align-items: center; justify-content: center;
+           font-size: 40px; line-height: 1; }
+.steps i.was { border-color: var(--navy); color: var(--navy); }
+.steps i u { position: absolute; inset: -3px; text-decoration: none; display: flex; align-items: center; justify-content: center;
+             background: var(--grain), var(--terra-dk); color: var(--paper-hi); }
+.steps b { font-weight: 400; font-size: 30px; color: var(--dim); padding: 0 2px; }
+/* шкала въезжает в угол: из крупной по центру (s02, «Вот как это делают») — на «шаг» */
+.dock { transform-origin: 0 0; animation: dock .4s cubic-bezier(.3, .8, .3, 1) var(--d, 0s) both; }
+@keyframes dock { from { transform: translate(var(--fx), var(--fy)) scale(var(--fs)); } to { transform: none; } }
+
+</style></head><body>
+<!-- s04 — почему, шаг 3, ГОВОРЯЩАЯ ВЫРЕЗКА: «Шаг третий: | клон скажет маме что угодно — | с вашего же аккаунта.»
+     Шкала шагов: 1–2 пройдены, на «шаг» загорается 3.
+     Профиль головы — бумажная кукла (утверждена в тесте motion-test): голова и челюсть — две вырезки в растре,
+     челюсть на латунной заклёпке ходит в такт гласным со слова «клон» (common.js, data-talk) — клон говорит вашим голосом.
+     Справа облачко пишет «Мам, это я. Срочно!», на «аккаунта» над облачком — плашка отправителя «от: Сын ✓».
+     Заголовок «Скажет / что угодно» — сверху, «← клон» — рукой у головы. -->
+<div class="stage">
+  <div class="title" style="left: -4px; top: 18px; font-size: 150px; color: var(--navy)" data-at="скажет:-0.1">Скажет</div>
+  <div class="title" style="left: 0; top: 150px; font-size: 104px; color: var(--terra-dk)" data-at="угодно:-0.1">что угодно</div>
+  <!-- шкала шагов: на одном месте в s02–s04 -->
+  <div class="abs steps" style="left: 556px; top: 22px"><i class="was">1</i><b>→</b><i class="was">2</i><b>→</b><i>3<u class="pop" data-at="шаг:-0.05" data-sfx="flick">3</u></i></div>
+
+  <!-- голова-кукла -->
+  <div class="abs slideL sticker" style="left: 6px; top: 330px; width: 480px; height: 580px; --d: .05s" data-boil=".6">
+    <svg width="480" height="580" viewBox="0 0 480 580" data-talk="клон" style="overflow: visible">
+      <defs>
+        <pattern id="ht" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <rect width="9" height="9" fill="#FBF8EF"/><circle cx="4.5" cy="4.5" r="2.7" fill="#30353C"/>
+        </pattern>
+        <linearGradient id="shade" x1="0" x2="1" y1="0" y2=".3">
+          <stop offset="0" stop-color="#141210" stop-opacity=".8"/><stop offset=".6" stop-color="#141210" stop-opacity=".18"/>
+          <stop offset="1" stop-color="#141210" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- рот: виден, только когда челюсть открыта -->
+      <path d="M236 352 L 458 360 L 448 422 Z" fill="#141210"/>
+      <!-- голова и шея -->
+      <path id="hd" d="M150 580 C 150 520, 140 470, 128 440 C 70 420, 40 360, 42 290 C 44 170, 120 70, 240 52
+               C 330 40, 400 80, 418 150 C 424 175, 422 200, 430 222 L 440 234 C 458 256, 482 284, 506 306
+               C 510 314, 500 322, 466 322 C 460 330, 464 338, 462 344 C 472 350, 466 358, 450 362 L 320 368 L 236 352
+               C 250 400, 262 440, 290 480 C 296 510, 300 545, 300 580 Z" fill="url(#ht)"/>
+      <use href="#hd" fill="url(#shade)"/>
+      <!-- волосы -->
+      <path d="M42 290 C 44 170, 120 70, 240 52 C 330 40, 400 80, 418 150 C 380 118, 320 108, 280 128
+               C 232 150, 204 200, 192 258 C 172 300, 120 320, 58 336 C 48 322, 43 306, 42 290 Z" fill="#141210" opacity=".92"/>
+      <!-- бровь, глаз, ухо -->
+      <path d="M352 188 Q 380 172 412 182" stroke="#141210" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M360 208 Q 380 190 402 205 Q 382 220 360 208 Z" fill="#141210"/><circle cx="388" cy="205" r="4" fill="#FBF8EF"/>
+      <path d="M226 252 C 192 244, 184 300, 216 316" stroke="#141210" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <!-- челюсть на заклёпке -->
+      <g class="jaw">
+        <path id="jw" d="M236 352 L 320 368 L 450 362 C 466 368, 470 380, 460 390 C 452 398, 448 404, 452 412
+                 C 462 428, 464 446, 452 462 C 436 480, 404 488, 362 486 C 330 486, 300 480, 286 470
+                 C 266 440, 248 400, 236 352 Z" fill="url(#ht)"/>
+        <use href="#jw" fill="url(#shade)"/>
+        <path d="M236 352 L 320 368 L 450 362" stroke="#FBF8EF" stroke-width="3" fill="none" opacity=".9"/>
+      </g>
+      <circle cx="236" cy="352" r="12" fill="#E0C377" stroke="#A9503F" stroke-width="2.5"/>
+      <circle cx="232" cy="348" r="3.5" fill="#FBF8EF"/>
+    </svg>
+  </div>
+
+  <!-- облачко клона и отправитель -->
+  <div class="abs pop" style="left: 528px; top: 330px; --r: 3deg" data-at="клон:-0.1" data-boil=".5">
+    <div class="shadow">
+      <div class="sheet speech" style="width: 250px; font-size: 56px; padding: 22px 22px 26px" data-torn="all" data-depth="6">
+        <span class="write" style="display: block; --dd: .4s" data-at="скажет:-0.05" data-sfx="marker">Мам,</span>
+        <span class="write" style="display: block; --dd: .45s" data-at="маме:0.05" data-sfx="none">это я.</span>
+        <span class="write" style="display: block; --dd: .45s; color: var(--terra-dk)" data-at="угодно:0.05" data-sfx="none">Срочно!</span>
+      </div>
+      <svg width="80" height="90" style="position: absolute; left: -2px; top: 100%; margin-top: -4px; overflow: visible">
+        <path d="M30 0 L 66 0 L -10 70 Z" fill="#FBF8EF"/>
+      </svg>
+    </div>
+  </div>
+  <div class="abs pop" style="left: 500px; top: 262px; --r: -3deg" data-at="аккаунта:-0.1" data-boil=".5">
+    <div class="shadow"><div class="tanp chip" style="display: flex; align-items: center; gap: 10px; font-size: 26px">
+      <span class="ava" style="width: 40px; height: 40px; font-size: 24px">С</span>от: Сын <b style="color: var(--olive)">✓</b></div></div>
+  </div>
+
+  <div class="abs hand appear" style="left: 520px; top: 800px; font-size: 64px; color: var(--terra-dk); --r: -5deg" data-at="клон">← клон</div>
+</div>
+
+<script>
+// Paper Explained — общий ход сцены web.html.
+// 1) .stage 780×960 вписывается в рабочую зону кадра (SCENE.area, CSS px) по центру.
+// 2) Рваные края: data-torn="tb" (верх/низ), "lr", "all" — clip-path многоугольником с зазубринами (сид — номер элемента).
+// 3) Время «на двойках»: студия зовёт window.seek(t), мы ставим всем анимациям t, округлённое вниз до 1/12 с, а свой
+//    обход анимаций студии гасим (document.getAnimations → []). Без студии (просмотр в браузере) всё идёт как обычно.
+// 4) «Кипение» бумаги: элементы с data-boil чуть дрожат раз в 1/6 с (translate/rotate не мешают transform анимаций).
+// 5) Подписи (шаблон paper_page): слова озвучки кусками по 1–2 строки внизу сцены, звучащее слово — под маркером.
+(function () {
+  const S = window.SCENE || { W: 1080, H: 1920, area: { x0: 151, y0: 154, x1: 929, y1: 1536 } };
+  const a = S.area, aw = a.x1 - a.x0, ah = a.y1 - a.y0;
+  const st = document.querySelector('.stage');
+  const k = Math.min(aw / 780, ah / 1380) * 0.96;  // запас 4 %: тени, скотч и «кипение» не выходят за зону
+  st.style.left = (a.x0 + (aw - 780 * k) / 2) + 'px';
+  st.style.top = (a.y0 + (ah - 1380 * k) / 2) + 'px';
+  st.style.transform = 'scale(' + k + ')';
+
+  // подписи: куски не длиннее CAP символов, граница — и на смене бита
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
+  // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
+  const byBeat = [];
+  Wd.forEach((w, i) => { const b = beatOf(w); (byBeat[b] = byBeat[b] || []).push(i); });
+  const chunks = [];
+  byBeat.forEach((ids, b) => {
+    if (!ids) return;
+    const len = ids.reduce((s, i) => s + Wd[i].w.length + 1, -1), n = Math.ceil(len / CAP), goal = len / n;
+    const first = chunks.length;  // первый кусок этого бита
+    let c = null, acc = 0;
+    ids.forEach(i => {
+      const made = chunks.length - first;  // кусков бита уже начато
+      if (!c || (made < n && acc >= goal * made - 2)) { c = { beat: b, idx: [], text: '' }; chunks.push(c); }
+      c.idx.push(i); c.text = c.text ? c.text + ' ' + Wd[i].w : Wd[i].w; acc += Wd[i].w.length + 1;
+    });
+  });
+  const caps = document.createElement('div'); caps.className = 'caps'; st.appendChild(caps);
+  chunks.forEach(c => {
+    c.el = document.createElement('div'); c.el.className = 'chunk';
+    c.spans = c.idx.map((i, n) => { const s = document.createElement('span'); s.textContent = Wd[i].w; c.el.appendChild(s);
+                                const nx = c.idx[n + 1], glue = nx !== undefined && /^[^\p{L}\p{N}]+$/u.test(Wd[nx].w);  // тире не висит одно на строке
+                                c.el.appendChild(document.createTextNode(glue ? ' ' : ' ')); return s; });
+    caps.appendChild(c.el);
+  });
+  function captions(t) {
+    let cur = -1;
+    chunks.forEach((c, j) => { if (t >= Wd[c.idx[0]].t0 - 0.05) cur = j; });
+    chunks.forEach((c, j) => {
+      c.el.style.display = j === cur ? 'block' : 'none';
+      if (j !== cur) return;
+      c.idx.forEach((i, n) => {
+        const w = Wd[i], next = Wd[i + 1];
+        const on = t >= w.t0 - 0.02 && (!next || t < next.t0 - 0.02 || n === c.idx.length - 1 && t < w.t1 + 0.4);
+        const p = Math.max(0, Math.min(1, (t - w.t0 + 0.02) / 0.14));
+        c.spans[n].style.backgroundSize = on ? (p * 100).toFixed(1) + '% 74%' : '0% 74%';
+      });
+    });
+  }
+
+  function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  document.querySelectorAll('[data-torn]').forEach((el, i) => {
+    const r = rng(9173 + i * 101), sides = el.dataset.torn, depth = +(el.dataset.depth || 7);
+    const step = 2.2, pts = [];
+    const j = (on) => (on ? r() * depth : 0);
+    const top = /t|all/.test(sides), bot = /b|all/.test(sides), lft = /l|all/.test(sides), rgt = /r|all/.test(sides);
+    for (let x = 0; x <= 100; x += step) pts.push([x, j(top) * 100 / el.offsetHeight]);
+    for (let y = 0; y <= 100; y += step * el.offsetWidth / el.offsetHeight) pts.push([100 - j(rgt) * 100 / el.offsetWidth, y]);
+    for (let x = 100; x >= 0; x -= step) pts.push([x, 100 - j(bot) * 100 / el.offsetHeight]);
+    for (let y = 100; y >= 0; y -= step * el.offsetWidth / el.offsetHeight) pts.push([j(lft) * 100 / el.offsetWidth, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%').join(',') + ')';
+  });
+
+  // data-at="слово[:сдвиг]" — элемент стартует со слова озвучки (SCENE.words, первое совпадение по началу слова)
+  const words = (S.words || []).map(w => ({ w: w.w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), t: w.t0 }));
+  // (voice-clone: сначала точное совпадение — «голос» не цепляется за «голосовых», потом по началу слова)
+  document.querySelectorAll('[data-at]').forEach(el => {
+    const [word, off] = el.dataset.at.split(':'), w0 = word.toLowerCase();
+    const hit = words.find(x => x.w === w0) || words.find(x => x.w.startsWith(w0));
+    if (hit) el.style.setProperty('--d', (hit.t + (+off || 0)).toFixed(3) + 's');
+  });
+  // время слова: сначала точное совпадение («мам» ≠ «маме»), потом по началу слова
+  const wordT = (w0, dflt) => { w0 = w0.toLowerCase(); const hit = words.find(x => x.w === w0) || words.find(x => x.w.startsWith(w0));
+                               return hit ? hit.t : dflt; };
+
+  // ── motion-test (2026-11-11): новые движения ──
+  // 7) Камера (.cam): окно — картинка сцены (0…780 × 0…data-bottom px) с рваными краями со всех сторон: слои при
+  //    наезде уходят за край бумажного окна, а не под интерфейс площадки и не за поля кадра (qa «безопасная зона»).
+  document.querySelectorAll('.cam').forEach((el, i) => {
+    const r = rng(4242 + i), L = 2, R = 778, T = 2, B = +(el.dataset.bottom || 966), dp = 9, pts = [];
+    for (let x = L; x < R; x += 11) pts.push([x, T + r() * dp]);
+    for (let y = T; y < B; y += 11) pts.push([R - r() * dp, y]);
+    for (let x = R; x > L; x -= 11) pts.push([x, B - r() * dp]);
+    for (let y = B; y > T; y -= 11) pts.push([L + r() * dp, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(',') + ')';
+  });
+
+  // 8) Волна голосового: data-wave="N" — N столбиков с постоянным рисунком (--h0, сид — номер волны)
+  document.querySelectorAll('[data-wave]').forEach((el, i) => {
+    const r = rng(777 + i * 13 + (+el.dataset.seed || 0)), n = +el.dataset.wave;
+    for (let j = 0; j < n; j++) {
+      const b = document.createElement('i');
+      const h = .22 + .78 * Math.pow(Math.sin(Math.PI * (j + .5) / n), .5) * (.35 + .65 * r());
+      b.dataset.h0 = h.toFixed(3); b.style.setProperty('--h', h.toFixed(3)); el.appendChild(b);
+    }
+  });
+
+  // 9) Речь: data-talk="слово[~слово2]" — с этого слова до конца сцены (или до слова2) элемент «говорит»: --m 0…1 — открытия рта по гласным
+  //    звучащего слова (piper и ElevenLabs дают время слов), шагом 1/12 с. У волны (data-wave) прыгают столбики.
+  const VOW = /[аеёиоуыэюяaeiouy]/gi;
+  const talkers = Array.from(document.querySelectorAll('[data-talk]')).map(el => {
+    const [a, b] = el.dataset.talk.split('~');
+    return { el, t0: wordT(a, 0), t1: b ? wordT(b, 1e9) - 0.02 : 1e9, bars: el.dataset.wave ? Array.from(el.children) : null };
+  });
+  const mouth = (t) => {
+    const w = (S.words || []).find(x => t >= x.t0 && t < x.t1 && /[\p{L}\p{N}]/u.test(x.w));
+    if (!w) return 0;
+    const n = Math.max(1, (w.w.match(VOW) || []).length), ph = (t - w.t0) / Math.max(.05, w.t1 - w.t0) * n;
+    return Math.pow(Math.abs(Math.sin(Math.PI * ph)), .6);
+  };
+
+  // 10) Ксерокопия: data-misprint="слово" — поверх краски две её копии (синяя и терракотовая, только тёмное — светлое
+  //     и бумага прозрачны) со сдвигом; до слова сдвиг едва заметен, со слова — сбит; дрожит раз в 1/6 с.
+  const mps = [];
+  if (document.querySelector('[data-misprint]')) {
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.style.position = 'absolute';
+    const tint = (id, c) => `<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 ${c[0]}  0 0 0 0 ${c[1]}  0 0 0 0 ${c[2]}  -.34 -.34 -.34 1 0"/></filter>`;
+    defs.innerHTML = tint('mpB', [.30, .47, .62]) + tint('mpT', [.80, .36, .28]);
+    document.body.appendChild(defs);
+    document.querySelectorAll('[data-misprint]').forEach(el => {
+      const layers = ['t', 'b'].map(c => {
+        const cl = el.cloneNode(true); cl.removeAttribute('data-misprint'); cl.classList.add('mp', c);
+        el.parentNode.insertBefore(cl, el.nextSibling); return cl;
+      });
+      mps.push({ t0: wordT(el.dataset.misprint, 0), layers });
+    });
+  }
+
+  const FPS2 = 12;
+  const all = document.getAnimations.bind(document);
+  document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick',
+                dolly: 'whoosh', travel: 'swish', tape: 'slide', printIn: 'slide', flapOpen: 'paper', up: 'slide',
+                fall: 'swish', unfoldT: 'paper', unfoldB: 'paper' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
+  const boil = Array.from(document.querySelectorAll('[data-boil]'));
+  window.seek = (t) => {
+    captions(t);  // подписи — по точному времени речи, не шагом
+    const q = Math.floor(t * FPS2 + 1e-4) / FPS2;
+    for (const an of all()) { an.pause(); an.currentTime = q * 1000; }
+    const n = Math.floor(t * 6);
+    boil.forEach((el, i) => {
+      const r = rng(n * 7919 + i * 131 + 1); const amp = +(el.dataset.boil || 1);
+      el.style.translate = ((r() - .5) * 1.4 * amp).toFixed(2) + 'px ' + ((r() - .5) * 1.4 * amp).toFixed(2) + 'px';
+      el.style.rotate = ((r() - .5) * .35 * amp).toFixed(3) + 'deg';
+    });
+    talkers.forEach((tk, i) => {
+      const m = q >= tk.t0 && q < tk.t1 ? mouth(q) : 0;
+      tk.el.style.setProperty('--m', m.toFixed(3));
+      if (!tk.bars) return;
+      const r = rng(Math.round(q * 12) * 977 + i * 31 + 5);
+      tk.bars.forEach(b => {
+        const h0 = +b.dataset.h0, h = m > .04 ? Math.max(.12, Math.min(1, h0 * (.3 + 1.25 * m * (.3 + .7 * r())))) : h0;
+        b.style.setProperty('--h', h.toFixed(3));
+      });
+    });
+    mps.forEach((mp, i) => {
+      const a = t >= mp.t0 ? 7 : 1.6;
+      mp.layers.forEach((L, j) => {
+        const r = rng(n * 613 + i * 71 + j * 7 + 3), s = j ? -1 : 1;
+        L.style.translate = (s * a * .7 + (r() - .5) * a * .7).toFixed(1) + 'px ' + (-s * a * .35 + (r() - .5) * a * .6).toFixed(1) + 'px';
+      });
+    });
+  };
+})();
+
+</script>
+</body></html>
