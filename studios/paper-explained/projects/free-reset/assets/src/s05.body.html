@@ -1,0 +1,92 @@
+<!-- s05 — когда жать, НЕДЕЛЯ ИЗ БУМАЖНЫХ ДНЕЙ: «Только не жмите сразу: | день обновления сброс не сдвигает.»
+     «Жмите, когда неделя кончилась, | а до обновления ещё несколько дней.»
+     Заголовок «КОГДА ЖАТЬ», под ним — вырезка настоящей строки из крючка («run out Saturday night, before Wednesday's
+     reset», маркер на Saturday и Wednesday). Шкала «лимит недели» над восемью днями СР…СР (обновление — синие).
+     Внизу ждёт купон «СБРОС ЛИМИТА». «сразу» — рукой «не сразу!»; «сдвигает» — булавка в последнюю среду и «не сдвинуть».
+     «неделя» — шкала тает ступеньками, метка «сегодня» идёт СР→СБ; «кончилась» — ВС, ПН, ВТ под штриховкой и замками;
+     «ещё» — скобка «ещё 3 дня»; «несколько» — купон летит на субботу, шкала снова полная (олива), замки слетают,
+     «дней» — галочки и «снова ваши». Это тот же случай, что в крючке: кончилось в субботу, обновление в среду. -->
+<style>
+  @keyframes step3 { from { transform: translateX(0); } to { transform: translateX(276px); } }
+  .crop { position: relative; width: 729px; height: 87px; background: url(screen/usage@3x.png) -373px -171px / 1290px 1290px; }
+  .lockic { position: absolute; left: 21px; top: 58px; width: 44px; height: 54px; }
+</style>
+<div class="stage">
+  <div class="title" style="left: 0; top: 24px; font-size: 124px; color: var(--navy)" data-at="только:-0.1">Когда жать</div>
+
+  <!-- вырезка настоящей строки из крючка -->
+  <div class="abs drop" style="left: 22px; top: 162px; --r: -1.5deg; --d: .25s" data-boil=".4">
+    <div class="shadow"><div style="padding: 8px; background: var(--grain), #FBFAF6">
+      <div class="crop">
+        <div class="hl" style="left: 449px; top: 11px; width: 176px; height: 34px; --d: .6s"></div>
+        <div class="hl" style="left: 10px; top: 44px; width: 154px; height: 34px; --d: .8s; --dd: .25s"></div>
+      </div>
+    </div></div>
+    <div class="tape" style="left: -18px; top: -30px; height: 80px; --r: -50deg; --d: .4s" data-torn="tb" data-depth="5"></div>
+    <div class="tape" style="left: 700px; top: -26px; height: 80px; --r: 44deg; --d: .45s" data-torn="tb" data-depth="5"></div>
+  </div>
+
+  <!-- шкала лимита недели -->
+  <div class="abs label appear" style="left: 25px; top: 292px; font-size: 26px; --d: .3s">лимит недели</div>
+  <div class="lim appear" style="left: 25px; top: 326px; width: 638px; --d: .3s">
+    <div class="f drainTo" style="width: 630px; --to: 0; --n: 4; --dd: .9s" data-at="неделя:-0.25" data-sfx="tick"></div>
+    <div class="f2 growX" style="left: 0; width: 630px; --dd: .45s" data-at="несколько:0.05" data-sfx="slide"></div>
+  </div>
+
+  <!-- восемь дней: от обновления до обновления -->
+  <div class="days" style="left: 25px; top: 396px; gap: 6px">
+    <div class="day upd drop" style="width: 86px; height: 140px; --d: .1s"><b>Ср</b><small>обновл.</small></div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .15s"><b>Чт</b></div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .2s"><b>Пт</b></div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .25s"><b>Сб</b></div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .3s"><b>Вс</b>
+      <div class="fadeTo" style="position: absolute; inset: 0; --to: 0" data-at="несколько:0.1"><div class="hatch appear" data-at="кончилась:0.1"></div></div>
+      <div class="lift" style="position: absolute; inset: 0" data-at="несколько:0.15"><svg class="lockic pop" viewBox="0 0 44 54" data-at="кончилась:0.1" data-sfx="flick"><path d="M11 24 V 15 a11 11 0 0 1 22 0 V 24" fill="none" stroke="#A9503F" stroke-width="6"/><rect x="3" y="23" width="38" height="29" rx="5" fill="#A9503F"/></svg></div>
+      <svg class="ink" width="86" height="140"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--dd: .2s" data-at="дней:-0.2" d="M22 92 L 38 108 L 66 74"/></svg>
+    </div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .35s"><b>Пн</b>
+      <div class="fadeTo" style="position: absolute; inset: 0; --to: 0" data-at="несколько:0.15"><div class="hatch appear" data-at="кончилась:0.2"></div></div>
+      <div class="lift" style="position: absolute; inset: 0" data-at="несколько:0.2"><svg class="lockic pop" viewBox="0 0 44 54" data-at="кончилась:0.2"><path d="M11 24 V 15 a11 11 0 0 1 22 0 V 24" fill="none" stroke="#A9503F" stroke-width="6"/><rect x="3" y="23" width="38" height="29" rx="5" fill="#A9503F"/></svg></div>
+      <svg class="ink" width="86" height="140"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--dd: .2s" data-at="дней:-0.1" d="M22 92 L 38 108 L 66 74"/></svg>
+    </div>
+    <div class="day drop" style="width: 86px; height: 140px; --d: .4s"><b>Вт</b>
+      <div class="fadeTo" style="position: absolute; inset: 0; --to: 0" data-at="несколько:0.2"><div class="hatch appear" data-at="кончилась:0.3"></div></div>
+      <div class="lift" style="position: absolute; inset: 0" data-at="несколько:0.25"><svg class="lockic pop" viewBox="0 0 44 54" data-at="кончилась:0.3"><path d="M11 24 V 15 a11 11 0 0 1 22 0 V 24" fill="none" stroke="#A9503F" stroke-width="6"/><rect x="3" y="23" width="38" height="29" rx="5" fill="#A9503F"/></svg></div>
+      <svg class="ink" width="86" height="140"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round" style="--dd: .2s" data-at="дней:0" d="M22 92 L 38 108 L 66 74"/></svg>
+    </div>
+    <div class="day upd drop" style="width: 86px; height: 140px; --d: .45s"><b>Ср</b><small>обновл.</small></div>
+  </div>
+  <!-- метка «сегодня»: идёт по дням, пока шкала тает -->
+  <div class="abs" style="left: 25px; top: 544px; width: 86px; height: 10px; background: var(--mustard); animation: appear .01s linear .5s both, step3 .9s steps(3) var(--d, 9s) both"
+       data-at="неделя:-0.25"></div>
+
+  <!-- булавка: день обновления не сдвигается -->
+  <div class="pin drop" style="left: 695px; top: 380px" data-at="сдвигает:-0.45" data-sfx="flick"></div>
+  <div class="fadeTo" style="--to: 0" data-at="кончилась:-0.2">
+    <div class="abs hand appear" style="left: 600px; top: 566px; font-size: 44px; color: var(--terra-dk); white-space: nowrap; transform: rotate(-4deg)"
+         data-at="сдвигает:-0.1">не сдвинуть</div>
+  </div>
+
+  <!-- скобка «ещё 3 дня» → «снова ваши» -->
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#A9503F" stroke-width="5" fill="none" stroke-linecap="round"
+       style="--dd: .3s" data-at="ещё:-0.15" d="M395 560 Q 395 578 413 578 L 643 578 Q 661 578 661 560"/></svg>
+  <div class="fadeTo" style="--to: 0; animation-duration: .15s" data-at="дней:-0.25">
+    <div class="abs hand appear" style="left: 440px; top: 590px; font-size: 54px; color: var(--terra-dk); white-space: nowrap" data-at="ещё:0.1">ещё 3 дня</div>
+  </div>
+  <div class="abs hand appear" style="left: 410px; top: 590px; font-size: 54px; color: var(--olive); white-space: nowrap" data-at="дней:-0.2">снова ваши ✓</div>
+
+  <!-- купон ждёт внизу; «не сразу!»; потом летит на субботу -->
+  <div class="abs hand appear" style="left: 30px; top: 610px; font-size: 58px; color: var(--terra-dk); white-space: nowrap; transform: rotate(-6deg)"
+       data-at="сразу:-0.1">не сразу!</div>
+  <div class="abs drop" style="left: 150px; top: 700px; --d: .35s; --r: 2deg">
+    <div class="toShot" style="--tx: -46px; --ty: -319px; --r0: 0deg; --r: -8deg; --s1: .2; --dd: .5s" data-at="несколько:-0.2" data-sfx="flick">
+      <div class="coupon" style="width: 480px; height: 170px; box-shadow: 0 20px 18px rgba(50, 38, 20, .3)">
+        <div class="stub" style="width: 70px"><span style="font-size: 16px">№ 0001</span></div>
+        <div class="body" style="padding: 20px 24px 16px">
+          <div class="t1" style="font-size: 66px">Сброс лимита</div>
+          <div class="t2" style="font-size: 24px">бесплатно · 1 шт</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

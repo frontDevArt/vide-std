@@ -4,16 +4,16 @@ measured:
 - language: ru
   backend: elevenlabs
   voice: 848d5c1805bc
-  wpm: 153.5
+  wpm: 149.2
   rate: 110.0
-  words: 138
-  project: voice-clone
-  date: '2026-11-11'
+  words: 25
+  project: nvidia-huang-demo
+  date: '2026-11-14'
 - language: ru
   backend: piper
   voice: 2dce0a8db652
-  wpm: 157.9
-  rate: 109.0
-  words: 38
-  project: motion-test
-  date: '2026-11-11'
+  wpm: 150.8
+  rate: 100.0
+  words: 91
+  project: free-reset
+  date: '2026-11-12'

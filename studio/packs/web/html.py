@@ -7,6 +7,8 @@ words [{w, t0, t1}], vars (params.vars), area и safe (рабочая зона �
 `animation-delay: var(--b1)` — анимация со второго бита. Свой ход времени — `window.seek = (t, S) => {…}`.
 Звуки под движение — `window.sfx = () => [[t, имя], …]` (имена — studio/sfx.py), их кладёт в дорожку assemble.
 Фон страницы — прозрачный: под ней наш фон, над ней — субтитры.
+Своя подложка страницы (цветной лист на весь кадр, обрывки-декор у краёв) — с атрибутом `data-backdrop`: проверка
+«контент в безопасной зоне» (studio/safezone.py) её не видит, как фото на весь кадр у media; в кадре она есть.
 """
 from __future__ import annotations
 
@@ -17,6 +19,11 @@ from ... import gfx as G
 from ..base import Template
 from ..registry import P, template
 from . import browser as B
+
+
+# safe_draw прячет подложку страницы на время снимка (inline-стиль сильнее любого правила страницы)
+_BACKDROP_JS = ("(on) => document.querySelectorAll('[data-backdrop]').forEach(el => "
+                "el.style.setProperty('visibility', on ? 'hidden' : '', on ? 'important' : ''))")
 
 
 def _css(style, beats, dur, vars_, zoom):
@@ -84,6 +91,15 @@ class HtmlScene(Template):
         pg = B.page(self.key, self.file, self.W, self.H, self.scene, self.css)
         ev = pg.evaluate("() => typeof window.sfx === 'function' ? window.sfx() : []") or []
         return [(float(t), str(n)) for t, n in ev]
+
+    def safe_draw(self, img, t, T):
+        """Без подложки `[data-backdrop]` (лист на весь кадр можно под обрез): safezone проверяет то, что поверх."""
+        pg = B.page(self.key, self.file, self.W, self.H, self.scene, self.css)
+        pg.evaluate(_BACKDROP_JS, True)
+        try:
+            self.draw(img, t, T)
+        finally:
+            pg.evaluate(_BACKDROP_JS, False)
 
     def draw(self, img, t, T):
         lay = self.layer(t)

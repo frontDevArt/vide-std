@@ -1,0 +1,61 @@
+# «Лимит Claude кончился раньше? Вам не показалось», 8 сцен ≈ 44 с (потолок 50 с). План и факты — outline.md.
+# Формула канала: боль на настоящем экране (s01) → почему (s02) → лекарство уже в аккаунте (s03) → путь на настоящем
+# экране (s04) → когда жать, вылечено на том же случае — суббота (s05) → срок (s06) → вопрос (s07) → лайк и подписка (s08).
+# Тело сцены — страница web.html (шаблон проекта paper_page; исходники assets/src/, сборка build.py). Настоящий экран —
+# assets/screen/usage@3x.png. Сцены встык (fade: false), переходы — «влёт» камеры (outline.md).
+chapter: ch01
+title: "Лимит Claude кончился раньше? Вам не показалось"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Лимит Клода | кончается раньше обычного?"
+      - "Вам не показалось."
+    params: {file: assets/s01-screen.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Антропик это признала."
+      - "Из-за ошибок | лимит тратился быстрее, чем должен."
+    params: {file: assets/s02-bug.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Взамен подписчикам дали | бесплатный полный сброс лимита."
+      - "Он уже лежит в вашем аккаунте."
+    params: {file: assets/s03-coupon.html, fade: false}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Настройки, | вкладка Юсэдж, | и вот эта кнопка."
+      - "Или короткая ссылка на экране."
+    params: {file: assets/s04-where.html, fade: false}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Только не жмите сразу: | день обновления сброс не сдвигает."
+      - "Жмите, когда неделя кончилась, | а до обновления ещё несколько дней."
+    params: {file: assets/s05-week.html, fade: false}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Успейте по десятое декабря включительно."
+      - "А сброс Фейбла на тарифе Про — | по шестнадцатое ноября включительно."
+    params: {file: assets/s06-deadline.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "В какой день | кончается неделя у вас?"
+    params: {file: assets/s07-ask.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Если было полезно — | поставьте лайк и подпишитесь."
+    params: {file: assets/s08-follow.html, fade: false}

@@ -1,0 +1,46 @@
+<!-- s06 — срок, ОТРЫВНОЙ КАЛЕНДАРЬ: «Успейте по десятое декабря включительно.» «А сброс Фейбла на тарифе Про — | по
+     шестнадцатое ноября включительно.»
+     Отрывной календарь: «Успейте» — листки 12 ноября, 24 ноября, 3 декабря слетают один за другим, остаётся
+     «ДЕКАБРЬ 10, четверг»; «включительно» — рукой «включительно ✓», и крупно «до 01:00 по Москве / 11 декабря».
+     «Фейбла» — справа въезжает второй, синий листок «НОЯБРЬ 16» с плашкой «Fable · Pro»; «шестнадцатое» — под ним
+     «до 10:59 по Москве / 17 ноября». Сроки — outline.md (10.12 14:00 PT; Fable Pro — 17.11 10:59 МСК). -->
+<style>
+  @keyframes flyOff { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+                      45% { transform: translate(calc(var(--tx) * .45), calc(var(--ty) * .45 - 50px)) rotate(calc(var(--rr) * .5)); opacity: 1; }
+                      100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rr)); opacity: 0; } }
+  .flyOff { animation: flyOff var(--dd, .45s) cubic-bezier(.3, .6, .3, 1) var(--d, 0s) both; }
+  .pad .rb { position: absolute; top: -20px; width: 26px; height: 46px; border-radius: 13px; background: var(--grain), var(--navy); }
+</style>
+<div class="stage">
+  <!-- главный календарь -->
+  <div class="abs drop" style="left: 50px; top: 70px; --r: -2deg; --d: 0s" data-boil=".4">
+    <div class="pad" style="width: 440px; height: 500px">
+      <span class="mo">Декабрь</span><span class="dd2" style="font-size: 300px; margin-top: 12px">10</span><span class="wk" style="font-size: 32px">четверг</span>
+      <!-- листки, которые слетают (сверху — первый) -->
+      <div class="pad flyOff" style="position: absolute; left: 0; top: 0; width: 440px; height: 500px; box-shadow: none; --tx: 420px; --ty: -520px; --rr: 38deg; --dd: .45s; z-index: 1"
+           data-at="успейте:0.4" data-sfx="swish">
+        <span class="mo">Ноябрь</span><span class="dd2" style="font-size: 300px; margin-top: 12px">3</span><span class="wk" style="font-size: 32px">четверг</span></div>
+      <div class="pad flyOff" style="position: absolute; left: 0; top: 0; width: 440px; height: 500px; box-shadow: none; --tx: -460px; --ty: -480px; --rr: -34deg; --dd: .45s; z-index: 2"
+           data-at="успейте:0.1" data-sfx="swish">
+        <span class="mo">Ноябрь</span><span class="dd2" style="font-size: 300px; margin-top: 12px">24</span><span class="wk" style="font-size: 32px">вторник</span></div>
+      <div class="pad flyOff" style="position: absolute; left: 0; top: 0; width: 440px; height: 500px; box-shadow: none; --tx: 440px; --ty: -560px; --rr: 30deg; --dd: .45s; z-index: 3"
+           data-at="успейте:-0.2" data-sfx="swish">
+        <span class="mo">Ноябрь</span><span class="dd2" style="font-size: 300px; margin-top: 12px">12</span><span class="wk" style="font-size: 32px">четверг</span></div>
+      <span class="rb" style="left: 90px"></span><span class="rb" style="left: 324px"></span>
+    </div>
+  </div>
+  <div class="abs hand appear" style="left: 70px; top: 606px; font-size: 66px; color: var(--olive); white-space: nowrap; transform: rotate(-3deg)"
+       data-at="включительно:-0.05">включительно ✓</div>
+  <div class="timechip slideL" style="left: 30px; top: 704px; --r: -1deg" data-at="включительно:0.35">до 01:00 по Москве<br>11 декабря</div>
+
+  <!-- сброс Fable на Pro -->
+  <div class="abs slideR" style="left: 520px; top: 270px; --r: 5deg" data-at="фейбла:-0.25" data-boil=".5">
+    <div class="pad fable" style="width: 240px; height: 300px">
+      <span class="mo" style="font-size: 30px; letter-spacing: 4px; padding: 10px 0 8px">Ноябрь</span>
+      <span class="dd2" style="font-size: 170px; margin-top: 8px; letter-spacing: -3px">16</span>
+      <span class="chip tanp" style="display: inline-block; margin-top: 4px; font-size: 24px">Fable · Pro</span>
+      <span class="rb" style="left: 50px; width: 20px; height: 36px; top: -16px"></span><span class="rb" style="left: 170px; width: 20px; height: 36px; top: -16px"></span>
+    </div>
+  </div>
+  <div class="timechip slideR" style="left: 528px; top: 610px; font-size: 34px; --r: 3deg" data-at="шестнадцатое:0.3">до 10:59 мск<br>17 ноября</div>
+</div>

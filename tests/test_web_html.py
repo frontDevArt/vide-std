@@ -79,6 +79,25 @@ def test_page_sfx_events(proj, browser, tmp_path):
     assert tpl.sfx_events() == [(0.5, "paper"), (1.25, "stamp")]
 
 
+def test_backdrop_is_not_safezone_content(proj, browser, tmp_path):
+    # подложка страницы [data-backdrop] (лист на весь кадр) — в кадре есть, а safezone видит только то, что поверх
+    from studio.safezone import content_box
+    s, tpl = _scene(proj, "s02")
+    page = tmp_path / "backdrop.html"
+    page.write_text('<html><body style="margin:0"><div data-backdrop style="position:fixed;inset:0;background:#c46557"></div>'
+                    '<div style="position:absolute;left:400px;top:800px;width:200px;height:200px;background:#141210"></div>'
+                    "</body></html>", encoding="utf-8")
+    tpl.file, tpl.key = page, (str(page), "backdrop", tpl.W, tpl.H)
+    tpl.p["fade"] = False
+    full = np.asarray(tpl.layer(1.0))[..., 3]
+    assert (full > 200).mean() > 0.99  # лист на весь кадр
+    _, ctx = render.prepare(proj)
+    x0, y0, x1, y1 = content_box(ctx, tpl, s, 1.0)
+    z = min(tpl.W, tpl.H) / 1080
+    assert abs(x0 - 400 * z) <= 2 and abs(y1 - 1000 * z) <= 2  # только квадрат
+    assert (np.asarray(tpl.layer(1.0))[..., 3] > 200).mean() > 0.99  # подложка вернулась
+
+
 def test_virtual_time_is_deterministic(proj, browser):
     s, tpl = _scene(proj, "s02")
     t = s["beats"][1]["t0"] + 0.4

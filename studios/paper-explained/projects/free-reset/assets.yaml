@@ -1,0 +1,13 @@
+# Источник и лицензия всего, что видно и слышно в ролике (studio/assets.py). Картинок Kie нет.
+# Настоящий экран Claude — снимок окна Settings → Usage с аккаунта пользователя (встроенный браузер, 2026-11-12):
+# показан как есть, для объяснения, где кнопка; личных данных в кадре нет (только окно настроек).
+assets:
+  - {file: assets/screen/usage@3x.png, source: "снимок экрана claude.ai Settings → Usage с аккаунта пользователя, 2026-11-12 (9 кусков ×3, склейка 2304×2304)", license: "снимок интерфейса для объяснения (цитирование); интерфейс — Anthropic, снимок — пользователь"}
+  - {file: assets/s01-screen.html, source: "своя вёрстка студии, собрана assets/src/build.py; внутри — снимок экрана assets/screen/usage@3x.png", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/; снимок — см. строку выше"}
+  - {file: assets/s02-bug.html, source: "своя вёрстка студии, собрана assets/src/build.py; счётчик и жук — SVG/CSS кодом", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s03-coupon.html, source: "своя вёрстка студии, собрана assets/src/build.py; внутри — снимок экрана assets/screen/usage@3x.png", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/; снимок — см. первую строку"}
+  - {file: assets/s04-where.html, source: "своя вёрстка студии, собрана assets/src/build.py; снимок экрана assets/screen/usage@3x.png; рука — вырезка бренда brand/avatar/src/hand.cut.png (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/; снимок — см. первую строку"}
+  - {file: assets/s05-week.html, source: "своя вёрстка студии, собрана assets/src/build.py; вырезка строки из снимка экрана assets/screen/usage@3x.png", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/; снимок — см. первую строку"}
+  - {file: assets/s06-deadline.html, source: "своя вёрстка студии, собрана assets/src/build.py", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s07-ask.html, source: "своя вёрстка студии, собрана assets/src/build.py; рука — вырезка бренда brand/avatar/src/hand.cut.png (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}
+  - {file: assets/s08-follow.html, source: "своя вёрстка студии, собрана assets/src/build.py; рука и аватар канала — вырезки бренда brand/avatar/ (brand/avatar/sources.json)", license: "своё (Paper Explained); шрифты — OFL-1.1, brand/fonts/"}

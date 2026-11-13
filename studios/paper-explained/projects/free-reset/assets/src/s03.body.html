@@ -1,0 +1,46 @@
+<!-- s03 — лекарство есть, КУПОН: «Взамен подписчикам дали | бесплатный полный сброс лимита.» «Он уже лежит в вашем
+     аккаунте.»
+     Сверху падает книжка купонов: корешок «№ 0001» и купон «СБРОС ЛИМИТА · бесплатно · 1 шт · Pro · Max · Ultra · Team».
+     «сброс» — купон отрывается по перфорации; «лимита» — штамп «ИЗВИНИТЕ». «Он» — снизу въезжает распечатка
+     настоящего экрана (то же место, что в начале s04); «лежит» — купон уменьшается и ныряет в строку «Full reset»,
+     корешок уезжает вверх; «аккаунте» — строка «Full reset» под жёлтым маркером, «2 available» в кольце. -->
+<style>
+  .stack { position: absolute; width: 600px; height: 300px; }
+  @keyframes sink { 0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; } 82% { opacity: 1; }
+                    100% { transform: translate(var(--tx), var(--ty)) rotate(-4deg) scale(var(--s1)); opacity: 0; } }
+  @keyframes outL { from { transform: translateX(0) rotate(0deg); opacity: 1; } to { transform: translateX(-260px) rotate(-8deg); opacity: 0; } }
+  .sink { transform-origin: 50% 50%; animation: sink var(--dd, .6s) cubic-bezier(.45, 0, .3, 1) var(--d, 0s) both; }
+</style>
+<div class="stage">
+  <!-- распечатка экрана: въезжает снизу; камера стоит (как первый кадр s04) -->
+  <div class="abs raise" style="left: 0; top: 0; width: 780px; height: 960px; --fy: 1800px; --dd: .5s" data-at="он:-0.25" data-sfx="slide">
+    <div class="tour" data-view="390 600" data-tour='[[0, 398, 398, 0.62]]'>
+      <!--@shot-->
+      <div class="hl" style="left: 238px; top: 457px; width: 222px; height: 51px" data-at="аккаунте:0.05"></div>
+      <!--@ring {"box": [676, 403, 768, 446], "at": "аккаунте:0.3", "c": "#E0C377", "w": 4}-->
+    </div>
+  </div>
+
+  <!-- книжка: стопка и корешок (уезжают вверх, когда купон ушёл в экран) -->
+  <div class="abs" style="left: 0; top: 0; animation: outL .45s cubic-bezier(.5, -0.3, .8, .5) var(--d, 0s) both" data-at="лежит:0.15" data-sfx="slide">
+    <div class="abs drop" style="left: 90px; top: 40px; --d: 0s; --r: -1deg">
+      <div class="stack" style="left: 12px; top: 16px; background: var(--grain), #C9AD70; box-shadow: 0 20px 18px rgba(50, 38, 20, .3)"></div>
+      <div class="stack" style="left: 6px; top: 8px; background: var(--grain), #D6BC80"></div>
+      <div class="coupon" style="width: 600px"><div class="stub"><span>№ 0001</span></div><div style="flex: 1; background: var(--grain), #DCC283"></div></div>
+    </div>
+  </div>
+
+  <!-- купон: отрывается, штамп, ныряет в строку Full reset -->
+  <div class="abs drop" style="left: 200px; top: 40px; --d: 0s; --r: -1deg">
+    <div class="sink" style="--tx: -90px; --ty: 468px; --s1: .14; --dd: .6s" data-at="лежит:-0.05" data-sfx="whoosh">
+      <div class="tear" style="--tx: 30px; --ty: -40px; --rr: -4deg" data-at="сброс:-0.1" data-sfx="swish">
+        <div class="coupon"><div class="body" style="width: 490px">
+          <div class="t1">Сброс<br>лимита</div>
+          <div class="t2">бесплатно · 1 шт</div>
+          <div class="t3">Pro · Max · Ultra · Team</div>
+          <div class="stamp" style="left: 236px; top: 168px; font-size: 54px; --r: -11deg" data-at="лимита:-0.1">Извините</div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</div>

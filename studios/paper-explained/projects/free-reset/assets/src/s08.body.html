@@ -1,0 +1,30 @@
+<!-- s08 — лайк и подписка (образец — voice-clone s11, без изменений): «Если было полезно — | поставьте лайк и подпишитесь.»
+     Сверху рукой «было полезно?», справа на «лайк» выпрыгивает бумажное сердце; ниже на «подпишитесь» — карточка
+     канала (аватар-рука, «На бумаге», @nabumage.tv), рука бренда указывает на «+ Подписаться», в конце — галочка. -->
+<style>
+  .heart { width: 230px; height: 210px; background: var(--grain), var(--terra);
+           clip-path: path('M115 207 C 44 154, 0 110, 0 62 A 57 57 0 0 1 115 40 A 57 57 0 0 1 230 62 C 230 110, 186 154, 115 207 Z'); }
+  .chan { width: 560px; box-sizing: border-box; padding: 18px 24px; display: flex; align-items: center; gap: 22px; }
+  .chan img { width: 126px; height: 126px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 4px var(--navy); flex: none; }
+  .chan b { display: block; font-family: Oswald; font-weight: 700; font-size: 64px; line-height: .95; color: var(--navy); text-transform: uppercase; white-space: nowrap; }
+  .chan small { display: block; margin-top: 8px; font-family: PTMono; font-size: 26px; color: var(--dim); }
+  .follow { padding: 16px 30px 12px; font-family: Oswald; font-weight: 600; font-size: 56px; color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+</style>
+<div class="stage">
+  <div class="cross" style="left: 700px; top: 420px; --d: .3s"></div>
+  <div class="abs hand appear" style="left: 16px; top: 60px; font-size: 96px; --r: -3deg" data-at="было">было<br>полезно?</div>
+  <div class="abs pop sticker" style="left: 470px; top: 40px; --r: 8deg" data-at="лайк:-0.15" data-sfx="flick" data-boil><div class="heart"></div></div>
+
+  <div class="abs slideL" style="left: 16px; top: 400px; --r: -1deg" data-at="подпишитесь:-0.35" data-boil=".6">
+    <div class="shadow"><div class="sheet chan" data-torn="b" data-depth="6">
+      <img src="../../../brand/avatar/hand.png" alt="">
+      <div><b>На бумаге</b><small>@nabumage.tv</small></div>
+    </div></div>
+  </div>
+  <div class="abs slideL sticker" style="left: 18px; top: 620px; width: 270px; height: 140px; --r: -3deg" data-at="подпишитесь:-0.1" data-boil>
+    <img data-cut="HAND" data-box="270 140">
+  </div>
+  <div class="abs pop shadow" style="left: 296px; top: 634px; --r: 2deg" data-at="подпишитесь:0.15" data-boil><div class="follow">+ Подписаться</div></div>
+  <svg class="ink" width="780" height="960"><path class="draw" pathLength="1" stroke="#6F8A4E" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"
+       style="--dd: .2s" data-at="подпишитесь:0.75" d="M640 790 L 664 816 L 712 758"/></svg>
+</div>
