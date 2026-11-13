@@ -1,0 +1,2 @@
+# ИМЯ в data-cut → путь от папки assets/ — теперь в build.py (KEYS). Вырезки бренда — brand/avatar/sources.json;
+# вырезки Kie этого ролика (оплачены 2026-11-13) — assets/images/<ключ>.cut.png, происхождение — assets.yaml.

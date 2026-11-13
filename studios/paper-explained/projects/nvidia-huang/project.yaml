@@ -1,0 +1,76 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+# v2 «Живая бумага» (2026-11-14): первая версия (куртка вместо Хуанга) удалена пользователем из TikTok.
+schema_version: 1
+title: "Хуанг ушёл — что это значит для нейросетей"
+topic: "Глава Nvidia Дженсен Хуанг ушёл 12 ноября 2026 после истории с женщиной, которую разведка США считает китайской шпионкой; Трамп, ФБР, Конгресс; за неделю Nvidia потеряла больше полтриллиона. Главное — что это значит для нейросетей и для нас: на чипах Nvidia работает большая часть ИИ, Хуанг был лицом гонки, у конкурентов (Google, AMD) появился шанс — и вычисления могут подешеветь"
+audience: "Русскоязычные зрители канала «На бумаге» (ИИ, техника) и шире — все, кто пользуется ChatGPT, Claude, Gemini. Вынести: что случилось (через людей: Хуанг, Трамп, Конгресс, Кресс), что с рынком, и что это значит для нейросетей и цен на них"
+kind: explainer           # длительность по речи; решение пользователя 2026-11-14: ~80–90 с, как у конкурента (200 слов ≈ 90 с)
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null
+
+tts:
+  backend: elevenlabs     # голос студии Artspace; синтез — только после «да» пользователя (voice --yes)
+  voice: auto
+  rate: 110               # ElevenLabs — только числом
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # правила студии: 0,42 / 0,6 с; старт короче — крючок с первого кадра
+  start: 0.2
+  comma: 0.18
+  sentence: 0.42
+  scene: 0.6
+  end: 0.6
+
+style:
+  palette: neon           # перекрыто бренд-китом студии (defaults.style.brand)
+  font: Inter Display
+
+music:
+  enabled: false          # студия: без музыки — бумажные звуки под движение
+  level_db: -13
+  duck: true
+
+sfx: {enabled: true, level_db: 10}
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+# Картинки Kie — только предметы (чип, пустое кресло; оплачены 2026-11-13, новых не генерируем). Люди — настоящие фото
+# Wikimedia Commons растром (assets/src/people.py), список и лицензии — assets.yaml.
+images:
+  enabled: true
+  style: "Style: black and white editorial halftone cut-out, vintage magazine print, high contrast, visible halftone dots and ink imperfections, cleanly isolated subject with a thin white paper cut border, premium paper collage quality, flat even light. Isolated on a plain flat light grey background. No people, no faces, no hands, no clutter, no text, no letters, no numbers, no logos, no watermark, no anime, no cartoon style, no CGI look, no glossy 3D rendering, no photorealistic background, no oversaturated colors, no blurry details"   # brand/PROMPTS.md
+  budget_usd: 1
+
+package:
+  title: "Хуанг ушёл — что это значит для нейросетей?"
+  description: >-
+    Глава Nvidia Дженсен Хуанг ушёл из компании, которую строил 33 года. Как это вышло и что это значит для ChatGPT,
+    Claude, Gemini и для нас с вами. А вы как думаете — Nvidia справится? Фото: Anders Eidesvik, CC BY 4.0;
+    SiliconANGLE theCUBE, CC BY 4.0.
+  hashtags: [nvidia, хуанг, нейросети, новости, chatgpt]   # tiktok: не больше 5
+  cover: {at: 2.6}          # s01: Хуанг растром, карточка имени, штамп «ушёл» (на 1,5 с — ножницы на полпути)
+  ai_label: false         # решение студии (CLAUDE.md, 2026-11-10): коллаж и синтезированная озвучка под отметку не попадают;
+                          #   сгенерированных людей нет — настоящие фото публичных людей растром (новостной разбор)
+
+avoid:
+  - {numbers_without_source: false}   # решение пользователя 2026-11-10: источников-плашек нет — факты сверены до ролика (outline.md)
+  - "сгенерированные изображения реальных людей — нет: только настоящие фото Commons (Хуанг, Трамп, Кресс); безымянные женщины — силуэт «?», без имён и лиц"
+  - "оговорка одна: «разведка США считает… Китай всё отрицает»; второй роман — «газеты написали»"
+  - "Gemini учится в основном на своих чипах Google — не говорить, что Gemini на чипах Nvidia"
+  - "хайп и крик, смакование личного"
+done_means:
+  - "крючок «Глава Nvidia Дженсен Хуанг ушёл. Что это значит для нейросетей?» к 4 с, Хуанг крупно с первого кадра"
+  - "история через людей: NYT, письмо, Трамп и ФБР, Конгресс, второй роман, уход, 33 года, Кресс"
+  - "рынок на терракотовом листе; «Теперь главное: что это значит для нас» на тёмно-синем; что дальше — на синем"
+  - "картинка меняется каждые 1–2 с; главное — по центру, левее кнопок TikTok"
+  - "«Сохраните» + лайк и подписка в финале; в описании — подписи к фото CC BY"

@@ -1,0 +1,95 @@
+/* ── «Живая бумага» (2026-11-14, демо стиля): лист по актам, надпись сверху, кадр заполнен, люди растром,
+   телефонные формы из бумаги, камера всегда едет. Поверх common.css. ── */
+
+/* надпись-фраза — крупно сверху (не мелко посередине) */
+/* надпись — бумажная полоса-заголовок поверх всего: читается на любом листе и поверх предметов */
+.caps { top: 0; height: 240px; align-items: flex-start; padding-top: 4px; z-index: 5; }
+.chunk { width: fit-content; margin: 0 auto; padding: 10px 24px 4px; font-size: 80px; line-height: 1.04; font-weight: 700;
+         background: var(--grain), var(--paper-hi); transform: rotate(-1.2deg);
+         box-shadow: 0 3px 0 rgba(60, 45, 20, .14), 0 14px 14px rgba(30, 20, 10, .3); }
+
+/* лист акта: на весь кадр (body, не .stage), въезжает поверх прошлого листа в начале сцены */
+.sheetbg { position: fixed; inset: -40px; z-index: -1; background: var(--grain), var(--c); box-shadow: 0 -30px 40px rgba(30, 20, 10, .35);
+           animation: sheetIn .42s cubic-bezier(.25, .8, .3, 1.04) 0s both; }
+.sheetbg::after { content: ''; position: absolute; inset: 0; background: var(--grain); opacity: .9; mix-blend-mode: multiply; }
+@keyframes sheetIn { from { transform: translateY(105%) rotate(4deg); } to { transform: translateY(0) rotate(0deg); } }
+.sheetbg.fromR { animation-name: sheetInR; }
+@keyframes sheetInR { from { transform: translateX(105%) rotate(-5deg); } to { transform: translateX(0) rotate(0deg); } }
+
+/* сцена — под надписью; камера едет всю сцену (push), на ключевом слове — толчок (.kick) */
+.scene { position: absolute; left: 0; top: 200px; width: 780px; height: 1180px; transform-origin: 390px 520px;
+         animation: push var(--dur, 4s) linear 0s both; }
+@keyframes push { from { transform: scale(1); } to { transform: scale(var(--ps, 1.05)); } }
+.kick { position: absolute; inset: 0; transform-origin: var(--kx, 390px) var(--ky, 520px);
+        animation: kick .5s cubic-bezier(.2, .9, .3, 1) var(--d, 99s) both; }
+@keyframes kick { from { transform: scale(1); } 35% { transform: scale(1.09); } to { transform: scale(1.06); } }
+.dive2 { position: absolute; inset: 0; transform-origin: var(--ox, 390px) var(--oy, 520px);
+         animation: dive2 .34s cubic-bezier(.55, 0, .25, 1) calc(var(--dur) - .34s) both; }
+/* нырок гаснет к 60 %: в конце сцены (кадр проверки safezone) слоя уже не видно */
+@keyframes dive2 { 0% { transform: scale(1); opacity: 1; } 60% { opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
+
+/* второй план: обрывки газет (светлые, не спорят с главным) */
+.scrap { position: absolute; box-sizing: border-box; padding: 14px 16px; background: var(--grain), #EEE6D3;
+         transform: rotate(var(--r, 0deg)); opacity: var(--op, .75); }
+.scrap i { display: block; height: 7px; margin: 0 0 9px; background: rgba(20, 18, 16, .22); }
+.scrap i.h { height: 20px; width: 70%; background: rgba(20, 18, 16, .42); margin-bottom: 14px; }
+.scrap i.s { width: 55%; }
+body:has(.sheetbg.dark) .scrap { background: var(--grain), rgba(251, 248, 239, .10); }
+body:has(.sheetbg.dark) .scrap i { background: rgba(251, 248, 239, .16); } body:has(.sheetbg.dark) .scrap i.h { background: rgba(251, 248, 239, .26); }
+
+/* человек: ч/б растр (people.py) + белая кромка + тень — как вырезки канала */
+.person { position: absolute; filter: drop-shadow(6px 0 0 var(--paper-hi)) drop-shadow(-6px 0 0 var(--paper-hi))
+                                       drop-shadow(0 -6px 0 var(--paper-hi)) drop-shadow(0 26px 20px rgba(40, 28, 14, .38)); }
+.person img { display: block; width: 100%; }
+.poster { position: absolute; background: var(--grain), var(--navy); }
+
+/* карточка имени: имя крупно, должность — отрезается ножницами (.fly) */
+.namecard { position: absolute; box-sizing: border-box; padding: 18px 26px 16px; background: var(--grain), var(--paper-hi); }
+.namecard .nm { font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1; text-transform: uppercase; color: var(--ink); letter-spacing: -.5px; }
+.namecard .role { display: flex; align-items: center; gap: 14px; margin-top: 10px; font-family: PTMono; font-size: 30px; color: var(--navy); }
+.namecard .role img { height: 30px; }
+.namecard .ceo { display: inline-block; padding: 3px 12px 1px; background: var(--grain), var(--tan); }
+.cutline { position: absolute; border-top: 3px dashed rgba(20, 18, 16, .55); animation: appear .01s linear var(--d, 0s) both; }
+
+/* жетон с логотипом: бумажный круг */
+.token { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.token .c { width: var(--sz, 150px); height: var(--sz, 150px); border-radius: 50%; background: var(--grain), var(--paper-hi);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(60, 45, 20, .14), 0 16px 14px rgba(30, 20, 10, .35); }
+.token .c img { width: 58%; height: 58%; object-fit: contain; }
+.token b { font-family: Oswald; font-weight: 600; font-size: 38px; line-height: 1; color: var(--ink); background: var(--grain), var(--paper-hi); padding: 6px 14px 3px; }
+
+/* уведомление — бумажная полоска сверху */
+.notif { position: absolute; box-sizing: border-box; display: flex; align-items: center; gap: 18px; padding: 16px 22px;
+         border-radius: 26px; background: var(--grain), var(--paper-hi); box-shadow: 0 4px 0 rgba(60, 45, 20, .12), 0 18px 16px rgba(30, 20, 10, .32);
+         animation: notif .45s cubic-bezier(.2, .9, .3, 1.15) var(--d, 0s) both; }
+@keyframes notif { from { transform: translateY(-260px) rotate(var(--r, 0deg)); } to { transform: translateY(0) rotate(var(--r, 0deg)); } }
+.notif .ic { flex: none; width: 78px; height: 78px; border-radius: 18px; background: var(--grain), #fff; display: flex; align-items: center; justify-content: center; }
+.notif .ic img { width: 80%; }
+.notif .tx { flex: 1; font-family: PTSerif; font-size: 30px; line-height: 1.15; color: var(--ink); }
+.notif .tx b { font-family: Oswald; font-weight: 600; font-size: 32px; display: block; }
+.notif .dn { font-family: Oswald; font-weight: 700; font-size: 48px; color: var(--terra-dk); white-space: nowrap; }
+.notif small { position: absolute; right: 22px; top: 12px; font-family: PTMono; font-size: 18px; color: var(--dim); }
+
+/* огромная цифра газетными буквами: каждая буква — свой клочок, свой шрифт, наклон, выпрыгивает лесенкой */
+.ransom { position: absolute; display: flex; align-items: flex-end; gap: 6px; }
+.ransom span { display: inline-block; padding: 4px 9px 0; line-height: .95; font-weight: 700; transform: rotate(var(--r, 0deg));
+               box-shadow: 0 3px 0 rgba(30, 20, 10, .15), 0 10px 8px rgba(30, 20, 10, .3);
+               animation: pop .32s cubic-bezier(.3, 1.6, .5, 1) calc(var(--d, 0s) + var(--i) * .07s) both; }
+.ransom .a { font-family: Oswald; background: var(--grain), var(--paper-hi); color: var(--ink); }
+.ransom .b { font-family: PTSerif; background: var(--grain), var(--mustard); color: var(--ink); }
+.ransom .c { font-family: Oswald; background: var(--grain), var(--ink); color: var(--paper-hi); }
+.ransom .d { font-family: PTMono; font-weight: 400; background: var(--grain), #EEE6D3; color: var(--terra-dk); }
+.ransom .sp { box-shadow: none; background: none; width: 10px; padding: 0; }
+
+/* миллиметровка с графиком маркером */
+.mm { position: absolute; background: linear-gradient(rgba(48, 53, 60, .16) 1.5px, transparent 1.5px) 0 0 / 30px 30px,
+                                      linear-gradient(90deg, rgba(48, 53, 60, .16) 1.5px, transparent 1.5px) 0 0 / 30px 30px, var(--grain), var(--paper-hi); }
+
+/* мел по картону */
+.chalk { fill: none; stroke: var(--paper-hi); stroke-width: 5; stroke-dasharray: 1 1; opacity: .9; }
+.chiplabel { position: absolute; box-sizing: border-box; padding: 10px 16px; background: var(--grain), var(--paper-hi); display: flex; align-items: center; justify-content: center; }
+.chiplabel img { width: 100%; }
+.pulse { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--mustard);
+         box-shadow: 0 0 0 6px rgba(224, 195, 119, .35); offset-rotate: 0deg;
+         animation: along var(--dd, 1s) linear var(--d, 0s) infinite; }
+@keyframes along { from { offset-distance: 0%; opacity: 1; } 85% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }

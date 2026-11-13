@@ -1,0 +1,12 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7707786819890433300
+  date: 2026-11-14 02:30
+  version: null
+  file: nvidia-huang.mp4
+  sha1: 177e72eccb11
+  duration: 94.63
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'

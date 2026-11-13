@@ -1,0 +1,27 @@
+# Демо стиля «Живая бумага» (решение пользователя 2026-11-14, studios/paper-explained/CLAUDE.md): 3 акта — 3 листа.
+# s01 — кремовый: настоящее фото Хуанга растром во весь кадр, карточка «CEO» — ножницы отрезают должность, «ушёл».
+# s02 — терракотовый лист въезжает поверх: график маркером на миллиметровке, огромное «−$490 млрд» газетными буквами,
+#       уведомление NVDA выезжает сверху.
+# s03 — тёмно-синий картон: чип с логотипом Nvidia, мелом линии к жетонам ChatGPT / Claude / Gemini.
+# Фото и логотипы — Wikimedia Commons (лицензии — assets/people/SOURCES.md демо). Сборка страниц — assets/src/build.py демо.
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Глава Nvidia | ушёл."
+      - "Что это значит | для нейросетей?"
+    params: {file: assets/d01.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "За неделю компания подешевела | почти на полтриллиона долларов."
+    params: {file: assets/d02.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "А на её чипах учатся | ChatGPT, Claude и Gemini."
+    params: {file: assets/d03.html, fade: false}

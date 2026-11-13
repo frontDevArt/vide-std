@@ -1,0 +1,113 @@
+# «Хуанг ушёл — что это значит для нейросетей?» v2, «Живая бумага» (демо nvidia-huang-demo утверждено 2026-11-14).
+# Длина ~85 с, призыв «Сохраните» + лайк и подписка (решения пользователя 2026-11-14). Факты — outline.md (на 14.11).
+# Акты = листы: история — кремовый (s01–s07); рынок — терракотовый (s08); нейросети — тёмно-синий картон (s09–s10);
+# что дальше — приглушённый синий (s11–s14); призыв — кремовый (s15). Картинка меняется на каждом бите `|`.
+# Люди — настоящие фото Commons растром (Хуанг, Трамп, Кресс); женщины без имён и лиц — силуэт.
+chapter: ch01
+title: "Хуанг ушёл — что это значит для нейросетей"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Глава Nvidia | Дженсен Хуанг | ушёл."
+      - "Что это значит | для нейросетей?"
+    params: {file: assets/s01-hook.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "The New York Times написала: | у Хуанга роман | с женщиной, | которую разведка США считает | китайской шпионкой."
+      - "Китай всё отрицает."
+    params: {file: assets/s02-nyt.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Хуанг сам признал измену | в письме сотрудникам."
+      - "А Трампу сказал, | что не знал, кто она."
+    params: {file: assets/s03-letter.html, fade: false}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Трамп сказал: | этим занимается ФБР."
+      - "Конгресс | зовёт Хуанга на разговор."
+    params: {file: assets/s04-probe.html, fade: false}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "Потом газеты написали | про второй роман — | с подчинённой."
+      - "И двенадцатого ноября | Хуанг ушёл."
+      - "Сразу."
+    params: {file: assets/s05-exit.html, fade: false}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Тридцать три года | он строил компанию, | а ушёл | за четыре дня."
+    params: {file: assets/s06-years.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Пока компанией руководит | финансовый директор | Колетт Кресс."
+    params: {file: assets/s07-kress.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Рынок испугался."
+      - "В день ухода акции падали | на шестнадцать процентов."
+      - "А за неделю Nvidia потеряла | больше полтриллиона долларов."
+    params: {file: assets/s08-market.html, fade: false}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Теперь главное: | что это значит для нас."
+      - "На чипах Nvidia работает | большая часть нейросетей."
+      - "Например, | ChatGPT | и Claude."
+    params: {file: assets/s09-chips.html, fade: false}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "А Хуанг был лицом | этой гонки."
+      - "Он договаривался | с правительствами, | с OpenAI | и с дата-центрами."
+    params: {file: assets/s10-face.html, fade: false}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Завтра ничего не сломается: | чипы расписаны на годы вперёд."
+      - "Но без Хуанга | договариваться | сложнее."
+    params: {file: assets/s11-orders.html, fade: false}
+
+  - id: s12
+    template: paper_page
+    lines:
+      - "А у конкурентов | появился шанс."
+      - "Google учит Gemini | на своих чипах, | AMD продаёт свои | OpenAI."
+    params: {file: assets/s12-rivals.html, fade: false}
+
+  - id: s13
+    template: paper_page
+    lines:
+      - "Если они догонят, | вычисления подешевеют."
+      - "А с ними | и нейросети | для нас."
+    params: {file: assets/s13-cheaper.html, fade: false}
+
+  - id: s14
+    template: paper_page
+    lines:
+      - "Семнадцатого ноября — | первый отчёт Nvidia | без Хуанга."
+      - "Как думаете, | компания справится?"
+    params: {file: assets/s14-next.html, fade: false}
+
+  - id: s15
+    template: paper_page
+    lines:
+      - "Сохраните, | чтобы не потерять."
+      - "Если было полезно — | поставьте лайк | и подпишитесь."
+    params: {file: assets/s15-save.html, fade: false}

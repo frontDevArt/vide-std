@@ -1,0 +1,108 @@
+/* ── nvidia-huang v2 (2026-11-14): формы ролика поверх live.css ── */
+/* лист акта внутри акта не въезжает заново — лежит с первого кадра */
+.sheetbg.still { animation: none; }
+/* лицо в бумажном круге: фото растром (people.py) целиком в круг */
+.token .c img.ph { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.token .c.ring { box-shadow: 0 0 0 7px var(--paper-hi), 0 0 0 11px var(--terra-dk), 0 16px 14px rgba(30, 20, 10, .35); }
+.token small { font-family: PTMono; font-size: 24px; color: var(--navy); background: var(--grain), var(--tan); padding: 4px 10px 2px; margin-top: -4px; }
+
+/* бумажный пузырь-цитата рядом с лицом: хвостик снизу слева (--tail: right — справа) */
+.qbub { position: absolute; box-sizing: border-box; padding: 20px 28px 18px; border-radius: 30px; background: var(--grain), var(--paper-hi);
+        font-family: Caveat; font-weight: 700; font-size: 60px; line-height: 1; color: var(--ink);
+        box-shadow: 0 4px 0 rgba(60, 45, 20, .12), 0 18px 16px rgba(30, 20, 10, .3); }
+.qbub::after { content: ''; position: absolute; left: 46px; bottom: -30px; border-left: 22px solid transparent; border-right: 22px solid transparent;
+               border-top: 34px solid var(--paper-hi); transform: skewX(-18deg); }
+.qbub.r::after { left: auto; right: 46px; transform: skewX(18deg); }
+.qbub small { display: block; margin-bottom: 6px; font-family: PTMono; font-weight: 400; font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); }
+
+/* газетная карточка: логотип издания, заголовок по-русски, строки-текст */
+.news { box-sizing: border-box; padding: 26px 32px 30px; background: var(--grain), var(--paper-hi); }
+.news .mast { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 3px double rgba(20, 18, 16, .55); }
+.news .mast img { height: 40px; }
+.news .mast span { font-family: PTMono; font-size: 20px; color: var(--dim); }
+.news .hd { margin-top: 18px; font-family: PTSerif; font-weight: 700; font-size: 58px; line-height: 1.06; color: var(--ink); }
+.news .ln { height: 12px; margin-top: 14px; background: rgba(20, 18, 16, .16); }
+.news .ln.s { width: 62%; }
+
+/* письмо сотрудникам */
+.letter { box-sizing: border-box; padding: 30px 36px 34px; background: var(--grain), var(--paper-hi); }
+.letter .to { font-family: PTMono; font-size: 24px; color: var(--dim); margin: 16px 0 18px; }
+.letter .ln { height: 11px; margin-top: 15px; background: rgba(20, 18, 16, .15); }
+.letter .ln.s { width: 55%; }
+.letter .key { position: relative; margin-top: 20px; font-family: PTSerif; font-weight: 700; font-size: 64px; line-height: 1.1; color: var(--ink); }
+.letter .key .hl { left: -8px; top: 4px; bottom: -2px; width: calc(100% + 16px); height: auto; }
+
+/* огромная надпись мелом / краской (вне ransom) */
+.big { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .9; letter-spacing: -1px; white-space: nowrap; }
+
+/* счётчик романов: бумажная плашка, цифра меняется */
+.count { box-sizing: border-box; padding: 18px 30px 14px; display: flex; align-items: center; gap: 24px; background: var(--grain), var(--paper-hi); }
+.count .lb { font-family: PTMono; font-size: 30px; letter-spacing: 3px; text-transform: uppercase; color: var(--navy); }
+.count .n { position: relative; width: 120px; height: 150px; font-family: Oswald; font-weight: 700; font-size: 170px; line-height: 150px; text-align: center; color: var(--terra-dk); }
+.count .n b { position: absolute; inset: 0; background: var(--grain), var(--paper-hi); }
+
+/* шкала лет */
+.years { position: absolute; height: 22px; border-radius: 11px; background: rgba(20, 18, 16, .14); }
+.years .f { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 11px; background: var(--grain), var(--navy); }
+.yr { position: absolute; font-family: Oswald; font-weight: 700; font-size: 54px; line-height: 1; color: var(--navy); }
+
+/* заказ: бумажный бланк с годом */
+.order { box-sizing: border-box; width: 300px; padding: 18px 22px; background: var(--grain), var(--paper-hi); }
+.order .hd { font-family: PTMono; font-size: 22px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); }
+.order .y { font-family: Oswald; font-weight: 700; font-size: 96px; line-height: 1; color: var(--navy); }
+.order .ln { height: 10px; margin-top: 10px; background: rgba(20, 18, 16, .15); }
+
+/* гонка: полосы с логотипами */
+.lane { position: absolute; height: 92px; display: flex; align-items: center; }
+.lane .bar2 { height: 74px; border-radius: 6px; background: var(--grain), var(--paper-hi); transform-origin: 0 50%; box-shadow: 0 10px 10px rgba(20, 15, 10, .3); }
+.lane img { position: absolute; left: 18px; height: 44px; }
+
+/* ценник на верёвочке */
+.tag { position: absolute; box-sizing: border-box; padding: 22px 30px 18px 56px; background: var(--grain), var(--mustard);
+       clip-path: polygon(34px 0, 100% 0, 100% 100%, 34px 100%, 0 50%); font-family: Oswald; font-weight: 700; color: var(--navy); line-height: 1; }
+.tag::before { content: ''; position: absolute; left: 24px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; background: var(--navy); }
+
+/* сервер (дата-центр) из бумажных полос */
+.rack { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: var(--grain), var(--ink); border-radius: 8px; }
+.rack i { display: block; height: 22px; border-radius: 3px; background: var(--grain), #5D646C; position: relative; }
+.rack i::after { content: ''; position: absolute; right: 10px; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--olive); }
+
+/* закладка «Сохранено» */
+.bookmark { width: 300px; height: 400px; background: var(--grain), var(--navy); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%); }
+.saved { padding: 14px 30px 10px; font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1; letter-spacing: 1px; text-transform: uppercase; color: var(--navy); }
+.heart { width: 230px; height: 210px; background: var(--grain), var(--terra);
+         clip-path: path('M115 207 C 44 154, 0 110, 0 62 A 57 57 0 0 1 115 40 A 57 57 0 0 1 230 62 C 230 110, 186 154, 115 207 Z'); }
+.chan { width: 600px; box-sizing: border-box; padding: 18px 24px; display: flex; align-items: center; gap: 22px; }
+.chan img { width: 126px; height: 126px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 4px var(--navy); flex: none; }
+.chan b { display: block; font-family: Oswald; font-weight: 700; font-size: 64px; line-height: .95; color: var(--navy); text-transform: uppercase; white-space: nowrap; }
+.chan small { display: block; margin-top: 8px; font-family: PTMono; font-size: 26px; color: var(--dim); }
+.follow { padding: 16px 30px 12px; font-family: Oswald; font-weight: 600; font-size: 56px; color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+
+/* крест маркером поверх лица / предмета */
+.xout path { fill: none; stroke: var(--terra-dk); stroke-width: 16; stroke-linecap: round; }
+/* мел-текст по картону */
+.chalkt { font-family: Caveat; font-weight: 700; color: var(--paper-hi); line-height: 1; opacity: .95; }
+
+/* предмет едет по шкале на --tx */
+.along2 { animation: along2 var(--dd, 1s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+@keyframes along2 { from { transform: translateX(0); } to { transform: translateX(var(--tx, 0)); } }
+
+/* ── правки по stills 2026-11-14 ── */
+/* обёртки-группы (уходят/падают/бледнеют целиком) — на всю сцену: иначе у вложенных .abs ширина 0 и текст встаёт столбиком */
+.grp { position: absolute; left: 0; top: 0; width: 780px; height: 1180px; }
+.chalkt, .hand { white-space: nowrap; }
+/* уведомление до своего слова не видно (в демо оно стояло у верха кадра и пряталось за краем) */
+@keyframes notif { from { transform: translateY(-200px) rotate(var(--r, 0deg)); opacity: 0; } 35% { opacity: 1; }
+                   to { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+/* огонёк по линии — только после старта */
+.pulse { opacity: 0; }
+/* группа уходит вверх и гаснет (вместо улёта за край кадра — safezone смотрит конец сцены) */
+.away { animation: away .4s cubic-bezier(.5, 0, .8, .6) var(--d, 99s) both; }
+@keyframes away { from { transform: none; opacity: 1; } to { transform: translateY(var(--ay, -240px)) rotate(var(--ar, -4deg)); opacity: 0; } }
+.lane { width: 740px; }
+.lane .bar2 { flex: none; }
+.grid60.lt i { width: 46px; height: 46px; background: var(--grain), rgba(251, 248, 239, .85); }
+/* крупный штамп влетает с ×1,5, а не ×2,4: на ×2,4 он шире кадра и уходит под кнопки площадки */
+.stamp.soft { animation-name: slam2; }
+@keyframes slam2 { 0% { transform: rotate(var(--r, -12deg)) scale(1.5); opacity: 0; }
+                   60% { opacity: .95; } 100% { transform: rotate(var(--r, -12deg)) scale(1); opacity: .92; } }
