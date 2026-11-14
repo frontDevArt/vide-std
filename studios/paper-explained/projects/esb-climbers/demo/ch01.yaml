@@ -1,0 +1,28 @@
+# Демо стиля 10–15 с (channel/STYLE.md §14): `python -m studio demo <проект>` → projects/<slug>-demo/.
+# Это заготовка: замените на главную метафору ролика + 1–2 новых элемента + один вердикт.
+# Новые элементы — шаблоны в projects/<slug>/templates/*.py (копируются в демо).
+# Настроение и overrides берутся из project.yaml → style; подсветку главы можно задать здесь: glow: ember
+chapter: ch01
+title: "style demo"
+scenes:
+  - id: s01
+    template: lab_chapter
+    lines: ["Chapter one. | The claim."]
+    min_duration: 3
+    params: {number: 1, total: 3, title: "The claim", subtitle: "style demo"}
+  - id: s02
+    template: lab_versus
+    lines: ["People say | it takes three weeks to build a habit.", "One careful study | found it takes much longer."]
+    params:
+      chrome: {rubric: "Myth on Trial", number: "№ 01", steps: [CLAIM, EVIDENCE, VERDICT], step: 2}
+      left: {title: "They say", items: [{text: "21 days to build a habit", at: "three"}]}
+      right: {title: "Studies found", items: [{text: "Median 66 days (Lally et al., 2010)", at: "found"}]}
+  - id: s03
+    template: lab_full_number
+    lines: ["Sixty-six days, on average. | The verdict: myth."]
+    params:
+      value: 66
+      caption: "median days"
+      sub: "Lally et al., 2010"
+      at: "sixty-six"
+      verdict: {verdict: MYTH, sub: "21 days → median *66*", at: "myth"}

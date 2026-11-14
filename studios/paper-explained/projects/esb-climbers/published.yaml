@@ -1,0 +1,22 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7707948278129724692
+  date: 2026-11-14 13:17
+  version: null
+  file: esb-climbers.mp4
+  sha1: 0445c29372aa
+  duration: 93.73
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+- out: null
+  platform: instagram-reels
+  url: https://www.instagram.com/p/Dft4MwfPBhS/
+  date: 2026-11-14 13:27
+  version: null
+  file: esb-climbers.mp4
+  sha1: 0445c29372aa
+  duration: 93.73
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'

@@ -1,0 +1,28 @@
+<!-- s03 — кремовый (история, механизм). «Вот как они туда попали.» «Шаг первый: | купили билеты | и остались в здании |
+     на ночь.»
+     С кадра 0 — небоскрёб в разрезе целиком (камера-экскурсия data-tour), шкала шагов крупно у низа; «шаг» — шкала
+     уезжает в угол, камера едет к входу; «билеты» — бумажный билет на смотровую; «здании» — камера к 86-му этажу,
+     точка «они здесь»; «ночь» — лист темнеет, луна. -->
+<div data-backdrop class="sheetbg still" style="--c: var(--paper)"></div>
+<div class="stage">
+  <div class="scene">
+    <!--@scraps-->
+    <div class="esbwin">
+    <div class="tour" data-view="390 560" data-tour='[[0, 390, 1000, 0.56], ["первый:-0.1", 390, 1560, 1.0, 0.7], ["здании:-0.2", 390, 640, 1.25, 0.8]]'>
+      <!--@esb-->
+      <div class="abs pop" style="left: 360px; top: 590px; width: 60px; height: 60px; border-radius: 50%; background: var(--terra); box-shadow: 0 0 0 10px rgba(196, 101, 87, .3)" data-at="здании:0.4"></div>
+      <div class="abs hand appear" style="left: 70px; top: 570px; font-size: 56px; --r: -4deg" data-at="здании:0.5">они здесь →</div>
+    </div>
+    </div>
+    <div data-backdrop class="night appear" style="left: -200px; top: -400px; width: 1180px; height: 2000px" data-at="ночь:-0.15"></div>
+    <div class="moon pop" style="left: 520px; top: 90px; width: 150px; height: 150px" data-at="ночь:-0.05"></div>
+    <div class="abs shadow pop" style="left: 40px; top: 760px; --r: -6deg" data-at="билеты:-0.15">
+      <div class="doc" data-torn="lr" data-depth="7" style="width: 460px; padding: 20px 26px 22px; background: var(--grain), var(--mustard)">
+        <div class="dh">Admit one · билет</div><div class="dt" style="font-size: 48px">Смотровая, 86 этаж</div><div class="dh" style="margin-top: 10px">30 июня 2026</div>
+      </div>
+    </div>
+    <div class="abs dock" style="left: 20px; top: 20px; --fx: 210px; --fy: 860px; --fs: 2.2" data-at="сначала:-0.1">
+      <div class="steps appear" data-at="вот:0.1"><i>1<u class="pop" data-at="сначала:-0.05" data-sfx="flick">1</u></i><b>→</b><i>2</i><b>→</b><i>3</i></div>
+    </div>
+  </div>
+</div>

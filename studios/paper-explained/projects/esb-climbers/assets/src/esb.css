@@ -1,0 +1,129 @@
+/* ── esb-climbers (2026-11-14): формы ролика поверх live.css / extra.css ── */
+
+/* небоскрёб в разрезе (build.py <!--@esb-->): тёмно-синий картон по кремовой бумаге, метки этажей мелом-краской */
+.esb { position: absolute; left: 0; top: 0; overflow: visible; }
+.esb-body { fill: var(--navy); }
+.esb-win { stroke: rgba(251, 248, 239, .16); stroke-width: 6; }
+.esb-mast { fill: var(--navy); }
+.esb-plat { fill: var(--navy); }
+.esb-lamp { fill: var(--terra); }
+.esb-ground { stroke: var(--navy); stroke-width: 6; }
+.esb-tick { stroke: var(--terra-dk); stroke-width: 5; stroke-dasharray: 10 8; }
+.esb-n { font-family: Oswald; font-weight: 700; font-size: 44px; fill: var(--terra-dk); }
+.esb-t { font-family: PTMono; font-size: 22px; fill: var(--navy); }
+.tour { position: absolute; left: 0; top: 0; width: 780px; height: 2000px; transform-origin: 0 0; }
+/* окно камеры над разрезом: левее колонки кнопок площадки и выше полосы описания (safezone) */
+.esbwin { position: absolute; left: 0; top: 0; width: 780px; height: 1180px; clip-path: inset(0 40px 40px 0); }
+
+/* бумажный пост Instagram (build.py <!--@ig ФОТО ПОДПИСЬ-->) */
+.igpost { box-sizing: border-box; padding: 14px 14px 16px; background: var(--grain), var(--paper-hi); }
+.ighd { display: flex; align-items: center; gap: 14px; padding: 0 4px 12px; }
+.iga { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--paper-hi), 0 0 0 6px #C13584; }
+.ighd b { flex: 1; font-family: PTMono; font-weight: 400; font-size: 28px; color: var(--ink); }
+.igl { width: 46px; height: 46px; }
+.igph { position: relative; overflow: hidden; }
+.igph img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.8) contrast(1.04); }
+.igph::after { content: ''; position: absolute; inset: 0; background: var(--grain); mix-blend-mode: multiply; opacity: .8; }
+.igft { display: flex; align-items: center; gap: 16px; padding: 14px 6px 0; }
+.ighe { font-size: 50px; line-height: 1; color: var(--terra); }
+.igc { font-family: PTSerif; font-size: 30px; line-height: 1.15; color: var(--ink); }
+
+/* фото-отпечаток: настоящее фото с рваным краем и бумажной тенью */
+.print { position: absolute; overflow: hidden; background: var(--paper-hi); }
+.print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.82) contrast(1.05); }
+.print::after { content: ''; position: absolute; inset: 0; background: var(--grain); mix-blend-mode: multiply; opacity: .8; }
+
+/* видео покадровой лентой (common.js .flip): кадры стопкой */
+.flip { position: relative; overflow: hidden; background: #111; }
+.flip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* бумажный телевизор вокруг видео: толстая картонная рамка, плашка «REC» */
+.tv { position: absolute; box-sizing: border-box; padding: 22px; background: var(--grain), var(--navy); border-radius: 18px; }
+.tv .rec { position: absolute; left: 40px; top: 40px; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 6px 14px 3px;
+           font-family: PTMono; font-size: 24px; color: var(--paper-hi); background: rgba(20, 18, 16, .55); }
+.tv .rec i { width: 16px; height: 16px; border-radius: 50%; background: #D7402F; }
+.tv .src2 { position: absolute; right: 40px; bottom: 36px; z-index: 2; padding: 6px 14px 3px; font-family: Oswald; font-weight: 700;
+            font-size: 30px; letter-spacing: 2px; color: var(--paper-hi); background: rgba(48, 53, 60, .85); }
+
+/* бирка статьи: бумажный ярлык «статья → срок» */
+.charge { position: absolute; box-sizing: border-box; width: 680px; padding: 18px 26px 16px 70px; background: var(--grain), var(--paper-hi);
+          clip-path: polygon(46px 0, 100% 0, 100% 100%, 46px 100%, 0 50%); display: flex; align-items: center; justify-content: space-between; }
+.charge::before { content: ''; position: absolute; left: 30px; top: 50%; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%; background: var(--terra-dk); }
+.charge b { font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; text-transform: uppercase; color: var(--ink); }
+.charge span { font-family: PTMono; font-size: 24px; color: var(--dim); }
+
+/* бланк сделки / документ */
+.doc { box-sizing: border-box; padding: 28px 34px 30px; background: var(--grain), var(--paper-hi); }
+.doc .dh { font-family: PTMono; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; color: var(--dim); }
+.doc .dt { margin-top: 10px; font-family: PTSerif; font-weight: 700; font-size: 54px; line-height: 1.08; color: var(--ink); }
+.doc .row { display: flex; align-items: center; gap: 18px; margin-top: 20px; font-family: Caveat; font-weight: 700; font-size: 56px; line-height: 1; color: var(--navy); white-space: nowrap; }
+.doc .row i { font-style: normal; font-family: Oswald; font-size: 44px; color: var(--terra-dk); }
+.doc .ln { height: 11px; margin-top: 15px; background: rgba(20, 18, 16, .14); }
+.doc .ln.s { width: 58%; }
+.doc .sig { margin-top: 26px; display: flex; gap: 40px; font-family: PTMono; font-size: 22px; color: var(--dim); }
+.doc .sig span { flex: 1; border-top: 3px solid rgba(20, 18, 16, .4); padding-top: 6px; }
+/* лист рвётся пополам: две половины разлетаются (.tearL / .tearR) */
+.halfL, .halfR { position: absolute; inset: 0; }
+.halfL { clip-path: polygon(0 0, 52% 0, 47% 14%, 54% 30%, 46% 46%, 53% 62%, 47% 78%, 52% 100%, 0 100%); }
+.halfR { clip-path: polygon(52% 0, 100% 0, 100% 100%, 52% 100%, 47% 78%, 53% 62%, 46% 46%, 54% 30%, 47% 14%); }
+.tearL { animation: tearL .5s cubic-bezier(.3, .6, .3, 1) var(--d, 99s) both; }
+.tearR { animation: tearR .5s cubic-bezier(.3, .6, .3, 1) var(--d, 99s) both; }
+@keyframes tearL { from { transform: none; } to { transform: translate(-70px, 40px) rotate(-9deg); } }
+@keyframes tearR { from { transform: none; } to { transform: translate(24px, 60px) rotate(6deg); } }
+
+/* паспорт и виза */
+.pass { box-sizing: border-box; width: 360px; height: 500px; padding: 40px 30px; border-radius: 14px; background: var(--grain), #7A2E2A;
+        display: flex; flex-direction: column; align-items: center; justify-content: space-between; color: #E8C98A; text-align: center; }
+.pass b { font-family: PTSerif; font-weight: 700; font-size: 34px; letter-spacing: 3px; }
+.pass .emb { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #E8C98A; opacity: .8; }
+.pass small { font-family: PTMono; font-size: 22px; letter-spacing: 4px; }
+.visa { box-sizing: border-box; width: 520px; padding: 22px 26px 24px; background: var(--grain), #E7EEF0; border: 4px solid var(--blue); }
+.visa .vh { display: flex; justify-content: space-between; font-family: PTMono; font-size: 24px; letter-spacing: 3px; color: var(--blue); }
+.visa .vt { margin-top: 12px; font-family: Oswald; font-weight: 700; font-size: 58px; line-height: 1; color: var(--navy); text-transform: uppercase; }
+.visa .vs { margin-top: 8px; font-family: PTSerif; font-size: 30px; color: var(--navy); }
+.visa .ln { height: 10px; margin-top: 14px; background: rgba(48, 53, 60, .16); }
+.visa .ln.s { width: 60%; }
+
+/* маршрут самолёта мелом по карте */
+.city { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.city i { width: 30px; height: 30px; border-radius: 50%; background: var(--paper-hi); box-shadow: 0 0 0 8px rgba(251, 248, 239, .25); }
+.city b { font-family: Oswald; font-weight: 700; font-size: 52px; color: var(--paper-hi); text-transform: uppercase; white-space: nowrap; }
+
+/* отрывной календарь */
+.cal { box-sizing: border-box; width: 360px; background: var(--grain), var(--paper-hi); text-align: center; padding-bottom: 20px; }
+.cal .ch { padding: 16px 0 10px; font-family: Oswald; font-weight: 700; font-size: 44px; letter-spacing: 3px; color: var(--paper-hi); background: var(--grain), var(--terra-dk); text-transform: uppercase; }
+.cal .cd { font-family: Oswald; font-weight: 700; font-size: 230px; line-height: 1; color: var(--navy); margin-top: 10px; }
+.cal .cy { font-family: PTMono; font-size: 30px; color: var(--dim); }
+
+/* весы «искусство / преступление» */
+.beam { position: absolute; height: 18px; border-radius: 9px; background: var(--grain), var(--paper-hi); transform-origin: 50% 50%;
+        animation: tilt 2.4s ease-in-out var(--d, 0s) infinite alternate both; }
+@keyframes tilt { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+.pan2 { position: absolute; display: flex; flex-direction: column; align-items: center; }
+.pan2 .ch2 { width: 4px; height: 120px; background: var(--paper-hi); }
+.pan2 .bw { width: 300px; height: 90px; border-radius: 0 0 150px 150px; background: var(--grain), var(--paper-hi); }
+.pan2 b { margin-top: 18px; padding: 10px 20px 6px; font-family: Oswald; font-weight: 700; font-size: 52px; text-transform: uppercase; line-height: 1;
+          background: var(--grain), var(--paper-hi); color: var(--navy); white-space: nowrap; }
+.swingL { animation: swingL 2.4s ease-in-out var(--d, 0s) infinite alternate both; }
+.swingR { animation: swingR 2.4s ease-in-out var(--d, 0s) infinite alternate both; }
+@keyframes swingL { from { transform: translateY(-32px); } to { transform: translateY(32px); } }
+@keyframes swingR { from { transform: translateY(32px); } to { transform: translateY(-32px); } }
+
+/* наручники из бумаги (SVG) и луна */
+.cuffs path, .cuffs circle { fill: none; stroke: var(--navy); stroke-width: 14; }
+.moon { position: absolute; border-radius: 50%; background: var(--grain), var(--mustard); box-shadow: 0 0 0 16px rgba(224, 195, 119, .18); }
+.night { position: absolute; background: rgba(28, 32, 44, .62); mix-blend-mode: multiply; }
+
+/* счётчик подписчиков */
+.subs { box-sizing: border-box; display: flex; align-items: center; gap: 22px; padding: 20px 28px 16px; background: var(--grain), var(--paper-hi); }
+.subs img { width: 86px; height: 86px; }
+.subs b { font-family: Oswald; font-weight: 700; font-size: 110px; line-height: .9; color: var(--ink); }
+.subs small { display: block; font-family: PTMono; font-size: 26px; color: var(--dim); }
+.nflx { box-sizing: border-box; padding: 18px 26px 14px; background: var(--grain), #141210; display: flex; align-items: center; gap: 20px; }
+.nflx img { width: 70px; height: 70px; }
+.nflx b { font-family: Oswald; font-weight: 700; font-size: 44px; color: var(--paper-hi); text-transform: uppercase; line-height: 1; }
+.nflx small { display: block; font-family: PTSerif; font-style: italic; font-size: 28px; color: var(--tan); margin-top: 4px; }
+
+/* правки по stills 2026-11-14: газетные буквы и штампы не переносятся */
+.ransom { width: max-content; flex-wrap: nowrap; }
+.stamp { white-space: nowrap; }
+.charge b { font-size: 42px; }

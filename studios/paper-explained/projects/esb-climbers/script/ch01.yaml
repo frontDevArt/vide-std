@@ -1,0 +1,118 @@
+# «Обручились на шпиле — теперь им грозит тюрьма». «Живая бумага». Факты — outline.md (на 14.11.2026).
+# Акты = листы: история — кремовый (s01–s08); суд — терракотовый (s09–s11); «почему страшнее тюрьмы» — тёмно-синий
+# картон (s12–s14); что дальше — приглушённый синий (s15–s16); призыв — кремовый (s17).
+# Картинка меняется на каждом бите `|`. Пара — их настоящие кадры (Instagram), задержание — бодикам NYPD.
+chapter: ch01
+title: "Обручились на шпиле — теперь им грозит тюрьма"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Они обручились | на шпиле | Empire State Building."
+      - "А теперь им грозит | тюрьма."
+    params: {file: assets/s01-hook.html, fade: false}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Это Ангела Николау | и Иван Кузнецов, | руферы из Москвы."
+      - "Про них снял фильм Netflix, | а у Ангелы | больше четырёх миллионов подписчиков."
+    params: {file: assets/s02-who.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Вот как они туда попали."
+      - "Сначала | купили билеты | и остались в здании | на ночь."
+    params: {file: assets/s03-night.html, fade: false}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Потом, | в пять утра, | открыли люк | на сто втором этаже."
+    params: {file: assets/s04-hatch.html, fade: false}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "И наконец | сломали замок | на сто четвёртом | и вышли на антенну."
+      - "Это четыреста сорок три метра."
+    params: {file: assets/s05-lock.html, fade: false}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Наверху развернули флаг | о любви и мире."
+      - "А на спуске | Иван встал на колено."
+    params: {file: assets/s06-ring.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Ангела снимала всё | и выкладывала | прямо оттуда."
+    params: {file: assets/s07-live.html, fade: false}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "За ними на шпиль | полез спецотряд полиции."
+      - "Внизу их задержали."
+    params: {file: assets/s08-bodycam.html, fade: false}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Им вменяют три тяжкие статьи: | кража со взломом, | угроза жизни | и порча имущества."
+      - "По каждой | до семи лет."
+    params: {file: assets/s09-charges.html, fade: false}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "Всё лето адвокат | договаривался о сделке: | признать мелкие проступки | и отделаться общественными работами."
+    params: {file: assets/s10-deal.html, fade: false}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Но двенадцатого ноября, | по словам адвоката, | сделку отозвали."
+      - "Прокуратура говорит, | что её и не было."
+    params: {file: assets/s11-withdrawn.html, fade: false}
+
+  - id: s12
+    template: paper_page
+    lines:
+      - "Теперь главное: | почему это страшнее тюрьмы."
+      - "Они живут в США | по визе | для талантливых людей."
+    params: {file: assets/s12-visa.html, fade: false}
+
+  - id: s13
+    template: paper_page
+    lines:
+      - "Осудят по тяжкой статье — | визу могут отнять, | а их выслать | в Россию."
+    params: {file: assets/s13-deport.html, fade: false}
+
+  - id: s14
+    template: paper_page
+    lines:
+      - "А там, | говорит адвокат, | Ивана почти наверняка | отправят на войну."
+    params: {file: assets/s14-war.html, fade: false}
+
+  - id: s15
+    template: paper_page
+    lines:
+      - "Следующий суд | двадцать восьмого января."
+      - "Сами они говорят: | это было искусство, | и за него | они готовы умереть."
+    params: {file: assets/s15-court.html, fade: false}
+
+  - id: s16
+    template: paper_page
+    lines:
+      - "А вы как думаете: | искусство | или преступление?"
+    params: {file: assets/s16-ask.html, fade: false}
+
+  - id: s17
+    template: paper_page
+    lines:
+      - "Если было полезно, | поставьте лайк | и подпишитесь."
+    params: {file: assets/s17-sub.html, fade: false}

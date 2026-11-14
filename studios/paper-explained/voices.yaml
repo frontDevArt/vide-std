@@ -4,10 +4,10 @@ measured:
 - language: ru
   backend: elevenlabs
   voice: 848d5c1805bc
-  wpm: 152.4
+  wpm: 165.3
   rate: 110.0
-  words: 200
-  project: nvidia-huang
+  words: 218
+  project: esb-climbers
   date: '2026-11-14'
 - language: ru
   backend: piper
