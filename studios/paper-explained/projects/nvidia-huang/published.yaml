@@ -10,3 +10,13 @@
   duration: 94.63
   forced:
   - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+- out: null
+  platform: instagram-reels
+  url: https://www.instagram.com/p/Dft5vUuvKfc/
+  date: 2026-11-14 13:39
+  version: null
+  file: nvidia-huang.instagram.mp4
+  sha1: 289e21e3047f
+  duration: 94.67
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
