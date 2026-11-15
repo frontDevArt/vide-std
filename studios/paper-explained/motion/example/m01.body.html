@@ -1,0 +1,24 @@
+<!-- m01 — приём «предмет-герой». «В июле шестьдесят девятого | человек впервые шагнул на Луну.»
+     Кадр 0 — Луна в центре (canvas, moon.js). «июле» — пилюля на ножке «июль 1969» у края диска; «шагнул» — след
+     ботинка в центре Луны, кольцо маркера и пилюля «первый шаг человека». Последние 0,6 с — Луна раскрывается на
+     весь кадр (следующая сцена начинается с того же кадра — мы «на Луне»), пометки улетают навстречу (.dive2).
+     --ps: 1 — сцена не едет сама: пометки привязаны к Луне на canvas. -->
+<canvas class="world" data-backdrop data-mode="moon"></canvas>
+<div class="grade" data-backdrop></div>
+<div class="stage">
+  <div class="scene" style="--ps: 1"><div class="dive2" style="--ox: 360px; --oy: 580px">
+    <div class="tag over" style="left: 96px; top: 128px; --st: 80px; --sx: 52px" data-at="июле:-0.1"><i></i><b>июль 1969</b></div>
+    <svg class="boot zin" style="left: 305px; top: 470px; width: 110px; height: 220px; --r: -14deg; --d: 99s" data-at="шагнул:-0.05" data-sfx="thud" viewBox="0 0 110 220">
+      <rect x="0" y="0" width="110" height="152" rx="50"/><rect x="14" y="164" width="82" height="56" rx="28"/>
+      <rect class="tr" x="18" y="24" width="74" height="7" rx="3.5"/><rect class="tr" x="14" y="44" width="82" height="7" rx="3.5"/>
+      <rect class="tr" x="12" y="64" width="86" height="7" rx="3.5"/><rect class="tr" x="12" y="84" width="86" height="7" rx="3.5"/>
+      <rect class="tr" x="14" y="104" width="82" height="7" rx="3.5"/><rect class="tr" x="20" y="124" width="70" height="7" rx="3.5"/>
+      <rect class="tr" x="24" y="178" width="62" height="7" rx="3.5"/><rect class="tr" x="24" y="196" width="62" height="7" rx="3.5"/>
+    </svg>
+    <svg class="ink" width="720" height="1100" viewBox="0 0 720 1100">
+      <circle class="draw o" cx="360" cy="580" r="160" pathLength="1" stroke-width="6" transform="rotate(-100 360 580)" style="--dd: .35s; --d: 99s" data-at="шагнул:0.12"/>
+    </svg>
+    <div class="tag" style="left: 172px; top: 696px; --st: 50px; --sx: 300px" data-at="шагнул:0.35"><i></i><b>первый шаг человека</b></div>
+    <i class="abs appear" style="--d: calc(var(--dur) - .6s)" data-sfx="whoosh"></i>
+  </div></div>
+</div>

@@ -1,0 +1,31 @@
+<!-- m02 — приём «оригинал + перевод с общим маркером». «И сказал: маленький шаг для человека, | огромный скачок для
+     человечества.» Сцена начинается с лунного кадра, которым кончилась m01. Сверху — карточка оригинала (запись NASA,
+     английский), от неё пунктир-связь к плашке «перевод», ниже крупно русский текст. У каждой пары фраз одно data-at:
+     маркер идёт в оригинале и в переводе сразу, в такт голосу. На «человека» / «человечества» — кольцо на слове
+     оригинала и пилюля-пояснение на ножке под русским словом. Подписей сверху нет (.nocaps): их роль играет перевод.
+     Вход карточки — из глубины (.zup): .zin с его 1,8 вылезал за левый край безопасной зоны на кадре 0,12 с.
+     Конец — всё уходит вглубь (.outz): следующая сцена отъезжает из экрана телевизора. -->
+<canvas class="world" data-backdrop data-mode="surface" data-s0="1" data-s1="1.03"></canvas>
+<div class="grade" data-backdrop></div>
+<div class="stage nocaps">
+  <div class="scene"><div class="outz">
+    <div class="orig zup" style="left: 6px; top: -170px; width: 708px; --d: .05s">
+      <div class="hd"><i></i>Apollo 11 · запись NASA · 21.07.1969</div>
+      <div class="tx">That's <span class="mk" data-at="маленький:-0.05">one small step</span> <span class="mk" data-at="для:-0.05">for <span class="rw">man<svg viewBox="0 0 100 50" preserveAspectRatio="none"><ellipse class="draw" cx="50" cy="25" rx="49" ry="24" pathLength="1" style="--dd: .3s; --d: 99s" data-at="человека:0.2" data-sfx="none"/></svg></span>,</span><br><span class="mk" data-at="огромный:-0.05">one giant leap</span> <span class="mk" data-at="человечества:-0.3">for <span class="rw">mankind<svg viewBox="0 0 100 50" preserveAspectRatio="none"><ellipse class="draw" cx="50" cy="25" rx="49" ry="24" pathLength="1" style="--dd: .3s; --d: 99s" data-at="человечества:0.25" data-sfx="none"/></svg></span>.</span></div>
+    </div>
+    <div class="node" style="left: 60px; top: 62px; --d: .45s"></div>
+    <svg class="ink" width="720" height="1100" viewBox="0 0 720 1100">
+      <defs><mask id="cm" maskUnits="userSpaceOnUse" x="0" y="0" width="720" height="1100">
+        <path class="draw" d="M60 66 V 150" pathLength="1" stroke="#fff" stroke-width="22" style="--dd: .25s; --d: .5s" data-sfx="none"/></mask></defs>
+      <path class="dotted" d="M60 66 V 150" mask="url(#cm)"/>
+    </svg>
+    <div class="abs fadein" style="left: 0; top: 0; width: 720px; height: 960px; --d: .3s">
+      <div class="glass2" style="left: 0; top: 172px; width: 716px; height: 770px"></div>
+      <div class="ru" style="left: 30px; top: 228px"><span class="mk" data-at="маленький:-0.05" data-sfx="marker">Маленький шаг</span><br><span class="mk" data-at="для:-0.05" data-sfx="marker">для человека</span></div>
+      <div class="tag" style="left: 298px; top: 412px; --st: 42px; --fs: 48px" data-at="человека:0.2"><i></i><b>один астронавт</b></div>
+      <div class="ru" style="left: 30px; top: 602px"><span class="mk" data-at="огромный:-0.05" data-sfx="marker">огромный скачок</span><br><span class="mk" data-at="человечества:-0.3" data-sfx="marker">для человечества</span></div>
+      <div class="tag" style="left: 213px; top: 786px; --st: 42px; --sx: 200px; --fs: 48px" data-at="человечества:0.25"><i></i><b>все люди Земли</b></div>
+    </div>
+    <div class="lab" style="left: 26px; top: 152px; animation: pillIn .24s cubic-bezier(.2, 1.4, .4, 1) .7s both; transform-origin: 34px 0">перевод</div>
+  </div></div>
+</div>

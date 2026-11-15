@@ -1,0 +1,111 @@
+/* ── Набор моушн-приёмов «На бумаге» (одобрено пользователем 2026-11-16). Шпаргалка с разметкой — README.md рядом.
+   Подключать в build.py ролика ПОСЛЕ common.css / live.css и ДО css мира ролика: мир перекрывает цвета набора
+   переменными --m-* (ниже). Вид у каждого ролика свой — набор задаёт только движение и форму приёма.
+   Время появления — data-at="слово[:сдвиг]" (common.js ставит --d). Имена классов набора заняты: .tag .tally .orig
+   .glass2 .lab .ru .mk .rw .dotted .node .plate .count .heart2 .plus .tap .subw .sub .zup .outz — в мире ролика
+   такие не заводить; новое имя сначала искать в common.css (там уже есть .up, .out, .draw, .pop…). ── */
+:root {
+  --m-text: #F4E7C8;                    /* текст на тёмном */
+  --m-accent: #FF8A3C;                  /* узлы, точки, плашка «перевод» */
+  --m-mark: rgba(255, 138, 60, .94);    /* маркер по тексту */
+  --m-ring: #E0531F;                    /* кольцо на слове оригинала */
+  --m-pill: rgba(8, 12, 28, .93);       /* пилюля, плашка счётчика */
+  --m-line: rgba(244, 231, 200, .38);   /* кромка пилюли */
+  --m-card: #F4EFE2; --m-card-ink: #17130C; --m-card-dim: #6B6455;   /* карточка оригинала */
+  --m-on-mark: #1A1206;                 /* текст поверх маркера и плашки */
+  --m-like: #FE2C55; --m-ok: #5CFF9A;   /* сердце и кнопка, галочка */
+}
+
+/* ── вход из глубины и уход вглубь (для стыков «влетели внутрь» / «отъезжаем наружу») ──
+   .zup вместо .zin для элементов во всю ширину: .zin стартует с 1,8 и на кадре 0,12 с вылезает за безопасную зону */
+.zup { animation: zup .5s cubic-bezier(.2, 1.1, .35, 1) var(--d, 0s) both; }
+@keyframes zup { 0% { transform: scale(.5); opacity: 0; filter: blur(14px); } 60% { opacity: 1; filter: blur(0); } 100% { transform: scale(1); opacity: 1; } }
+.outz { position: absolute; inset: 0; transform-origin: 360px 440px; animation: outz .3s cubic-bezier(.5, 0, .9, .5) calc(var(--dur) - .3s) both; }
+@keyframes outz { to { transform: scale(.5); opacity: 0; filter: blur(8px); } }
+.stage.nocaps .caps { display: none; }  /* сцена, где подписью работает сам текст в кадре (перевод) */
+
+/* ── приём: пилюля на ножке. Узел стоит на предмете, ножка растёт (0,16 с), пилюля выскакивает (0,24 с).
+   .tag — узел сверху, пилюля под ним; .tag.over — пилюля сверху, узел внизу.
+   --sx — где ножка под пилюлей (от её левого края), --st — длина ножки, --fs — кегль ── */
+.tag { position: absolute; display: flex; flex-direction: column; align-items: flex-start; z-index: 3; }
+.tag > i { position: relative; display: block; flex: none; width: 3px; height: var(--st, 46px); margin-left: var(--sx, 34px); background: var(--m-text);
+           transform-origin: 50% 0; animation: stem .16s ease-out var(--d, 99s) both; }
+.tag > i::before { content: ''; position: absolute; left: -6.5px; top: -9px; width: 16px; height: 16px; border-radius: 50%; background: var(--m-accent);
+                   box-shadow: 0 0 14px color-mix(in srgb, var(--m-accent) 95%, transparent); }
+@keyframes stem { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+.tag > b, .tally { display: block; padding: 11px 26px 9px 22px; border-radius: 44px; background: var(--m-pill); border: 2px solid var(--m-line);
+                   font-family: Oswald; font-weight: 600; font-size: var(--fs, 42px); line-height: 1.12; color: var(--m-text); white-space: nowrap; box-shadow: 0 14px 34px rgba(0, 0, 0, .55); }
+.tag > b::before, .tally::before { content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 13px; border-radius: 50%; background: var(--m-accent); vertical-align: 4px; }
+.tag > b { transform-origin: var(--sx, 34px) 0; animation: pillIn .24s cubic-bezier(.2, 1.4, .4, 1) calc(var(--d, 99s) + .12s) both; }
+@keyframes pillIn { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.tag.over { flex-direction: column-reverse; }
+.tag.over > i { transform-origin: 50% 100%; }
+.tag.over > i::before { top: auto; bottom: -9px; }
+.tag.over > b { transform-origin: var(--sx, 34px) 100%; }
+/* приём: счётчики столбиком — те же пилюли без ножки, одна под другой, каждая на своём слове */
+.tally { position: absolute; transform-origin: 0 50%; animation: tallyIn .3s cubic-bezier(.2, 1.3, .4, 1) var(--d, 99s) both; }
+@keyframes tallyIn { from { transform: translateX(-70px) scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ── приём: оригинал + перевод с общим маркером. .orig — карточка источника (.hd — откуда, .tx — текст),
+   .ru — крупный перевод (обычно на .glass2), .lab — плашка «перевод». Фразы обёрнуты в .mk; у пары фраз
+   (оригинал ↔ перевод) одно и то же data-at — маркер идёт в обеих сразу, 0,28 с на фразу ── */
+.orig { position: absolute; box-sizing: border-box; padding: 20px 28px 26px; border-radius: 22px; background: var(--m-card); color: var(--m-card-ink);
+        box-shadow: 0 26px 60px rgba(0, 0, 0, .6); }
+.orig .hd { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; font-family: PTMono; font-size: 21px; letter-spacing: 1.2px; text-transform: uppercase;
+            color: var(--m-card-dim); white-space: nowrap; }
+.orig .hd i { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--m-badge, radial-gradient(circle at 35% 32%, #E6E3DB 0 18%, #A9A69F 60%, #6F6D68 100%));
+              box-shadow: inset -6px -6px 10px rgba(0, 0, 0, .35); }  /* значок источника; --m-badge — свой фон (логотип, предмет-герой) */
+.orig .tx { font-family: PTSerif; font-size: 47px; line-height: 1.32; white-space: nowrap; }
+.glass2 { position: absolute; box-sizing: border-box; border-radius: 28px; background: rgba(8, 12, 28, .74); border: 2px solid rgba(244, 231, 200, .22);
+          box-shadow: 0 24px 60px rgba(0, 0, 0, .55); }
+.lab { position: absolute; padding: 7px 18px 5px 16px; border-radius: 30px; background: var(--m-accent); color: var(--m-on-mark); font-family: PTMono; font-size: 24px;
+       letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+.ru { position: absolute; font-family: Oswald; font-weight: 700; font-size: 78px; line-height: 1.1; letter-spacing: -1px; text-transform: uppercase; color: var(--m-text);
+      white-space: nowrap; }
+.mk { background-image: linear-gradient(90deg, var(--m-mark), var(--m-mark)); background-repeat: no-repeat; background-position: 0 56%; background-size: 0% 88%;
+      border-radius: 12px; padding: 0 .12em; margin: 0 -.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+      animation: mk var(--dd, .28s) linear var(--d, 99s) both; }
+@keyframes mk { to { background-size: 100% 88%; } }
+.ru .mk { animation: mk var(--dd, .28s) linear var(--d, 99s) both, mkc .16s linear calc(var(--d, 99s) + .08s) both; }
+@keyframes mkc { to { color: var(--m-on-mark); } }
+/* кольцо маркера вокруг слова в строке: <span class="rw">слово<svg …><ellipse class="draw" …/></svg></span> */
+.rw { position: relative; white-space: nowrap; }
+.rw > svg { position: absolute; left: -18%; top: -12%; width: 136%; height: 128%; overflow: visible; pointer-events: none; }
+.rw > svg ellipse { stroke: var(--m-ring); stroke-width: 5; vector-effect: non-scaling-stroke; }
+/* приём: пунктир-связь. Путь .dotted под маской с тем же путём класса .draw — «дорисовывается» точками; .node — узлы на концах */
+.dotted { fill: none; stroke: var(--m-text); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 0 16; }
+.node { position: absolute; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--m-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--m-accent) 95%, transparent);
+        animation: pillIn .2s cubic-bezier(.2, 1.4, .4, 1) var(--d, 99s) both; }
+
+/* ── приём: счётчик (motion.js, data-count) на плашке; «один → множество» под ним рисует мир ролика ── */
+.plate { position: absolute; box-sizing: border-box; padding: 16px 20px 20px; border-radius: 30px; background: rgba(5, 7, 15, .84); border: 2px solid rgba(244, 231, 200, .25);
+         box-shadow: 0 24px 60px rgba(0, 0, 0, .6); text-align: center; }
+.count { font-family: Oswald; font-weight: 700; font-size: 122px; line-height: 1.02; letter-spacing: -2px; color: var(--m-text); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.plate small { display: block; margin-top: 6px; font-family: PTMono; font-size: 34px; letter-spacing: 1px; color: var(--m-accent); white-space: nowrap; }
+
+/* ── приём: призыв действием. Касание .tap нажимает; сердце .heart2 заливается (.fl) со всплеском (.bu) и «+1» (.plus);
+   кнопка .subw: состояние .sub.a («Подписаться») сменяется на .sub.b («Вы подписаны») ── */
+.heart2 { position: absolute; overflow: visible; }
+.heart2 .ol { fill: rgba(5, 7, 15, .45); stroke: var(--m-text); stroke-width: 6; stroke-linejoin: round; }
+.heart2 .fl { fill: var(--m-like); transform-box: fill-box; transform-origin: 50% 60%; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--m-like) 85%, transparent));
+              animation: heartFill .42s cubic-bezier(.2, 1.6, .4, 1) var(--d, 99s) both; }
+@keyframes heartFill { 0% { transform: scale(0); opacity: 0; } 55% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.heart2 .bu { fill: none; stroke: var(--m-like); stroke-width: 5; transform-box: fill-box; transform-origin: 50% 50%; animation: burst .5s ease-out var(--d, 99s) both; }
+@keyframes burst { 0% { transform: scale(.5); opacity: 0; } 15% { opacity: .95; } 100% { transform: scale(1.75); opacity: 0; } }
+.plus { position: absolute; font-family: Oswald; font-weight: 700; font-size: 64px; color: #fff; text-shadow: 0 0 18px color-mix(in srgb, var(--m-like) 90%, transparent);
+        animation: plus .8s ease-out var(--d, 99s) both; }
+@keyframes plus { 0% { transform: translateY(20px) scale(.6); opacity: 0; } 25% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-70px) scale(1); opacity: 0; } }
+.tap { position: absolute; z-index: 4; width: 100px; height: 100px; margin: -50px 0 0 -50px; border-radius: 50%; background: rgba(255, 255, 255, .3);
+       border: 4px solid rgba(255, 255, 255, .9); box-shadow: 0 0 34px rgba(255, 255, 255, .45); animation: tap .72s cubic-bezier(.3, .7, .3, 1) var(--d, 99s) both; }
+/* нажатие — на 58 % (0,42 с от старта): data-at="слово:-0.42" ставит его на слово */
+@keyframes tap { 0% { transform: translate(80px, 130px) scale(1.25); opacity: 0; } 40% { transform: translate(0, 0) scale(1); opacity: 1; }
+                 58% { transform: translate(0, 0) scale(.7); opacity: 1; } 74% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(0, 0) scale(1.12); opacity: 0; } }
+.subw { position: absolute; height: 150px; }
+.sub { position: absolute; inset: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 75px;
+       font-family: Oswald; font-weight: 700; font-size: 76px; line-height: 1; white-space: nowrap; }
+.sub.a { background: var(--m-like); color: #fff; box-shadow: 0 0 44px color-mix(in srgb, var(--m-like) 55%, transparent); animation: subOut .2s ease-in var(--d, 99s) both; }
+.sub.b { background: var(--m-pill); color: var(--m-text); border: 3px solid color-mix(in srgb, var(--m-text) 60%, transparent); animation: subIn .34s cubic-bezier(.2, 1.5, .4, 1) calc(var(--d, 99s) + .1s) both; }
+@keyframes subOut { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(.92); opacity: 1; } 100% { transform: scale(.92); opacity: 0; } }
+@keyframes subIn { 0% { transform: scale(.9); opacity: 0; } 35% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.sub.b svg { width: 62px; height: 62px; margin-right: 18px; }
+.sub.b svg path { fill: none; stroke: var(--m-ok); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }

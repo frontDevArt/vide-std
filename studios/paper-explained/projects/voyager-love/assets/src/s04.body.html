@@ -1,0 +1,26 @@
+<!-- s04 — запуск и зачем пластинка (v2). «Его запустили почти полвека назад.» «А пластинку положили на борт | как
+     письмо инопланетянам — | пусть узнают, кто мы такие.»
+     Настоящий кадр запуска 5.09.1977 (NASA) на весь кадр, тёплое тонирование, наезд. «полвека» — фольгой «1977»,
+     «назад» — «ПОЧТИ 50 ЛЕТ НАЗАД»; «пластинку» — 1977 уходит вниз, обложка пластинки с гравировкой (NASA) влетает
+     кругом; «письмо» — рукой «Письмо инопланетянам»; «инопланетянам» — «КОМУ: ЛЮБОМУ, КТО НАЙДЁТ»; «узнают» — кольцо
+     вокруг обложки, толчок. -->
+<!--@bg real/launch.jpg 1.0 1.14 50% 30% warm-->
+<div class="grade" data-backdrop></div>
+<div class="fadein" data-backdrop style="position: fixed; inset: 0; z-index: -1; background: rgba(5, 7, 15, .62); --d: 99s" data-at="пластинку:-0.3"></div>
+<div class="leak" data-backdrop style="--lx0: -400px; --ly0: 600px; --lx1: 400px; --ly1: -100px"></div>
+<div class="stage">
+  <div class="scene"><div class="kick" style="--kx: 700px; --ky: 420px" data-at="узнают:-0.05"><div class="dive2" style="--ox: 380px; --oy: 400px">
+    <div class="kick" style="--kx: 700px; --ky: 640px" data-at="полвека:-0.05">
+      <div class="grp out" style="--oy2: 200px" data-at="пластинку:-0.25">
+        <div class="foil zin" style="left: 0; width: 720px; text-align: center; top: 560px; font-size: 300px; --d: 99s" data-at="полвека:-0.1">1977</div>
+        <div class="abs fadein" style="left: 0; width: 720px; text-align: center; top: 870px; --d: 99s" data-at="назад:-0.15"><span class="hd" style="position: static; display: inline-block; padding: 12px 30px 8px; border-radius: 20px; background: rgba(8, 12, 28, .85); border: 2px solid rgba(233, 185, 73, .6); font-size: 62px; color: var(--gold2)">почти 50 лет назад</span></div>
+      </div>
+    </div>
+    <div class="print zin" style="left: 90px; top: 90px; width: 540px; height: 540px; border-radius: 50%; --d: 99s" data-at="пластинку:-0.1">
+      <img src="real/cover.jpg" alt="" style="transform: scale(1.06)">
+    </div>
+    <div class="ring2 zin" style="left: 70px; top: 70px; width: 580px; height: 580px; --d: 99s" data-at="узнают:-0.1"></div>
+    <div class="hand whip" style="left: 0; width: 720px; text-align: center; top: 660px; font-size: 96px; line-height: 1.02; --wx: -120px; --d: 99s" data-at="письмо:-0.15">Письмо<br>инопланетянам</div>
+    <div class="hud fadein" style="left: 0; width: 720px; text-align: center; top: 880px; font-size: 38px; --d: 99s" data-at="инопланетянам:0">КОМУ: <b>ЛЮБОМУ, КТО НАЙДЁТ</b><i></i></div>
+  </div></div></div>
+</div>

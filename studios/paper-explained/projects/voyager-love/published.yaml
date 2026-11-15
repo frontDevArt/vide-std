@@ -1,0 +1,25 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7708430303244700949
+  date: 2026-11-15 20:10
+  version: null
+  file: voyager-love.mp4
+  sha1: 8b358bfb0122
+  duration: 88.97
+  note: v2 (для новичка), обложка-постер cover.py
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+- out: null
+  platform: instagram-reels
+  url: https://www.instagram.com/nabumage.tv/reel/DfxLFMIv6VW/
+  date: 2026-11-15 20:10
+  version: null
+  file: voyager-love.mp4
+  sha1: 8b358bfb0122
+  duration: 88.97
+  note: Instagram Reels, тот же MP4 и обложка
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+  - ссылка www.instagram.com — не TikTok

@@ -1,0 +1,7 @@
+# Источник и лицензия всего, что видно и слышно в демо (studio/assets.py). Картинок и фото нет: Луна, поверхность и
+# телевизоры нарисованы кодом (assets/src/moon.js). Фраза Армстронга — запись переговоров NASA, общественное достояние.
+assets:
+  - {file: assets/m01-moon.html, source: "страница сцены, код (assets/src/m01.body.html, moon.css, moon.js)", license: "своё; шрифты — OFL-1.1, brand/fonts/", by: Paper Explained}
+  - {file: assets/m02-words.html, source: "страница сцены, код (assets/src/m02.body.html); текст — фраза Нила Армстронга, запись NASA 1969", license: "своё; фраза — общественное достояние (NASA); шрифты — OFL-1.1", by: Paper Explained}
+  - {file: assets/m03-many.html, source: "страница сцены, код (assets/src/m03.body.html, moon.js)", license: "своё; шрифты — OFL-1.1, brand/fonts/", by: Paper Explained}
+  - {file: assets/m04-sub.html, source: "страница сцены, код (assets/src/m04.body.html); аватар канала brand/avatar/hand.png", license: "своё; шрифты — OFL-1.1, brand/fonts/", by: Paper Explained}

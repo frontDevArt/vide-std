@@ -1,0 +1,90 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+# Запрос пользователя 2026-11-15: эстетичная хайповая тема, которую пересылают друг другу (стратегия «эстетика под
+# тему», CLAUDE.md студии). Выбор пользователя — Voyager. Радар — ../../research/radar/2026-W46-aesthetic.md,
+# сверка фактов и мир ролика — outline.md. Повод — 18.11.2026 13:16 МСК; публиковать 17.11 вечером или 18.11 утром.
+schema_version: 1
+title: "Дальше всех от Земли летит запись влюблённой женщины"
+topic: "Voyager 1 18.11.2026 впервые окажется в световых сутках от Земли. На борту Золотая пластинка: приветствия на 55 языках и запись мозга и сердца Энн Друян, сделанная через два дня после того, как они с Карлом Саганом решили пожениться"
+audience: "Русскоязычные зрители Reels и TikTok, не только любители космоса. Вынести: что такое световые сутки, что летит на пластинке, историю любви на ней — и переслать своему человеку"
+kind: explainer           # длительность по речи
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null
+
+tts:
+  backend: elevenlabs     # голос студии Artspace; «да» пользователя на синтез — 2026-11-15 (черновик кадров был на fake)
+  voice: auto
+  rate: 106               # чуть медленнее канала (110): ролик тихий и лиричный
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # правила студии: 0,42 / 0,6 с; старт короче — крючок с первого кадра
+  start: 0.2
+  comma: 0.18
+  sentence: 0.45
+  scene: 0.6
+  end: 0.8
+
+style:
+  palette: calm           # перекрыто бренд-китом студии; вид ролика — «Золотая пластинка» (assets/src/gold.css)
+  font: Inter Display
+
+music:                    # пользователь 2026-11-15: ролики без музыки «голые»; канал — −18 LU (выбор на gta6)
+  enabled: true
+  file: assets/music/a-62d357e8-x89.mp3   # v2: тот же трек, удлинён кодом до 91 с — повтор 4 тактов (26,3–39,6 с);
+                                        # тихая часть сдвинута на 73 с, затихает к 88,8 с (ролик 88,9 с). Исходник — a-62d357e8.mp3
+  under_lu: -18
+  fade_out: 0.8
+  generate:               # один вариант: у ElevenLabs осталось ~6,4 тыс. символов на голос и музыку
+    model: music_v2_5
+    prompts:
+      a: >-
+        Instrumental dreamy ambient score for a romantic short film about a lonely space probe carrying a golden
+        record into interstellar space. Warm 1970s analog synthesizers, soft evolving pads, a slow glassy arpeggio
+        like distant stars, gentle tape warmth, a faint heartbeat-like low pulse. 72 BPM, D major, tender and
+        hopeful with a touch of melancholy, cinematic like a space documentary. Starts softly but immediately present,
+        no silence at the start. Steady and calm throughout so a narrator can talk over it: no drums, no drops, no
+        tempo changes, no lead melody in the center, no vocals, no choir. Gently swells in the last fifteen seconds and
+        ends with a soft final chord and a natural reverb tail exactly at the end.
+
+sfx: {enabled: true, level_db: 6}   # мягкие звуки движения: здесь не бумага, тише, чем в бумажных роликах
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+images:                   # арты сцен на весь кадр (role bg, 9:16), потом оживление видеомоделью (assets/src/clips.py)
+  enabled: true
+  budget_usd: 1.5
+  cutout: none
+  style: "Style: vintage 1970s space-program concept painting, airbrush and gouache like classic NASA mission art, soft film grain, warm gold #E9B949 and amber light against deep navy-black space #05070F, cream highlights #F4E7C8, faint teal starlight, dreamy, romantic and quiet, cinematic vertical composition with calm empty space in the upper third. No text, no letters, no numbers, no logos, no watermark, no UI, no frame, no border, no human faces"
+  # настоящие кадры — NASA (общественное достояние) и Commons: assets/real/, список и лицензии — assets.yaml
+
+package:
+  title: "Дальше всех от Земли летит запись сердца влюблённой женщины"
+  description: >-
+    18 ноября Voyager 1 впервые улетит от нас так далеко, что даже свет летит до него целые сутки. А на борту —
+    золотая пластинка, и на ней запись сердца и мозга Энн Друян: её сделали через два дня после того, как они
+    с Карлом Саганом решили пожениться. Перешлите тому, о ком думали бы вы на её месте.
+  hashtags: [космос, voyager, любовь, nasa, наука]   # tiktok: не больше 5
+  cover: {at: 1.9, verdict: none}   # обложка бренда (бумага) здесь не годится: настоящая — assets/src/cover.py (постер
+                                    # на арте s10), запускать ПОСЛЕ package — он перезаписывает voyager-love.cover.jpg
+  ai_label: false         # рисованные арты и синтезированная озвучка; фото — настоящие (NASA)
+
+avoid:
+  - {numbers_without_source: false}   # решение пользователя 2026-11-10: источников-плашек нет — факты сверены (outline.md)
+  - "без нагромождения чисел (память narration-style-no-numbers): в речи одно число на сцену, не больше"
+  - "лица людей не генерировать: Саган и Друян — только настоящие фото"
+  - "не утверждать, что зонд «уже» в световых сутках, до 18.11 13:16 МСК"
+done_means:
+  - "крючок с первой секунды: пластинка в кадре, линия сердца загорается на «сердца» (v2), пластинка садится на зонд"
+  - "понятно новичку: каждое понятие объяснено голосом, у людей названа роль, у событий — причина (v2)"
+  - "дата и время по Москве крупно: 18 ноября, 13:16"
+  - "у каждого факта — настоящий кадр NASA или арт на весь кадр; картинка меняется каждые 1–2 с"
+  - "призыв переслать называет адресата; лайк и подписка в финале"

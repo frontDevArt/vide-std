@@ -1,0 +1,49 @@
+/* ── motion-moon-demo «Лунная ночь» (2026-11-16): вид демо моушн-приёмов — только оформление этого ролика.
+   Сами приёмы (пилюли, общий маркер, счётчик, призыв действием…) — общий набор студии: motion/motion.css в папке
+   студии (build.py подключает его перед этим файлом). Мир — Луна, поверхность, телевизоры — рисует moon.js. ── */
+:root { --s0: #05070F; --cream: #F4E7C8; --orange: #FF8A3C; --mark: rgba(255, 138, 60, .94); --red: #FE2C55; --ink2: #17130C; }
+body { color: var(--cream); }  /* фон — только у [data-backdrop]: иначе проверка безопасной зоны видит «контент» во весь кадр */
+canvas.world { position: fixed; left: 0; top: 0; z-index: -3; }
+.grade { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+         background: linear-gradient(180deg, rgba(5, 7, 15, .88) 0%, rgba(5, 7, 15, .4) 17%, rgba(5, 7, 15, 0) 34%,
+                                     rgba(5, 7, 15, 0) 62%, rgba(5, 7, 15, .5) 84%, rgba(5, 7, 15, .9) 100%); }
+.film { position: fixed; inset: 0; z-index: 8; pointer-events: none; opacity: .45; mix-blend-mode: overlay;
+        background: var(--grunge), radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 0, 0, .55) 100%); }
+
+/* надпись сверху: кремовые узкие буквы, звучащее слово — оранжевый маркер */
+.caps { top: 0; height: 250px; align-items: flex-start; padding-top: 6px; z-index: 6; }
+.chunk { width: fit-content; max-width: 760px; margin: 0 auto; padding: 0; background: none !important; box-shadow: none !important; transform: none !important;
+         font-family: Oswald; font-weight: 600; font-size: 78px; line-height: 1.08; letter-spacing: -.3px; color: var(--cream);
+         text-shadow: 0 4px 0 rgba(5, 7, 15, .9), 0 0 28px rgba(5, 7, 15, .9); }
+.chunk span { padding: 0 6px; border-radius: 8px; -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--cream); mix-blend-mode: normal;
+              background-image: linear-gradient(90deg, var(--mark), var(--mark)) !important; background-repeat: no-repeat; background-position: 0 64%; }
+
+/* безопасная зона TikTok: всё в сцене левее x 720; камера растёт от правого края контента */
+.scene { transform-origin: 700px 560px; }
+.kick { --kx: 700px; }
+.grp { position: absolute; left: 0; top: 0; width: 720px; height: 1180px; }
+
+/* ── входы и выходы ── */
+.zin { animation: zin .5s cubic-bezier(.2, 1.2, .35, 1) var(--d, 0s) both; }
+@keyframes zin { 0% { transform: scale(1.8) rotate(var(--r, 0deg)); opacity: 0; filter: blur(16px); }
+                 60% { opacity: 1; filter: blur(0); } 100% { transform: scale(1) rotate(var(--r, 0deg)); opacity: 1; } }
+.whip { animation: whip .42s cubic-bezier(.2, .9, .3, 1) var(--d, 0s) both; }
+@keyframes whip { 0% { transform: translateX(var(--wx, 140px)); opacity: 0; filter: blur(12px); } 100% { transform: translateX(0); opacity: 1; filter: blur(0); } }
+.rise2 { animation: rise2 .5s cubic-bezier(.2, .9, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise2 { 0% { transform: translateY(var(--ry, 120px)); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+.fadein { animation: fadein .5s ease-out var(--d, 0s) both; }
+@keyframes fadein { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+.out { animation: out .3s cubic-bezier(.5, 0, .8, .4) var(--d, 99s) both; }
+@keyframes out { to { transform: translate(var(--ox2, 0), var(--oy2, -60px)) scale(var(--os, .8)); opacity: 0; filter: blur(8px); } }
+
+/* карточка канала в призыве */
+.chan2 { position: absolute; box-sizing: border-box; display: flex; align-items: center; gap: 26px; padding: 26px 30px; }
+.chan2 img { width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 0 4px var(--cream); }
+.chan2 .nm { font-family: Oswald; font-weight: 700; font-size: 66px; color: var(--cream); line-height: 1; }
+.chan2 .ds { font-family: PTMono; font-size: 26px; color: var(--orange); margin-top: 8px; }
+
+/* след ботинка на Луне (m01) */
+.boot { position: absolute; overflow: visible; filter: drop-shadow(0 0 14px rgba(5, 7, 15, .5)); }
+.boot rect { fill: rgba(30, 28, 27, .78); }
+.boot .tr { fill: rgba(190, 187, 180, .55); }
+svg.ink .draw.o { stroke: var(--orange); filter: drop-shadow(0 0 10px rgba(255, 138, 60, .8)); }

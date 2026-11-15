@@ -1,0 +1,102 @@
+# «Дальше всех от Земли летит запись того, как женщина влюбилась» — сценарий v2 (2026-11-15: переписан для новичка — каждое понятие
+# объяснено, у людей названа роль, у событий — причина; s08 «Бледно-голубая точка» убрана). Мир — «Золотая
+# пластинка» (outline.md). Факты — outline.md. Каждое предложение — своя строка `lines` (иначе ElevenLabs сливает).
+# Картинка меняется на каждом бите `|`. Арты Kie — `image:` (role bg, 9:16), их рисует страница сцены; ожившие арты —
+# кадры assets/video/<сцена>/ (assets/src/clips.py).
+chapter: ch01
+title: "Voyager и запись о любви"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Запись сердца влюблённой женщины | сейчас летит в космосе | дальше всего, что сделали люди."
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - {role: bg, prompt: "the Voyager space probe drifting alone through deep interstellar space, its large white parabolic dish antenna facing the viewer at a three-quarter angle, a long thin magnetometer boom, a round golden disc mounted on its side catching a warm glint of light, the distant Sun a tiny bright star far behind, dense dark starfield with faint milky way haze"}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Эта запись — на золотой пластинке | аппарата Voyager."
+      - "Восемнадцатого ноября он впервые улетит так далеко, | что даже свет | летит до него целые сутки."
+    params: {file: assets/s02-lightday.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Скажешь ему привет — | ответ придёт только через двое суток."
+    params: {file: assets/s03-hello.html, fade: false}
+    image:
+      - {role: bg, prompt: "a giant radio telescope dish of a deep space tracking station in a quiet desert at night, pointing up toward the sky, the milky way arching overhead, a faint warm glow at the dish center, dark hills on the horizon, low angle"}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "Его запустили почти полвека назад."
+      - "А пластинку положили на борт | как письмо инопланетянам — | пусть узнают, кто мы такие."
+    params: {file: assets/s04-launch.html, fade: false}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "На ней музыка, | звук поцелуя | и приветствия на пятидесяти пяти языках."
+    params: {file: assets/s05-hello55.html, fade: false}
+    image:
+      - {role: bg, prompt: "extreme macro close-up of a shimmering gold-plated phonograph record, fine concentric grooves catching warm light, a slender stylus needle resting on the grooves, shallow depth of field, deep dark background with soft golden bokeh"}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Собирали пластинку астроном Карл Саган | и писательница Энн Друян."
+      - "Однажды Энн позвонила ему по делу."
+      - "А когда он перезвонил, | они решили пожениться."
+      - "Хотя до этого ни разу даже не целовались."
+    params: {file: assets/s06-call.html, fade: false}
+    hold: 0.7               # последний элемент сцены успевает прочитаться до нырка камеры
+    image:
+      - {role: bg, prompt: "a cream-colored 1970s rotary telephone on a wooden desk at night in a cozy apartment, the coiled cord curling, a warm desk lamp glowing, scattered sheets of music notes and star charts, a tall window with distant city lights and a starry sky, intimate and romantic mood"}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "Через два дня Энн подключили к датчикам | и записали её мозг и сердце."
+      - "Вдруг инопланетяне сумеют прочитать её мысли?"
+      - "А думала она о Земле | и о том, каково это — влюбиться."
+      - "Эти сигналы превратили в звук | и поставили на пластинку."
+    params: {file: assets/s07-eeg.html, fade: false}
+    hold: 0.6               # последний элемент сцены успевает прочитаться до нырка камеры
+    image:
+      - {role: bg, prompt: "a vintage 1970s electroencephalograph machine in a dim hospital lab, a row of fine ink pens drawing wavy brain wave lines on a long scrolling paper chart, analog dials and knobs, warm amber lamp light, soft haze, close view of the chart and pens"}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Сейчас у Voyager кончается энергия, | и скоро он замолчит."
+      - "Но пластинка полетит дальше — | ещё миллиард лет."
+    params: {file: assets/s09-fade.html, fade: false}
+    hold: 0.5               # последний элемент сцены успевает прочитаться до нырка камеры
+    image:
+      - {role: bg, prompt: "a tiny distant space probe seen from far away in vast cold darkness, a single faint warm glint on it, endless starfield with deep blue haze, enormous emptiness around it, melancholic and calm"}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "И может быть, последнее, что останется от людей, — | это запись о любви."
+    params: {file: assets/s10-love.html, fade: false}
+    hold: 0.8               # последний элемент сцены успевает прочитаться до нырка камеры
+    image:
+      - {role: bg, prompt: "a single golden phonograph record floating alone in interstellar space, slightly tilted, its gold surface softly reflecting starlight, a warm halo of light around it, deep navy darkness and scattered stars, quiet, eternal and romantic"}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Перешлите это тому, | о ком думали бы вы на её месте."
+    params: {file: assets/s11-send.html, fade: false}
+    hold: 0.6
+
+  - id: s12
+    template: paper_page
+    lines:
+      - "Если было интересно, | поставьте лайк и подпишитесь."
+    params: {file: assets/s12-sub.html, fade: false}
+    hold: 0.4

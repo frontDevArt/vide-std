@@ -4,10 +4,10 @@ measured:
 - language: ru
   backend: elevenlabs
   voice: 848d5c1805bc
-  wpm: 160.8
-  rate: 110.0
-  words: 168
-  project: gta6
+  wpm: 151.8
+  rate: 106.0
+  words: 188
+  project: voyager-love
   date: '2026-11-15'
 - language: ru
   backend: piper

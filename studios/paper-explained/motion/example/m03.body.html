@@ -1,0 +1,23 @@
+<!-- m03 — приёмы «один → множество со счётчиком» и «нырок в картинку». «Прямой эфир с Луны смотрели | шестьсот
+     пятьдесят миллионов человек.» Кадр 0 — тот же лунный кадр, что в конце m02: камера отъезжает, и он оказывается
+     экраном телевизора (0,7 с). «эфир» — пилюля на ножке «прямой эфир с Луны». «смотрели» — отъезд: телевизоров
+     много; «шестьсот» — ещё отъезд: телевизоры превращаются в точки, счётчик докручивается от 1 до 650 000 000,
+     герой остаётся в кольце маркера. Потом — счётчики-пилюли столбиком. Последние 0,6 с — нырок обратно в экран героя:
+     следующая сцена начинается с лунного кадра. --ps: 1 — пометки привязаны к телевизору на canvas. -->
+<canvas class="world" data-backdrop data-mode="tv" data-s0="1.03" data-a="смотрели:-0.1" data-b="шестьсот:-0.25"></canvas>
+<div class="grade" data-backdrop></div>
+<div class="stage">
+  <div class="scene" style="--ps: 1"><div class="dive2" style="--ox: 360px; --oy: 560px">
+    <div class="abs out" style="left: 0; top: 0; --oy2: -40px; --d: 99s" data-at="смотрели:-0.2">
+      <div class="tag over" style="left: 268px; top: 150px; --st: 58px; --sx: 330px" data-at="эфир:-0.15"><i></i><b>прямой эфир с Луны</b></div>
+    </div>
+    <div class="plate zin" style="left: 2px; top: 60px; width: 714px; --d: 99s" data-at="шестьсот:-0.25">
+      <div class="count" data-count='{"to": 650000000, "at": "шестьсот:-0.1", "dd": 1.35}'>1</div>
+      <small>человек у телевизоров</small>
+    </div>
+    <i class="abs appear" style="--d: 99s" data-at="шестьсот:-0.25" data-sfx="riser"></i>
+    <div class="tally" style="left: 14px; top: 890px; --d: 99s" data-at="миллионов:0.3" data-sfx="pop">по оценке NASA</div>
+    <div class="tally" style="left: 14px; top: 978px; --d: 99s" data-at="человек:0.15" data-sfx="pop">каждый пятый на Земле</div>
+    <i class="abs appear" style="--d: calc(var(--dur) - .6s)" data-sfx="whoosh"></i>
+  </div></div>
+</div>
