@@ -1,0 +1,1216 @@
+<!doctype html>
+<!-- Собрано assets/src/build.py — правьте исходники. -->
+<html><head><meta charset="utf-8"><style>
+/* Paper Explained — общий вид сцен web.html (референс 2: редакционный коллаж «Global Icon / Global Impact»).
+   Слои снизу вверх: бумага (кит) → геометрия (круг, кольца, линии, кресты) → огромный заголовок → главный предмет
+   (ч/б вырезка с белой кромкой) → 2–5 вспомогательных элементов → тени. Подписи — common.js.
+   Сцена верстается в .stage 780×1380 (common.js вписывает её в безопасную зону): картинка — 0…960, подписи — ниже.
+   Время — шагом 1/12 с («на двойках», common.js): анимации пишутся обычными CSS @keyframes. */
+@font-face { font-family: Oswald; src: url('../../../brand/fonts/Oswald-VF.ttf'); font-weight: 200 700; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Regular.ttf'); font-weight: 400; }
+@font-face { font-family: PTSerif; src: url('../../../brand/fonts/PTSerif-Bold.ttf'); font-weight: 700; }
+@font-face { font-family: PTMono; src: url('../../../brand/fonts/PTMono-Regular.ttf'); }
+
+:root {
+  --b0: 0s; --b1: 1.6s; --b2: 3.2s; --b3: 4.8s; --b4: 6.4s; --e0: 1.4s; --e1: 3s; --e2: 4.6s; --e3: 6.2s; --e4: 8s;
+  /* палитра — пипеткой по референсу (brand/brand.yaml) */
+  --ink: #141210; --paper: #F6F0E2; --paper-hi: #FBF8EF; --tan: #DCCDB0; --terra: #C46557; --terra-dk: #A9503F;
+  --blue: #5B7684; --navy: #30353C; --mustard: #E0C377; --dim: #7D766C; --olive: #6F8A4E;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .15  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grunge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -3 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+html, body { margin: 0; background: transparent; overflow: hidden; width: 100%; height: 100%; }
+body { color: var(--ink); font-family: Oswald, sans-serif; -webkit-font-smoothing: antialiased; }
+.stage { position: absolute; left: 150px; top: 150px; width: 780px; height: 1380px; transform-origin: 0 0; }
+.abs { position: absolute; }
+svg.ink { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* ── геометрия ── */
+.disc { position: absolute; border-radius: 50%; background: var(--grain), var(--terra);
+        animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+.disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: multiply;
+               background: radial-gradient(circle, rgba(0,0,0,.30) 1.6px, transparent 2.2px) 0 0 / 9px 9px;
+               -webkit-mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%);
+               mask-image: radial-gradient(circle at 78% 86%, #000 0 20%, transparent 46%); }
+.dot { position: absolute; border-radius: 50%; background: var(--grain), var(--tan); animation: pop .4s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both; }
+.rings circle, .thin { fill: none; stroke: var(--ink); stroke-width: 1.6; opacity: .38; }
+.cross { position: absolute; width: 70px; height: 70px; opacity: .45; animation: appear .01s linear var(--d, 0s) both; }
+.cross::before, .cross::after { content: ''; position: absolute; background: var(--ink); }
+.cross::before { left: 0; right: 0; top: 50%; height: 1.6px; } .cross::after { top: 0; bottom: 0; left: 50%; width: 1.6px; }
+.halftone { background-image: radial-gradient(rgba(20, 18, 16, .55) 1.5px, transparent 2px); background-size: 8px 8px; }
+
+/* ── заголовок: огромный, узкий, печатный; за предметом ── */
+.title { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .8;
+         letter-spacing: -2px; color: var(--ink); white-space: nowrap; mix-blend-mode: multiply;
+         animation: rise .5s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise { 0% { transform: translateY(60px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+.kicker { position: absolute; font-family: PTMono; font-size: 26px; letter-spacing: 6px; text-transform: uppercase;
+          color: var(--paper-hi); background: var(--navy); padding: 8px 18px 6px;
+          animation: slideL .45s cubic-bezier(.2,.8,.3,1.1) var(--d, 0s) both; }
+.label { font-family: PTMono; font-size: 24px; color: var(--navy); }
+
+/* ── главный предмет: ч/б вырезка, белая кромка, бумажная тень ── */
+.sticker { filter: drop-shadow(5px 0 0 var(--paper-hi)) drop-shadow(-5px 0 0 var(--paper-hi)) drop-shadow(0 5px 0 var(--paper-hi))
+                   drop-shadow(0 -5px 0 var(--paper-hi)) drop-shadow(0 4px 0 rgba(60,45,20,.12)) drop-shadow(0 22px 16px rgba(50,38,20,.33)); }
+/* надпись кодом на пустой этикетке вырезки Kie (картинки — без букв): краской поверх растра */
+.kie-label { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+             font-family: PTMono; color: #141210; text-align: center; line-height: 1.1; mix-blend-mode: multiply; }
+.kie-label b { font-size: 17px; letter-spacing: .5px; }
+.kie-label i { width: 80%; border-top: 1.5px solid #141210; }
+.kie-label span { font-size: 13px; }
+
+/* ── бумага: фишки, полоски с рваным краем (.torn внутри .shadow — тень не режется clip-path) ── */
+.shadow { filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .10)) drop-shadow(0 14px 12px rgba(60, 45, 20, .26)); }
+.sheet { background: var(--grain), var(--paper-hi); }
+.tanp { background: var(--grain), var(--tan); }
+.stamp { position: absolute; border: 6px solid var(--terra-dk); color: var(--terra-dk); padding: 4px 16px 0;
+         font-family: Oswald; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-radius: 6px;
+         -webkit-mask-image: var(--grunge); mask-image: var(--grunge); mix-blend-mode: multiply;
+         animation: slam .42s cubic-bezier(.2, .7, .3, 1.2) var(--d, 0s) both; }
+@keyframes slam { 0% { transform: rotate(var(--r, -12deg)) scale(2.4); opacity: 0; }
+                  60% { opacity: .95; } 100% { transform: rotate(var(--r, -12deg)) scale(1); opacity: .92; } }
+
+/* линии: путь с pathLength="1" рисуется от 0 до 1 */
+.draw { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+        animation: draw var(--dd, .6s) ease-in-out var(--d, 0s) both; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* появления (пружина видна шагами 12 к/с) */
+.drop  { animation: drop .5s cubic-bezier(.2, .8, .3, 1.15) var(--d, 0s) both; }
+@keyframes drop { 0% { transform: translateY(-90px) rotate(calc(var(--r, 0deg) - 6deg)); opacity: 0; }
+                  45% { opacity: 1; } 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideL { animation: slideL .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideL { 0% { transform: translateX(-160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.slideR { animation: slideR .45s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes slideR { 0% { transform: translateX(160px) rotate(var(--r, 0deg)); opacity: 0; }
+                    40% { opacity: 1; } 100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.pop { animation: pop .4s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+@keyframes pop { 0% { transform: rotate(var(--r, 0deg)) scale(.2); opacity: 0; }
+                 100% { transform: rotate(var(--r, 0deg)) scale(1); opacity: 1; } }
+.appear { animation: appear .01s linear var(--d, 0s) both; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+.fadeTo { animation: fadeTo .4s linear var(--d, 0s) both; }
+@keyframes fadeTo { from { opacity: 1; } to { opacity: var(--to, .35); } }
+
+/* ── подписи (common.js): под картинкой сцены, краской; звучащее слово — приглушённым жёлтым ── */
+.caps { position: absolute; left: 0; right: 0; top: 985px; height: 230px; display: flex; align-items: center; justify-content: center; }
+.chunk { font-family: Oswald; font-weight: 600; font-size: 70px; line-height: 1.12; text-align: center; color: var(--ink); max-width: 760px; }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, var(--mustard) 2% 98%, transparent 99%);
+              background-repeat: no-repeat; background-position: 0 62%; background-size: 0% 74%; padding: 0 .08em; margin: 0 -.08em;
+              mix-blend-mode: multiply; }
+
+/* ── fable-52: общие мелочи сцен ── */
+@font-face { font-family: Caveat; src: url('../../../brand/fonts/Caveat-VF.ttf'); font-weight: 400 700; }
+.src { position: absolute; left: 0; width: 780px; font-family: PTSerif; font-style: italic; font-size: 22px; line-height: 1.3; color: var(--dim); }
+.chip { padding: 9px 17px 7px; font-family: PTMono; font-size: 25px; color: var(--navy); white-space: nowrap; }
+.num { font-family: Oswald; font-weight: 700; line-height: .85; color: var(--terra); letter-spacing: -2px; mix-blend-mode: multiply; white-space: nowrap; }
+.hand { font-family: Caveat; font-weight: 600; color: var(--navy); line-height: 1; }
+.growX { transform-origin: 0 50%; animation: growX var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+@keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* слово подписи не рвётся по дефису («пять-два»), тире держится за слово (common.js) */
+.chunk span { white-space: nowrap; }
+
+/* ── shared-limit: лист лечения (build.py, s05–s09 — на одном месте), бумажный чат, терминал, ползунок ── */
+.sheetbox { left: 20px; top: 512px; width: 740px; }
+.cure { box-sizing: border-box; width: 740px; padding: 22px 30px 18px; }
+.cure .hd { font-family: Oswald; font-weight: 600; font-size: 34px; letter-spacing: 4px; text-transform: uppercase; color: var(--navy); margin-bottom: 6px; }
+.cure .row { position: relative; display: flex; align-items: center; height: 84px; border-top: 2px dashed rgba(20, 18, 16, .22); }
+.cure .n { flex: none; width: 52px; font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; color: var(--terra); }
+.cure .txt { flex: 1; font-family: Caveat; font-weight: 600; font-size: 54px; line-height: 1; color: var(--ink); white-space: nowrap; }
+.cure .txt b { font-family: PTMono; font-weight: 400; font-size: 32px; color: var(--navy); background: var(--grain), var(--tan);
+               padding: 5px 12px 3px; margin-left: 6px; vertical-align: 8px; white-space: nowrap; }
+.cure .cb { flex: none; width: 44px; height: 44px; box-sizing: border-box; border: 3px solid var(--navy); border-radius: 5px; opacity: .8; }
+.cure .tick { position: absolute; right: -8px; top: 6px; width: 66px; height: 66px; overflow: visible; }
+.cure .tick path { fill: none; stroke: var(--olive); stroke-width: 9; }
+.draw.on { animation: none; stroke-dashoffset: 0; }
+.write { animation: writeIn var(--dd, .9s) linear var(--d, 0s) both; }
+@keyframes writeIn { from { clip-path: inset(-20px 100% -20px 0); } to { clip-path: inset(-20px -40px -20px 0); } }
+.growXR { transform-origin: 100% 50%; animation: growX var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+.term { box-sizing: border-box; background: var(--grain), var(--navy); padding: 20px 26px 22px; font-family: PTMono; font-size: 25px; line-height: 1.5; color: var(--paper-hi); }
+.term .p { color: var(--mustard); }
+.term .dim { color: rgba(251, 248, 239, .62); }
+.win { box-sizing: border-box; padding: 0 0 22px; }
+.win .bar { display: flex; align-items: center; gap: 14px; padding: 14px 22px 12px; border-bottom: 2px solid rgba(20, 18, 16, .18); }
+.win .bar b { font-family: Oswald; font-weight: 600; font-size: 36px; color: var(--navy); }
+.win .bar i { font-style: normal; font-family: PTMono; font-size: 19px; color: var(--dim); background: var(--grain), var(--tan); padding: 4px 10px 2px; }
+.win .msg { margin: 18px 22px 0 auto; width: fit-content; max-width: 330px; padding: 12px 18px 10px; font-family: PTSerif; font-size: 29px; line-height: 1.2; background: var(--grain), var(--tan); }
+.win .skel { height: 18px; margin: 16px 22px 0; background: rgba(20, 18, 16, .13); }
+.knob { animation: knob .55s cubic-bezier(.3, .7, .3, 1.15) var(--d, 0s) both; }
+@keyframes knob { from { transform: translateX(0); } to { transform: translateX(var(--kx)); } }
+.sweep { animation: sweep var(--dd, 1.1s) cubic-bezier(.4, 0, .6, 1) var(--d, 0s) both; }
+@keyframes sweep { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: .85; } 92% { opacity: .85; } 100% { transform: translateY(var(--sy)); opacity: 0; } }
+.growY { transform-origin: 50% 100%; animation: growY var(--dd, .45s) cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+@keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.drain { transform-origin: 0 50%; animation: drain var(--dd, 1.4s) cubic-bezier(.5, 0, .7, 1) var(--d, 0s) both; }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.split { animation: split .4s cubic-bezier(.2, .8, .3, 1.2) var(--d, 0s) both; }
+@keyframes split { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--rr, 0deg)); } }
+.straw { position: absolute; width: 24px; border-radius: 4px; transform-origin: 50% 100%;
+         background: repeating-linear-gradient(-35deg, var(--paper-hi) 0 9px, var(--navy) 9px 17px);
+         box-shadow: 0 0 0 3px var(--paper-hi), 0 8px 10px rgba(50, 38, 20, .3); }
+.flag { padding: 8px 18px 6px; font-family: Oswald; font-weight: 600; font-size: 40px; line-height: 1; color: var(--navy); white-space: nowrap; }
+
+/* ── motion-test (2026-11-11): новые движения — камера, ножницы и скотч, говорящая вырезка, ксерокс, конверт ── */
+/* 1) Камера в глубину: .cam (common.js режет её во весь кадр, низ — рваный край над подписями) → слои .cam-l.
+      Все слои растут вокруг одной точки (--ox --oy, px сцены) до своего --s1: дальние чуть-чуть, ближние сильно
+      и уходят (--o1: 0) — параллакс бумажных слоёв. */
+.cam { position: absolute; left: 0; top: 0; width: 780px; height: 960px; }
+.cam-l { position: absolute; left: 0; top: 0; width: 780px; height: 960px; transform-origin: var(--ox, 390px) var(--oy, 480px);
+         animation: dolly var(--dd, 1.4s) cubic-bezier(.55, 0, .25, 1) var(--d, 0s) both; }
+@keyframes dolly { from { transform: scale(1); opacity: 1; } to { transform: scale(var(--s1, 1.5)); opacity: var(--o1, 1); } }
+.grid { background: linear-gradient(rgba(48, 53, 60, .13) 1.5px, transparent 1.5px) 0 0 / 34px 34px,
+                    linear-gradient(90deg, rgba(48, 53, 60, .13) 1.5px, transparent 1.5px) 0 0 / 34px 34px, var(--grain), var(--tan); }
+.note { box-sizing: border-box; padding: 26px 24px; background: var(--grain), var(--mustard); font-family: Caveat; font-weight: 600; font-size: 50px; line-height: 1; color: var(--navy); }
+
+/* бумажный телефон и чат */
+.phone { position: absolute; box-sizing: border-box; border-radius: 48px; background: var(--grain), var(--navy); padding: 58px 18px 64px; }
+.phone::before { content: ''; position: absolute; left: 50%; top: 24px; width: 90px; height: 12px; margin-left: -45px; border-radius: 6px; background: rgba(251, 248, 239, .25); }
+.phone .scr { position: relative; width: 100%; height: 100%; border-radius: 12px; background: var(--grain), var(--paper-hi); overflow: hidden; }
+.chat-hd { display: flex; align-items: center; gap: 14px; padding: 16px 18px 14px; border-bottom: 2px solid rgba(20, 18, 16, .15); }
+.ava { flex: none; width: 62px; height: 62px; border-radius: 50%; background: var(--grain), var(--blue); color: var(--paper-hi);
+       font-family: Oswald; font-weight: 600; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+.chat-hd b { display: block; font-family: Oswald; font-weight: 600; font-size: 34px; line-height: 1; color: var(--navy); }
+.chat-hd i { font-style: normal; font-family: PTMono; font-size: 18px; color: var(--olive); }
+.bub { position: absolute; padding: 12px 18px 10px; font-family: PTSerif; font-size: 27px; line-height: 1.15; border-radius: 20px; }
+.bub.in { background: var(--grain), var(--tan); border-bottom-left-radius: 6px; }
+.bub.out { background: var(--grain), #EFDDA6; border-bottom-right-radius: 6px; }
+.vbub { position: absolute; box-sizing: border-box; height: 92px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+        border-radius: 24px 24px 24px 6px; background: var(--grain), var(--tan); }
+.play { flex: none; position: relative; width: 56px; height: 56px; border-radius: 50%; background: var(--navy); }
+.play::after { content: ''; position: absolute; left: 22px; top: 17px; border-left: 19px solid var(--paper-hi);
+               border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
+.vdur { flex: none; font-family: PTMono; font-size: 20px; color: var(--dim); }
+/* волна голосового: столбики рисует common.js (data-wave="N"), высота — --h (речь: data-talk) */
+.wave { flex: 1; display: flex; align-items: center; gap: 3px; height: 52px; }
+.wave i { flex: 1; height: 100%; border-radius: 3px; background: var(--navy); transform: scaleY(var(--h, .5)); }
+
+/* 2) Ножницы и скотч: ножницы едут по линии разреза и щёлкают (.travel + .snip), кусок улетает дугой (.fly),
+      скотч вытягивается и прижимается (.tape) */
+.travel { animation: travel var(--dd, 1.2s) linear var(--d, 0s) both; }
+@keyframes travel { 0% { transform: translate(0, 0); opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; }
+                    100% { transform: translate(var(--tx, 0), var(--ty, 0)); opacity: 0; } }
+.snip { width: 100%; height: 100%; position: relative; animation: snip .34s steps(1) infinite; }
+@keyframes snip { 0% { transform: rotate(180deg); } 50% { transform: rotate(186deg) scaleX(.93); } }
+.fly { animation: fly var(--dd, .55s) cubic-bezier(.3, .6, .3, 1.12) var(--d, 0s) both; }
+@keyframes fly { 0% { transform: translate(0, 0) rotate(0deg); }
+                 45% { transform: translate(calc(var(--tx) * .45), calc(var(--ty) * .45 - 50px)) rotate(calc(var(--rr) * 4)); }
+                 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rr)); } }
+.strip { box-sizing: border-box; height: 104px; display: flex; align-items: center; gap: 14px; padding: 0 18px; }
+.strip .lab { flex: none; font-family: PTMono; font-size: 21px; color: var(--navy); }
+.tape { position: absolute; width: 66px; height: 150px; background: var(--grain), rgba(234, 222, 190, .82);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); transform-origin: 50% 0;
+        animation: tape .4s cubic-bezier(.2, .8, .3, 1.25) var(--d, 0s) both; }
+@keyframes tape { 0% { transform: rotate(var(--r, 0deg)) scaleY(0); opacity: 0; } 25% { opacity: 1; }
+                  70% { transform: rotate(var(--r, 0deg)) scaleY(1.07); } 100% { transform: rotate(var(--r, 0deg)) scaleY(1); opacity: 1; } }
+
+/* 3) Говорящая вырезка: челюсть на заклёпке, угол — --m (0…1) от common.js (data-talk) */
+.jaw { transform-origin: 236px 352px; transform: rotate(calc(var(--m, 0) * 15deg)); }
+.speech { box-sizing: border-box; padding: 26px 26px 30px; font-family: Caveat; font-weight: 700; font-size: 60px; line-height: 1; color: var(--ink); }
+
+/* 4) Ксерокс: лист печатается сверху вниз под полосой света (.printIn + .sweep), у копии сбиты краски — common.js
+      кладёт две копии краски (data-misprint), синюю и терракотовую, со сдвигом */
+.printIn { animation: printIn var(--dd, .9s) linear var(--d, 0s) both; }
+@keyframes printIn { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+.scanbar { position: absolute; height: 34px; mix-blend-mode: multiply;
+           background: linear-gradient(transparent, rgba(224, 195, 119, .9) 40%, #F3DE9C 50%, rgba(224, 195, 119, .9) 60%, transparent); }
+.card { position: relative; box-sizing: border-box; }
+.card .ink { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 34px 26px; box-sizing: border-box; }
+.card .face { width: 170px; height: 170px; border-radius: 50%; background: var(--grain), var(--blue); color: var(--paper-hi);
+              font-family: Oswald; font-weight: 600; font-size: 96px; display: flex; align-items: center; justify-content: center; }
+.card .nm { margin-top: 18px; font-family: Oswald; font-weight: 600; font-size: 52px; line-height: 1; color: var(--navy); }
+.card .vb { margin-top: 30px; width: 100%; height: 84px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
+            padding: 0 12px; border: 3px solid var(--navy); border-radius: 22px; }
+.card .vb .play { width: 50px; height: 50px; } .card .vb .play::after { left: 19px; top: 14px; }
+.card .vb .wave { height: 44px; }
+.mp { mix-blend-mode: multiply; pointer-events: none; }
+.mp.b { filter: url(#mpB); } .mp.t { filter: url(#mpT); }
+
+/* 5) Конверт и лист: клапан откидывается в 3D, лист выходит, конверт падает, лист разворачивается из трёх частей
+      (.pn.top и .pn.bot сложены на .pn.mid; у каждой — лицо .face и изнанка .back) */
+.env { position: absolute; width: 660px; height: 370px; perspective: 1100px; }
+.env-back { position: absolute; left: 0; top: 0; width: 660px; height: 370px; z-index: 0; background: var(--grain), #D3C2A0; }
+.env-pocket { position: absolute; left: 0; top: 0; width: 660px; height: 370px; z-index: 5; background: var(--grain), #E6D8BB;
+              clip-path: polygon(0 18%, 50% 60%, 100% 18%, 100% 100%, 0 100%); }
+.flapw { position: absolute; left: 0; top: 0; width: 660px; height: 222px; perspective: 900px; z-index: 6; }
+.flap { width: 100%; height: 100%; transform-origin: 50% 0; clip-path: polygon(0 0, 100% 0, 50% 100%); background: var(--grain), #C9B690; }
+.flapOpen { animation: flapOpen var(--dd, .4s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+@keyframes flapOpen { from { transform: rotateX(0deg); } to { transform: rotateX(180deg); } }
+@keyframes flapz { 0% { z-index: 6; } 49% { z-index: 6; } 50% { z-index: 1; } 100% { z-index: 1; } }
+@keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 60% { opacity: 1; }
+                  100% { transform: translateY(var(--fy, 760px)) rotate(var(--fr, 7deg)); opacity: 0; } }
+.fall { animation: fall var(--dd, .5s) cubic-bezier(.5, 0, .9, .6) var(--d, 0s) both; }
+.pstamp { position: absolute; width: 86px; height: 104px; box-sizing: border-box; background: var(--grain), var(--terra);
+          border: 7px solid var(--paper-hi); outline: 3px dotted var(--paper-hi); outline-offset: -1px; z-index: 5; }
+.fold { position: absolute; width: 600px; height: 230px; z-index: 3; perspective: 1400px; }
+.up { animation: up var(--dd, .45s) cubic-bezier(.3, .7, .3, 1.1) var(--d, 0s) both; }
+@keyframes up { from { transform: translateY(0); } to { transform: translateY(var(--uy, -250px)); } }
+.pn { position: absolute; left: 0; width: 600px; height: 230px; transform-style: preserve-3d; }
+.pn.mid { top: 0; } .pn.top { top: -230px; transform-origin: 50% 100%; } .pn.bot { top: 230px; transform-origin: 50% 0; }
+.pn .face, .pn .back { position: absolute; inset: 0; box-sizing: border-box; padding: 20px 30px; backface-visibility: hidden;
+                       -webkit-backface-visibility: hidden; background: var(--grain), var(--paper-hi); }
+.pn .back { transform: rotateX(180deg); background: var(--grain), #EFE6D2; }
+.pn.mid .face { box-shadow: inset 0 3px 0 rgba(60, 45, 20, .10), inset 0 -3px 0 rgba(60, 45, 20, .10); }
+.unfoldT { animation: unfoldT var(--dd, .45s) cubic-bezier(.4, 0, .3, 1.08) var(--d, 0s) both; }
+@keyframes unfoldT { from { transform: rotateX(-180deg); } to { transform: rotateX(0deg); } }
+.unfoldB { animation: unfoldB var(--dd, .45s) cubic-bezier(.4, 0, .3, 1.08) var(--d, 0s) both; }
+@keyframes unfoldB { from { transform: rotateX(180deg); } to { transform: rotateX(0deg); } }
+.shd { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(60, 45, 20, .05), rgba(60, 45, 20, .38));
+       animation: shd var(--dd, .45s) linear var(--d, 0s) both; }
+@keyframes shd { from { opacity: 1; } to { opacity: 0; } }
+.pn .hd2 { font-family: Oswald; font-weight: 600; font-size: 50px; line-height: 1; letter-spacing: 2px; text-transform: uppercase; color: var(--navy); }
+.pn .who { display: inline-block; padding: 6px 14px 3px; font-family: PTMono; font-size: 24px; letter-spacing: 3px; text-transform: uppercase; color: var(--paper-hi); }
+.pn .it { font-family: Caveat; font-weight: 600; font-size: 43px; line-height: 1; color: var(--ink); white-space: nowrap; }
+
+/* ── voice-clone: лист лечения (build.py, <!--@sheet-->) — строки с квадратом и галочкой, наклейки под листом ── */
+.pn .row2 { position: relative; display: flex; align-items: center; gap: 12px; height: 58px; margin-top: 6px; border-bottom: 2px dashed rgba(20, 18, 16, .16); }
+.pn .row2 .cb { flex: none; width: 32px; height: 32px; box-sizing: border-box; border: 3px solid var(--navy); border-radius: 4px; opacity: .75; }
+.pn .row2 .tick { position: absolute; left: -6px; top: -4px; width: 50px; height: 50px; overflow: visible; }
+.pn .row2 .tick path { fill: none; stroke: var(--olive); stroke-width: 8; }
+.pn .hd2 + .hand { display: block; }
+.stamp.ok { border-color: var(--olive); color: var(--olive); }
+.lock .shackle { animation: shackle .3s cubic-bezier(.4, 0, .3, 1.4) var(--d, 0s) both; }
+@keyframes shackle { from { transform: translateY(-34px); } to { transform: translateY(0); } }
+.strike { stroke: var(--terra-dk); stroke-width: 7; }
+
+/* voice-clone (правка 2026-11-11): шкала шагов схемы «1 → 2 → 3» — s02–s04, одно место в кадре (склейки).
+   i — шаг впереди (бледный), i.was — пройденный, u внутри i — текущий: заливка терракотой выпрыгивает на data-at. */
+.steps { display: flex; align-items: center; gap: 6px; font-family: Oswald; font-weight: 700; }
+.steps i { position: relative; font-style: normal; width: 50px; height: 58px; box-sizing: border-box; border: 3px solid var(--dim);
+           color: var(--dim); background: var(--paper-hi); display: flex; align-items: center; justify-content: center;
+           font-size: 40px; line-height: 1; }
+.steps i.was { border-color: var(--navy); color: var(--navy); }
+.steps i u { position: absolute; inset: -3px; text-decoration: none; display: flex; align-items: center; justify-content: center;
+             background: var(--grain), var(--terra-dk); color: var(--paper-hi); }
+.steps b { font-weight: 400; font-size: 30px; color: var(--dim); padding: 0 2px; }
+/* шкала въезжает в угол: из крупной по центру (s02, «Вот как это делают») — на «шаг» */
+.dock { transform-origin: 0 0; animation: dock .4s cubic-bezier(.3, .8, .3, 1) var(--d, 0s) both; }
+@keyframes dock { from { transform: translate(var(--fx), var(--fy)) scale(var(--fs)); } to { transform: none; } }
+
+/* ── free-reset (2026-11-12): распечатка настоящего экрана, камера-экскурсия, счётчик с жуком, купон, неделя, календарь ── */
+/* камера-экскурсия (common.js, data-tour): .tour двигается и растёт целиком, пометки внутри едут вместе с экраном */
+.tour { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+/* распечатка экрана: тёмное окно Claude на фотобумаге с полями 14 px; поверх — светлая фактура печати */
+.shot { position: absolute; box-sizing: border-box; padding: 14px; background: var(--grain), #FBFAF6;
+        box-shadow: 0 2px 0 rgba(60, 45, 20, .12), 0 26px 30px rgba(50, 38, 20, .35); }
+.shot img { display: block; width: 768px; height: 768px; }
+.shot::after { content: ''; position: absolute; inset: 14px; background: var(--grain); mix-blend-mode: screen; opacity: .55; pointer-events: none; }
+/* выделитель поверх тёмного экрана: полупрозрачная жёлтая полоса растёт слева направо */
+.hl { position: absolute; transform-origin: 0 50%; background: rgba(224, 195, 119, .34); border-radius: 3px;
+      animation: growX var(--dd, .35s) cubic-bezier(.3, .7, .3, 1) var(--d, 0s) both; }
+.uline { position: absolute; height: 4px; border-radius: 2px; background: var(--mustard); transform-origin: 0 50%;
+         animation: growX var(--dd, .3s) cubic-bezier(.3, .7, .3, 1) var(--d, 0s) both; }
+/* полоса недели заливается с текущей доли (--from) до конца */
+.fillTo { transform-origin: 0 50%; animation: fillTo var(--dd, .7s) cubic-bezier(.5, 0, .3, 1) var(--d, 0s) both; }
+@keyframes fillTo { from { transform: scaleX(var(--from, 0)); } to { transform: scaleX(1); } }
+/* клик: два кольца расходятся от точки */
+.click { position: absolute; width: 0; height: 0; }
+.click i { position: absolute; left: -30px; top: -30px; width: 60px; height: 60px; box-sizing: border-box; border-radius: 50%;
+           border: 5px solid var(--mustard); animation: clickR .5s cubic-bezier(.2, .7, .3, 1) var(--d, 0s) both; }
+.click i + i { animation-delay: calc(var(--d, 0s) + .12s); border-width: 3px; }
+@keyframes clickR { 0% { transform: scale(.2); opacity: 0; } 15% { opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+/* рука нажимает: подъезд, нажим, отскок */
+.press { animation: press .55s cubic-bezier(.3, .7, .3, 1) var(--d, 0s) both; }
+@keyframes press { 0% { transform: translate(140px, 120px) rotate(var(--r, 0deg)); opacity: 0; } 30% { opacity: 1; }
+                   60% { transform: translate(0, 0) rotate(var(--r, 0deg)) scale(1); } 75% { transform: translate(-4px, -4px) rotate(var(--r, 0deg)) scale(.94); }
+                   100% { transform: translate(0, 0) rotate(var(--r, 0deg)) scale(1); opacity: 1; } }
+
+/* бумажный счётчик: корпус, окно с барабанами цифр, диск со скоростью */
+.meter { position: absolute; box-sizing: border-box; border-radius: 26px; background: var(--grain), var(--navy); padding: 26px 28px 30px; }
+.meter .plate { font-family: PTMono; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; color: var(--paper-hi); opacity: .8; }
+.drums { display: flex; gap: 8px; margin-top: 14px; padding: 12px; background: var(--grain), var(--ink); border-radius: 8px; }
+.drum { position: relative; width: 74px; height: 104px; overflow: hidden; background: var(--grain), var(--paper-hi); }
+.drum.red { background: var(--grain), var(--terra); }
+.drum .col { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; animation: roll var(--sp, 1s) steps(10) var(--d, 0s) infinite; }
+.drum .col b { flex: none; height: 104px; display: flex; align-items: center; justify-content: center; font-family: Oswald; font-weight: 700; font-size: 82px; color: var(--ink); }
+.drum.red .col b { color: var(--paper-hi); }
+@keyframes roll { from { transform: translateY(0); } to { transform: translateY(-1040px); } }
+.disc2 { position: absolute; border-radius: 50%; background: var(--grain), var(--paper-hi); box-shadow: inset 0 0 0 6px var(--tan); }
+.disc2 .mark { position: absolute; left: 50%; top: 6px; width: 16px; height: 46%; margin-left: -8px; border-radius: 8px; background: var(--terra-dk); transform-origin: 50% 100%; }
+.spin { animation: spin var(--sp, 1s) linear var(--d, 0s) infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* жук-«баг»: выползает (.crawl из --tx/--ty), лапки перебирают (.legs) */
+.crawl { animation: crawl var(--dd, .9s) cubic-bezier(.3, .4, .4, 1) var(--d, 0s) both; }
+@keyframes crawl { 0% { transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r0, 0deg)); opacity: 0; } 12% { opacity: 1; }
+                   100% { transform: translate(0, 0) rotate(var(--r, 0deg)); opacity: 1; } }
+.legs { animation: legs .17s steps(1) infinite; }
+@keyframes legs { 0% { transform: scaleY(1); } 50% { transform: scaleY(-1); } }
+.shake { animation: shake .25s steps(1) var(--d, 0s) infinite; }
+@keyframes shake { 0% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(-4px, 2px) rotate(-.6deg); }
+                   50% { transform: translate(3px, -3px) rotate(.5deg); } 75% { transform: translate(-2px, -2px) rotate(-.3deg); } }
+
+/* купон: корешок с перфорацией слева, отрывается (.tear) */
+.coupon { position: relative; display: flex; box-sizing: border-box; height: 300px; }
+.coupon .stub { flex: none; width: 110px; box-sizing: border-box; background: var(--grain), var(--mustard);
+                display: flex; align-items: center; justify-content: center; }
+.coupon .stub span { transform: rotate(-90deg); white-space: nowrap; font-family: PTMono; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; color: var(--navy); }
+.coupon .body { position: relative; flex: 1; box-sizing: border-box; padding: 26px 30px 22px; background: var(--grain), var(--mustard);
+                border-left: 5px dotted rgba(48, 53, 60, .55); }
+.coupon .t1 { font-family: Oswald; font-weight: 700; font-size: 92px; line-height: .86; text-transform: uppercase; color: var(--navy); letter-spacing: -1px; }
+.coupon .t2 { margin-top: 14px; font-family: PTMono; font-size: 28px; letter-spacing: 3px; text-transform: uppercase; color: var(--navy); }
+.coupon .t3 { margin-top: 10px; font-family: PTMono; font-size: 22px; color: rgba(48, 53, 60, .75); }
+.tear { animation: tear .5s cubic-bezier(.3, .6, .3, 1.1) var(--d, 0s) both; }
+@keyframes tear { 0% { transform: translate(0, 0) rotate(0deg); } 35% { transform: translate(18px, -16px) rotate(4deg); }
+                  100% { transform: translate(var(--tx, 60px), var(--ty, -40px)) rotate(var(--rr, 6deg)); } }
+/* купон летит в экран и уменьшается в бирку */
+.toShot { animation: toShot var(--dd, .6s) cubic-bezier(.4, 0, .3, 1) var(--d, 0s) both; }
+@keyframes toShot { from { transform: translate(0, 0) rotate(var(--r0, 0deg)) scale(1); }
+                    to { transform: translate(var(--tx), var(--ty)) rotate(var(--r, -4deg)) scale(var(--s1, .3)); } }
+.raise { animation: raise var(--dd, .5s) cubic-bezier(.2, .8, .3, 1.05) var(--d, 0s) both; }
+@keyframes raise { from { transform: translateY(var(--fy, 900px)) rotate(var(--r, 0deg)); } to { transform: translateY(0) rotate(var(--r, 0deg)); } }
+
+/* неделя: семь бумажных дней от обновления до обновления, шкала лимита над ними, замки на запертых днях */
+.days { position: absolute; display: flex; gap: 8px; }
+.day { position: relative; width: 98px; height: 128px; box-sizing: border-box; padding-top: 16px; text-align: center;
+       background: var(--grain), var(--paper-hi); box-shadow: 0 3px 0 rgba(60, 45, 20, .1), 0 10px 10px rgba(60, 45, 20, .2); }
+.day b { display: block; font-family: Oswald; font-weight: 700; font-size: 50px; line-height: 1; color: var(--navy); text-transform: uppercase; }
+.day small { display: block; margin-top: 8px; font-family: PTMono; font-size: 17px; color: var(--dim); }
+.day.upd { background: var(--grain), var(--navy); } .day.upd b, .day.upd small { color: var(--paper-hi); }
+.day .hatch { position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, rgba(169, 80, 63, .5) 0 8px, transparent 8px 18px); }
+.lim { position: absolute; height: 44px; box-sizing: border-box; border: 4px solid var(--navy); background: var(--paper-hi); overflow: hidden; }
+.lim .f { position: absolute; left: 0; top: 0; bottom: 0; background: var(--grain), var(--blue); transform-origin: 0 50%; }
+.lim .f2 { position: absolute; top: 0; bottom: 0; background: var(--grain), var(--olive); transform-origin: 0 50%; }
+/* шкала тает ступеньками по дням: от 1 до --to */
+.drainTo { animation: drainTo var(--dd, 1.2s) steps(var(--n, 4)) var(--d, 0s) both; }
+@keyframes drainTo { from { transform: scaleX(1); } to { transform: scaleX(var(--to, 0)); } }
+.pin { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--grain), var(--terra-dk); box-shadow: 0 6px 6px rgba(50, 38, 20, .35), inset -5px -5px 0 rgba(0, 0, 0, .15); }
+.lift { animation: lift .45s cubic-bezier(.5, -0.4, .8, .5) var(--d, 0s) both; }
+@keyframes lift { from { transform: translateY(0) rotate(0deg); opacity: 1; } to { transform: translateY(-90px) rotate(-25deg); opacity: 0; } }
+
+/* отрывной календарь: блок с листком даты; прошлые листки слетают (.fly) */
+.pad { position: absolute; box-sizing: border-box; background: var(--grain), var(--paper-hi); text-align: center;
+       box-shadow: 0 4px 0 #E3D8C2, 0 8px 0 #D7CAB0, 0 12px 0 #CBBD9F, 0 30px 26px rgba(50, 38, 20, .32); }
+.pad .mo { display: block; padding: 12px 0 10px; background: var(--grain), var(--terra-dk); font-family: Oswald; font-weight: 600;
+           font-size: 44px; letter-spacing: 6px; text-transform: uppercase; color: var(--paper-hi); }
+.pad .dd2 { display: block; font-family: Oswald; font-weight: 700; line-height: .9; color: var(--ink); letter-spacing: -4px; }
+.pad .wk { display: block; font-family: PTMono; color: var(--dim); }
+.pad.fable .mo { background: var(--grain), var(--blue); }
+.timechip { position: absolute; padding: 12px 22px 10px; font-family: Oswald; font-weight: 600; font-size: 46px; line-height: 1.05;
+            color: var(--paper-hi); background: var(--grain), var(--navy); white-space: nowrap; }
+.timechip small { display: block; font-family: PTMono; font-weight: 400; font-size: 22px; letter-spacing: 2px; opacity: .8; }
+
+/* ── nvidia-huang (2026-11-13): настоящие страницы новостей, влёт между сценами, силуэты, сетка подчинённых ── */
+/* переход «влёт»: в конце сцены камера ныряет (.dive, origin — --ox --oy), следующая сцена отъезжает из наезда (.inn).
+   Задержки записаны числом, а не через --d: иначе --d достался бы всем детям без data-at. */
+.dive { --s1: 3; --o1: 0; animation: dolly var(--dv, .42s) cubic-bezier(.55, 0, .25, 1) calc(var(--dur) - var(--dv, .42s)) both; }  /* --dv — длина нырка */
+.inn { position: absolute; left: 0; top: 0; width: 780px; height: 960px; transform-origin: 390px 480px;
+       animation: pullOut .36s cubic-bezier(.2, .7, .3, 1) 0s both; }
+@keyframes pullOut { from { transform: scale(1.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* маркер по светлой странице (.hl рассчитан на тёмный экран) */
+.hl.pg { background: rgba(224, 195, 119, .78); mix-blend-mode: multiply; }
+/* безликий силуэт на бумажной карточке */
+.sil path { fill: var(--navy); }
+.who { position: relative; box-sizing: border-box; text-align: center; padding: 14px 10px 10px; }
+.who .q { position: absolute; left: 0; right: 0; top: 34%; font-family: Oswald; font-weight: 700; font-size: 96px; line-height: 1; color: var(--paper-hi); }
+.who small { display: block; margin-top: 6px; font-family: PTMono; font-size: 19px; line-height: 1.2; color: var(--navy); }
+.who b { display: block; font-family: Oswald; font-weight: 700; font-size: 40px; line-height: 1; color: var(--terra-dk); }
+/* сетка подчинённых: точки выходят лесенкой от --d родителя */
+.grid60 { position: absolute; }
+.grid60 i { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: var(--grain), var(--navy);
+            animation: pop .3s cubic-bezier(.3, 1.6, .5, 1) calc(var(--d, 0s) + var(--i) * .022s) both; }
+.tagbig { padding: 10px 22px 6px; font-family: Oswald; font-weight: 700; font-size: 54px; line-height: 1; letter-spacing: 1px;
+          text-transform: uppercase; color: var(--navy); white-space: nowrap; }
+.tagbig.dark { color: var(--paper-hi); background: var(--grain), var(--navy); }
+.tagbig.red { color: var(--paper-hi); background: var(--grain), var(--terra-dk); }
+.bar { position: absolute; height: 26px; border-radius: 4px; background: repeating-linear-gradient(-45deg, var(--paper-hi) 0 14px, var(--terra-dk) 14px 28px);
+       box-shadow: 0 0 0 3px var(--paper-hi), 0 8px 10px rgba(50, 38, 20, .3); }
+.todo { box-sizing: border-box; padding: 18px 22px 14px; }
+.todo .hd { font-family: PTMono; font-size: 22px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); }
+.todo .it { margin-top: 10px; font-family: Caveat; font-weight: 600; font-size: 46px; line-height: 1; color: var(--ink); white-space: nowrap; }
+.todo .it b { font-family: PTMono; font-weight: 400; font-size: 22px; color: var(--terra-dk); }
+
+/* настоящая страница — бумажное окно браузера (правка пользователя 2026-11-13: фотокарточка с белой рамкой .shot
+   «обводилась» как чужая вырезка). Полоса с точками и адресом, рамки нет, белое подкрашено под бумагу, низ рваный.
+   Сдвиг окна (14, −26): левый верхний угол страницы — в (14, 14) координат .tour, как было у .shot. */
+.page { position: absolute; left: 14px; top: -26px; filter: drop-shadow(0 3px 0 rgba(60, 45, 20, .12)) drop-shadow(0 20px 20px rgba(50, 38, 20, .28)); }
+.pgin { position: relative; background: var(--paper); }
+.pgin img { display: block; }
+.pgin::after { content: ''; position: absolute; left: 0; right: 0; top: 40px; bottom: 0; background: var(--grain), #EFE4CB;
+               mix-blend-mode: multiply; opacity: .8; pointer-events: none; }
+.pbar { height: 40px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: var(--grain), var(--navy); }
+.pbar i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--terra); }
+.pbar i + i { background: var(--mustard); } .pbar i + i + i { background: var(--tan); }
+.pbar span { margin-left: 10px; padding: 4px 14px 2px; border-radius: 11px; background: rgba(251, 248, 239, .14);
+             font-family: PTMono; font-size: 17px; letter-spacing: .5px; color: var(--paper-hi); white-space: nowrap; }
+
+/* ── «Живая бумага» (2026-11-14, демо стиля): лист по актам, надпись сверху, кадр заполнен, люди растром,
+   телефонные формы из бумаги, камера всегда едет. Поверх common.css. ── */
+
+/* надпись-фраза — крупно сверху (не мелко посередине) */
+/* надпись — бумажная полоса-заголовок поверх всего: читается на любом листе и поверх предметов */
+.caps { top: 0; height: 240px; align-items: flex-start; padding-top: 4px; z-index: 5; }
+.chunk { width: fit-content; margin: 0 auto; padding: 10px 24px 4px; font-size: 80px; line-height: 1.04; font-weight: 700;
+         background: var(--grain), var(--paper-hi); transform: rotate(-1.2deg);
+         box-shadow: 0 3px 0 rgba(60, 45, 20, .14), 0 14px 14px rgba(30, 20, 10, .3); }
+
+/* лист акта: на весь кадр (body, не .stage), въезжает поверх прошлого листа в начале сцены */
+.sheetbg { position: fixed; inset: -40px; z-index: -1; background: var(--grain), var(--c); box-shadow: 0 -30px 40px rgba(30, 20, 10, .35);
+           animation: sheetIn .42s cubic-bezier(.25, .8, .3, 1.04) 0s both; }
+.sheetbg::after { content: ''; position: absolute; inset: 0; background: var(--grain); opacity: .9; mix-blend-mode: multiply; }
+@keyframes sheetIn { from { transform: translateY(105%) rotate(4deg); } to { transform: translateY(0) rotate(0deg); } }
+.sheetbg.fromR { animation-name: sheetInR; }
+@keyframes sheetInR { from { transform: translateX(105%) rotate(-5deg); } to { transform: translateX(0) rotate(0deg); } }
+
+/* сцена — под надписью; камера едет всю сцену (push), на ключевом слове — толчок (.kick) */
+.scene { position: absolute; left: 0; top: 200px; width: 780px; height: 1180px; transform-origin: 390px 520px;
+         animation: push var(--dur, 4s) linear 0s both; }
+@keyframes push { from { transform: scale(1); } to { transform: scale(var(--ps, 1.05)); } }
+.kick { position: absolute; inset: 0; transform-origin: var(--kx, 390px) var(--ky, 520px);
+        animation: kick .5s cubic-bezier(.2, .9, .3, 1) var(--d, 99s) both; }
+@keyframes kick { from { transform: scale(1); } 35% { transform: scale(1.09); } to { transform: scale(1.06); } }
+.dive2 { position: absolute; inset: 0; transform-origin: var(--ox, 390px) var(--oy, 520px);
+         animation: dive2 .34s cubic-bezier(.55, 0, .25, 1) calc(var(--dur) - .34s) both; }
+/* нырок гаснет к 60 %: в конце сцены (кадр проверки safezone) слоя уже не видно */
+@keyframes dive2 { 0% { transform: scale(1); opacity: 1; } 60% { opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
+
+/* второй план: обрывки газет (светлые, не спорят с главным) */
+.scrap { position: absolute; box-sizing: border-box; padding: 14px 16px; background: var(--grain), #EEE6D3;
+         transform: rotate(var(--r, 0deg)); opacity: var(--op, .75); }
+.scrap i { display: block; height: 7px; margin: 0 0 9px; background: rgba(20, 18, 16, .22); }
+.scrap i.h { height: 20px; width: 70%; background: rgba(20, 18, 16, .42); margin-bottom: 14px; }
+.scrap i.s { width: 55%; }
+body:has(.sheetbg.dark) .scrap { background: var(--grain), rgba(251, 248, 239, .10); }
+body:has(.sheetbg.dark) .scrap i { background: rgba(251, 248, 239, .16); } body:has(.sheetbg.dark) .scrap i.h { background: rgba(251, 248, 239, .26); }
+
+/* человек: ч/б растр (people.py) + белая кромка + тень — как вырезки канала */
+.person { position: absolute; filter: drop-shadow(6px 0 0 var(--paper-hi)) drop-shadow(-6px 0 0 var(--paper-hi))
+                                       drop-shadow(0 -6px 0 var(--paper-hi)) drop-shadow(0 26px 20px rgba(40, 28, 14, .38)); }
+.person img { display: block; width: 100%; }
+.poster { position: absolute; background: var(--grain), var(--navy); }
+
+/* карточка имени: имя крупно, должность — отрезается ножницами (.fly) */
+.namecard { position: absolute; box-sizing: border-box; padding: 18px 26px 16px; background: var(--grain), var(--paper-hi); }
+.namecard .nm { font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1; text-transform: uppercase; color: var(--ink); letter-spacing: -.5px; }
+.namecard .role { display: flex; align-items: center; gap: 14px; margin-top: 10px; font-family: PTMono; font-size: 30px; color: var(--navy); }
+.namecard .role img { height: 30px; }
+.namecard .ceo { display: inline-block; padding: 3px 12px 1px; background: var(--grain), var(--tan); }
+.cutline { position: absolute; border-top: 3px dashed rgba(20, 18, 16, .55); animation: appear .01s linear var(--d, 0s) both; }
+
+/* жетон с логотипом: бумажный круг */
+.token { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.token .c { width: var(--sz, 150px); height: var(--sz, 150px); border-radius: 50%; background: var(--grain), var(--paper-hi);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(60, 45, 20, .14), 0 16px 14px rgba(30, 20, 10, .35); }
+.token .c img { width: 58%; height: 58%; object-fit: contain; }
+.token b { font-family: Oswald; font-weight: 600; font-size: 38px; line-height: 1; color: var(--ink); background: var(--grain), var(--paper-hi); padding: 6px 14px 3px; }
+
+/* уведомление — бумажная полоска сверху */
+.notif { position: absolute; box-sizing: border-box; display: flex; align-items: center; gap: 18px; padding: 16px 22px;
+         border-radius: 26px; background: var(--grain), var(--paper-hi); box-shadow: 0 4px 0 rgba(60, 45, 20, .12), 0 18px 16px rgba(30, 20, 10, .32);
+         animation: notif .45s cubic-bezier(.2, .9, .3, 1.15) var(--d, 0s) both; }
+@keyframes notif { from { transform: translateY(-260px) rotate(var(--r, 0deg)); } to { transform: translateY(0) rotate(var(--r, 0deg)); } }
+.notif .ic { flex: none; width: 78px; height: 78px; border-radius: 18px; background: var(--grain), #fff; display: flex; align-items: center; justify-content: center; }
+.notif .ic img { width: 80%; }
+.notif .tx { flex: 1; font-family: PTSerif; font-size: 30px; line-height: 1.15; color: var(--ink); }
+.notif .tx b { font-family: Oswald; font-weight: 600; font-size: 32px; display: block; }
+.notif .dn { font-family: Oswald; font-weight: 700; font-size: 48px; color: var(--terra-dk); white-space: nowrap; }
+.notif small { position: absolute; right: 22px; top: 12px; font-family: PTMono; font-size: 18px; color: var(--dim); }
+
+/* огромная цифра газетными буквами: каждая буква — свой клочок, свой шрифт, наклон, выпрыгивает лесенкой */
+.ransom { position: absolute; display: flex; align-items: flex-end; gap: 6px; }
+.ransom span { display: inline-block; padding: 4px 9px 0; line-height: .95; font-weight: 700; transform: rotate(var(--r, 0deg));
+               box-shadow: 0 3px 0 rgba(30, 20, 10, .15), 0 10px 8px rgba(30, 20, 10, .3);
+               animation: pop .32s cubic-bezier(.3, 1.6, .5, 1) calc(var(--d, 0s) + var(--i) * .07s) both; }
+.ransom .a { font-family: Oswald; background: var(--grain), var(--paper-hi); color: var(--ink); }
+.ransom .b { font-family: PTSerif; background: var(--grain), var(--mustard); color: var(--ink); }
+.ransom .c { font-family: Oswald; background: var(--grain), var(--ink); color: var(--paper-hi); }
+.ransom .d { font-family: PTMono; font-weight: 400; background: var(--grain), #EEE6D3; color: var(--terra-dk); }
+.ransom .sp { box-shadow: none; background: none; width: 10px; padding: 0; }
+
+/* миллиметровка с графиком маркером */
+.mm { position: absolute; background: linear-gradient(rgba(48, 53, 60, .16) 1.5px, transparent 1.5px) 0 0 / 30px 30px,
+                                      linear-gradient(90deg, rgba(48, 53, 60, .16) 1.5px, transparent 1.5px) 0 0 / 30px 30px, var(--grain), var(--paper-hi); }
+
+/* мел по картону */
+.chalk { fill: none; stroke: var(--paper-hi); stroke-width: 5; stroke-dasharray: 1 1; opacity: .9; }
+.chiplabel { position: absolute; box-sizing: border-box; padding: 10px 16px; background: var(--grain), var(--paper-hi); display: flex; align-items: center; justify-content: center; }
+.chiplabel img { width: 100%; }
+.pulse { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--mustard);
+         box-shadow: 0 0 0 6px rgba(224, 195, 119, .35); offset-rotate: 0deg;
+         animation: along var(--dd, 1s) linear var(--d, 0s) infinite; }
+@keyframes along { from { offset-distance: 0%; opacity: 1; } 85% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }
+
+/* ── gta6 (2026-11-14): «Vice-бумага» — та же «Живая бумага», но палитра под вайб GTA 6 (пипеткой по официальной
+   обложке и логотипу Rockstar: закатный розовый, персик, оранжевый, морская бирюза, лаванда, фиолетовая ночь).
+   Пользователь 2026-11-14: тёмные / красные / чёрные листы, шкала шагов и штампы-запреты не обязательны; бумагу
+   оставляем, цвета — из GTA 6. Оригинальные картинки Rockstar (обложка, открытка) — как есть, без бумажной фактуры. ── */
+:root {
+  --vc-pink: #EE5A97; --vc-pink-lt: #F7B3CE; --vc-peach: #F8C3A0; --vc-orange: #F28A52; --vc-gold: #F5B547;
+  --vc-teal: #2FA9B0; --vc-aqua: #A3DDD8; --vc-lav: #B8A8E4; --vc-violet: #3A1D57; --vc-blue: #3E55C8; --vc-ink: #26113D;
+  --sunset: linear-gradient(180deg, #F6A6C6 0%, #F48DA4 34%, #F39C78 68%, #F8C493 100%);
+  --sea: linear-gradient(180deg, #8FD6D6 0%, #5FC2C3 55%, #3FAFB4 100%);
+  --dusk: linear-gradient(180deg, #A99BE0 0%, #C4A4DC 45%, #F1A9C4 100%);
+  --ink: var(--vc-ink);
+}
+
+/* лист акта: цветная бумага + рисограф-растр розовым (крупная точка сгущается к низу листа) */
+.sheetbg::before { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; opacity: var(--dots, .5);
+                   background: radial-gradient(circle, var(--dc, rgba(214, 60, 130, .55)) 2.2px, transparent 3px) 0 0 / 14px 14px;
+                   -webkit-mask-image: linear-gradient(180deg, transparent 30%, #000 100%); mask-image: linear-gradient(180deg, transparent 30%, #000 100%); }
+.sheetbg.sea::before { --dc: rgba(30, 120, 140, .55); }
+.sheetbg.dusk::before { --dc: rgba(120, 60, 170, .5); }
+
+/* надпись сверху: кремовая полоса, краска — фиолетовая ночь, звучащее слово — розовым маркером */
+.chunk { color: var(--vc-ink); }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, rgba(238, 90, 151, .62) 2% 98%, transparent 99%); }
+
+/* второй план: обрывки цветной бумаги (пастель палитры), а не серые газеты */
+.scrap { background: var(--grain), var(--sc, #FBEFE6); }
+.scrap i { background: rgba(58, 29, 87, .18); } .scrap i.h { background: rgba(58, 29, 87, .34); }
+
+/* пальма — вырезка из фиолетовой бумаги (build.py <!--@palm …-->): качается от основания, светлая кромка и тень */
+.palm { position: absolute; transform-origin: 50% 100%; animation: sway 3.2s ease-in-out 0s infinite alternate both;
+        filter: drop-shadow(0 0 0 transparent) drop-shadow(0 18px 14px rgba(40, 15, 60, .35)); }
+.palm svg { display: block; overflow: visible; }
+.palm .fr, .palm .tr { fill: var(--pc, var(--vc-violet)); }
+.palm.mir { transform: scaleX(-1); animation-name: swayF; }
+@keyframes sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
+@keyframes swayF { from { transform: scaleX(-1) rotate(-1.6deg); } to { transform: scaleX(-1) rotate(1.6deg); } }
+
+/* закатное солнце из бумаги: полосы вырезаны (как на ретро-открытках) */
+.sun { position: absolute; border-radius: 50%; background: var(--grain), linear-gradient(180deg, var(--vc-gold), var(--vc-orange) 55%, var(--vc-pink));
+       -webkit-mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 72%, #000 72% 80%, transparent 80% 87%, #000 87%);
+       mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 72%, #000 72% 80%, transparent 80% 87%, #000 87%);
+       animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+
+/* оригинальная картинка Rockstar: как есть — без растра, без бумаги поверх, только тень и скотч сверху */
+.orig { position: absolute; overflow: hidden; border-radius: 6px; box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 24px 22px rgba(40, 15, 60, .38); }
+.orig img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.orig.card { padding: 0; }
+
+/* рисограф: две краски с лёгким сдвигом (розовая + бирюзовая) — огромные цифры и слова */
+.riso { position: absolute; font-family: Oswald; font-weight: 700; line-height: .86; letter-spacing: -3px; white-space: nowrap; text-transform: uppercase;
+        color: var(--vc-pink); text-shadow: -7px 5px 0 rgba(47, 169, 176, .9); }
+.riso.on-sea { color: var(--paper-hi); text-shadow: -7px 5px 0 var(--vc-pink); }
+.riso small { font-size: .42em; letter-spacing: 0; }
+
+/* уведомление — бумажная полоска; иконка — цветной квадрат с буквой */
+.notif .ic.lt { background: var(--grain), var(--vc-blue); color: #fff; font-family: Oswald; font-weight: 700; font-size: 48px; }
+.notif .tx { font-size: 34px; } .notif .tx b { color: var(--vc-ink); font-size: 36px; }
+
+/* отрывной листок дня: шапка розовая, число фиолетовое */
+.dayp { position: absolute; width: 128px; background: var(--grain), var(--paper-hi); text-align: center; padding-bottom: 8px;
+        box-shadow: 0 3px 0 rgba(40, 15, 60, .12), 0 12px 10px rgba(40, 15, 60, .3); }
+.dayp i { display: block; font-style: normal; padding: 6px 0 4px; font-family: Oswald; font-weight: 600; font-size: 24px; letter-spacing: 2px;
+          color: #fff; background: var(--grain), var(--vc-pink); }
+.dayp b { display: block; font-family: Oswald; font-weight: 700; font-size: 84px; line-height: 1; color: var(--vc-violet); margin-top: 4px; }
+.dayp small { display: block; font-family: PTMono; font-size: 18px; color: var(--vc-teal); }
+
+/* билет «командировка»: розовая часть + бирюзовый корешок, перфорация */
+.ticket { position: absolute; display: flex; width: 720px; height: 250px; filter: drop-shadow(0 4px 0 rgba(40, 15, 60, .12)) drop-shadow(0 20px 16px rgba(40, 15, 60, .35)); }
+.ticket .tm { flex: 1; box-sizing: border-box; padding: 22px 28px; background: var(--grain), var(--vc-pink); color: #fff;
+              -webkit-mask: radial-gradient(circle at 100% 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                            radial-gradient(circle at 100% 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat;
+              mask: radial-gradient(circle at 100% 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                    radial-gradient(circle at 100% 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat; }
+.ticket .tm .k { font-family: PTMono; font-size: 22px; letter-spacing: 5px; opacity: .9; }
+.ticket .tm .t { margin-top: 6px; font-family: Oswald; font-weight: 700; font-size: 70px; line-height: .95; text-transform: uppercase; }
+.ticket .tm .r { margin-top: 12px; font-family: Oswald; font-weight: 600; font-size: 36px; letter-spacing: 1px; }
+.ticket .ts { width: 210px; box-sizing: border-box; padding: 18px 16px; background: var(--grain), var(--vc-aqua); border-left: 5px dashed rgba(255, 255, 255, .9);
+              display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--vc-violet);
+              -webkit-mask: radial-gradient(circle at 0 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                            radial-gradient(circle at 0 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat;
+              mask: radial-gradient(circle at 0 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                    radial-gradient(circle at 0 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat; }
+.ticket .ts img { width: 170px; }
+.ticket .ts small { font-family: PTMono; font-size: 20px; letter-spacing: 2px; }
+
+/* шкала диска приставки: бумажная полоска, кусок игры дорастает розовым */
+.disk { position: absolute; box-sizing: border-box; padding: 20px 26px 22px; background: var(--grain), var(--paper-hi);
+        box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 18px 16px rgba(40, 15, 60, .3); }
+.disk .hd { display: flex; justify-content: space-between; font-family: PTMono; font-size: 32px; color: var(--vc-violet); }
+.disk .bar { position: relative; height: 64px; margin-top: 14px; background: repeating-linear-gradient(90deg, rgba(58, 29, 87, .1) 0 6px, transparent 6px 12px), var(--grain), #EFE6F2; }
+.disk .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 32%); background: var(--grain), var(--vc-pink); }
+.disk .bar b { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-family: Oswald; font-weight: 700; font-size: 36px; color: #fff; white-space: nowrap; }
+
+/* часы из бумаги: циферблат кремовый, стрелки фиолетовые, крутятся к времени */
+.clock { position: absolute; border-radius: 50%; background: var(--grain), var(--paper-hi); box-shadow: 0 0 0 10px var(--vc-pink), 0 20px 18px rgba(40, 15, 60, .35); }
+.clock i { position: absolute; left: 50%; bottom: 50%; width: 14px; margin-left: -7px; border-radius: 7px; background: var(--vc-violet); transform-origin: 50% 100%; }
+.clock .hh { height: 26%; animation: hand 1s cubic-bezier(.3, .8, .3, 1.1) var(--d, 0s) both; --a0: -200deg; --a1: 60deg; }
+.clock .mm2 { height: 38%; width: 10px; margin-left: -5px; background: var(--vc-pink); animation: hand 1s cubic-bezier(.3, .8, .3, 1.1) var(--d, 0s) both; --a0: -720deg; --a1: 0deg; }
+.clock .ctr { position: absolute; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px; border-radius: 50%; background: var(--vc-violet); }
+.clock .tk { position: absolute; left: 50%; top: 6%; width: 8px; height: 22px; margin-left: -4px; background: rgba(58, 29, 87, .45); transform-origin: 50% 340%; }
+@keyframes hand { from { transform: rotate(var(--a0)); } to { transform: rotate(var(--a1)); } }
+
+/* карточка времени: дата + местное время крупно */
+.when { position: absolute; box-sizing: border-box; padding: 22px 30px 20px; background: var(--grain), var(--paper-hi);
+        box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 18px 16px rgba(40, 15, 60, .3); }
+.when .d { font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1; color: var(--vc-violet); text-transform: uppercase; }
+.when .tm { font-family: Oswald; font-weight: 700; font-size: 150px; line-height: .9; color: var(--vc-pink); text-shadow: -6px 4px 0 rgba(47, 169, 176, .85); }
+.when small { display: block; margin-top: 6px; font-family: PTMono; font-size: 26px; color: var(--vc-violet); }
+
+/* флажок-лента и скотч в палитре */
+.flag.vc { color: #fff; background: var(--grain), var(--vc-violet); }
+.vtape { position: absolute; height: 46px; background: rgba(247, 179, 206, .78); box-shadow: 0 2px 4px rgba(40, 15, 60, .2); transform: rotate(var(--r, -4deg));
+         animation: tape .3s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }
+
+/* ── gta6 v3 «Vice Night» (2026-11-15, правки пользователя: «не бумажные иконки, футуристичные картинки, изменить всю
+   цветовую гамму UI… будь дизайнером Rockstar»). Язык — сайт rockstargames.com/VI: ночной индиго, свечение заката
+   (розовый → персик → золото), бирюза, кремовые узкие заголовки, скруглённые стеклянные карточки, рисованные арты
+   на весь кадр. Плюс узнаваемое из самой игры: звёзды розыска, зелёные деньги, «миссия выполнена».
+   Поверх common.css + live.css (ход, подписи, толчок, нырок); бумаги нет. ── */
+:root {
+  --n0: #0B0820; --n1: #120E2A; --n2: #1E1640; --n3: #2A1E57;
+  --pink: #FF4FA3; --pink2: #FF8CC6; --peach: #FFB37A; --gold: #FFD36E; --teal: #2FD3C8; --aqua: #9FF1E8;
+  --violet: #7B4DFF; --cream: #FFF1C9; --white: #FFFFFF; --cash: #7CE38B;
+  --sunsetT: linear-gradient(180deg, #FFE7A0 0%, #FFB37A 38%, #FF7AB0 70%, #FF4FA3 100%);
+  --ui: 'Segoe UI', 'Segoe UI Variable Display', Arial, sans-serif;
+  --ink: var(--cream);
+}
+body { color: var(--cream); }  /* фон — только у .bgart (data-backdrop): иначе проверка безопасной зоны видит «контент» во весь кадр */
+
+/* ── фон: рисованный арт на весь кадр + цветокор + медленный наезд камеры ── */
+.bgart { position: fixed; inset: 0; z-index: -3; overflow: hidden; background: var(--n1); }
+.bgart > i { position: absolute; inset: -6%; background-size: cover; background-position: var(--bp, 50% 50%);
+             animation: kb var(--dur, 6s) linear 0s both; }
+@keyframes kb { from { transform: scale(var(--k0, 1.14)) translate(var(--tx0, 0), var(--ty0, 0)); }
+                to { transform: scale(var(--k1, 1.02)) translate(var(--tx1, 0), var(--ty1, 0)); } }
+.bgart.next { animation: bgIn .45s cubic-bezier(.2, .8, .3, 1) var(--d, 99s) both; z-index: -2; }
+@keyframes bgIn { from { opacity: 0; clip-path: circle(0% at var(--cx, 50%) var(--cy, 50%)); }
+                  to { opacity: 1; clip-path: circle(150% at var(--cx, 50%) var(--cy, 50%)); } }
+.bgart.blur > i { filter: blur(14px) saturate(1.2); }
+/* затемнение сверху (подпись) и снизу (интерфейс TikTok) + лёгкий закатный налёт */
+.grade { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+         background: linear-gradient(180deg, rgba(11, 8, 32, .88) 0%, rgba(11, 8, 32, .35) 20%, rgba(11, 8, 32, 0) 38%,
+                                     rgba(11, 8, 32, .05) 62%, rgba(11, 8, 32, .55) 84%, rgba(11, 8, 32, .9) 100%); }
+.grade.deep { background: linear-gradient(180deg, rgba(11, 8, 32, .9) 0%, rgba(11, 8, 32, .55) 25%, rgba(11, 8, 32, .45) 60%, rgba(11, 8, 32, .9) 100%); }
+/* световой блик, проходит по кадру (screen) */
+.leak { position: fixed; z-index: -1; width: 900px; height: 900px; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+        background: radial-gradient(circle, rgba(255, 79, 163, .42), rgba(255, 179, 122, .16) 45%, transparent 70%);
+        animation: leak var(--dur, 6s) ease-in-out 0s both; }
+.leak.t { background: radial-gradient(circle, rgba(47, 211, 200, .36), rgba(123, 77, 255, .14) 45%, transparent 70%); }
+@keyframes leak { from { transform: translate(var(--lx0, -300px), var(--ly0, 200px)); } to { transform: translate(var(--lx1, 500px), var(--ly1, 900px)); } }
+/* вспышка смены сцены */
+.flash { position: fixed; inset: 0; z-index: 9; pointer-events: none; background: #FFF4F9; animation: flash .26s ease-out var(--d, 0s) both; }
+@keyframes flash { from { opacity: .5; } to { opacity: 0; } }
+.flash.p { background: var(--pink); }
+
+/* ── подпись сверху: кремовые узкие буквы с тенью, звучащее слово — неоновый розовый маркер ── */
+.caps { top: 0; height: 250px; align-items: flex-start; padding-top: 6px; z-index: 6; }
+.chunk { width: fit-content; max-width: 760px; margin: 0 auto; padding: 0; background: none !important; box-shadow: none !important; transform: none !important;
+         font-family: Oswald; font-weight: 700; font-size: 82px; line-height: 1.06; letter-spacing: -.5px; color: var(--cream);
+         text-shadow: 0 5px 0 rgba(11, 8, 32, .9), 0 0 26px rgba(11, 8, 32, .85); }
+.chunk span { padding: 0 6px; border-radius: 10px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+              background-image: linear-gradient(90deg, var(--pink), var(--pink)) !important; background-repeat: no-repeat; background-position: 0 62%; }
+
+/* ── заголовок-метка в духе сайта VI: разрядка, кремовый, тонкая розовая линия ── */
+.kick2 { position: absolute; font-family: Oswald; font-weight: 500; font-size: 30px; letter-spacing: 12px; text-transform: uppercase; color: var(--pink2);
+         text-shadow: 0 0 18px rgba(255, 79, 163, .6); white-space: nowrap; }
+.hd { position: absolute; font-family: Oswald; font-weight: 700; text-transform: uppercase; line-height: .9; letter-spacing: -1px; color: var(--cream);
+      text-shadow: 0 6px 0 rgba(11, 8, 32, .85), 0 0 34px rgba(255, 79, 163, .45); white-space: nowrap; }
+/* огромные цифры: градиент заката внутри, тёмный край, свечение */
+.big { position: absolute; font-family: Oswald; font-weight: 700; line-height: .86; letter-spacing: -4px; white-space: nowrap;
+       background: var(--sunsetT); -webkit-background-clip: text; background-clip: text; color: transparent;
+       filter: drop-shadow(0 6px 0 var(--n0)) drop-shadow(0 0 30px rgba(255, 79, 163, .55)); }
+.big small { font-size: .42em; letter-spacing: 0; }
+/* деньги как в игре: зелёные с тёмной обводкой */
+.cash { position: absolute; font-family: Oswald; font-weight: 700; line-height: .9; letter-spacing: -2px; color: var(--cash); white-space: nowrap;
+        -webkit-text-stroke: 10px var(--n0); paint-order: stroke fill; filter: drop-shadow(0 8px 0 rgba(11, 8, 32, .7)) drop-shadow(0 0 26px rgba(124, 227, 139, .45)); }
+
+/* ── стеклянная карточка (как скруглённые плашки сайта VI) ── */
+.glass { position: absolute; box-sizing: border-box; border-radius: 34px; background: rgba(20, 14, 48, .66);
+         -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+         border: 2px solid rgba(255, 255, 255, .16); box-shadow: 0 30px 60px rgba(5, 3, 18, .55), inset 0 1px 0 rgba(255, 255, 255, .12); }
+.glass.pk { border-color: rgba(255, 140, 198, .55); box-shadow: 0 30px 60px rgba(5, 3, 18, .55), 0 0 40px rgba(255, 79, 163, .35); }
+.glass.tl { border-color: rgba(47, 211, 200, .55); box-shadow: 0 30px 60px rgba(5, 3, 18, .55), 0 0 40px rgba(47, 211, 200, .3); }
+
+/* логотип компании: белая карточка, ореол сзади, вход «неоном» */
+.logo { position: absolute; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 40px; background: #fff;
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, .18), 0 0 70px rgba(255, 79, 163, .6), 0 34px 60px rgba(5, 3, 18, .6); }
+.logo img { display: block; max-width: 86%; max-height: 74%; object-fit: contain; }
+.logo.clear { background: none; box-shadow: none; }
+.logo.clear img { max-width: 100%; max-height: 100%; filter: drop-shadow(0 0 40px rgba(255, 79, 163, .5)) drop-shadow(0 26px 30px rgba(5, 3, 18, .6)); }
+.halo { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255, 79, 163, .55), rgba(123, 77, 255, .25) 45%, transparent 70%);
+        animation: halo 1.6s ease-in-out var(--d, 0s) infinite alternate both; }
+.halo.t { background: radial-gradient(circle, rgba(47, 211, 200, .5), rgba(123, 77, 255, .2) 45%, transparent 70%); }
+.halo.g { background: radial-gradient(circle, rgba(255, 211, 110, .55), rgba(255, 79, 163, .2) 45%, transparent 70%); }
+@keyframes halo { from { transform: scale(.85); opacity: .7; } to { transform: scale(1.08); opacity: 1; } }
+
+/* ── входы ── */
+.zin { animation: zin .42s cubic-bezier(.2, 1.2, .35, 1) var(--d, 0s) both; }
+@keyframes zin { 0% { transform: scale(1.9) rotate(var(--r, 0deg)); opacity: 0; filter: blur(14px); }
+                 60% { opacity: 1; filter: blur(0); } 100% { transform: scale(1) rotate(var(--r, 0deg)); opacity: 1; } }
+.whip { animation: whip .36s cubic-bezier(.2, .9, .3, 1) var(--d, 0s) both; }
+@keyframes whip { 0% { transform: translateX(var(--wx, 140px)) rotate(var(--r, 0deg)) skewX(-8deg); opacity: 0; filter: blur(12px); }
+                  100% { transform: translateX(0) rotate(var(--r, 0deg)); opacity: 1; filter: blur(0); } }
+.rise2 { animation: rise2 .4s cubic-bezier(.2, .9, .3, 1.1) var(--d, 0s) both; }
+@keyframes rise2 { 0% { transform: translateY(var(--ry, 140px)) rotate(var(--r, 0deg)); opacity: 0; } 100% { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; } }
+.out { animation: out .3s cubic-bezier(.5, 0, .8, .4) var(--d, 99s) both; }
+@keyframes out { to { transform: translate(var(--ox2, 0), var(--oy2, -120px)) scale(var(--os, .7)); opacity: 0; filter: blur(10px); } }
+.dim { animation: dimTo .35s ease-out var(--d, 99s) both; }
+@keyframes dimTo { to { opacity: var(--to, .25); filter: blur(4px); } }
+/* неоновое мигание при появлении */
+.flick { animation: flickIn .5s steps(1) var(--d, 0s) both; }
+@keyframes flickIn { 0% { opacity: 0; } 12% { opacity: 1; } 22% { opacity: .2; } 34% { opacity: 1; } 46% { opacity: .5; } 58%, 100% { opacity: 1; } }
+
+/* ── формы ролика ── */
+/* заявление: чистый белый документ с розовой печатью */
+.doc { position: absolute; box-sizing: border-box; padding: 34px 40px 30px; border-radius: 18px; background: #FBF8F4; color: #1D1638;
+       box-shadow: 0 0 0 2px rgba(255, 255, 255, .5), 0 0 60px rgba(255, 79, 163, .35), 0 40px 70px rgba(5, 3, 18, .65); }
+.doc .to { margin-left: 46%; font-family: var(--ui); font-size: 22px; line-height: 1.35; color: #6B6386; }
+.doc .ttl { margin: 18px 0 12px; text-align: center; font-family: Oswald; font-weight: 700; font-size: 52px; letter-spacing: 8px; color: #1D1638; }
+.doc .tx { font-family: var(--ui); font-size: 34px; line-height: 1.32; color: #1D1638; }
+.doc .tx b { color: var(--pink); }
+.doc .hw { font-family: Caveat; font-weight: 700; font-size: 54px; line-height: 1.02; color: #2B3FD0; }
+.doc .ln { height: 6px; margin-top: 14px; border-radius: 3px; background: rgba(29, 22, 56, .12); }
+.seal { position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 8px solid var(--pink);
+        font-family: Oswald; font-weight: 700; color: var(--pink); text-transform: uppercase; text-align: center; line-height: .9;
+        animation: slam .32s cubic-bezier(.2, .9, .3, 1.2) var(--d, 0s) both; }
+/* бирка-имя героя (как имена на сайте VI) */
+.nametag { position: absolute; padding: 14px 26px 10px; border-radius: 18px; background: rgba(11, 8, 32, .78); border: 2px solid rgba(255, 140, 198, .7);
+           box-shadow: 0 0 34px rgba(255, 79, 163, .45), 0 20px 30px rgba(5, 3, 18, .5); white-space: nowrap; }
+.nametag i { display: block; font-style: normal; font-family: Oswald; font-weight: 500; font-size: 26px; letter-spacing: 8px; color: var(--pink2); }
+.nametag b { display: block; font-family: Oswald; font-weight: 700; font-size: 70px; line-height: 1; color: var(--cream); text-transform: uppercase; }
+.nametag::after { content: ''; position: absolute; left: var(--ax, 40px); bottom: -22px; border: 12px solid transparent; border-top-color: rgba(255, 140, 198, .9); }
+/* карточка даты выхода */
+.date { position: absolute; box-sizing: border-box; text-align: center; padding: 26px 30px 24px; }
+.date .k { font-family: Oswald; font-weight: 500; font-size: 28px; letter-spacing: 10px; color: var(--pink2); }
+.date .v { margin: 6px 0 4px; font-family: Oswald; font-weight: 700; font-size: 120px; line-height: .95; color: var(--cream); white-space: nowrap; }
+.date .p { display: flex; justify-content: center; gap: 26px; font-family: var(--ui); font-weight: 700; font-size: 30px; letter-spacing: 2px; color: rgba(255, 241, 201, .8); }
+/* лента канала: пост с шаблоном */
+.post { position: absolute; box-sizing: border-box; display: flex; gap: 20px; padding: 22px; }
+.post .av { flex: none; width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(135deg, var(--pink), var(--violet)); }
+.post .bd { flex: 1; }
+.post .nm { font-family: var(--ui); font-weight: 700; font-size: 28px; color: var(--cream); }
+.post .mini { margin-top: 12px; height: 150px; border-radius: 14px; background: #FBF8F4; padding: 16px 18px; box-sizing: border-box; }
+.post .mini i { display: block; height: 10px; margin: 0 0 12px; border-radius: 5px; background: rgba(29, 22, 56, .16); }
+.post .mini i.h { width: 44%; height: 18px; margin: 4px auto 16px; background: rgba(29, 22, 56, .5); }
+.post .mini i.s { width: 60%; }
+.post .bt { display: inline-block; margin-top: 14px; padding: 10px 22px; border-radius: 30px; background: var(--pink); font-family: var(--ui); font-weight: 700; font-size: 26px; color: #fff; }
+.post .fw { float: right; margin-top: 18px; font-family: var(--ui); font-weight: 600; font-size: 24px; color: var(--aqua); }
+/* плитка дня */
+.day { position: absolute; width: 132px; box-sizing: border-box; padding: 12px 0 14px; text-align: center; border-radius: 22px;
+       background: rgba(20, 14, 48, .72); border: 2px solid rgba(255, 140, 198, .6); box-shadow: 0 0 26px rgba(255, 79, 163, .35), 0 18px 26px rgba(5, 3, 18, .5); }
+.day i { display: block; font-style: normal; font-family: Oswald; font-weight: 500; font-size: 22px; letter-spacing: 5px; color: var(--pink2); }
+.day b { display: block; font-family: Oswald; font-weight: 700; font-size: 84px; line-height: 1; color: var(--cream); }
+.day small { display: block; font-family: var(--ui); font-weight: 700; font-size: 18px; color: var(--aqua); letter-spacing: 1px; }
+/* посадочный талон «командировка» */
+.pass { position: absolute; box-sizing: border-box; display: flex; border-radius: 30px; overflow: hidden; background: #FBF8F4; color: #1D1638;
+        box-shadow: 0 0 60px rgba(47, 211, 200, .4), 0 36px 60px rgba(5, 3, 18, .6); }
+.pass .m { flex: 1; padding: 26px 30px; background: linear-gradient(135deg, #FFE0EE, #FBF8F4 60%); }
+.pass .k { font-family: Oswald; font-weight: 500; font-size: 24px; letter-spacing: 7px; color: var(--pink); }
+.pass .t { margin-top: 4px; font-family: Oswald; font-weight: 700; font-size: 86px; line-height: 1; }
+.pass .r { margin-top: 6px; font-family: var(--ui); font-weight: 700; font-size: 28px; color: #6B6386; }
+.pass .s { width: 210px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+           border-left: 4px dashed rgba(29, 22, 56, .25); background: #120E2A; }
+.pass .s img { width: 150px; }
+.pass .s small { font-family: var(--ui); font-weight: 700; font-size: 20px; color: var(--aqua); letter-spacing: 1px; }
+/* сотрудники: светлые фигурки на тёмном стекле (контраст — пункт 4 правок) */
+.crowd2 { position: absolute; display: grid; gap: 12px 12px; }
+.crowd2 i { display: block; width: 50px; height: 70px; background: rgba(255, 241, 201, .9);
+            -webkit-mask: radial-gradient(circle at 50% 13px, #000 12px, transparent 13px), linear-gradient(#000, #000) 50% 100% / 44px 42px no-repeat;
+            mask: radial-gradient(circle at 50% 13px, #000 12px, transparent 13px), linear-gradient(#000, #000) 50% 100% / 44px 42px no-repeat;
+            animation: pop .3s cubic-bezier(.3, 1.6, .5, 1) calc(var(--d, 0s) + var(--i, 0) * .012s) both; }
+.crowd2 i:nth-child(3n) { background: var(--aqua); } .crowd2 i:nth-child(5n) { background: var(--pink2); }
+/* мини-карта игры: круглый радар с меткой */
+.radar { position: absolute; border-radius: 50%; overflow: hidden; border: 8px solid rgba(11, 8, 32, .9);
+         box-shadow: 0 0 0 4px rgba(255, 255, 255, .25), 0 0 40px rgba(47, 211, 200, .45), 0 24px 40px rgba(5, 3, 18, .6);
+         background: radial-gradient(circle at 50% 50%, #3E7C8C 0 30%, #2E5F73 60%, #24485C 100%); }
+.radar svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.radar .me { position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: -22px 0 0 -16px; border: 16px solid transparent; border-bottom: 44px solid #fff;
+             filter: drop-shadow(0 0 6px rgba(0, 0, 0, .6)); }
+.pin { position: absolute; width: 70px; height: 70px; margin: -70px 0 0 -35px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--pink);
+       box-shadow: 0 0 24px rgba(255, 79, 163, .8); animation: pinDrop .45s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+.pin::after { content: ''; position: absolute; left: 21px; top: 21px; width: 28px; height: 28px; border-radius: 50%; background: #fff; }
+@keyframes pinDrop { from { transform: translateY(-160px) rotate(-45deg); opacity: 0; } to { transform: translateY(0) rotate(-45deg); opacity: 1; } }
+.place { position: absolute; padding: 12px 22px 10px; border-radius: 16px; background: rgba(11, 8, 32, .8); border: 2px solid rgba(159, 241, 232, .6); white-space: nowrap; }
+.place b { display: block; font-family: Oswald; font-weight: 700; font-size: 54px; line-height: 1; color: var(--cream); text-transform: uppercase; }
+.place i { display: block; font-style: normal; font-family: var(--ui); font-weight: 700; font-size: 24px; color: var(--aqua); letter-spacing: 1px; }
+/* настоящее фото / кадр: скруглённая рамка со свечением и подписью */
+.photo { position: absolute; box-sizing: border-box; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255, 255, 255, .85);
+         box-shadow: 0 0 50px rgba(255, 79, 163, .45), 0 36px 60px rgba(5, 3, 18, .65); background: var(--n0); }
+.photo.tl { box-shadow: 0 0 50px rgba(47, 211, 200, .45), 0 36px 60px rgba(5, 3, 18, .65); }
+.photo > img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--op, 50% 50%);
+               transform-origin: var(--zo, 50% 50%); animation: zoomIn var(--zd, 1.2s) cubic-bezier(.4, 0, .2, 1) var(--zt, 99s) both; }
+@keyframes zoomIn { from { transform: scale(1); } to { transform: scale(var(--zs, 1.6)); } }
+.photo .lb { position: absolute; left: 18px; bottom: 18px; padding: 8px 16px 6px; border-radius: 12px; background: rgba(11, 8, 32, .82);
+             font-family: Oswald; font-weight: 600; font-size: 30px; letter-spacing: 1px; color: var(--cream); text-transform: uppercase; white-space: nowrap; }
+.photo .lb small { display: block; font-family: var(--ui); font-weight: 600; font-size: 20px; letter-spacing: 0; text-transform: none; color: var(--aqua); }
+/* неоновое кольцо-выделение */
+.ring { position: absolute; border-radius: 50%; border: 8px solid var(--pink); box-shadow: 0 0 24px var(--pink), inset 0 0 24px rgba(255, 79, 163, .6);
+        animation: ringIn .4s cubic-bezier(.3, 1.5, .5, 1) var(--d, 99s) both; }
+@keyframes ringIn { from { transform: scale(1.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* звёзды розыска (как в игре): загораются по очереди и мигают */
+.stars { position: absolute; display: flex; gap: 10px; }
+.stars i { width: 96px; height: 92px; background: rgba(255, 255, 255, .18); clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+           animation: starOn .2s steps(1) calc(var(--d, 0s) + var(--i) * .12s) both, starBlink .5s steps(1) calc(var(--d, 0s) + .7s) infinite; }
+@keyframes starOn { from { background: rgba(255, 255, 255, .18); } to { background: #fff; } }
+@keyframes starBlink { 0% { background: #fff; } 50% { background: rgba(255, 255, 255, .35); } }
+.stars.wrap { padding: 14px 18px; border-radius: 20px; background: rgba(11, 8, 32, .7); }
+/* «миссия выполнена»: тёмная полоса через кадр + золотые буквы */
+.mission { position: absolute; left: 0; width: 720px; box-sizing: border-box; padding: 26px 0 18px; text-align: center;
+           background: linear-gradient(90deg, transparent, rgba(11, 8, 32, .88) 12% 88%, transparent);
+           animation: band .4s cubic-bezier(.2, .9, .3, 1) var(--d, 99s) both; }
+.mission b { display: block; white-space: nowrap; font-family: Oswald; font-weight: 700; font-size: 72px; line-height: 1; letter-spacing: 0; text-transform: uppercase;
+             background: linear-gradient(180deg, #FFF3B8, #FFD36E 50%, #F2A93B); -webkit-background-clip: text; background-clip: text; color: transparent;
+             filter: drop-shadow(0 5px 0 var(--n0)) drop-shadow(0 0 24px rgba(255, 211, 110, .55)); }
+.mission i { display: block; margin-top: 6px; font-style: normal; font-family: Oswald; font-weight: 500; font-size: 34px; letter-spacing: 8px; color: var(--cream); }
+@keyframes band { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+/* чек-лист: два пункта */
+.check { position: absolute; box-sizing: border-box; padding: 28px 30px; }
+.check .it { display: flex; align-items: center; gap: 24px; padding: 18px 10px; border-radius: 22px; transition: none; }
+.check .it + .it { margin-top: 8px; }
+.check .bx { flex: none; position: relative; width: 74px; height: 74px; border-radius: 20px; border: 5px solid rgba(255, 241, 201, .75); box-sizing: border-box; }
+.check .bx::after { content: ''; position: absolute; left: 18px; top: 4px; width: 22px; height: 42px; border: solid var(--n0); border-width: 0 10px 10px 0; transform: rotate(45deg) scale(0); }
+.check .tx { font-family: Oswald; font-weight: 600; font-size: 50px; line-height: 1.04; color: var(--cream); }
+.check .tx small { display: block; font-family: var(--ui); font-weight: 600; font-size: 24px; color: var(--aqua); }
+.check .it.lit { animation: lit .3s ease-out var(--d, 99s) both; }
+@keyframes lit { to { background: rgba(255, 79, 163, .22); box-shadow: inset 0 0 0 3px rgba(255, 140, 198, .6); } }
+.check .bx.ok { animation: boxOk .25s ease-out var(--d, 99s) both; }
+@keyframes boxOk { to { background: var(--cash); border-color: var(--cash); } }
+.check .bx.ok::after { animation: tick .3s cubic-bezier(.3, 1.6, .5, 1) var(--d, 99s) both; }
+@keyframes tick { to { transform: rotate(45deg) scale(1); } }
+/* шкала диска и загрузка */
+.bar { position: absolute; height: 46px; border-radius: 23px; background: rgba(255, 255, 255, .12); overflow: hidden; border: 2px solid rgba(255, 255, 255, .2); }
+.bar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; border-radius: 23px;
+           background: linear-gradient(90deg, var(--teal), var(--violet) 50%, var(--pink)); box-shadow: 0 0 24px rgba(255, 79, 163, .6);
+           animation: fillTo var(--dd, 1s) cubic-bezier(.4, 0, .2, 1) var(--d, 99s) both; }
+/* часы со стрелками */
+.clock { position: absolute; border-radius: 50%; background: rgba(11, 8, 32, .78); border: 6px solid var(--cream); box-shadow: 0 0 40px rgba(255, 211, 110, .45); }
+.clock i { position: absolute; left: 50%; bottom: 50%; width: 12px; margin-left: -6px; border-radius: 6px; background: var(--cream); transform-origin: 50% 100%; }
+.clock i.h { height: 26%; transform: rotate(var(--h0, 0deg)); animation: hand 1.2s cubic-bezier(.4, 0, .2, 1) var(--d, 0s) both; }
+.clock i.m { height: 38%; width: 8px; margin-left: -4px; background: var(--pink); transform: rotate(var(--m0, 0deg)); animation: handm 1.2s cubic-bezier(.4, 0, .2, 1) var(--d, 0s) both; }
+@keyframes hand { to { transform: rotate(var(--h1, 60deg)); } }
+@keyframes handm { to { transform: rotate(var(--m1, 720deg)); } }
+/* кнопки опроса и подписки */
+.pill { position: absolute; padding: 18px 40px 14px; border-radius: 60px; font-family: Oswald; font-weight: 700; font-size: 56px; line-height: 1; white-space: nowrap; text-transform: uppercase; }
+.pill.p { background: var(--pink); color: #fff; box-shadow: 0 0 40px rgba(255, 79, 163, .7), 0 18px 30px rgba(5, 3, 18, .5); }
+.pill.c { background: rgba(255, 241, 201, .95); color: var(--n1); box-shadow: 0 0 30px rgba(255, 241, 201, .4), 0 18px 30px rgba(5, 3, 18, .5); }
+.chan2 { position: absolute; box-sizing: border-box; display: flex; align-items: center; gap: 26px; padding: 26px 30px; }
+.chan2 img { width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 0 6px var(--pink), 0 0 40px rgba(255, 79, 163, .6); }
+.chan2 b { display: block; font-family: Oswald; font-weight: 700; font-size: 66px; line-height: 1; color: var(--cream); }
+.chan2 small { display: block; margin-top: 8px; font-family: var(--ui); font-weight: 600; font-size: 26px; color: var(--aqua); }
+.heart2 { position: absolute; width: 150px; height: 136px; background: var(--pink); filter: drop-shadow(0 0 30px rgba(255, 79, 163, .8));
+          clip-path: path('M75 136 C 30 100 0 70 0 40 C 0 15 20 0 42 0 C 58 0 70 10 75 22 C 80 10 92 0 108 0 C 130 0 150 15 150 40 C 150 70 120 100 75 136 Z');
+          animation: beat .5s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s) both; }
+@keyframes beat { 0% { transform: scale(.2); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.vs { position: absolute; font-family: Oswald; font-weight: 700; font-size: 90px; line-height: 1; color: var(--gold);
+      -webkit-text-stroke: 8px var(--n0); paint-order: stroke fill; filter: drop-shadow(0 0 24px rgba(255, 211, 110, .6)); }
+/* значок: микрофон / самолёт (SVG белым) */
+.ico { position: absolute; }
+.ico svg { display: block; width: 100%; height: 100%; }
+/* пальмы — тёмные силуэты по краям (как на сайте VI) */
+.palm .fr, .palm .tr { fill: var(--pc, #0B0820); }
+.palm { filter: none; }
+.grp { position: absolute; left: 0; top: 0; width: 780px; height: 1180px; }
+/* переезд на новое место (логотип уходит наверх, уступая место следующему) */
+.to { animation: toPos .45s cubic-bezier(.3, .8, .3, 1) var(--d, 99s) both; }
+@keyframes toPos { from { transform: none; } to { transform: translate(var(--tx2, 0), var(--ty2, 0)) scale(var(--ts2, 1)); } }
+svg.ink .draw { filter: drop-shadow(0 0 10px rgba(255, 79, 163, .9)); }
+.photo > img[data-at] { animation-delay: var(--d, 99s); }
+
+/* безопасная зона TikTok: колонка кнопок справа (кадр x > 0,86) — всё в сцене правее x 720 не ставим; камера (наезд,
+   толчок) растёт от правого края контента, а не от центра — правый край не уезжает под кнопки */
+.scene { transform-origin: 700px 560px; }
+
+</style></head><body>
+<!-- s04 — Pocketpair (пункт 2: логотип крупно и чётко). «А кому-то отпрашиваться не нужно.» «Японская студия
+     Pocketpair | дала сотрудникам | пять выходных.» «И назвала это командировкой | в Vice City.»
+     Фон — арт Kie: пустой японский офис на закате, чемодан у стола. С кадра 0 — заявление; «не» — неоновый крест,
+     «нужно» — заявление улетает. «японская» — плашка «Япония · Токио»; «pocketpair» — логотип на белой карточке во весь
+     кадр с ореолом и толчком, под ним «создатели Palworld»; «дала» — логотип уезжает наверх; «пять» — пять плиток
+     19–23 ноября; «командировкой» — посадочный талон «Vice City»; «vice» — толчок. -->
+<div class="bgart" data-backdrop><i style="background-image: url(images/7801155810139bd3.png); --k0: 1.16; --k1: 1.03; --bp: 50% 45%"></i></div>
+<div class="grade" data-backdrop></div>
+<div class="leak t" data-backdrop style="--lx0: -300px; --ly0: 900px; --lx1: 600px; --ly1: 0px"></div>
+<div class="flash" data-backdrop></div>
+<div class="stage">
+  <div class="scene"><div class="kick" style="--kx: 700px; --ky: 520px" data-at="pocketpair:-0.05"><div class="dive2" style="--ox: 390px; --oy: 860px">
+    <div class="grp out" style="--oy2: -300px; --os: .5" data-at="японская:-0.25">
+      <div class="doc zin" style="left: 110px; top: 260px; width: 560px; --r: 2deg; --d: 0s">
+        <div class="to" style="font-size: 18px">Директору<br>от сотрудника</div>
+        <div class="ttl" style="font-size: 44px">ЗАЯВЛЕНИЕ</div>
+        <div class="tx" style="font-size: 28px">Прошу предоставить отгул <b>19&nbsp;ноября</b></div>
+        <div class="ln"></div><div class="ln"></div><div class="ln" style="width: 60%"></div>
+      </div>
+      <svg class="ink" width="780" height="1180">
+        <path class="draw" pathLength="1" stroke="#FF4FA3" stroke-width="26" style="--dd: .22s" data-at="не:-0.08" d="M150 300 L 640 700"/>
+        <path class="draw" pathLength="1" stroke="#FF4FA3" stroke-width="26" style="--dd: .22s" data-at="нужно:-0.15" d="M640 300 L 150 700"/>
+      </svg>
+    </div>
+    <div class="grp out" data-at="пять:-0.35"><div class="place whip" style="left: 40px; top: 90px; --d: 99s" data-at="японская:-0.1"><i>студия игр</i><b>Япония · Токио</b></div></div>
+    <div class="abs to" style="left: 0; top: 0; width: 780px; height: 1180px; transform-origin: 390px 200px; --ty2: -150px; --ts2: .74" data-at="пять:-0.35">
+      <div class="halo" style="left: 60px; top: 250px; width: 600px; height: 520px; --d: 99s" data-at="pocketpair:-0.12"></div>
+      <div class="logo zin" style="left: 20px; top: 340px; width: 680px; height: 280px; --d: 99s" data-at="pocketpair:-0.12"><img src="logos/pocketpair.png" alt=""></div>
+      <div class="kick2 appear" style="left: 0; width: 720px; text-align: center; top: 650px; --d: 99s" data-at="pocketpair:0.25">создатели palworld</div>
+    </div>
+    <div class="day pop" style="width: 124px; left: 20px; top: 600px; --r: -4deg; --d: 99s" data-at="пять:-0.12"><i>НОЯ</i><b>19</b><small>выходной</small></div>
+    <div class="day pop" style="width: 124px; left: 155px; top: 612px; --r: 3deg; --d: 99s" data-at="пять:-0.02"><i>НОЯ</i><b>20</b><small>выходной</small></div>
+    <div class="day pop" style="width: 124px; left: 290px; top: 598px; --r: -2deg; --d: 99s" data-at="пять:0.08"><i>НОЯ</i><b>21</b><small>выходной</small></div>
+    <div class="day pop" style="width: 124px; left: 425px; top: 614px; --r: 4deg; --d: 99s" data-at="пять:0.18"><i>НОЯ</i><b>22</b><small>выходной</small></div>
+    <div class="day pop" style="width: 124px; left: 560px; top: 602px; --r: -3deg; --d: 99s" data-at="пять:0.28"><i>НОЯ</i><b>23</b><small>выходной</small></div>
+    <div class="pass whip" style="left: 20px; top: 830px; width: 680px; height: 230px; --r: -2deg; --d: 99s" data-at="командировкой:-0.15">
+      <div class="m"><div class="k">командировка · срочно</div><div class="t">Vice City</div><div class="r">19–23 ноября · цель: играть</div></div>
+      <div class="s"><img src="logos/gta6-logo.png" alt=""><small>GTA VI</small></div>
+    </div>
+  </div></div></div>
+</div>
+
+<script>
+// Paper Explained — общий ход сцены web.html.
+// 1) .stage 780×960 вписывается в рабочую зону кадра (SCENE.area, CSS px) по центру.
+// 2) Рваные края: data-torn="tb" (верх/низ), "lr", "all" — clip-path многоугольником с зазубринами (сид — номер элемента).
+// 3) Время «на двойках»: студия зовёт window.seek(t), мы ставим всем анимациям t, округлённое вниз до 1/12 с, а свой
+//    обход анимаций студии гасим (document.getAnimations → []). Без студии (просмотр в браузере) всё идёт как обычно.
+// 4) «Кипение» бумаги: элементы с data-boil чуть дрожат раз в 1/6 с (translate/rotate не мешают transform анимаций).
+// 5) Подписи (шаблон paper_page): слова озвучки кусками по 1–2 строки внизу сцены, звучащее слово — под маркером.
+(function () {
+  const S = window.SCENE || { W: 1080, H: 1920, area: { x0: 151, y0: 154, x1: 929, y1: 1536 } };
+  const a = S.area, aw = a.x1 - a.x0, ah = a.y1 - a.y0;
+  const st = document.querySelector('.stage');
+  const k = Math.min(aw / 780, ah / 1380) * 0.96;  // запас 4 %: тени, скотч и «кипение» не выходят за зону
+  st.style.left = (a.x0 + (aw - 780 * k) / 2) + 'px';
+  st.style.top = (a.y0 + (ah - 1380 * k) / 2) + 'px';
+  st.style.transform = 'scale(' + k + ')';
+
+  // подписи: куски не длиннее CAP символов, граница — и на смене бита
+  const CAP = 30, Wd = S.words || [], Bs = S.beats || [];
+  // слово — в бит, с которым дольше пересекается: начало слова по разметке ElevenLabs бывает раньше границы бита
+  // (смычка «К» в «Клод» беззвучна — граница по паузе встаёт на взрыв), по одному t0 оно уезжало в прошлый кусок
+  const beatOf = (w) => {
+    let best = -1, ov = 0;
+    Bs.forEach((b, j) => { const o = Math.min(b.t1, w.t1) - Math.max(b.t0, w.t0); if (o > ov) { ov = o; best = j; } });
+    return best >= 0 ? best : Bs.reduce((i, b, j) => (w.t0 >= b.t0 - 1e-3 ? j : i), 0);
+  };
+  // слова бита делятся на ровные куски: n = ceil(длина / CAP), без «сирот» в одно слово
+  const byBeat = [];
+  // gta6: число не отрывается от названия («GTA | 6» рвало подпись на два куска) — идёт в бит предыдущего слова
+  let prevB = 0;
+  Wd.forEach((w, i) => { let b = beatOf(w); if (i && /^\d+\W*$/u.test(w.w) && /^[A-Za-z]+$/.test(Wd[i - 1].w)) b = prevB;
+                         prevB = b; (byBeat[b] = byBeat[b] || []).push(i); });
+  const chunks = [];
+  byBeat.forEach((ids, b) => {
+    if (!ids) return;
+    const len = ids.reduce((s, i) => s + Wd[i].w.length + 1, -1), n = Math.ceil(len / CAP), goal = len / n;
+    const first = chunks.length;  // первый кусок этого бита
+    let c = null, acc = 0;
+    ids.forEach(i => {
+      const made = chunks.length - first;  // кусков бита уже начато
+      if (!c || (made < n && acc >= goal * made - 2)) { c = { beat: b, idx: [], text: '' }; chunks.push(c); }
+      c.idx.push(i); c.text = c.text ? c.text + ' ' + Wd[i].w : Wd[i].w; acc += Wd[i].w.length + 1;
+    });
+  });
+  const caps = document.createElement('div'); caps.className = 'caps'; st.appendChild(caps);
+  chunks.forEach(c => {
+    c.el = document.createElement('div'); c.el.className = 'chunk';
+    c.spans = c.idx.map((i, n) => { const s = document.createElement('span'); s.textContent = Wd[i].w; c.el.appendChild(s);
+                                const nx = c.idx[n + 1], glue = nx !== undefined && /^[^\p{L}\p{N}]+$/u.test(Wd[nx].w);  // тире не висит одно на строке
+                                c.el.appendChild(document.createTextNode(glue ? ' ' : ' ')); return s; });
+    caps.appendChild(c.el);
+  });
+  function captions(t) {
+    let cur = -1;
+    chunks.forEach((c, j) => { if (t >= Wd[c.idx[0]].t0 - 0.05) cur = j; });
+    chunks.forEach((c, j) => {
+      c.el.style.display = j === cur ? 'block' : 'none';
+      if (j !== cur) return;
+      c.idx.forEach((i, n) => {
+        const w = Wd[i], next = Wd[i + 1];
+        const on = t >= w.t0 - 0.02 && (!next || t < next.t0 - 0.02 || n === c.idx.length - 1 && t < w.t1 + 0.4);
+        const p = Math.max(0, Math.min(1, (t - w.t0 + 0.02) / 0.14));
+        c.spans[n].style.backgroundSize = on ? (p * 100).toFixed(1) + '% 74%' : '0% 74%';
+      });
+    });
+  }
+
+  function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+  document.querySelectorAll('[data-torn]').forEach((el, i) => {
+    const r = rng(9173 + i * 101), sides = el.dataset.torn, depth = +(el.dataset.depth || 7);
+    const step = 2.2, pts = [];
+    const j = (on) => (on ? r() * depth : 0);
+    const top = /t|all/.test(sides), bot = /b|all/.test(sides), lft = /l|all/.test(sides), rgt = /r|all/.test(sides);
+    for (let x = 0; x <= 100; x += step) pts.push([x, j(top) * 100 / el.offsetHeight]);
+    for (let y = 0; y <= 100; y += step * el.offsetWidth / el.offsetHeight) pts.push([100 - j(rgt) * 100 / el.offsetWidth, y]);
+    for (let x = 100; x >= 0; x -= step) pts.push([x, 100 - j(bot) * 100 / el.offsetHeight]);
+    for (let y = 100; y >= 0; y -= step * el.offsetWidth / el.offsetHeight) pts.push([j(lft) * 100 / el.offsetWidth, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%').join(',') + ')';
+  });
+
+  // data-at="слово[:сдвиг]" — элемент стартует со слова озвучки (SCENE.words, первое совпадение по началу слова)
+  const words = (S.words || []).map(w => ({ w: w.w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), t: w.t0 }));
+  // (voice-clone: сначала точное совпадение — «голос» не цепляется за «голосовых», потом по началу слова)
+  document.querySelectorAll('[data-at]').forEach(el => {
+    const [word, off] = el.dataset.at.split(':'), w0 = word.toLowerCase();
+    const hit = words.find(x => x.w === w0) || words.find(x => x.w.startsWith(w0));
+    if (hit) el.style.setProperty('--d', (hit.t + (+off || 0)).toFixed(3) + 's');
+  });
+  // время слова: сначала точное совпадение («мам» ≠ «маме»), потом по началу слова
+  const wordT = (w0, dflt) => { w0 = w0.toLowerCase(); const hit = words.find(x => x.w === w0) || words.find(x => x.w.startsWith(w0));
+                               return hit ? hit.t : dflt; };
+
+  // ── motion-test (2026-11-11): новые движения ──
+  // 7) Камера (.cam): окно — картинка сцены (0…780 × 0…data-bottom px) с рваными краями со всех сторон: слои при
+  //    наезде уходят за край бумажного окна, а не под интерфейс площадки и не за поля кадра (qa «безопасная зона»).
+  document.querySelectorAll('.cam').forEach((el, i) => {
+    const r = rng(4242 + i), L = 2, R = 778, T = 2, B = +(el.dataset.bottom || 966), dp = 9, pts = [];
+    for (let x = L; x < R; x += 11) pts.push([x, T + r() * dp]);
+    for (let y = T; y < B; y += 11) pts.push([R - r() * dp, y]);
+    for (let x = R; x > L; x -= 11) pts.push([x, B - r() * dp]);
+    for (let y = B; y > T; y -= 11) pts.push([L + r() * dp, y]);
+    el.style.clipPath = 'polygon(' + pts.map(p => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(',') + ')';
+  });
+
+  // 8) Волна голосового: data-wave="N" — N столбиков с постоянным рисунком (--h0, сид — номер волны)
+  document.querySelectorAll('[data-wave]').forEach((el, i) => {
+    const r = rng(777 + i * 13 + (+el.dataset.seed || 0)), n = +el.dataset.wave;
+    for (let j = 0; j < n; j++) {
+      const b = document.createElement('i');
+      const h = .22 + .78 * Math.pow(Math.sin(Math.PI * (j + .5) / n), .5) * (.35 + .65 * r());
+      b.dataset.h0 = h.toFixed(3); b.style.setProperty('--h', h.toFixed(3)); el.appendChild(b);
+    }
+  });
+
+  // 9) Речь: data-talk="слово[~слово2]" — с этого слова до конца сцены (или до слова2) элемент «говорит»: --m 0…1 — открытия рта по гласным
+  //    звучащего слова (piper и ElevenLabs дают время слов), шагом 1/12 с. У волны (data-wave) прыгают столбики.
+  const VOW = /[аеёиоуыэюяaeiouy]/gi;
+  const talkers = Array.from(document.querySelectorAll('[data-talk]')).map(el => {
+    const [a, b] = el.dataset.talk.split('~');
+    return { el, t0: wordT(a, 0), t1: b ? wordT(b, 1e9) - 0.02 : 1e9, bars: el.dataset.wave ? Array.from(el.children) : null };
+  });
+  const mouth = (t) => {
+    const w = (S.words || []).find(x => t >= x.t0 && t < x.t1 && /[\p{L}\p{N}]/u.test(x.w));
+    if (!w) return 0;
+    const n = Math.max(1, (w.w.match(VOW) || []).length), ph = (t - w.t0) / Math.max(.05, w.t1 - w.t0) * n;
+    return Math.pow(Math.abs(Math.sin(Math.PI * ph)), .6);
+  };
+
+  // 10) Ксерокопия: data-misprint="слово" — поверх краски две её копии (синяя и терракотовая, только тёмное — светлое
+  //     и бумага прозрачны) со сдвигом; до слова сдвиг едва заметен, со слова — сбит; дрожит раз в 1/6 с.
+  const mps = [];
+  if (document.querySelector('[data-misprint]')) {
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.style.position = 'absolute';
+    const tint = (id, c) => `<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 0 0 ${c[0]}  0 0 0 0 ${c[1]}  0 0 0 0 ${c[2]}  -.34 -.34 -.34 1 0"/></filter>`;
+    defs.innerHTML = tint('mpB', [.30, .47, .62]) + tint('mpT', [.80, .36, .28]);
+    document.body.appendChild(defs);
+    document.querySelectorAll('[data-misprint]').forEach(el => {
+      const layers = ['t', 'b'].map(c => {
+        const cl = el.cloneNode(true); cl.removeAttribute('data-misprint'); cl.classList.add('mp', c);
+        el.parentNode.insertBefore(cl, el.nextSibling); return cl;
+      });
+      mps.push({ t0: wordT(el.dataset.misprint, 0), layers });
+    });
+  }
+
+  // ── free-reset (2026-11-12): камера-экскурсия по большой картинке ──
+  // 11) data-tour='[[когда, cx, cy, s, dd?, звук?], …]' на элементе .tour (transform-origin 0 0, содержимое — в своих
+  //     px): точка (cx, cy) встаёт в центр окна (data-view="x y", по умолчанию 390 480 — центр картинки сцены) с зумом s.
+  //     когда — секунды, "слово[:сдвиг]" или "end:-0.4" (от конца сцены). Переход к остановке — dd с (умолч. .6),
+  //     ход «медленно — быстро — медленно», зум — в логарифме (наезд ровный). Камера идёт шагом 1/12 с, как всё.
+  //     Звук перехода — whoosh (6-й элемент: своё имя или "none"); у первой остановки звука нет.
+  const when = (k) => {
+    if (typeof k === 'number') return k;
+    const [w, off] = String(k).split(':');
+    return (w === 'end' ? (S.dur || 0) : wordT(w, 0)) + (+off || 0);
+  };
+  const ease3 = (p) => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const lerpCam = (a, b, p) => { const e = ease3(Math.max(0, Math.min(1, p)));
+    return { x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e, s: Math.exp(Math.log(a.s) + (Math.log(b.s) - Math.log(a.s)) * e) }; };
+  const tours = Array.from(document.querySelectorAll('[data-tour]')).map(el => {
+    const v = (el.dataset.view || '390 480').split(/\s+/).map(Number);
+    const stops = JSON.parse(el.dataset.tour).map(s => ({ t: when(s[0]), x: s[1], y: s[2], s: s[3], dd: s[4] == null ? .6 : s[4], snd: s[5] }))
+      .sort((a, b) => a.t - b.t);
+    stops[0].from = stops[0];  // где была камера в момент старта каждой остановки
+    for (let i = 1; i < stops.length; i++) { const p = stops[i - 1]; stops[i].from = lerpCam(p.from, p, p.dd > 0 ? (stops[i].t - p.t) / p.dd : 1); }
+    stops.slice(1).forEach(s => {
+      if (s.snd === 'none') return;
+      const k = document.createElement('i');
+      k.style.cssText = `position: absolute; width: 0; height: 0; animation: appear .01s linear ${Math.max(0, s.t).toFixed(3)}s both`;
+      k.dataset.sfx = s.snd || 'whoosh'; st.appendChild(k);
+    });
+    return { el, v, stops };
+  });
+  const tourAt = (tr, t) => {
+    const ss = tr.stops; let i = 0;
+    while (i + 1 < ss.length && t >= ss[i + 1].t) i++;
+    const s = ss[i];
+    return i === 0 && t < s.t ? s : lerpCam(s.from, s, s.dd > 0 ? (t - s.t) / s.dd : 1);
+  };
+
+  // ── esb-climbers (2026-11-14): настоящее видео покадровой лентой ──
+  // 12) <div class="flip" data-src="video/climb/" data-n="42" data-at="слово"> — кадры 001.jpg…NNN.jpg (12 к/с, «на
+  //     двойках», как всё движение): все <img> в DOM заранее (успевают загрузиться), виден один — по времени от --d.
+  const flips = Array.from(document.querySelectorAll('.flip')).map(el => {
+    const n = +el.dataset.n, imgs = [];
+    for (let i = 1; i <= n; i++) {
+      const im = document.createElement('img'); im.src = el.dataset.src + String(i).padStart(3, '0') + '.jpg';
+      im.style.visibility = i === 1 ? 'visible' : 'hidden'; el.appendChild(im); imgs.push(im);
+    }
+    return { el, n, fps: +(el.dataset.fps || 12), imgs, cur: 0 };
+  });
+
+  const FPS2 = 30;  // gta6 v3 «Vice Night»: плавно, не «на двойках» (бумаги нет)
+  const all = document.getAnimations.bind(document);
+  document.getAnimations = () => [];
+
+  // 6) Звуки под движение (шаблон web.html → studio/sfx.py): старт CSS-анимации → бумажный звук по её имени.
+  //    data-sfx="имя" или "none" на элементе — своё. Декор (точки, кресты, кольца, тонкие линии) — без звука;
+  //    одинаковые звуки ближе GAP — один (стопка фишек не трещит).
+  const SFX = { drop: 'paper', slideL: 'slide', slideR: 'slide', rise: 'slide', pop: 'flick', fly: 'flick',
+                slam: 'stamp', strike: 'marker', draw: 'marker', grow: 'tick', appear: 'tick',
+                dolly: 'whoosh', travel: 'swish', tape: 'slide', printIn: 'slide', flapOpen: 'paper', up: 'slide',
+                fall: 'swish', unfoldT: 'paper', unfoldB: 'paper' };
+  const GAP = { tick: 0.07, flick: 0.08 };
+  window.sfx = () => {
+    const ev = [];
+    for (const an of all()) {
+      const el = an.effect && an.effect.target;
+      if (!el) continue;
+      let name = el.dataset && el.dataset.sfx;
+      if (!name) {
+        name = SFX[an.animationName];
+        if (!name || el.closest('.rings, .dot, .cross')) continue;
+        if (an.animationName === 'draw' && parseFloat(getComputedStyle(el).strokeWidth) < 4) continue;
+      }
+      if (name !== 'none') ev.push([an.effect.getTiming().delay / 1000, name]);
+    }
+    ev.sort((a, b) => a[0] - b[0]);
+    const last = {}, out = [];
+    for (const [t, n] of ev) {
+      if (t - (n in last ? last[n] : -9) < (GAP[n] || 0.1)) continue;
+      last[n] = t; out.push([+t.toFixed(3), n]);
+    }
+    return out;
+  };
+  const boil = Array.from(document.querySelectorAll('[data-boil]'));
+  window.seek = (t) => {
+    captions(t);  // подписи — по точному времени речи, не шагом
+    const q = Math.floor(t * FPS2 + 1e-4) / FPS2;
+    for (const an of all()) { an.pause(); an.currentTime = q * 1000; }
+    tours.forEach(tr => {
+      const c = tourAt(tr, q);
+      tr.el.style.transform = `translate(${(tr.v[0] - c.x * c.s).toFixed(2)}px, ${(tr.v[1] - c.y * c.s).toFixed(2)}px) scale(${c.s.toFixed(4)})`;
+    });
+    flips.forEach(f => {
+      const d = parseFloat(f.el.style.getPropertyValue('--d') || getComputedStyle(f.el).getPropertyValue('--d')) || 0;
+      const i = Math.max(0, Math.min(f.n - 1, Math.floor((q - d) * f.fps + 1e-4)));
+      if (i !== f.cur) { f.imgs[f.cur].style.visibility = 'hidden'; f.imgs[i].style.visibility = 'visible'; f.cur = i; }
+    });
+    const n = Math.floor(t * 6);
+    boil.forEach((el, i) => {
+      const r = rng(n * 7919 + i * 131 + 1); const amp = +(el.dataset.boil || 1);
+      el.style.translate = ((r() - .5) * 1.4 * amp).toFixed(2) + 'px ' + ((r() - .5) * 1.4 * amp).toFixed(2) + 'px';
+      el.style.rotate = ((r() - .5) * .35 * amp).toFixed(3) + 'deg';
+    });
+    talkers.forEach((tk, i) => {
+      const m = q >= tk.t0 && q < tk.t1 ? mouth(q) : 0;
+      tk.el.style.setProperty('--m', m.toFixed(3));
+      if (!tk.bars) return;
+      const r = rng(Math.round(q * 12) * 977 + i * 31 + 5);
+      tk.bars.forEach(b => {
+        const h0 = +b.dataset.h0, h = m > .04 ? Math.max(.12, Math.min(1, h0 * (.3 + 1.25 * m * (.3 + .7 * r())))) : h0;
+        b.style.setProperty('--h', h.toFixed(3));
+      });
+    });
+    mps.forEach((mp, i) => {
+      const a = t >= mp.t0 ? 7 : 1.6;
+      mp.layers.forEach((L, j) => {
+        const r = rng(n * 613 + i * 71 + j * 7 + 3), s = j ? -1 : 1;
+        L.style.translate = (s * a * .7 + (r() - .5) * a * .7).toFixed(1) + 'px ' + (-s * a * .35 + (r() - .5) * a * .6).toFixed(1) + 'px';
+      });
+    });
+  };
+})();
+
+</script>
+</body></html>

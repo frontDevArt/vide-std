@@ -512,6 +512,16 @@ def issues(proj) -> tuple[list[str], list[str]]:
     xf = m.get("crossfade")
     if xf is not None and (isinstance(xf, bool) or not isinstance(xf, (int, float)) or xf < 0):
         errs.append(f"music.crossfade: секунды ≥ 0, а не {xf!r}")
+    ul, ol = m.get("under_lu"), m.get("open_lu")
+    if isinstance(ul, (int, float)) and not isinstance(ul, bool):
+        if ul > -10:
+            warns.append(f"music.under_lu: {ul:+g} — музыка под речью громче −10 LU заглушает согласные (qa — ❌)")
+        elif ul < -28:
+            warns.append(f"music.under_lu: {ul:+g} — тише −28 LU музыку под речью не слышно (qa — ❌)")
+        if isinstance(ol, (int, float)) and ol < ul:
+            warns.append(f"music.open_lu {ol:+g} тише under_lu {ul:+g}: без речи музыка станет тише, чем под ней")
+    elif ul is None and any(m.get(k) is not None for k in ("open_lu", "hold", "carve_db", "fade_in", "fade_out")):
+        warns.append("music: open_lu / hold / carve_db / fade_in / fade_out работают только при under_lu")
     for r in used(proj):
         p = resolve(proj, r)
         if p is None:

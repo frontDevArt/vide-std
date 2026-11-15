@@ -1,0 +1,23 @@
+# Публикации проекта (ROADMAP E1): python -m studio publish <проект> --done --url <ссылка>.
+# Пишет команда после ручной загрузки или загрузки через API (--api youtube); поправить ссылку или время руками можно.
+- out: null
+  platform: tiktok
+  url: https://www.tiktok.com/@nabumage.tv/video/7708325647579352340
+  date: 2026-11-15 13:23
+  version: null
+  file: gta6.mp4
+  sha1: 30420805ec75
+  duration: 75.0
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+- out: null
+  platform: instagram-reels
+  url: https://www.instagram.com/p/DfwccaCv4iR/
+  date: 2026-11-15 13:23
+  version: null
+  file: gta6.mp4
+  sha1: 30420805ec75
+  duration: 75.0
+  forced:
+  - 'канал: источники в описании обязательны — нет ни цитат в сценах, ни package.sources'
+  - ссылка www.instagram.com — не TikTok

@@ -1,0 +1,103 @@
+# «Работа против GTA 6» — сценарий v3 (правки пользователя 2026-11-15, 16 пунктов; «Да, делаем»). Вид — «Vice Night»
+# по сайту rockstargames.com/VI: ночной индиго, свечение заката, кремовые узкие заголовки, рисованные арты (Kie) и
+# официальные арты Rockstar, без бумаги. Факты — outline.md (сверено 2026-11-15).
+# Убрано: уволенный тиктокер (пункты 5, 10). Майами — кто/где/когда + настоящее фото (7, 9). Джокер — кадр трейлера
+# рядом с его фото (12). Чек-лист — без «сделайте одно» (13), предзагрузка — со своей целью (14), вопрос — живой (15).
+# Каждая фраза — своя строка `lines` (пункт 1: иначе ElevenLabs читает две фразы одной).
+# Картинка меняется на каждом бите `|`. Картинки Kie — `image:` (role bg, 9:16), их рисует страница сцены.
+chapter: ch01
+title: "GTA 6: работа против игры"
+scenes:
+  - id: s01
+    template: paper_page
+    lines:
+      - "Ради GTA 6 | россияне отпрашиваются с работы | на девятнадцатое ноября."
+      - "А в заявлении пишут, | что приезжают родственники | из Америки."
+    params: {file: assets/s01-hook.html, fade: false}
+    image:
+      - {role: bg, prompt: "a young office worker in a white shirt with a loosened tie tiptoeing out of a modern open-space office at sunset, holding a game controller behind his back, sunglasses pushed up on his forehead, sly grin, his empty desk with a monitor behind him, warm pink and orange sunset light pouring through tall windows, palm trees and city towers outside"}
+
+  - id: s02
+    template: paper_page
+    lines:
+      - "Дядя Джейсон | и тётя Люсия."
+      - "Это главные герои GTA 6."
+      - "Игра выходит | как раз в этот день."
+    params: {file: assets/s02-heroes.html, fade: false}
+
+  - id: s03
+    template: paper_page
+    lines:
+      - "Шаблоны таких заявлений | уже раздают в соцсетях."
+    params: {file: assets/s03-templates.html, fade: false}
+    image:
+      - {role: bg, prompt: "a tropical coastal city skyline at dusk seen from the beach, silhouettes of tall palm trees in the foreground, pink orange and violet sky, calm purple ocean reflecting neon lights of art deco hotels turning on, wide cinematic view"}
+
+  - id: s04
+    template: paper_page
+    lines:
+      - "А кому-то отпрашиваться не нужно."
+      - "Японская студия Pocketpair | дала сотрудникам | пять выходных."
+      - "И назвала это командировкой | в Vice City."
+    params: {file: assets/s04-pocketpair.html, fade: false}
+    image:
+      - {role: bg, prompt: "an empty modern Japanese video game development studio at golden hour, rows of desks with dark switched-off monitors, office chairs neatly pushed in, one small travel suitcase with a palm tree luggage tag waiting by a desk, huge windows with Tokyo skyline under a pink and orange sunset, warm light beams across the floor"}
+
+  - id: s05
+    template: paper_page
+    lines:
+      - "А Logitech | подарила выходной | семи тысячам сотрудников."
+    params: {file: assets/s05-logitech.html, fade: false}
+    image:
+      - {role: bg, prompt: "a huge joyful crowd of office employees pouring out of the glass doors of a corporate headquarters at sunset, cheering with raised arms, some wearing gaming headsets around their necks, loose papers flying in the air, low angle wide shot, glass facade reflecting a pink and orange sky"}
+
+  - id: s06
+    template: paper_page
+    lines:
+      - "Rockstar тем временем заплатила городу Майами-Бич | около трёх миллионов долларов."
+      - "И теперь там на пляже | стоят зонтики Vice City."
+    params: {file: assets/s06-miami.html, fade: false}
+
+  - id: s07
+    template: paper_page
+    lines:
+      - "А мужчина по прозвищу Флоридский Джокер | решил, | что в трейлере GTA 6 | показали его."
+      - "Он требовал у Rockstar | пять миллионов долларов."
+      - "А потом попросил | просто дать ему озвучить | этого героя."
+    params: {file: assets/s07-joker.html, fade: false}
+    image:
+      - {role: bg, prompt: "a Florida street at night after rain, palm trees, a row of small shops with glowing pink and cyan neon signs without any readable letters, red and blue police lights reflecting on the wet asphalt, light haze, moody cinematic wide shot, nobody in the street"}
+
+  - id: s08
+    template: paper_page
+    lines:
+      - "Если тоже берёте отгул, | освободите место на приставке."
+      - "Игра весит | до двухсот двенадцати гигабайт."
+      - "И включите предзагрузку, | чтобы девятнадцатого | сразу начать играть."
+    params: {file: assets/s08-disk.html, fade: false}
+    image:
+      - {role: bg, prompt: "a sleek white modern game console standing upright next to a large wall-mounted TV in a cozy dark living room at night, the TV glowing magenta and cyan, a wireless gamepad resting on the couch cushion, a big window with a neon-lit city and palm trees outside"}
+
+  - id: s09
+    template: paper_page
+    lines:
+      - "Первыми в мире сыграют | в Новой Зеландии, | восемнадцатого, | в два часа дня по Москве."
+    params: {file: assets/s09-nz.html, fade: false}
+    image:
+      - {role: bg, prompt: "the Auckland city skyline at midnight with the illuminated Sky Tower in the center, pink and gold fireworks bursting over the harbour, reflections on dark water, small sailboats, wide cinematic view"}
+
+  - id: s10
+    template: paper_page
+    lines:
+      - "А вы возьмёте отгул | ради GTA 6?"
+    params: {file: assets/s10-ask.html, fade: false}
+    hold: 0.9               # вопрос держится: логотип и ответы успевают прочитаться
+    image:
+      - {role: bg, prompt: "a gamer seen from behind sitting on a couch in a dark room at night holding a gamepad, a huge TV screen in front showing a sunny tropical beach with palm trees, the room bathed in pink and teal light, snacks and an energy drink can on the coffee table, a calendar on the wall"}
+
+  - id: s11
+    template: paper_page
+    lines:
+      - "Если было полезно, | поставьте лайк | и подпишитесь."
+    params: {file: assets/s11-sub.html, fade: false}
+    hold: 0.4

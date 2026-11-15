@@ -18,6 +18,8 @@ python -m studio images   <проект> [--yes] # картинки сцен (im
 #   хост файлов Kie закрыт сетью → стоп до оплаты; --yes --defer — оплатить здесь, скачать позже повтором images из
 #   открытой сети (assets/images/pending.json, 14 дней, без повторной оплаты; docs/IMAGES.md)
 python -m studio voice    <проект> [--yes] # озвучка + тайминг (кэш); --yes — согласие на платный синтез (elevenlabs)
+python -m studio music    <проект> [--yes] # ИИ-трек ElevenLabs ровно в длину ролика (music.generate): смета → --yes;
+#   громкость — music.under_lu (LU от голоса в полосе речи, −15), приглушение по сценарию; docs/LESSONS.md «Громкость…»
 python -m studio stills   <проект> [--chapter chNN] [--times 1.2,3.4]   # контрольные кадры
 python -m studio render   <проект> [--chapter chNN] [--draft]  # рендер сцен (кэш) — ДОЛГО, в фоне; --draft — полразмера
 #   --alpha mov|webm — графика без фона и субтитров на прозрачном (ProRes 4444 / VP9) для монтажки

@@ -6,7 +6,7 @@ from __future__ import annotations
 import importlib
 
 # порядок = порядок в `python -m studio --help`
-NAMES = ("doctor", "new", "validate", "images", "voice", "stills", "render", "assemble", "qa", "all", "status",
+NAMES = ("doctor", "new", "validate", "images", "voice", "music", "stills", "render", "assemble", "qa", "all", "status",
          "templates", "frame", "demo", "selftest", "clean", "studios", "new-studio",
          "platforms", "cutdown", "package", "kinds", "gallery", "review", "batch", "jobs", "translate", "deliver",
          "publish", "analytics", "calendar")

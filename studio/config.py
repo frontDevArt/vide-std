@@ -91,6 +91,16 @@ SCHEMA = {
         "sync": F((str, NONE), doc="beat | bar — склейки сцен в долю / в сильную долю трека (studio/music.py)"),
         "bpm": F(NUM, doc="темп процедурного ритм-трека при sync без file (120); подсказка детектору долей"),
         "meter": F((int,), doc="долей в такте (4): сильная доля — каждая meter-я"),
+        "under_lu": F(NUM, doc="музыка под речью, LU от голоса в полосе речи 200 Гц–7 кГц (−15 — фон; −12 — ярко; "
+                               "−18 — тихо). Задано — level_db и duck не нужны: уровень от громкости трека и голоса, "
+                               "приглушение по сценарию (studio/audio.py, music_relative)"),
+        "open_lu": F(NUM, doc="при under_lu: музыка без речи (начало, конец, паузы дольше hold), LU от голоса (−6)"),
+        "hold": F(NUM, doc="при under_lu: пауза короче, с — музыка остаётся приглушённой, без «качелей» (0.9)"),
+        "carve_db": F(NUM, doc="при under_lu: провал музыки около 2,5 кГц под речью, dB (−4; 0 — выкл.)"),
+        "fade_in": F(NUM, doc="при under_lu: вход музыки в начале, с (0.1)"),
+        "fade_out": F(NUM, doc="при under_lu: уход музыки в конце, с (1.5; трек с концовкой ровно в длину — 0.3)"),
+        "generate": F((dict,), doc="ИИ-трек ElevenLabs Music: {model, prompts: {имя: текст}} — "
+                                   "python -m studio music (studio/musicgen.py), платно"),
     },
     "sfx": {"enabled": F((bool,), True), "level_db": F(NUM, 0)},  # звуки появления — только у шаблонов с sfx_events
     "subtitles": {"enabled": F((bool,), True), "max_lines": F((int,), 2), "size": F((int, NONE), None),

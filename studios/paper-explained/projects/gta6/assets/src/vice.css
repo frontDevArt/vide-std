@@ -1,0 +1,113 @@
+/* ── gta6 (2026-11-14): «Vice-бумага» — та же «Живая бумага», но палитра под вайб GTA 6 (пипеткой по официальной
+   обложке и логотипу Rockstar: закатный розовый, персик, оранжевый, морская бирюза, лаванда, фиолетовая ночь).
+   Пользователь 2026-11-14: тёмные / красные / чёрные листы, шкала шагов и штампы-запреты не обязательны; бумагу
+   оставляем, цвета — из GTA 6. Оригинальные картинки Rockstar (обложка, открытка) — как есть, без бумажной фактуры. ── */
+:root {
+  --vc-pink: #EE5A97; --vc-pink-lt: #F7B3CE; --vc-peach: #F8C3A0; --vc-orange: #F28A52; --vc-gold: #F5B547;
+  --vc-teal: #2FA9B0; --vc-aqua: #A3DDD8; --vc-lav: #B8A8E4; --vc-violet: #3A1D57; --vc-blue: #3E55C8; --vc-ink: #26113D;
+  --sunset: linear-gradient(180deg, #F6A6C6 0%, #F48DA4 34%, #F39C78 68%, #F8C493 100%);
+  --sea: linear-gradient(180deg, #8FD6D6 0%, #5FC2C3 55%, #3FAFB4 100%);
+  --dusk: linear-gradient(180deg, #A99BE0 0%, #C4A4DC 45%, #F1A9C4 100%);
+  --ink: var(--vc-ink);
+}
+
+/* лист акта: цветная бумага + рисограф-растр розовым (крупная точка сгущается к низу листа) */
+.sheetbg::before { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; opacity: var(--dots, .5);
+                   background: radial-gradient(circle, var(--dc, rgba(214, 60, 130, .55)) 2.2px, transparent 3px) 0 0 / 14px 14px;
+                   -webkit-mask-image: linear-gradient(180deg, transparent 30%, #000 100%); mask-image: linear-gradient(180deg, transparent 30%, #000 100%); }
+.sheetbg.sea::before { --dc: rgba(30, 120, 140, .55); }
+.sheetbg.dusk::before { --dc: rgba(120, 60, 170, .5); }
+
+/* надпись сверху: кремовая полоса, краска — фиолетовая ночь, звучащее слово — розовым маркером */
+.chunk { color: var(--vc-ink); }
+.chunk span { background-image: linear-gradient(100deg, transparent 0 1%, rgba(238, 90, 151, .62) 2% 98%, transparent 99%); }
+
+/* второй план: обрывки цветной бумаги (пастель палитры), а не серые газеты */
+.scrap { background: var(--grain), var(--sc, #FBEFE6); }
+.scrap i { background: rgba(58, 29, 87, .18); } .scrap i.h { background: rgba(58, 29, 87, .34); }
+
+/* пальма — вырезка из фиолетовой бумаги (build.py <!--@palm …-->): качается от основания, светлая кромка и тень */
+.palm { position: absolute; transform-origin: 50% 100%; animation: sway 3.2s ease-in-out 0s infinite alternate both;
+        filter: drop-shadow(0 0 0 transparent) drop-shadow(0 18px 14px rgba(40, 15, 60, .35)); }
+.palm svg { display: block; overflow: visible; }
+.palm .fr, .palm .tr { fill: var(--pc, var(--vc-violet)); }
+.palm.mir { transform: scaleX(-1); animation-name: swayF; }
+@keyframes sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
+@keyframes swayF { from { transform: scaleX(-1) rotate(-1.6deg); } to { transform: scaleX(-1) rotate(1.6deg); } }
+
+/* закатное солнце из бумаги: полосы вырезаны (как на ретро-открытках) */
+.sun { position: absolute; border-radius: 50%; background: var(--grain), linear-gradient(180deg, var(--vc-gold), var(--vc-orange) 55%, var(--vc-pink));
+       -webkit-mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 72%, #000 72% 80%, transparent 80% 87%, #000 87%);
+       mask-image: linear-gradient(180deg, #000 0 52%, transparent 52% 57%, #000 57% 66%, transparent 66% 72%, #000 72% 80%, transparent 80% 87%, #000 87%);
+       animation: pop .5s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+
+/* оригинальная картинка Rockstar: как есть — без растра, без бумаги поверх, только тень и скотч сверху */
+.orig { position: absolute; overflow: hidden; border-radius: 6px; box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 24px 22px rgba(40, 15, 60, .38); }
+.orig img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.orig.card { padding: 0; }
+
+/* рисограф: две краски с лёгким сдвигом (розовая + бирюзовая) — огромные цифры и слова */
+.riso { position: absolute; font-family: Oswald; font-weight: 700; line-height: .86; letter-spacing: -3px; white-space: nowrap; text-transform: uppercase;
+        color: var(--vc-pink); text-shadow: -7px 5px 0 rgba(47, 169, 176, .9); }
+.riso.on-sea { color: var(--paper-hi); text-shadow: -7px 5px 0 var(--vc-pink); }
+.riso small { font-size: .42em; letter-spacing: 0; }
+
+/* уведомление — бумажная полоска; иконка — цветной квадрат с буквой */
+.notif .ic.lt { background: var(--grain), var(--vc-blue); color: #fff; font-family: Oswald; font-weight: 700; font-size: 48px; }
+.notif .tx { font-size: 34px; } .notif .tx b { color: var(--vc-ink); font-size: 36px; }
+
+/* отрывной листок дня: шапка розовая, число фиолетовое */
+.dayp { position: absolute; width: 128px; background: var(--grain), var(--paper-hi); text-align: center; padding-bottom: 8px;
+        box-shadow: 0 3px 0 rgba(40, 15, 60, .12), 0 12px 10px rgba(40, 15, 60, .3); }
+.dayp i { display: block; font-style: normal; padding: 6px 0 4px; font-family: Oswald; font-weight: 600; font-size: 24px; letter-spacing: 2px;
+          color: #fff; background: var(--grain), var(--vc-pink); }
+.dayp b { display: block; font-family: Oswald; font-weight: 700; font-size: 84px; line-height: 1; color: var(--vc-violet); margin-top: 4px; }
+.dayp small { display: block; font-family: PTMono; font-size: 18px; color: var(--vc-teal); }
+
+/* билет «командировка»: розовая часть + бирюзовый корешок, перфорация */
+.ticket { position: absolute; display: flex; width: 720px; height: 250px; filter: drop-shadow(0 4px 0 rgba(40, 15, 60, .12)) drop-shadow(0 20px 16px rgba(40, 15, 60, .35)); }
+.ticket .tm { flex: 1; box-sizing: border-box; padding: 22px 28px; background: var(--grain), var(--vc-pink); color: #fff;
+              -webkit-mask: radial-gradient(circle at 100% 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                            radial-gradient(circle at 100% 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat;
+              mask: radial-gradient(circle at 100% 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                    radial-gradient(circle at 100% 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat; }
+.ticket .tm .k { font-family: PTMono; font-size: 22px; letter-spacing: 5px; opacity: .9; }
+.ticket .tm .t { margin-top: 6px; font-family: Oswald; font-weight: 700; font-size: 70px; line-height: .95; text-transform: uppercase; }
+.ticket .tm .r { margin-top: 12px; font-family: Oswald; font-weight: 600; font-size: 36px; letter-spacing: 1px; }
+.ticket .ts { width: 210px; box-sizing: border-box; padding: 18px 16px; background: var(--grain), var(--vc-aqua); border-left: 5px dashed rgba(255, 255, 255, .9);
+              display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--vc-violet);
+              -webkit-mask: radial-gradient(circle at 0 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                            radial-gradient(circle at 0 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat;
+              mask: radial-gradient(circle at 0 0, transparent 22px, #000 23px) top / 100% 51% no-repeat,
+                    radial-gradient(circle at 0 100%, transparent 22px, #000 23px) bottom / 100% 51% no-repeat; }
+.ticket .ts img { width: 170px; }
+.ticket .ts small { font-family: PTMono; font-size: 20px; letter-spacing: 2px; }
+
+/* шкала диска приставки: бумажная полоска, кусок игры дорастает розовым */
+.disk { position: absolute; box-sizing: border-box; padding: 20px 26px 22px; background: var(--grain), var(--paper-hi);
+        box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 18px 16px rgba(40, 15, 60, .3); }
+.disk .hd { display: flex; justify-content: space-between; font-family: PTMono; font-size: 32px; color: var(--vc-violet); }
+.disk .bar { position: relative; height: 64px; margin-top: 14px; background: repeating-linear-gradient(90deg, rgba(58, 29, 87, .1) 0 6px, transparent 6px 12px), var(--grain), #EFE6F2; }
+.disk .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 32%); background: var(--grain), var(--vc-pink); }
+.disk .bar b { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-family: Oswald; font-weight: 700; font-size: 36px; color: #fff; white-space: nowrap; }
+
+/* часы из бумаги: циферблат кремовый, стрелки фиолетовые, крутятся к времени */
+.clock { position: absolute; border-radius: 50%; background: var(--grain), var(--paper-hi); box-shadow: 0 0 0 10px var(--vc-pink), 0 20px 18px rgba(40, 15, 60, .35); }
+.clock i { position: absolute; left: 50%; bottom: 50%; width: 14px; margin-left: -7px; border-radius: 7px; background: var(--vc-violet); transform-origin: 50% 100%; }
+.clock .hh { height: 26%; animation: hand 1s cubic-bezier(.3, .8, .3, 1.1) var(--d, 0s) both; --a0: -200deg; --a1: 60deg; }
+.clock .mm2 { height: 38%; width: 10px; margin-left: -5px; background: var(--vc-pink); animation: hand 1s cubic-bezier(.3, .8, .3, 1.1) var(--d, 0s) both; --a0: -720deg; --a1: 0deg; }
+.clock .ctr { position: absolute; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px; border-radius: 50%; background: var(--vc-violet); }
+.clock .tk { position: absolute; left: 50%; top: 6%; width: 8px; height: 22px; margin-left: -4px; background: rgba(58, 29, 87, .45); transform-origin: 50% 340%; }
+@keyframes hand { from { transform: rotate(var(--a0)); } to { transform: rotate(var(--a1)); } }
+
+/* карточка времени: дата + местное время крупно */
+.when { position: absolute; box-sizing: border-box; padding: 22px 30px 20px; background: var(--grain), var(--paper-hi);
+        box-shadow: 0 4px 0 rgba(40, 15, 60, .12), 0 18px 16px rgba(40, 15, 60, .3); }
+.when .d { font-family: Oswald; font-weight: 700; font-size: 64px; line-height: 1; color: var(--vc-violet); text-transform: uppercase; }
+.when .tm { font-family: Oswald; font-weight: 700; font-size: 150px; line-height: .9; color: var(--vc-pink); text-shadow: -6px 4px 0 rgba(47, 169, 176, .85); }
+.when small { display: block; margin-top: 6px; font-family: PTMono; font-size: 26px; color: var(--vc-violet); }
+
+/* флажок-лента и скотч в палитре */
+.flag.vc { color: #fff; background: var(--grain), var(--vc-violet); }
+.vtape { position: absolute; height: 46px; background: rgba(247, 179, 206, .78); box-shadow: 0 2px 4px rgba(40, 15, 60, .2); transform: rotate(var(--r, -4deg));
+         animation: tape .3s cubic-bezier(.2, .8, .3, 1.1) var(--d, 0s) both; }

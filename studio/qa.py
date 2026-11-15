@@ -151,7 +151,12 @@ def run(proj: Project, log=print, fast=False):
         else:  # сборка до P4.2: промежуточные WAV лежат в build/mix/
             vI = loudness(md / "voice.wav")[0]
             mI = loudness(md / "music_ducked.wav")[0] if (md / "music_ducked.wav").exists() else None
-        if mI is not None:
+        if mI is not None and lv.get("mode") == "under_lu":  # музыка от голоса: замер в полосе речи под словами
+            ua = lv.get("under_actual")
+            chk(ua is not None and -28 <= ua <= -10, "Музыка под речью тише голоса, но слышна",
+                f"в полосе речи музыка под голосом {ua} LU (цель {lv['under_lu']:+g}, норма −28…−10), без речи "
+                f"{lv['open_lu']:+g} LU; весь спектр: голос {vI:.1f}, музыка {mI:.1f} LUFS")
+        elif mI is not None:
             chk(14 <= vI - mI <= 28, "Музыка значительно тише речи, но слышна",
                 f"голос {vI:.1f} LUFS, музыка {mI:.1f} LUFS (разница {vI - mI:.1f} LU, норма 14–28)")
         l0 = lines[0]

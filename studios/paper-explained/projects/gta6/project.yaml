@@ -1,0 +1,100 @@
+# Бриф ролика. Всё, что не указано, берётся из studio/config.py (SCHEMA → DEFAULTS) и defaults студии.
+# Запрос пользователя 2026-11-14: забавные истории про GTA 6 и полезный блок; выход игры 19.11.2026 — ролик до него.
+# v1 (2026-11-14) — «Vice-бумага». v3 (правки пользователя 2026-11-15: «подача полная…», 16 пунктов) — вид «Vice Night»
+# по сайту rockstargames.com/VI: ночной индиго, свечение заката, кремовые узкие заголовки, рисованные арты Kie и
+# официальные арты Rockstar, без бумажных иконок. Досье — ../../research/radar/2026-W46-gta6.md, сверка — outline.md.
+schema_version: 1
+title: "GTA 6 выходит 19 ноября — самое дикое перед релизом"
+topic: "GTA 6 выходит 19.11.2026 (PS5, Xbox Series). Работа против игры: россияне отпрашиваются («приезжают дядя Джейсон и тётя Люсия»), Pocketpair и Logitech дали выходные, Rockstar заплатила Майами-Бич за зонтики Vice City, «Флоридский Джокер». Полезное: место на диске, предзагрузка, Новая Зеландия первой"
+audience: "Русскоязычные зрители канала «На бумаге» и шире — все, кто ждёт GTA 6. Вынести: пару историй, которые хочется переслать, и что сделать до 19-го (место на диске, время открытия)"
+kind: explainer           # длительность по речи
+language: ru
+format: vertical
+platform: tiktok
+fps: 30
+target_duration: null
+
+tts:
+  backend: elevenlabs     # голос студии Artspace; синтез — только после «да» пользователя (voice --yes)
+  voice: auto
+  rate: 110               # ElevenLabs — только числом
+  rate_range: [98, 125]
+  context: false          # без соседних строк: иначе обрывы на стыках (docs/LESSONS.md)
+
+pauses:                   # правила студии: 0,42 / 0,6 с; старт короче — крючок с первого кадра
+  start: 0.2
+  comma: 0.18
+  sentence: 0.42
+  scene: 0.6
+  end: 0.6
+
+style:
+  palette: neon           # перекрыто бренд-китом студии (defaults.style.brand)
+  font: Inter Display
+  # вид — «Vice-бумага»: закатный розовый, персик, бирюза, лаванда; пальмы и солнце из бумаги; рисограф (assets/src/vice.css; style.mood движка тут не нужен)
+
+music:                    # пользователь 2026-11-15: «видео классная, но голая — нет фоновой музыки» → ИИ-трек ElevenLabs
+  enabled: true
+  file: assets/music/a-d1409c33.mp3   # вариант a (синтвейв 104 BPM): b кончается на 70 с — призыв остался бы без музыки
+  under_lu: -18           # под речью −18 LU от голоса в полосе речи (studio/audio.py, music_relative); паузы — −6
+                          # выбор пользователя на слух 2026-11-15 из превью −12 / −15 / −18 и трека b (qa/music-preview/)
+  fade_out: 0.5           # трек ровно в длину ролика, концовка своя
+  generate:               # 2 варианта на выбор, «да» пользователя 2026-11-15 (~2300 кредитов ElevenLabs)
+    model: music_v2_5
+    prompts:
+      a: >-
+        Instrumental retro synthwave for a fun short video about a hyped open-world crime game release. Neon Miami
+        night-drive mood, 1980s analog synths with modern punchy production. 104 BPM, A minor, steady driving groove
+        from the very first second with no slow intro: four-on-the-floor kick, tight gated-reverb snare, pulsing
+        eighth-note analog bassline, warm detuned saw pads, sparkling arpeggios panned wide. Playful, confident and a
+        little cheeky, not dark. Constant energy throughout with no breakdown, no drop and no tempo change, so a
+        narrator can talk over it the whole time. Uncluttered midrange: no lead melody in the center, no vocals, no
+        choir, no vocal chops. Ends with a clean final hit and a short reverb tail exactly at the end.
+      b: >-
+        Instrumental modern nu-disco and retro funk for a playful short video about a hyped open-world crime game set
+        in sunny Florida. Groovy synth bass, crisp disco hi-hats, tight claps on two and four, glossy 80s electric
+        piano stabs and short synth brass hits, sunset beach-party mood with a wink. 112 BPM, steady groove from the
+        very first second with no intro build, constant energy with no breakdown or drop, so a narrator can talk over
+        it the whole time. Sparse midrange: no lead melody in the center, no vocals, no choir, no vocal chops. Ends
+        with a clean final hit exactly at the end.
+
+sfx: {enabled: true, level_db: 10}
+
+subtitles:
+  enabled: true           # в .srt/.vtt; в кадре подписи рисует страница (paper_page)
+  max_lines: 2
+
+loudness: -14             # профиль tiktok
+
+chapters: [ch01]
+
+images:                   # v3: рисованные арты сцен (role bg, 9:16) — Kie nano-banana-2 2K, согласие пользователя 2026-11-15
+  enabled: true
+  budget_usd: 1.5
+  cutout: none
+  style: "Style: bold hand-painted digital key art like the loading screens of modern open-world crime video games, crisp confident linework, cel-shaded realistic proportions, saturated Vice City dusk palette of hot pink #FF4FA3, peach #FFB37A, gold #FFD36E, teal #2FD3C8, violet haze and deep indigo night #17123A, dramatic rim light, cinematic composition, rich detail, poster quality. No text, no letters, no numbers, no logos, no watermark, no UI, no frame, no border, no photo realism"
+  # картинки GTA 6 — официальные Rockstar (assets/gta/); логотипы — Wikimedia Commons (assets/logos/); фото — assets/real/
+
+package:
+  title: "Отпрашиваются на 19-е: «приезжают дядя Джейсон и тётя Люсия»"
+  description: >-
+    Россияне берут отгул на выход GTA 6 — в заявлении пишут, что приезжают американские родственники. А кому-то
+    отпрашиваться не нужно. Что сделать до релиза — в конце. А вы возьмёте отгул ради GTA 6?
+    Арт: Rockstar Games. Фото: Miami-Dade Corrections (2017), llllitl.fr (Майами-Бич, 2026).
+  hashtags: [gta6, гта6, rockstar, игры, работа]   # tiktok: не больше 5
+  cover: {at: 69.6, verdict: none}   # s10: «А вы возьмёте отгул ради GTA VI?», логотип, «ДА / КОНЕЧНО ДА» — всё в
+                                     # центре 3:4 (сетка профиля TikTok и Instagram); 0,6 с — логотип обрезан
+  ai_label: false         # коллаж и синтезированная озвучка; картинки — официальные Rockstar, не сгенерированы
+
+avoid:
+  - {numbers_without_source: false}   # решение пользователя 2026-11-10: источников-плашек нет — факты сверены (outline.md)
+  - "инструкции по обходу региональных ограничений не даём: «официально в России купить нельзя» — и хватит"
+  - "уволенного тиктокера не брать (пользователь 2026-11-15: «эта инфо не нужна»)"
+  - "смерть фаната (Джерри Форт) — не брать"
+  - "ПК-версия и «230 ГБ» — слухи, не брать"
+done_means:
+  - "крючок с первой секунды: GTA 6 в кадре (официальный арт на весь кадр) и в первых словах"
+  - "картинки GTA 6 — оригинальные; логотипы компаний — настоящие, крупно; Майами и Джокер — настоящие кадры"
+  - "картинка меняется каждые 1–2 с; главное — по центру, левее кнопок TikTok"
+  - "поворот «что знать вам» → время открытия по Москве крупно, место на диске"
+  - "лайк и подписка в финале"
