@@ -136,7 +136,33 @@ EL_DEFAULTS = {"model": "eleven_multilingual_v2", "stability": 0.5, "similarity_
                "use_speaker_boost": True}
 EL_VOICE_KEYS = ("stability", "similarity_boost", "style", "use_speaker_boost", "speed", "model")  # voice: сцены/строки
 EL_SPEED = (0.7, 1.2)  # диапазон speed, который принимает API
+# Какие voice_settings понимает модель (GET /v1/models и docs ElevenLabs, сверено 2026-11-16; docs/ELEVENLABS.md):
+# eleven_v4 / v4_turbo — только stability и similarity_boost (style, speed, speaker boost нет: темп и подача — теги
+# и пунктуация), eleven_v3 — без style и speaker boost. Остальные модели (multilingual_v2 и др.) — все пять.
+# Лишнее в запрос не шлём: модель его молча проигнорирует, и `tts.rate` «подействует» только на бумаге.
+EL_SETTINGS = ("stability", "similarity_boost", "style", "use_speaker_boost", "speed")
+EL_MODEL_SETTINGS = {"eleven_v4": ("stability", "similarity_boost"),
+                     "eleven_v3": ("stability", "similarity_boost", "speed")}
 _RAW_WORDS = {}  # out_raw -> [[слово, t0, t1]] относительно сырого звука (до срезки тишины)
+
+
+def el_settings_for(model) -> tuple:
+    """Ключи voice_settings, которые принимает модель ElevenLabs (по префиксу model_id)."""
+    for prefix, keys in EL_MODEL_SETTINGS.items():
+        if str(model or "").startswith(prefix):
+            return keys
+    return EL_SETTINGS
+
+
+def el_post_tempo(cfg: dict, rate) -> float:
+    """Темп после синтеза для модели без speed (eleven_v4): та же величина, что ушла бы в API speed
+    (voice.speed или rate/100, 0,7–1,2), но через ffmpeg atempo. Остальным моделям — 1 (темп в запросе).
+    Метод — atempo: пользователь сравнил на слух (2026-11-16) — rubberband ×1,2 давал хрип и «металл», atempo
+    ×1,2 чистый (docs/ELEVENLABS.md, раздел 11). Другой метод — только после такого же сравнения на слух."""
+    c = dict(EL_DEFAULTS, **(cfg or {}))
+    if "speed" in el_settings_for(c["model"]):
+        return 1.0
+    return max(EL_SPEED[0], min(EL_SPEED[1], float(c.get("speed") or float(rate) / 100.0)))
 
 
 def _el_key(ws=None):
@@ -178,9 +204,10 @@ def _elevenlabs(text, voice, rate, out_raw, cfg=None, ws=None):
     cfg — настройки вызова (el_call_cfg): проектные + voice-override + previous_text/next_text."""
     c = dict(EL_DEFAULTS, **(cfg or {}))
     speed = max(EL_SPEED[0], min(EL_SPEED[1], float(c.get("speed") or rate / 100.0)))
-    body = {"text": text, "model_id": c["model"],
-            "voice_settings": {"stability": c["stability"], "similarity_boost": c["similarity_boost"],
-                               "style": c["style"], "use_speaker_boost": c["use_speaker_boost"], "speed": speed}}
+    vs = {"stability": c["stability"], "similarity_boost": c["similarity_boost"], "style": c["style"],
+          "use_speaker_boost": c["use_speaker_boost"], "speed": speed}
+    keys = el_settings_for(c["model"])
+    body = {"text": text, "model_id": c["model"], "voice_settings": {k: v for k, v in vs.items() if k in keys}}
     for k in ("previous_text", "next_text"):  # соседние строки: модель держит общую интонацию (платим только за text)
         if c.get(k):
             body[k] = c[k]
@@ -314,7 +341,10 @@ def el_call_cfg(tts_cfg: dict, prev=None, nxt=None, voice=None) -> dict:
 def cache_key(text: str, tts_cfg: dict, rate: float, prev=None, nxt=None, voice=None, beats=None) -> str:
     parts = [tts_cfg["backend"], tts_cfg["voice"], round(float(rate), 1), text]
     if tts_cfg["backend"] == "elevenlabs":  # у офлайн-бэкендов контекста нет — их кэш не трогаем
-        parts.append(el_call_cfg(tts_cfg, prev, nxt, voice))
+        c = el_call_cfg(tts_cfg, prev, nxt, voice)
+        parts.append(c)
+        if el_post_tempo(c, rate) != 1.0:  # v4: звук после atempo — метод в ключе (у v2 ключ прежний)
+            parts.append("post-tempo:atempo")
     if tts_cfg["backend"] == "fake":  # паузы fake зависят от битов '|'
         parts.append(list(beats or []))
     return stable_hash(parts, 16)
@@ -353,14 +383,17 @@ def synth(text: str, tts_cfg: dict, rate: float, cache_dir: Path, prev=None, nxt
         raise TTSUnavailable(f"Синтез не дал звука для: {text[:60]!r}")
     words = _RAW_WORDS.pop(str(raw), None)
     lead = _lead_silence(raw) if words else 0.0
-    r = run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af", TRIM,
+    k = el_post_tempo(extra["cfg"], rate) if extra else 1.0  # v4 без speed: темп после синтеза (atempo)
+    af = (f"atempo={k:g}," if k != 1.0 else "") + TRIM
+    r = run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-af", af,
              "-ar", str(SR), "-ac", "1", "-c:a", "pcm_s16le", str(out)])
     raw.unlink(missing_ok=True)
     if r.returncode or not out.exists():
         raise RuntimeError("ffmpeg trim: " + r.stderr[-300:])
-    if words:
+    if words:  # времена сырого звука → после atempo (÷k) и срезки тишины в начале
         d = duration(out)
-        words = [[w, round(max(0.0, a - lead), 3), round(min(d, max(0.0, b - lead)), 3)] for w, a, b in words]
+        words = [[w, round(max(0.0, (a - lead) / k), 3), round(min(d, max(0.0, (b - lead) / k)), 3)]
+                 for w, a, b in words]
         out.with_suffix(".words.json").write_text(json.dumps(words, ensure_ascii=False), encoding="utf-8")
     return out
 

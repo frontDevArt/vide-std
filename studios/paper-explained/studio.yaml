@@ -18,8 +18,12 @@ defaults:
 # Голос студии по языку проекта: DEFAULTS → defaults → voices[язык] → project.yaml (ROADMAP A3, docs/TTS.md).
 # env:ИМЯ — значение из .env студии (в git и чат не попадает). rate — числом после первого ролика.
 voices:
-  ru: {backend: elevenlabs, voice: env:ELEVENLABS_VOICE_ID, rate: 110}   # Artspace (Etagi), выбор пользователя 2026-11-09;
-                          #   ID — в studios/paper-explained/.env, ключ API — корневой .env. Запасной офлайн: piper ru_RU-ruslan-medium
+  ru: {backend: elevenlabs, voice: env:ELEVENLABS_VOICE_ID, model: eleven_v4, rate: 120}
+                          # Artspace (Etagi), выбор пользователя 2026-11-09; ID — в studios/paper-explained/.env, ключ API —
+                          #   корневой .env. Запасной офлайн: piper ru_RU-ruslan-medium.
+                          # eleven_v4 — с 2026-11-16 (A/B на слух: «v4 лучше»; было eleven_multilingual_v2, rate 110).
+                          #   У v4 нет speed: rate 120 = atempo ×1,2 после синтеза (~148 сл/мин, вариант D — «чистый»;
+                          #   rubberband давал хрип). docs/ELEVENLABS.md, раздел 11
 max_accents: 2             # переопределений голоса (voice: сцен/строк) на ролик без ⚠️
 
 # Ворота качества (ROADMAP D4, studio/gates.py): правила для всех проектов студии, к ним — avoid / done_means

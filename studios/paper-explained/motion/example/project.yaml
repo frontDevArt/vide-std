@@ -15,7 +15,7 @@ target_duration: null
 tts:
   backend: fake           # тон вместо речи: бесплатный черновик движения. Голос канала (ElevenLabs) — только после «да»
   voice: auto
-  rate: 110
+  rate: 110               # только для fake. На голос канала: backend elevenlabs и rate: auto — студия даст v4 и 120
   rate_range: [98, 125]
   context: false
 

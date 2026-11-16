@@ -25,7 +25,7 @@ class Report:
 def check(proj) -> Report:
     from . import imagegen as IG
     from .packs import REGISTRY, TemplateNameError, load_project_templates
-    from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG
+    from .textutil import word_count, segments, line_text, line_voice, AUDIO_TAG, RU_TAG
     from .lang import profile
     lp = profile(proj.cfg["language"])
     errs, warns = [], []
@@ -75,8 +75,18 @@ def check(proj) -> Report:
                     accents.append(f"{ch}/{sid}: «{l[:30]}…»")
                     voice(proj, line_voice(item), f"{ch}/{sid}", errs, warns)
                 model = {**proj.cfg["tts"], **(s.get("voice") or {}), **line_voice(item)}.get("model", "")
-                if AUDIO_TAG.search(l) and not str(model).startswith("eleven_v3"):
-                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: тег эмоции без model: eleven_v3 — будет прочитан вслух")
+                if AUDIO_TAG.search(l) and not str(model).startswith(TAG_MODELS):
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: тег подачи без model: eleven_v4 (или eleven_v3) — "
+                                 f"будет прочитан вслух")
+                if RU_TAG.search(l):
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: тег по-русски — ElevenLabs понимает теги по-английски "
+                                 f"([whispers], [calm, steady voice]); русский прочитается вслух и останется в субтитрах")
+                if "+" in l and proj.cfg["tts"]["backend"] == "elevenlabs":
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: «+» — разметка ударения RHVoice, ElevenLabs её не понимает; "
+                                 f"ударение — «ё», другое слово или заглавная гласная (docs/ELEVENLABS.md, «Ударения»)")
+                if "<break" in l:
+                    warns.append(f"{ch}/{sid}: «{l[:40]}…»: <break> не используем — v4/v3 его не понимают, а у v2 "
+                                 f"он ломает таймкоды; пауза — новая строка, «…» или тег [pause] (docs/ELEVENLABS.md)")
                 words += word_count(l)
                 if lp["foreign"] and re.search(lp["foreign"], l.replace("|", "")):
                     warns.append(f"{ch}/{sid}: «{l[:40]}…»: {lp['foreign_msg']}")
@@ -166,6 +176,16 @@ def voice(proj, v, where, errs, warns):
             errs.append(f"{where}: voice.speed {sp} быстрее потолка rate_range ({hi:g}) — речь не ускоряем")
     if "model" in v:
         warns.append(f"{where}: voice.model = {v['model']} — эксперимент: тембр и таймкоды сверить на слух и в stills")
+    from .tts import el_settings_for, EL_DEFAULTS
+    model = v.get("model") or tc.get("model") or EL_DEFAULTS["model"]
+    # speed есть у всех: где его нет в API (v4), студия ускоряет звук после синтеза (tts.el_post_tempo)
+    lost = sorted(k for k in v if k in ("style", "use_speaker_boost") and k not in el_settings_for(model))
+    if tc["backend"] == "elevenlabs" and lost:
+        warns.append(f"{where}: voice.{', voice.'.join(lost)} — у {model} нет такой настройки, не подействует "
+                     f"(подача на v4 — теги и пунктуация, docs/ELEVENLABS.md)")
+
+
+TAG_MODELS = ("eleven_v4", "eleven_v3")  # модели, которые понимают теги подачи [whispers]
 
 
 def style(proj, errs, warns):

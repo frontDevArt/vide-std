@@ -30,7 +30,10 @@ def tts_text(line: str) -> str:
     return re.sub(r"\s+", " ", t).strip()
 
 
-AUDIO_TAG = re.compile(r"\[[a-z][a-z ]*\]")  # теги эмоций eleven_v3: [sighs], [whispers] — звучат, но не видны
+# Теги подачи eleven_v4 / eleven_v3 — звучат, но не видны: [sighs], [whispers], и описания через запятую
+# [calm, steady voice], [dry, wry], [low-key]. Пишутся по-английски строчными (docs/ELEVENLABS.md).
+AUDIO_TAG = re.compile(r"\[[a-z][a-z ,'\-]*\]")
+RU_TAG = re.compile(r"\[[а-яё][^\]]*\]", re.I)  # тег по-русски: ElevenLabs его не понимает — прочитает вслух
 
 
 def display_text(s: str) -> str:

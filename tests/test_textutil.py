@@ -33,6 +33,9 @@ def test_display_text_strips_markup_and_audio_tags():
     assert tu.display_text("[sighs] It's *fine* | for z+amka.") == "It's fine for zamka."
     assert tu.display_text("Say [whispers soft] it") == "Say it"
     assert tu.display_text("Keep [Capital] and [2x]") == "Keep [Capital] and [2x]"  # не тег eleven_v3
+    # описания через запятую (v4): «[slow, quiet authority]», «[low-key]», «[don't rush]»
+    assert tu.display_text("[slow, quiet authority] Нет, Люк. [low-key] Ну [don't rush] да") == "Нет, Люк. Ну да"
+    assert tu.RU_TAG.search("[шёпотом] тише") and not tu.RU_TAG.search("[whispers] тише")
 
 
 def test_weight():
